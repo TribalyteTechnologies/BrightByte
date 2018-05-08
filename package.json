@@ -1,7 +1,7 @@
 {
-  "name": "myFirstApp",
+  "name": "BrightByte",
   "version": "0.0.1",
-  "author": "Ionic Framework",
+  "author": "Alonso Rodriguez and Arturo Serrano",
   "homepage": "http://ionicframework.com/",
   "private": true,
   "scripts": {
