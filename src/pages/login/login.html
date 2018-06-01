@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>login</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h2>Main</h2>
+  <p>
+    Who are you?
+  </p>
+  
+  <input type='file' (change)='openFile($event)'><br>
+  <!--<div id="output"></div>-->
+  <button ion-button (click)="register()">Register</button>
+  <br>
+  <p>Depuracion</p>
+  <p>{{text}}</p>
+
+</ion-content>

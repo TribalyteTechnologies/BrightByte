@@ -1,7 +1,7 @@
 {
-  "name": "BrightByte",
+  "name": "truffle-ionic",
   "version": "0.0.1",
-  "author": "Alonso Rodriguez and Arturo Serrano",
+  "author": "Ionic Framework",
   "homepage": "http://ionicframework.com/",
   "private": true,
   "scripts": {
@@ -9,31 +9,62 @@
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
+    "ionic:serve": "ionic-app-scripts serve",
+    "ionic": "ionic cordova run browser",
+    "truffle:migrate": "truffle compile --contracts_build_directory=./src/assets/build"
   },
   "dependencies": {
-    "@angular/animations": "5.2.10",
-    "@angular/common": "5.2.10",
-    "@angular/compiler": "5.2.10",
-    "@angular/compiler-cli": "5.2.10",
-    "@angular/core": "5.2.10",
-    "@angular/forms": "5.2.10",
-    "@angular/http": "5.2.10",
-    "@angular/platform-browser": "5.2.10",
-    "@angular/platform-browser-dynamic": "5.2.10",
-    "@ionic-native/core": "4.7.0",
-    "@ionic-native/splash-screen": "4.7.0",
-    "@ionic-native/status-bar": "4.7.0",
+    "@angular/common": "5.0.3",
+    "@angular/compiler": "5.0.3",
+    "@angular/compiler-cli": "5.0.3",
+    "@angular/core": "5.0.3",
+    "@angular/forms": "5.0.3",
+    "@angular/http": "^5.0.3",
+    "@angular/platform-browser": "5.0.3",
+    "@angular/platform-browser-dynamic": "5.0.3",
+    "@ionic-native/core": "4.4.0",
+    "@ionic-native/file-chooser": "^4.7.0",
+    "@ionic-native/file-opener": "^4.7.0",
+    "@ionic-native/file-path": "^4.7.0",
+    "@ionic-native/splash-screen": "4.4.0",
+    "@ionic-native/status-bar": "4.4.0",
     "@ionic/storage": "2.1.3",
+    "@machinomy/types-ethereumjs-tx": "^0.1.0",
+    "cordova-browser": "5.0.3",
+    "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-ionic-keyboard": "^2.1.2",
+    "cordova-plugin-ionic-webview": "^1.2.1",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "ethereumjs-tx": "^1.3.4",
+    "filereader": "^0.10.3",
+    "ionic": "^4.0.0-rc.6",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
-    "rxjs": "5.5.10",
+    "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
-    "zone.js": "0.8.26"
+    "truffle-contract": "^3.0.5",
+    "web3": "^1.0.0-beta.34",
+    "zone.js": "0.8.18"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.1.9",
-    "typescript": "~2.6.2"
+    "@ionic/app-scripts": "3.1.8",
+    "@types/node": "^10.1.3",
+    "path": "^0.12.7",
+    "types-ethereumjs-util": "0.0.8",
+    "typescript": "2.4.2"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {}
+    },
+    "platforms": [
+      "browser"
+    ]
+  }
 }

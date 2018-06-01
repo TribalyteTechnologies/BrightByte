@@ -1,5 +1,5 @@
 {
-  "name": "BrightByte",
+  "name": "truffle-ionic",
   "type": "ionic-angular",
   "integrations": {
     "cordova": {}

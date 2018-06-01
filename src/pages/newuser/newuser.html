@@ -1,17 +1,20 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      Reviews
-    </ion-title>
+    <ion-title>newuser</ion-title>
   </ion-navbar>
 </ion-header>
 
+<ion-content padding>
+  <h2>Main</h2>
+  <p>
+    WELCOME
+  </p>
 <ion-content>
   <ion-list>
-    <ion-list-header>Reviews</ion-list-header>
+    <ion-list-header>Register</ion-list-header>
     <ion-item>
       <ion-icon name="ionic" item-start></ion-icon>
-      HERE WE PUT REVIEWS
+
     </ion-item>
     <ion-item>
       <ion-label color="primary">Name</ion-label>
@@ -19,15 +22,17 @@
     </ion-item>
     <ion-item>
       <ion-label color="primary">Email</ion-label>
-      <ion-input type="text" placeholder="email@example.com"></ion-input>
+      <ion-input type="text" placeholder="email@example.com" [(ngModel)]="Mail"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label color="primary">Password</ion-label>
       <ion-input type="password" placeholder="pass"></ion-input>
     </ion-item>
   </ion-list>
-  <button ion-button (click)="ButtonClicked(Name)">Accept</button>
-  <button ion-button (click)="ButtonSetprofile(Name)">Set Profile</button>
+  <button ion-button (click)="ButtonClicked(Name)">Proof of Transaction (2)</button>
+  <button ion-button (click)="ButtonSetprofile(Name)">Set Profile (2)</button>
   <h1>Hello {{ Name || '????'}}</h1>
   <p id="statusSetUser"></p>
+  <p>If you want create a new user press the button</p>
+  <button ion-button (click)="createUser(Name, Mail)">Create New User (1)</button>
 </ion-content>
