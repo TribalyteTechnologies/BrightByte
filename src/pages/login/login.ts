@@ -2,33 +2,22 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { utf8Encode } from '@angular/compiler/src/util';
 import { NewuserPage } from '../newuser/newuser'
+import { default as Web3 } from 'web3';
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  // public text: string;
-  public text: string;
+  web3: any;
+  account: any;
+  public text: any;
+  public TextDepuracion: any;
+
   constructor(public navCtrl: NavController) {
-
+        this.web3 = new Web3(new Web3.providers.HttpProvider("http://52.209.188.78:22000"));
+        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
   }
-  //public upload() {
-    /*
-    ///const file = document.getElementById("file");
-    const reader = new FileReader();
-    //reader.readAsText(file ,utf8Encode);
-    reader.readAsBinaryString = (file) => {
-      //this.text = reader.result;
-      this.text = reader.result;
-    console.log("File contents: " + this.text);
-      //const buf = new Buffer(reader.result) // Convert data into buffer
-     // console.log(reader.readAsText(contents));
-
-    }
-    //reader.readAsArrayBuffer(file.files[0]); // Read Provided File
-    //let a = new FileReader.readAsText(file, utf8Encode);
-    console.log(this.text);
-   */
+  
   public openFile = (event: Event)=> {
     console.log("Event: ", event);
     let target = <HTMLInputElement>event.target;
@@ -46,17 +35,30 @@ export class LoginPage {
       //let output = document.getElementById('output');
       //output.innerHTML = dataURL;
       //console.log(dataURL);
+      me.TextDepuracion=reader.result;
       me.text = JSON.parse(reader.result); 
       //me.text = reader.result;
       //console.log(me.text);
     };
     // this.text=reader.readAsText(input);
     //console.log("Reader result: ", this.text);
+    
   };
   //}
-  
+  public login(Pass){
+    console.log(this.text);
+    let PrivK = this.text.Keys.privateKey;
+    this.account = this.web3.eth.accounts.decrypt(PrivK, Pass);
+    console.log("Imported account from the login file: ",this.account);
+  }
 public register(){
     this.navCtrl.push(NewuserPage);
 }
 
+//ESTA FUNCION SE PODRIA QUITAR. VER QUE DICE EL PRODUCT OWNER
+public Pkey(PrivatePass){
+  //TODO First i have to check if the account is located in BrightByte because if not i would have to denied the recover and Put a message saying Please Create a user.
+  this.account = this.web3.eth.accounts.privateKeyToAccount(PrivatePass);
+  console.log("Imported account from PK",this.account);
+}
 }

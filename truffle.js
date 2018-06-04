@@ -16,7 +16,7 @@ contracts_build_directory: path.join(__dirname, "./src/assets/build"),
       network_id: "*",
       gasPrice: 0,
       gas: 2000000,
-      from: "0x6EB1E76B3B4002EaEfB07619DA0447d8954D2f99"
+      from: "0x6eb1e76b3b4002eaefb07619da0447d8954d2f99"
     },
   }
 };
