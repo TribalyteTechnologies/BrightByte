@@ -25,6 +25,7 @@ export class NewuserPage {
     sent: any;
     nonce:any;
     private log: ILogger;
+    file: any;
 
     constructor(public navCtrl: NavController, public http: HttpClient, private loggerSrv: LoggerService) {
         this.log = this.loggerSrv.get("LoginPage");
@@ -97,10 +98,12 @@ export class NewuserPage {
 
     public createUser(Name, Mail, Pass){
         this.account = this.web3.eth.accounts.create('Pass');
-        this.downloadFile(this.generateText(this.account,Name, Mail, Pass), 'Identity.json');
+        this.file = this.generateText(this.account,Name, Mail, Pass);
+        this.downloadFile(this.file, 'Identity.json');
+        document.getElementById("downButton").style.display = "block";
     }
 
-    private downloadFile(contenidoEnBlob, filename) {
+    public downloadFile(contenidoEnBlob, filename) {
 
         let reader = new FileReader();
         reader.onload = (event: any) => {// TODO: Should be FileReaderProgressEvent but it can not find it
