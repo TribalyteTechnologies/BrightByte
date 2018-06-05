@@ -1,25 +1,24 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>login</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>login</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h2>Main</h2>
-  <p>
-    Who are you?
-    Please, upload your identity file or introduce your private key.
-  </p>
-
-  <input type='file' (change)='openFile($event)'><br>
-  <ion-item>
-    <ion-label color="primary">Password</ion-label>
-    <ion-input type="password" placeholder="pass" [(ngModel)]="Pass"></ion-input>
-  </ion-item>
-  <button ion-button (click)="login(Pass)">Login</button>
-  <button ion-button (click)="register()">Register</button>
-  <br>
-  <p>Depuracion</p>
-  <p>{{TextDepuracion}}</p>
-  
+    <h2>Main</h2>
+    <p>
+      Who are you?
+      Please, upload your identity file or introduce your private key.
+    </p>
+    <input type='file' (change)='openFile($event)'>
+    <br>
+    <ion-item>
+        <ion-label color="primary">Password</ion-label>
+        <ion-input type="password" placeholder="pass" [(ngModel)]="Pass"></ion-input>
+    </ion-item>
+    <button ion-button (click)="login(Pass)">Login</button>
+    <button ion-button (click)="register()">Register</button>
+    <br>
+    <p>Depuracion</p>
+    <p>{{TextDepuracion}}</p>
 </ion-content>

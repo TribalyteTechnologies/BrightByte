@@ -1,33 +1,33 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      Reviews
-    </ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>
+          Reviews
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Reviews</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      HERE WE PUT REVIEWS
-    </ion-item>
-    <ion-item>
-      <ion-label color="primary">Name</ion-label>
-      <ion-input type="text" placeholder="Name" [(ngModel)]="Name"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label color="primary">Email</ion-label>
-      <ion-input type="text" placeholder="email@example.com"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label color="primary">Password</ion-label>
-      <ion-input type="password" placeholder="pass"></ion-input>
-    </ion-item>
-  </ion-list>
-  <button ion-button (click)="ButtonClicked(Name)">Accept</button>
-  <button ion-button (click)="ButtonSetprofile(Name)">Set Profile</button>
-  <h1>Hello {{ Name || '????'}}</h1>
-  <p id="statusSetUser"></p>
+    <ion-list>
+        <ion-list-header>Reviews</ion-list-header>
+        <ion-item>
+            <ion-icon name="ionic" item-start></ion-icon>
+            HERE WE PUT REVIEWS
+        </ion-item>
+        <ion-item>
+            <ion-label color="primary">Name</ion-label>
+            <ion-input type="text" placeholder="Name" [(ngModel)]="Name"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label color="primary">Email</ion-label>
+            <ion-input type="text" placeholder="email@example.com"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label color="primary">Password</ion-label>
+            <ion-input type="password" placeholder="pass"></ion-input>
+        </ion-item>
+    </ion-list>
+    <button ion-button (click)="ButtonClicked(Name)">Accept</button>
+    <button ion-button (click)="ButtonSetprofile(Name)">Set Profile</button>
+    <h1>Hello {{ Name || '????'}}</h1>
+    <p id="statusSetUser"></p>
 </ion-content>

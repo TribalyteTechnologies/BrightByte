@@ -25,7 +25,7 @@ export class LoggerService implements ILogService {
     constructor(logDebug = false){
         this.logDebug  = logDebug;
     }
-
+    
     public get(prefix: string) {
         let ret: ILogger = {
             d: function (...args: any[]) {/*empty block*/},
