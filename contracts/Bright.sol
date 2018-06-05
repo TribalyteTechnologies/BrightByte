@@ -25,7 +25,7 @@ contract Bright is Ownable {
             users[msg.sender].mail = _mail;
 	        users[msg.sender].hash = _hash;
         }
-        if(bytes(users[msg.sender].name).length != 0 && bytes(users[msg.sender].mail).length == 0){
+        if(bytes(users[msg.sender].name).length != 0 && bytes(users[msg.sender].mail).length != 0){
             users[msg.sender].name = _name;
             users[msg.sender].mail = _mail;
         }
