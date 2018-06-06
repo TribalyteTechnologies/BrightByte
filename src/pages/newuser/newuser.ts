@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { default as Web3 } from 'web3';
+//import { default as Web3 } from 'web3';
 import { default as contract }  from 'truffle-contract';
 import Tx from 'ethereumjs-tx';
 import {HttpClient} from '@angular/common/http';
 import { stringify } from '@angular/compiler/src/util';
 import {ILogger, LoggerService} from "../../core/logger.service";
+import {Web3Service} from "../../core/web3.service";
 
 @Component({
     selector: 'page-newuser',
@@ -18,7 +19,7 @@ export class NewuserPage {
     contract:any;
     Bright: any;
     account: any;
-    web3: Web3;
+    web3: any;
     Priv: any;
     privateKey: any;
     rawTx: any;
@@ -27,10 +28,11 @@ export class NewuserPage {
     private log: ILogger;
     file: any;
 
-    constructor(public navCtrl: NavController, public http: HttpClient, private loggerSrv: LoggerService) {
+    constructor(public navCtrl: NavController, public http: HttpClient, private loggerSrv: LoggerService, private web3Service: Web3Service) {
         this.log = this.loggerSrv.get("LoginPage");
-        this.web3 = new Web3(new Web3.providers.HttpProvider("http://52.209.188.78:22000"));
-        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+        //this.web3 = new Web3(new Web3.providers.HttpProvider("http://52.209.188.78:22000"));
+        //Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+        this.web3 = this.web3Service.getWeb3();
         this.http.get('../assets/build/Bright.json').subscribe(data =>  {
             this.abijson = data;
             this.abi= data['abi'];

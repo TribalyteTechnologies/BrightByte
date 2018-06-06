@@ -12,8 +12,10 @@ import { LoginPage } from '../pages/login/login';
 import { NewuserPage } from '../pages/newuser/newuser'
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import {LoggerService} from "../core/logger.service";
-import {AppConfig} from "../app.constants";
+import { LoggerService } from "../core/logger.service";
+import { AppConfig } from "../app.constants";
+import { Web3Service } from "../core/web3.service";
+import { LoginService } from "../core/login.service";
 
 import { default as Web3 } from 'web3';
 import Tx from 'ethereumjs-tx';
@@ -57,6 +59,8 @@ import {HttpClientModule} from '@angular/common/http';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: LoggerService,useFactory: () => new LoggerService(AppConfig.LOG_DEBUG)},
     Web3,
+    Web3Service,
+    LoginService,
     //Http,
     HttpClientModule
     //Tx
