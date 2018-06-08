@@ -5,7 +5,7 @@ import { AppConfig } from "../app.config"
 @Injectable()
 export class Web3Service {
 
-    public web3: any;
+    public web3: Web3;
     
     constructor(){
         this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.URL_NODE));//http://52.209.188.78:22000"));
