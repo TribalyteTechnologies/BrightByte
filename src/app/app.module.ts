@@ -10,10 +10,12 @@ import { ReviewPage } from '../pages/review/review';
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
 import { NewuserPage } from '../pages/newuser/newuser'
+import { AddCommitPage } from '../pages/addcommit/addcommit'
+
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { LoggerService } from "../core/logger.service";
-import { AppConfig } from "../app.constants";
+import { AppConfig } from "../app.config";
 import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
 
@@ -33,7 +35,8 @@ import {HttpClientModule} from '@angular/common/http';
     ReviewPage,
     TabsPage,
     LoginPage,
-    NewuserPage
+    NewuserPage,
+    AddCommitPage
   ],
   imports: [
     BrowserModule,
@@ -50,7 +53,8 @@ import {HttpClientModule} from '@angular/common/http';
     ReviewPage,
     TabsPage,
     LoginPage,
-    NewuserPage
+    NewuserPage,
+    AddCommitPage
   ],
   providers: [
     StatusBar,

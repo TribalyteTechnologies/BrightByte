@@ -7,6 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import { stringify } from '@angular/compiler/src/util';
 import {ILogger, LoggerService} from "../../core/logger.service";
 import {Web3Service} from "../../core/web3.service";
+import { AppConfig } from "../../app.config"
 
 @Component({
     selector: 'page-newuser',
@@ -29,7 +30,7 @@ export class NewuserPage {
     file: any;
 
     constructor(public navCtrl: NavController, public http: HttpClient, private loggerSrv: LoggerService, private web3Service: Web3Service) {
-        this.log = this.loggerSrv.get("LoginPage");
+        this.log = this.loggerSrv.get("NewUserPage");
         //this.web3 = new Web3(new Web3.providers.HttpProvider("http://52.209.188.78:22000"));
         //Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
         this.web3 = this.web3Service.getWeb3();
@@ -47,10 +48,10 @@ export class NewuserPage {
     public ButtonSetprofile(Name, Mail){
           
         let account:string = this.account.address;
-        let contractAddress = this.Bright.networks[82584648528].address;//In alastria is 82584648528 instead of 4447 thats it is in local
+        let contractAddress = this.Bright.networks[AppConfig.NET_ID].address;//In alastria is 82584648528 instead of 4447 thats it is in local
         this.log.d("Direccion del contrato: ",contractAddress);
         this.log.d("Direccion publica: ",account);
-        this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {from: this.account.address, gas:200000, gasPrice:0, data: this.Bright.deployedBytecode});
+        this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {from: this.account.address, gas:AppConfig.GAS_LIMIT, gasPrice:AppConfig.GASPRICE, data: this.Bright.deployedBytecode});
         this.log.d("artefacto del contrato",this.contract);
           
         this.web3.eth.getTransactionCount(account)
@@ -58,16 +59,16 @@ export class NewuserPage {
             this.nonce= '0x' + (result).toString(16);
         }).then(() => {
             this.log.d("VALOR DEL NONCE",this.nonce);
-            this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {from: this.account.address, gas:2000000, gasPrice:0, data: this.Bright.deployedBytecode});
-            let data = this.contract.methods.setProfile(Name, Mail, this.account.address).encodeABI();
+            this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {from: this.account.address, gas:AppConfig.GAS_LIMIT, gasPrice:AppConfig.GASPRICE, data: this.Bright.deployedBytecode});
+            let data = this.contract.methods.setProfile(Name, Mail).encodeABI();
             this.log.d("Introduced name: ",Name);
             this.log.d("Introduced Mail: ",Mail);
             this.log.d("DATA: ",data);
                     
             let rawtx = new Tx({
                 nonce: this.nonce,
-                gasPrice: this.web3.utils.toHex(0),//Alastria needs value 0 and localhost 100. I can use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                gasLimit: this.web3.utils.toHex(200000),
+                gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),//Alastria needs value 0 and localhost 100. I can use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
                 to: contractAddress,
                 //value: 0x00,
                 data: data
@@ -99,7 +100,7 @@ export class NewuserPage {
     }
 
     public createUser(Name, Mail, Pass){
-        this.account = this.web3.eth.accounts.create('Pass');
+        this.account = this.web3.eth.accounts.create('Pass'); //TODO Instead of use pass use a random seed to make it stronger
         this.file = this.generateText(this.account,Name, Mail, Pass);
         this.downloadFile(this.file, 'Identity.json');
         document.getElementById("downButton").style.display = "block";

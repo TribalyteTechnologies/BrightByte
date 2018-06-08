@@ -21,7 +21,7 @@ export class TabsPage {
 
   constructor(private navParams: NavParams, private loggerSrv: LoggerService) {
     //this.account = navParams.get('account');
-    this.log = this.loggerSrv.get("LoginPage");
+    this.log = this.loggerSrv.get("TabsPage");
     //this.log.d(this.account);
 
   }

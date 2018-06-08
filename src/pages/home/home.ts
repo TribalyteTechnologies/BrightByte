@@ -16,7 +16,7 @@ export class HomePage {
 	constructor(public navCtrl: NavController, private loggerSrv: LoggerService, private web3Service: Web3Service, private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("LoginPage");
+		this.log = this.loggerSrv.get("HomePage");
 		this.account = this.loginService.getAccount();
 		this.log.d("Home: ",this.account);
   	}
