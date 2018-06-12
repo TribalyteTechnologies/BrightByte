@@ -18,7 +18,7 @@ export interface ILogCall {
 export class LoggerService implements ILogService {
 
     public static readonly logFnsThis = [console, console, console];
-    private logFns = [console.log, console.warn, console.error];
+    private logFns = [console.log, console.warn ? console.warn : console.log, console.error ? console.error : console.log];
     private msgPrefixes = [["[", "]"], ["[", "] WARN: "], ["[", "] ERROR: "]];
     private logDebug = false;
 

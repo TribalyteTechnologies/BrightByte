@@ -1,34 +1,34 @@
 <ion-header>
         <ion-navbar>
-          <ion-title>
+            <ion-title>
             Add Commit
-          </ion-title>
+            </ion-title>
         </ion-navbar>
-      </ion-header>
+</ion-header>
       
-      <ion-content padding>
-        <h2>Add yourcommit</h2>
-        <ion-item>
-            <ion-label color="primary">URL</ion-label>
-            <ion-input type="text" placeholder="http://example.com" [(ngModel)]="url"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label color="primary">Project</ion-label>
-            <ion-input type="text" placeholder="Name of the project" [(ngModel)]="project"></ion-input>
-        </ion-item>
-        <ion-label color="primary">Users</ion-label>
-        <ion-item>
-            <ion-input type="text" placeholder="email@example.com" [(ngModel)]="user1"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-input type="text" placeholder="email@example.com" [(ngModel)]="user2"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-input type="text" placeholder="email@example.com" [(ngModel)]="user3"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-input type="text" placeholder="email@example.com" [(ngModel)]="user4"></ion-input>
-        </ion-item>
-        <button ion-button (click)="AddCommit(url,project,user1,user2,user3,user4)">Set Profile (2)</button>
-      </ion-content>
+<ion-content padding>
+    <h2>Add yourcommit</h2>
+    <ion-item>
+        <ion-label color="primary">URL</ion-label>
+        <ion-input type="text" placeholder="http://example.com" [(ngModel)]="url"></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-label color="primary">Project</ion-label>
+        <ion-input type="text" placeholder="Name of the project" [(ngModel)]="project"></ion-input>
+    </ion-item>
+    <ion-label color="primary">Users</ion-label>
+    <ion-item>
+        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-input>
+    </ion-item>
+    <button ion-button (click)="addCommit(url,project)">Add Commit</button>
+</ion-content>
       
