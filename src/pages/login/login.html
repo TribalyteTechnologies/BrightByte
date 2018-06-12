@@ -16,9 +16,13 @@
         <ion-label color="primary">Password</ion-label>
         <ion-input type="password" placeholder="pass" [(ngModel)]="Pass"></ion-input>
     </ion-item>
+    <p class="error-message">{{msg}}</p>
     <button ion-button (click)="login(Pass)">Login</button>
     <button ion-button (click)="register()">Register</button>
     <br>
-    <p>Depuracion</p>
-    <p>{{textDebugging}}</p>
+    <div *ngIf="debugMode">
+        <p>Depuracion</p>
+        <p>{{textDebugging}}</p>
+    </div>
+    
 </ion-content>

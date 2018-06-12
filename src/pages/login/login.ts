@@ -6,6 +6,7 @@ import {ILogger, LoggerService} from "../../core/logger.service";
 import {Web3Service} from "../../core/web3.service";
 import {LoginService} from "../../core/login.service";
 import { TabsPage } from "../../pages/tabs/tabs";
+import {AppConfig} from "../../app.config";
 
 
 @Component({
@@ -15,9 +16,11 @@ import { TabsPage } from "../../pages/tabs/tabs";
 
 export class LoginPage {
     public web3: any;
+    public msg: string;
     public account: any;
     public text: any;
     public textDebugging: string;
+    public debugMode: boolean;
     private log: ILogger;
 
     constructor(
@@ -29,6 +32,7 @@ export class LoginPage {
 
         this.web3 = this.web3Service.getWeb3();
         this.log = this.loggerSrv.get("LoginPage");
+        this.debugMode = AppConfig.LOG_DEBUG;
         
     }
   
@@ -50,12 +54,27 @@ export class LoginPage {
     public login(Pass: string){
         this.log.d(this.text);
         let privK = this.text.Keys.privateKey;
-        this.account = this.web3.eth.accounts.decrypt(privK, Pass);
-        this.log.d("Imported account from the login file: ",this.account);
-        this.loginService.setAccount(this.account);
-        this.navCtrl.push(TabsPage);//, {account: this.account});
+        // this.account = this.web3.eth.accounts.decrypt(privK, Pass) =>{
+        // this.account = this.web3.eth.accounts.decrypt(privK, Pass)
+        // .then(() => {
+        //     this.log.d("Decrypted");
+        // }).catch(err => {
+        //     this.log.d("Wrong Pass. ERROR: ",err);
+        //     this.msg = "Wrong Password";
+        // });
+        try {
+            this.account = this.web3.eth.accounts.decrypt(privK, Pass)
+            this.log.d("Imported account from the login file: ",this.account);
+            this.loginService.setAccount(this.account);
+            this.navCtrl.push(TabsPage);//, {account: this.account});
+          }
+          catch(e) {
+            this.log.e("Wrong password: ",e);
+            this.msg = "Wrong Password";
+          }
+        
     }
-  
+
     public register(){
         this.navCtrl.push(NewuserPage);
     }

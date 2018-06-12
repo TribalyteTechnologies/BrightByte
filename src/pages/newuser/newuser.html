@@ -30,8 +30,8 @@
     <h1>Hello {{ Name || '????'}}</h1>
     <p id="statusSetUser"></p>
     <div id="downButton" style="display: none">
-        <button ion-button (click)="downloadFile(file,'Identity.json')">Download file</button>
+        <button ion-button (click)="saveFileLink(file,'Identity.json')">Download file</button>
     </div>
     <p>If you want create a new user press the button</p>
-    <button ion-button (click)="createUser(Name, Mail, Pass)">Create New User (1)</button>
+    <button ion-button [disabled]="!Pass" (click)="createUser(Name, Mail, Pass)">Create New User (1)</button>
 </ion-content>

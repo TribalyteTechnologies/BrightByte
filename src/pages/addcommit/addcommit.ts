@@ -71,10 +71,7 @@ export class AddCommitPopover {
                 data: this.bright.deployedBytecode
             });
           
-            for(let i=0; i< this.usersMail.length; i++){
-                if(this.usersMail[i] === undefined){this.usersMail[i]="";this.log.d("user"+(i+1)+" vacio")}
-            }
-            
+           
             let id = url; //TODO get the id from url
             let data = this.contract.methods.setNewCommit(id,url,project,this.usersMail[0],this.usersMail[1],this.usersMail[2],this.usersMail[3]).encodeABI();
             this.log.d("Introduced url: ",url);
