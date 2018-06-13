@@ -16,7 +16,7 @@ export class ContractManager {
     public abi: any;
     public abijson: any;
     public bright: any;
-
+    private createAccount: any;
 
     constructor(
         public http: HttpClient, 
@@ -25,7 +25,7 @@ export class ContractManager {
         private loginService: LoginService
     ){
         this.web3 = this.web3Service.getWeb3();
-        this.log = this.loggerSrv.get("LoginPage");
+        this.log = this.loggerSrv.get("ContractManagerService");
         this.http.get("../assets/build/Bright.json").subscribe(data =>  {
             this.abijson = data;
             this.abi= data["abi"];
@@ -35,10 +35,13 @@ export class ContractManager {
             this.log.d("TruffleContract function: ",this.bright);
         });
     }
-    
-    public getWeb3(): Web3 {
-        return this.web3;
+    public createUser(pass: string): Promise<any>{
+       return new Promise((resolve,reject)=>{
+            resolve (this.web3.eth.accounts.create(this.web3.utils.randomHex(32)));
+             
+        });
     }
+    
 
 }
 

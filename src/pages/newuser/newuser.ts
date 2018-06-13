@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { default as Web3 } from "web3";
+import { ContractManager } from "../../core/contractmanager.sevice";
 
 @Component({
     selector: "page-newuser",
@@ -21,7 +22,8 @@ export class NewuserPage {
         public navCtrl: NavController, 
         public http: HttpClient, 
         private loggerSrv: LoggerService, 
-        private web3Service: Web3Service
+        private web3Service: Web3Service,
+        private contractManager: ContractManager
     ) {
         this.log = this.loggerSrv.get("NewUserPage");
         this.web3 = this.web3Service.getWeb3();
@@ -29,10 +31,14 @@ export class NewuserPage {
     }
 
     public createUser(Pass: string){
-        this.account = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-        this.file = this.generateText(this.account, Pass);
-        this.saveFileLink(this.file, "Identity.json");
-        document.getElementById("downButton").style.display = "block"; //TODO: Change this and use property [hidden] of angular
+        this.contractManager.createUser(Pass)
+        .then((resolve)=>{
+            this.account = resolve;
+            this.file = this.generateText(this.account, Pass);
+            this.saveFileLink(this.file, "Identity.json");
+            document.getElementById("downButton").style.display = "block"; //TODO: Change this and use property [hidden] of angular
+    
+        });
     }
 
     public saveFileLink(contentinBlob:Blob, filename: string) {

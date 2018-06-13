@@ -13,12 +13,11 @@ import { NewuserPage } from "../pages/newuser/newuser";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { SetProfilePage } from "../pages/setprofile/setprofile";
 
-import { StatusBar } from "@ionic-native/status-bar";
-import { SplashScreen } from "@ionic-native/splash-screen";
 import { LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
 import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
+import { ContractManager } from "../core/contractmanager.sevice";
 
 import { default as Web3 } from "web3";
 import {HttpClientModule} from "@angular/common/http";
@@ -56,15 +55,14 @@ import {HttpClientModule} from "@angular/common/http";
     SetProfilePage
   ],
   providers: [
-    StatusBar,
-    SplashScreen,
     AppConfig,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: LoggerService,useFactory: () => new LoggerService(AppConfig.LOG_DEBUG)},
     Web3,
     Web3Service,
     LoginService,
-    HttpClientModule
+    HttpClientModule,
+    ContractManager
   ]
 })
 export class AppModule {}
