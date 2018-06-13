@@ -86,8 +86,10 @@ export class LoginPage {
                 this.contract.methods.getUser(this.account.address).call()
                 .then((data)=>{
                     if(data[1] == ""){
+                        this.log.d("Email: ",data[1]);
                         this.navCtrl.push(SetProfilePage);
                     }else{
+                        this.log.d("Email: ",data[1]);
                         this.navCtrl.push(TabsPage);
                     }
                 });       

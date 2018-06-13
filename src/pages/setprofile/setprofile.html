@@ -14,6 +14,6 @@
 		<ion-label color="primary">Email</ion-label>
 		<ion-input type="text" placeholder="email@example.com" [(ngModel)]="Mail"></ion-input>
     </ion-item>
-	<button ion-button (click)="buttonSetprofile(Name,Mail)">Set Profile (2)</button>
+	<button ion-button [disabled]="!Mail" (click)="buttonSetprofile(Name,Mail)">Set Profile (2)</button>
   
 </ion-content>
