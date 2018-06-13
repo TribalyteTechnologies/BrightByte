@@ -1,13 +1,15 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import { utf8Encode } from "@angular/compiler/src/util";
 import { NewuserPage } from "../newuser/newuser"
 import {ILogger, LoggerService} from "../../core/logger.service";
 import {Web3Service} from "../../core/web3.service";
 import {LoginService} from "../../core/login.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import {AppConfig} from "../../app.config";
-
+import { HttpClient } from "@angular/common/http";
+import { default as contract }  from "truffle-contract";
+import { SetProfilePage } from "../../pages/setprofile/setprofile";
+import { default as Web3 } from "web3";
 
 @Component({
     selector: "page-login",
@@ -15,10 +17,14 @@ import {AppConfig} from "../../app.config";
 })
 
 export class LoginPage {
-    public web3: any;
+    public web3: Web3;
     public msg: string;
     public account: any;
     public text: any;
+    public contract: any;
+    public abi: any;
+    public abijson: any;
+    public bright: any;
     public textDebugging: string;
     public debugMode: boolean;
     private log: ILogger;
@@ -26,6 +32,7 @@ export class LoginPage {
     constructor(
         public navCtrl: NavController, 
         private loggerSrv: LoggerService, 
+        public http: HttpClient, 
         private web3Service: Web3Service,
         private loginService: LoginService
     ) {
@@ -33,6 +40,15 @@ export class LoginPage {
         this.web3 = this.web3Service.getWeb3();
         this.log = this.loggerSrv.get("LoginPage");
         this.debugMode = AppConfig.LOG_DEBUG;
+        this.http.get("../assets/build/Bright.json").subscribe(data =>  {
+            this.abijson = data;
+            this.abi= data["abi"];
+            this.bright = contract(this.abijson); //TruffleContract function
+        },(err) => this.log.e(err), () => {
+            //If you want do after the promise. Code here
+            this.log.d("TruffleContract function: ",this.bright);
+        });
+        
         
     }
   
@@ -54,19 +70,32 @@ export class LoginPage {
     public login(Pass: string){
         this.log.d(this.text);
         let privK = this.text.Keys.privateKey;
-        // this.account = this.web3.eth.accounts.decrypt(privK, Pass) =>{
-        // this.account = this.web3.eth.accounts.decrypt(privK, Pass)
-        // .then(() => {
-        //     this.log.d("Decrypted");
-        // }).catch(err => {
-        //     this.log.d("Wrong Pass. ERROR: ",err);
-        //     this.msg = "Wrong Password";
-        // });
+       
         try {
             this.account = this.web3.eth.accounts.decrypt(privK, Pass)
             this.log.d("Imported account from the login file: ",this.account);
             this.loginService.setAccount(this.account);
-            this.navCtrl.push(TabsPage);//, {account: this.account});
+            try {
+                let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
+                this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {
+                    from: this.account.address, 
+                    gas:AppConfig.GAS_LIMIT, 
+                    gasPrice:AppConfig.GASPRICE, 
+                    data: this.bright.deployedBytecode
+                });
+                this.contract.methods.getUser(this.account.address).call()
+                .then((data)=>{
+                    if(data[1] == ""){
+                        this.navCtrl.push(SetProfilePage);
+                    }else{
+                        this.navCtrl.push(TabsPage);
+                    }
+                });       
+            }
+            catch(e){
+                this.log.e("ERROR getting user: ",e);
+            }
+            
           }
           catch(e) {
             this.log.e("Wrong password: ",e);

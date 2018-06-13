@@ -11,6 +11,7 @@ import { TabsPage } from "../pages/tabs/tabs";
 import { LoginPage } from "../pages/login/login";
 import { NewuserPage } from "../pages/newuser/newuser";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
+import { SetProfilePage } from "../pages/setprofile/setprofile";
 
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
@@ -20,9 +21,8 @@ import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
 
 import { default as Web3 } from "web3";
-//import Tx from "ethereumjs-tx";
-//import { default as contract } from "truffle-contract";
 import {HttpClientModule} from "@angular/common/http";
+
 @NgModule({
   declarations: [
     MyApp,
@@ -33,7 +33,8 @@ import {HttpClientModule} from "@angular/common/http";
     TabsPage,
     LoginPage,
     NewuserPage,
-    AddCommitPopover
+    AddCommitPopover,
+    SetProfilePage
   ],
   imports: [
     BrowserModule,
@@ -51,7 +52,8 @@ import {HttpClientModule} from "@angular/common/http";
     TabsPage,
     LoginPage,
     NewuserPage,
-    AddCommitPopover
+    AddCommitPopover,
+    SetProfilePage
   ],
   providers: [
     StatusBar,

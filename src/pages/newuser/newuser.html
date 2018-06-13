@@ -13,25 +13,14 @@
             <ion-icon name="ionic" item-start></ion-icon>
         </ion-item>
         <ion-item>
-            <ion-label color="primary">Name</ion-label>
-            <ion-input type="text" placeholder="Name" [(ngModel)]="Name"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label color="primary">Email</ion-label>
-            <ion-input type="text" placeholder="email@example.com" [(ngModel)]="Mail"></ion-input>
-        </ion-item>
-        <ion-item>
             <ion-label color="primary">Password</ion-label>
             <ion-input type="password" placeholder="pass" [(ngModel)]="Pass"></ion-input>
         </ion-item>
     </ion-list>
-    <button ion-button (click)="buttonSetprofile(Name,Mail)">Set Profile (2)</button>
-    <button ion-button (click)="getData()">getData</button>
-    <h1>Hello {{ Name || '????'}}</h1>
     <p id="statusSetUser"></p>
     <div id="downButton" style="display: none">
         <button ion-button (click)="saveFileLink(file,'Identity.json')">Download file</button>
     </div>
     <p>If you want create a new user press the button</p>
-    <button ion-button [disabled]="!Pass" (click)="createUser(Name, Mail, Pass)">Create New User (1)</button>
+    <button ion-button [disabled]="!Pass" (click)="createUser(Pass)">Create New User</button>
 </ion-content>
