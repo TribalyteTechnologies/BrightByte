@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { default as Web3 } from "web3";
-import { ContractManager } from "../../core/contract-manager.sevice";
+import { ContractManagerService } from "../../core/contract-manager.sevice";
 
 @Component({
     selector: "page-newuser",
@@ -23,7 +23,7 @@ export class NewuserPage {
         public http: HttpClient, 
         private loggerSrv: LoggerService, 
         private web3Service: Web3Service,
-        private contractManager: ContractManager
+        private contractManager: ContractManagerService
     ) {
         this.log = this.loggerSrv.get("NewUserPage");
         this.web3 = this.web3Service.getWeb3();
