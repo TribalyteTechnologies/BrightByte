@@ -1,15 +1,17 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import { NewuserPage } from "../newuser/newuser"
-import {ILogger, LoggerService} from "../../core/logger.service";
-import {Web3Service} from "../../core/web3.service";
-import {LoginService} from "../../core/login.service";
-import { TabsPage } from "../../pages/tabs/tabs";
-import {AppConfig} from "../../app.config";
 import { HttpClient } from "@angular/common/http";
 import { default as contract }  from "truffle-contract";
-import { SetProfilePage } from "../../pages/setprofile/setprofile";
 import { default as Web3 } from "web3";
+import { TranslateService } from "@ngx-translate/core";
+
+import { NewuserPage } from "../newuser/newuser"
+import { ILogger, LoggerService } from "../../core/logger.service";
+import { Web3Service } from "../../core/web3.service";
+import { LoginService } from "../../core/login.service";
+import { TabsPage } from "../../pages/tabs/tabs";
+import { AppConfig } from "../../app.config";
+import { SetProfilePage } from "../../pages/setprofile/setprofile";
 
 @Component({
     selector: "page-login",
@@ -17,6 +19,7 @@ import { default as Web3 } from "web3";
 })
 
 export class LoginPage {
+    
     public web3: Web3;
     public msg: string;
     public account: any;
@@ -29,14 +32,13 @@ export class LoginPage {
     public debugMode: boolean;
     private log: ILogger;
 
-    constructor(
-        public navCtrl: NavController, 
-        private loggerSrv: LoggerService, 
-        public http: HttpClient, 
-        private web3Service: Web3Service,
-        private loginService: LoginService
+    constructor(public navCtrl: NavController, 
+                public http: HttpClient,
+                public translateService: TranslateService, 
+                private loggerSrv: LoggerService, 
+                private web3Service: Web3Service,
+                private loginService: LoginService
     ) {
-
         this.web3 = this.web3Service.getWeb3();
         this.log = this.loggerSrv.get("LoginPage");
         this.debugMode = AppConfig.LOG_DEBUG;
@@ -48,8 +50,6 @@ export class LoginPage {
             //If you want do after the promise. Code here
             this.log.d("TruffleContract function: ",this.bright);
         });
-        
-        
     }
   
     public openFile = (event: Event)=> {
