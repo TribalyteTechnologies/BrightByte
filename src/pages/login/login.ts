@@ -68,41 +68,45 @@ export class LoginPage {
     };
   
     public login(pass: string){
-        this.log.d(this.text);
-        let privK = this.text.Keys.privateKey;
-       
         try {
+            this.log.d(this.text);
+            let privK = this.text.Keys.privateKey;
+        
             this.account = this.web3.eth.accounts.decrypt(privK, pass)
             this.log.d("Imported account from the login file: ",this.account);
             this.loginService.setAccount(this.account);
-            try {
-                let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
-                this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {
-                    from: this.account.address, 
-                    gas:AppConfig.GAS_LIMIT, 
-                    gasPrice:AppConfig.GASPRICE, 
-                    data: this.bright.deployedBytecode
-                });
-                this.contract.methods.getUser(this.account.address).call()
-                .then((data)=>{
-                    if(data[1] == ""){
-                        this.log.d("Email: ",data[1]);
-                        this.navCtrl.push(SetProfilePage);
-                    }else{
-                        this.log.d("Email: ",data[1]);
-                        this.navCtrl.push(TabsPage);
-                    }
-                });       
-            }
-            catch(e){
-                this.log.e("ERROR getting user: ",e);
-            }
             
-          }
-          catch(e) {
-            this.log.e("Wrong password: ",e);
-            this.msg = "Wrong Password";
-          }
+            let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
+            this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {
+                from: this.account.address, 
+                gas:AppConfig.GAS_LIMIT, 
+                gasPrice:AppConfig.GASPRICE, 
+                data: this.bright.deployedBytecode
+            });
+            this.contract.methods.getUser(this.account.address).call()
+            .then((data)=>{
+                if(data[1] == ""){
+                    this.log.d("Email: ",data[1]);
+                    this.navCtrl.push(SetProfilePage);
+                }else{
+                    this.log.d("Email: ",data[1]);
+                    this.navCtrl.push(TabsPage);
+                }
+            }).catch((e)=>{
+                this.log.e("ERROR getting user or checking if this user has already set his profile: ",e);
+                this.msg = "No RPC connetion";
+            });
+           
+        }
+        catch(e) {
+            if(e instanceof TypeError){
+            this.log.e("File not loaded: ",e);
+            this.msg = "Please upload your file first";
+            }else if(e instanceof Error){
+                this.log.e("Wrong password: ",e);
+                this.msg = "Wrong Password";
+            }
+        }
         
     }
 
