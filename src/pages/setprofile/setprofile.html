@@ -8,12 +8,12 @@
 	<h2>Set your profile: Register</h2>
 	<ion-item>
 		<ion-label color="primary">Name</ion-label>
-		<ion-input type="text" placeholder="Name" [(ngModel)]="Name"></ion-input>
+		<ion-input type="text" placeholder="Name" [(ngModel)]="name"></ion-input>
     </ion-item>
     <ion-item>
 		<ion-label color="primary">Email</ion-label>
-		<ion-input type="text" placeholder="email@example.com" [(ngModel)]="Mail"></ion-input>
+		<ion-input type="text" placeholder="email@example.com" [(ngModel)]="mail"></ion-input>
     </ion-item>
-	<button ion-button [disabled]="!Mail" (click)="buttonSetprofile(Name,Mail)">Set Profile (2)</button>
+	<button ion-button [disabled]="!mail" (click)="buttonSetprofile(name,mail)">Set Profile (2)</button>
   
 </ion-content>

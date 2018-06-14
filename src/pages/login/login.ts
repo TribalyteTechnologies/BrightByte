@@ -1,11 +1,11 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { NewuserPage } from "../newuser/newuser"
-import {ILogger, LoggerService} from "../../core/logger.service";
-import {Web3Service} from "../../core/web3.service";
-import {LoginService} from "../../core/login.service";
+import { ILogger, LoggerService } from "../../core/logger.service";
+import { Web3Service } from "../../core/web3.service";
+import { LoginService } from "../../core/login.service";
 import { TabsPage } from "../../pages/tabs/tabs";
-import {AppConfig} from "../../app.config";
+import { AppConfig } from "../../app.config";
 import { HttpClient } from "@angular/common/http";
 import { default as contract }  from "truffle-contract";
 import { SetProfilePage } from "../../pages/setprofile/setprofile";
@@ -26,7 +26,7 @@ export class LoginPage {
     public abijson: any;
     public bright: any;
     public textDebugging: string;
-    public debugMode: boolean;
+    public isDebugMode: boolean;
     private log: ILogger;
 
     constructor(
@@ -39,7 +39,7 @@ export class LoginPage {
 
         this.web3 = this.web3Service.getWeb3();
         this.log = this.loggerSrv.get("LoginPage");
-        this.debugMode = AppConfig.LOG_DEBUG;
+        this.isDebugMode = AppConfig.LOG_DEBUG;
         this.http.get("../assets/build/Bright.json").subscribe(data =>  {
             this.abijson = data;
             this.abi= data["abi"];
@@ -67,12 +67,12 @@ export class LoginPage {
         };
     };
   
-    public login(Pass: string){
+    public login(pass: string){
         this.log.d(this.text);
         let privK = this.text.Keys.privateKey;
        
         try {
-            this.account = this.web3.eth.accounts.decrypt(privK, Pass)
+            this.account = this.web3.eth.accounts.decrypt(privK, pass)
             this.log.d("Imported account from the login file: ",this.account);
             this.loginService.setAccount(this.account);
             try {

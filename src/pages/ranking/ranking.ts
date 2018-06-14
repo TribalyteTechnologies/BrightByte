@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import {ILogger, LoggerService} from "../../core/logger.service";
-import {Web3Service} from "../../core/web3.service";
-import {LoginService} from "../../core/login.service";
+import { ILogger, LoggerService } from "../../core/logger.service";
+import { Web3Service } from "../../core/web3.service";
+import { LoginService } from "../../core/login.service";
 
 @Component({
 	selector: "page-ranking",

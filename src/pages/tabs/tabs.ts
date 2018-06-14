@@ -5,7 +5,7 @@ import { ReviewPage } from "../review/review";
 import { HomePage } from "../home/home";
 import { RankingPage } from "../ranking/ranking";
 import { NavParams } from "ionic-angular";
-import {ILogger, LoggerService} from "../../core/logger.service";
+import { ILogger, LoggerService } from "../../core/logger.service";
 
 @Component({
   templateUrl: "tabs.html"

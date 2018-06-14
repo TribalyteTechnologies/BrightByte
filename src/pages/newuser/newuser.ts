@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { default as Web3 } from "web3";
-import { ContractManager } from "../../core/contractmanager.sevice";
+import { ContractManager } from "../../core/contract-manager.sevice";
 
 @Component({
     selector: "page-newuser",
@@ -30,11 +30,10 @@ export class NewuserPage {
       
     }
 
-    public createUser(Pass: string){
-        this.contractManager.createUser(Pass)
+    public createUser(pass: string){
+        this.contractManager.createUser(pass)
         .then((resolve)=>{
-            this.account = resolve;
-            this.file = this.generateText(this.account, Pass);
+            this.file = resolve;
             this.saveFileLink(this.file, "Identity.json");
             document.getElementById("downButton").style.display = "block"; //TODO: Change this and use property [hidden] of angular
     
@@ -59,18 +58,6 @@ export class NewuserPage {
             (window.URL).revokeObjectURL(save.href);
         };
         reader.readAsDataURL(contentinBlob);
-    };
-
-    private generateText(data, Pass: string) {
-        let Encrypted = this.web3.eth.accounts.encrypt(data.privateKey, Pass);
-        let text=[];
-        text.push('{"Keys":{');
-        text.push('"address":'+JSON.stringify(data.address)+',"privateKey":'+JSON.stringify(Encrypted)+'}}');
-        //The blob constructor needs an array as first parameter, so it is not neccessary use toString.
-        //The second parameter is the MIME type of the file.
-        return new Blob(text, {
-            type: "text/plain"
-        });
     };
 
 }

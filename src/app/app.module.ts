@@ -17,10 +17,10 @@ import { LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
 import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
-import { ContractManager } from "../core/contractmanager.sevice";
+import { ContractManager } from "../core/contract-manager.sevice";
 
 import { default as Web3 } from "web3";
-import {HttpClientModule} from "@angular/common/http";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [

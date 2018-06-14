@@ -1,9 +1,9 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import {ILogger, LoggerService} from "../../core/logger.service";
-import {Web3Service} from "../../core/web3.service";
-import {LoginService} from "../../core/login.service";
-import {AppConfig} from "../../app.config";
+import { ILogger, LoggerService } from "../../core/logger.service";
+import { Web3Service } from "../../core/web3.service";
+import { LoginService } from "../../core/login.service";
+import { AppConfig } from "../../app.config";
 import { default as Web3 } from "web3";
 import Tx from "ethereumjs-tx";
 import { default as contract }  from "truffle-contract";
@@ -45,7 +45,7 @@ export class SetProfilePage {
         });
 	}
 	  
-	public buttonSetprofile(Name: string, Mail: string){
+	public buttonSetprofile(name: string, mail: string){
           
         let account:string = this.account.address;
         let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
@@ -70,9 +70,9 @@ export class SetProfilePage {
                 gasPrice:AppConfig.GASPRICE, 
                 data: this.bright.deployedBytecode
             });
-            let data = this.contract.methods.setProfile(Name, Mail).encodeABI();
-            this.log.d("Introduced name: ",Name);
-            this.log.d("Introduced Mail: ",Mail);
+            let data = this.contract.methods.setProfile(name, mail).encodeABI();
+            this.log.d("Introduced name: ",name);
+            this.log.d("Introduced Mail: ",mail);
             this.log.d("DATA: ",data);
                     
             let rawtx = {

@@ -1,12 +1,11 @@
 import { Injectable } from "@angular/core";
 import { default as Web3 } from 'web3';
-import {Web3Service} from "../core/web3.service";
-import {LoginService} from "../core/login.service";
-import {ILogger, LoggerService} from "../core/logger.service";
-
-import {AppConfig} from "../app.config";
+import { Web3Service } from "../core/web3.service";
+import { LoginService } from "../core/login.service";
+import { ILogger, LoggerService } from "../core/logger.service";
 import { HttpClient } from "@angular/common/http";
 import { default as contract }  from "truffle-contract";
+
 @Injectable()
 export class ContractManager {
 
@@ -35,10 +34,19 @@ export class ContractManager {
             this.log.d("TruffleContract function: ",this.bright);
         });
     }
-    public createUser(pass: string): Promise<any>{
-       return new Promise((resolve,reject)=>{
-            resolve (this.web3.eth.accounts.create(this.web3.utils.randomHex(32)));
-             
+
+    public createUser(pass: string): Promise<Blob>{
+        this.createAccount = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+        let Encrypted = this.web3.eth.accounts.encrypt(this.createAccount.privateKey, pass);
+        let text=[];
+        text.push('{"Keys":{');
+        text.push('"address":'+JSON.stringify(this.createAccount.address)+',"privateKey":'+JSON.stringify(Encrypted)+'}}');
+        //The blob constructor needs an array as first parameter, so it is not neccessary use toString.
+        //The second parameter is the MIME type of the file.
+        return new Promise ((resolve,reject) =>{
+            resolve(new Blob(text, {
+                type: "text/plain"
+            }));
         });
     }
     

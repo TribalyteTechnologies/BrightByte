@@ -1,11 +1,10 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import {ILogger, LoggerService} from "../../core/logger.service";
-import {Web3Service} from "../../core/web3.service";
-import {LoginService} from "../../core/login.service";
-import {HttpClient} from "@angular/common/http";
+import { ILogger, LoggerService } from "../../core/logger.service";
+import { Web3Service } from "../../core/web3.service";
+import { LoginService } from "../../core/login.service";
+import { HttpClient } from "@angular/common/http";
 import { default as contract }  from "truffle-contract";
-import Tx from "ethereumjs-tx";
 import { PopoverController } from "ionic-angular";
 import { AddCommitPopover } from "../../pages/addcommit/addcommit";
 import { AppConfig } from "../../app.config";

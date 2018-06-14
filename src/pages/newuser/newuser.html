@@ -14,7 +14,7 @@
         </ion-item>
         <ion-item>
             <ion-label color="primary">Password</ion-label>
-            <ion-input type="password" placeholder="pass" [(ngModel)]="Pass"></ion-input>
+            <ion-input type="password" placeholder="pass" [(ngModel)]="pass"></ion-input>
         </ion-item>
     </ion-list>
     <p id="statusSetUser"></p>
@@ -22,5 +22,5 @@
         <button ion-button (click)="saveFileLink(file,'Identity.json')">Download file</button>
     </div>
     <p>If you want create a new user press the button</p>
-    <button ion-button [disabled]="!Pass" (click)="createUser(Pass)">Create New User</button>
+    <button ion-button [disabled]="!pass" (click)="createUser(pass)">Create New User</button>
 </ion-content>
