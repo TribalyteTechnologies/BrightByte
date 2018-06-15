@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { default as Web3 } from "web3";
-import { ContractManagerService } from "../../core/contract-manager.sevice";
+import { ContractManagerService } from "../../core/contract-manager.service";
 
 @Component({
     selector: "page-newuser",

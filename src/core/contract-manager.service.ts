@@ -60,7 +60,6 @@ export class ContractManagerService {
     public buttonSetprofile(name: string, mail: string): Promise<any>{
         this.account = this.loginService.getAccount();
         this.log.d("account: ", this.account);
-        let bool: boolean;
         let account:string = this.account.address;
         let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
         this.log.d("Contract Address: ",contractAddress);
@@ -107,24 +106,83 @@ export class ContractManagerService {
             this.log.d("Raw: ",raw);
             this.log.d("tx unsign: ",tx);
             return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) =>{
-               
                 if(!err){
 					this.log.d("Hash transaction",transactionHash);
-                    bool = true;
-                    
                 }else{
                     this.log.e(err);
-                    bool = false;
                 }
-                return bool;
 			});
 			
         }).catch(e => {
             this.log.e("Error getting nonce value: ",e);
-            return false;
         });
         
-    };  
+    } 
+    public addCommit(url: string, project: string, usersMail: string[]): Promise<any>{
+        this.account = this.loginService.getAccount();
+        let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
+        this.log.d("Contract Address: ",contractAddress);
+        this.log.d("Public Address: ",this.account.address);
+        this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {
+            from: this.account.address, 
+            gas:AppConfig.GAS_LIMIT, 
+            gasPrice:AppConfig.GASPRICE, 
+            data: this.bright.deployedBytecode
+        });
+        this.log.d("Contract artifact",this.contract);
+          
+        return this.web3.eth.getTransactionCount(this.account.address)
+        .then(result => {
+            this.nonce= "0x" + (result).toString(16);
+            this.log.d("Value NONCE",this.nonce);
+            this.contract = new this.web3.eth.Contract(this.abi,contractAddress, {
+                from: this.account.address, 
+                gas:AppConfig.GAS_LIMIT, 
+                gasPrice:AppConfig.GASPRICE, 
+                data: this.bright.deployedBytecode
+            });
+          
+           
+            let id = url; //TODO get the id from url
+            let data = this.contract.methods.setNewCommit(id,url,project,usersMail[0],usersMail[1],usersMail[2],usersMail[3]).encodeABI();
+            this.log.d("Introduced url: ",url);
+            this.log.d("Introduced project: ",project);
+            this.log.d("Introduced user1: ",usersMail[0]);
+            this.log.d("Introduced user2: ",usersMail[1]);
+            this.log.d("Introduced user3: ",usersMail[2]);
+            this.log.d("Introduced user4: ",usersMail[3]);
 
+            this.log.d("DATA: ",data);
+                    
+            let rawtx = {
+                nonce: this.nonce,
+                gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),
+                gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
+                to: contractAddress,
+                data: data
+            };
+            const tx = new Tx(rawtx);
+            let priv = this.account.privateKey.substring(2);
+            let privateKey = new Buffer(priv, "hex");
+            tx.sign(privateKey);
+
+            let raw = "0x" + tx.serialize().toString("hex");
+            this.log.d("Rawtx: ",rawtx);
+            this.log.d("Priv si 0x: ",priv);
+            this.log.d("privatekey: ",privateKey);
+            this.log.d("Raw: ",raw);
+            this.log.d("tx unsign: ",tx);
+            return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) =>{
+                if(!err){
+                  this.log.d("Hash transaction",transactionHash);
+                }else{
+                    this.log.e("Error sending the transaction addcommit: ",err);
+                }
+            });
+        }).catch(e => {
+          this.log.e("Error getting nonce in addcommit: ",e);
+        });
+    }
+    
 }
 

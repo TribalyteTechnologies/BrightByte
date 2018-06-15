@@ -7,7 +7,7 @@ import { default as Web3 } from "web3";
 import { default as contract }  from "truffle-contract";
 import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
-import { ContractManagerService } from "../../core/contract-manager.sevice";
+import { ContractManagerService } from "../../core/contract-manager.service";
 
 @Component({
 	selector: "page-setprofile",
@@ -20,6 +20,7 @@ export class SetProfilePage {
     public abijson: any;
 	public bright: any;
 	public contract: any;
+	public msg: string;
 	public nonce: string;
 	private log: ILogger;
 
@@ -48,11 +49,14 @@ export class SetProfilePage {
 	public buttonSetprofile(name: string, mail: string){
         this.contractManagerService.buttonSetprofile(name, mail)
         .then((resolve)=>{
-            this.log.d("Waiting")
-            if(resolve){
+			this.log.d("RESPUESTA DEL CONTRACT MAAGER: ", resolve);
+            if(resolve.status == true){
                 this.navCtrl.push(TabsPage);
             }
-        });
+        }).catch((e)=>{
+			this.log.d("Transaction Error!!");
+			this.msg = "Transaction Error!!";
+		});
                 
 			
     }
