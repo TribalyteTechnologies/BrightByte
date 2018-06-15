@@ -15,8 +15,9 @@ export class NewuserPage {
     
     public account: any;
     public web3: Web3;
-    private log: ILogger;
     public file: Blob;
+    public isUserCreated = false;
+    private log: ILogger;
 
     constructor(
         public navCtrl: NavController, 
@@ -35,7 +36,7 @@ export class NewuserPage {
         .then((resolve)=>{
             this.file = resolve;
             this.saveFileLink(this.file, "Identity.json");
-            document.getElementById("downButton").style.display = "block"; //TODO: Change this and use property [hidden] of angular
+            this.isUserCreated = true;
     
         });
     }
