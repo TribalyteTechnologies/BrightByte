@@ -20,7 +20,7 @@ export class ContractManagerService {
     public abi: any;
     public abijson: any;
     public bright: any;
-    
+    public contractAddress: any;
 
     constructor(
         public http: HttpClient, 
@@ -36,6 +36,7 @@ export class ContractManagerService {
             this.abijson = data;
             this.abi= data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
+            this.contractAddress = this.bright.networks[AppConfig.NET_ID].address;
         },(err) => this.log.e(err), () => {
             //If you want do after the promise. Code here
             this.log.d("TruffleContract function: ",this.bright);
@@ -183,6 +184,34 @@ export class ContractManagerService {
           this.log.e("Error getting nonce in addcommit: ",e);
         });
     }
-    
+    public getCommits(): Promise<any>{
+        this.account = this.loginService.getAccount();
+        return this.http.get("../assets/build/Bright.json").toPromise().then(data =>  {
+            this.abijson = data;
+            this.abi= data["abi"];
+            this.bright = contract(this.abijson); //TruffleContract function
+            this.contractAddress = this.bright.networks[AppConfig.NET_ID].address;
+            return this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress, {
+                from: this.account.address, 
+                gas:AppConfig.GAS_LIMIT, 
+                gasPrice:AppConfig.GASPRICE, 
+                data: this.bright.deployedBytecode
+            });
+        }).then(()=>{
+            return this.contract.methods.getNumberUserCommits().call()
+            .then(result => {
+                let numberUserCommits = result;
+                let promises = new Array<Promise<string>>();
+                for(let i = 0; i < numberUserCommits; i++){
+                    let promise = this.contract.methods.getUserCommits(i + 1).call();
+                    promises.push(promise);
+                }
+                return Promise.all(promises);				
+            })
+        })
+		.catch(err => {
+			this.log.e("Error calling BrightByte smart contract :",err);
+		})		  
+    }
 }
 
