@@ -46,8 +46,8 @@ export class SetProfilePage {
 		});
 	}
 
-	public buttonSetprofile(name: string, mail: string) {
-		this.contractManagerService.buttonSetprofile(name, mail)
+	public buttonSetProfile(name: string, mail: string) {
+		this.contractManagerService.buttonSetProfile(name, mail)
 			.then((resolve) => {
 				this.log.d("RESPUESTA DEL CONTRACT MAAGER: ", resolve);
 				if (resolve.status == true) {

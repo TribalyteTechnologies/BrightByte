@@ -15,7 +15,7 @@ import { ContractManagerService } from "../../core/contract-manager.service";
 
 export class CommitPage {
 	private log: ILogger;
-	public web3: Web3;
+    public web3: Web3;
 	public arrayUrls = new Array<string>();
 	public msg: string;
 
@@ -37,23 +37,22 @@ export class CommitPage {
         }).catch((e)=>{
 			this.log.d("Error getting commits!!");
 			this.msg = "Error getting commits!!";
-			return Promise.reject(e);
 		});
 
 	}
-
-	public openAddCommitDialog() {
+	
+	public openAddCommitDialog(){
 		let popover = this.popoverCtrl.create(AddCommitPopover);
 		popover.present();
-		popover.onDidDismiss(() => {
+		popover.onDidDismiss(() =>{
 			this.contractManagerService.getCommits()
-				.then((resolve) => {
-					this.log.d("ARRAY Commits: ", resolve);
-					this.arrayUrls = resolve;
-				}).catch((e) => {
-					this.log.d("Error getting commits!!", e);
-					this.msg = "Error getting commits!!";
-				});
+        	.then((resolve)=>{
+				this.log.d("ARRAY Commits: ", resolve);
+				this.arrayUrls = resolve;
+			}).catch((e)=>{
+				this.log.d("Error getting commits!!",e);
+				this.msg = "Error getting commits!!";
+			});
 		});
 	}
 

@@ -70,7 +70,7 @@ export class AddCommitPopover {
     public addCommit(url: string, project: string) {
         this.contractManagerService.addCommit(url, project, this.usersMail)
             .then((resolve) => {
-                this.log.d("RESPUESTA DEL CONTRACT MAAGER: ", resolve);
+                this.log.d("Contract manager response: ", resolve);
                 if (resolve.status == true) {
                     this.viewCtrl.dismiss();
                 }
@@ -86,7 +86,6 @@ export class AddCommitPopover {
     filteredOptions: Observable<string[]>;;
 
     initSearch() {
-        this.log.d("PEPE", this.arrayemails);
         this.filteredOptions = this.myControl.valueChanges
             .pipe(
                 startWith(""),

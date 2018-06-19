@@ -6,6 +6,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { default as Web3 } from "web3";
+//import { AutoCompleteModule } from 'ionic2-auto-complete';
 
 // Pages
 import { RankingPage } from "../pages/ranking/ranking";
