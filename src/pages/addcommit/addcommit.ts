@@ -52,7 +52,7 @@ export class AddCommitPopover {
      public addCommit(url: string, project: string){
         this.contractManagerService.addCommit(url, project, this.usersMail)
         .then((resolve)=>{
-			this.log.d("RESPUESTA DEL CONTRACT MAAGER: ", resolve);
+			this.log.d("Respuesta del contract manager: ", resolve);
             if(resolve.status == true){
                 this.viewCtrl.dismiss();
             }

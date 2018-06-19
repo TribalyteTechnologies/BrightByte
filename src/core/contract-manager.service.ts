@@ -7,6 +7,7 @@ import { HttpClient } from "@angular/common/http";
 import { default as contract }  from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
+import { error } from "util";
 
 @Injectable()
 export class ContractManagerService {
@@ -41,7 +42,7 @@ export class ContractManagerService {
             //If you want do after the promise. Code here
             this.log.d("TruffleContract function: ",this.bright);
         });
-        this.log.d("Cuenta constructor: ", this.account);
+        this.log.d("Constructor account: ", this.account);
     }
 
     public createUser(pass: string): Promise<Blob>{
@@ -58,7 +59,7 @@ export class ContractManagerService {
             }));
         });
     }
-    public buttonSetprofile(name: string, mail: string): Promise<any>{
+    public buttonSetProfile(name: string, mail: string): Promise<any>{
         this.account = this.loginService.getAccount();
         this.log.d("account: ", this.account);
         let account:string = this.account.address;
@@ -199,18 +200,16 @@ export class ContractManagerService {
             });
         }).then(()=>{
             return this.contract.methods.getNumberUserCommits().call()
-            .then(result => {
-                let numberUserCommits = result;
-                let promises = new Array<Promise<string>>();
-                for(let i = 0; i < numberUserCommits; i++){
-                    let promise = this.contract.methods.getUserCommits(i + 1).call();
-                    promises.push(promise);
-                }
-                return Promise.all(promises);				
-            })
-        })
-		.catch(err => {
-			this.log.e("Error calling BrightByte smart contract :",err);
+        }).then(result => {
+            let numberUserCommits = result;
+            let promises = new Array<Promise<string>>();
+            for(let i = 0; i < numberUserCommits; i++){
+                let promise = this.contract.methods.getUserCommits(i + 1).call();
+                promises.push(promise);
+            }
+            return Promise.all(promises);				
+        }).catch(err => {
+			return Promise.reject(err);
 		})		  
     }
 }

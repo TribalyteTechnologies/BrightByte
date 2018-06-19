@@ -35,7 +35,8 @@ export class CommitPage {
 			this.log.d("ARRAY Commits: ", resolve);
 			this.arrayUrls = resolve;
         }).catch((e)=>{
-			return Promise.reject(e);
+			this.log.d("Error getting commits!!");
+			this.msg = "Error getting commits!!";
 		});
 
 	}

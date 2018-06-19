@@ -100,8 +100,8 @@ export class LoginPage {
         }
         catch(e) {
             if(e instanceof TypeError){
-            this.log.e("File not loaded: ",e);
-            this.msg = "Please, first upload your file";
+                this.log.e("File not loaded: ",e);
+                this.msg = "Please, first upload your file";
             }else if(e instanceof Error){
                 this.log.e("Wrong password: ",e);
                 this.msg = "Wrong Password";
