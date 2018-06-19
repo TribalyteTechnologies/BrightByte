@@ -15,7 +15,7 @@ import { ContractManagerService } from "../../core/contract-manager.service";
 
 export class CommitPage {
 	private log: ILogger;
-    public web3: Web3;
+	public web3: Web3;
 	public arrayUrls = new Array<string>();
 	public msg: string;
 
@@ -31,28 +31,28 @@ export class CommitPage {
 		this.log = this.loggerSrv.get("CommitsPage");
 
 		this.contractManagerService.getCommits()
-        .then((resolve)=>{
-			this.log.d("ARRAY Commits: ", resolve);
-			this.arrayUrls = resolve;
-        }).catch((e)=>{
-			this.log.d("Error getting commits!!");
-			this.msg = "Error getting commits!!";
-		});
-
-	}
-	
-	public openAddCommitDialog(){
-		let popover = this.popoverCtrl.create(AddCommitPopover);
-		popover.present();
-		popover.onDidDismiss(() =>{
-			this.contractManagerService.getCommits()
-        	.then((resolve)=>{
+			.then((resolve) => {
 				this.log.d("ARRAY Commits: ", resolve);
 				this.arrayUrls = resolve;
-			}).catch((e)=>{
-				this.log.d("Error getting commits!!",e);
+			}).catch((e) => {
+				this.log.d("Error getting commits!!");
 				this.msg = "Error getting commits!!";
 			});
+
+	}
+
+	public openAddCommitDialog() {
+		let popover = this.popoverCtrl.create(AddCommitPopover);
+		popover.present();
+		popover.onDidDismiss(() => {
+			this.contractManagerService.getCommits()
+				.then((resolve) => {
+					this.log.d("ARRAY Commits: ", resolve);
+					this.arrayUrls = resolve;
+				}).catch((e) => {
+					this.log.d("Error getting commits!!", e);
+					this.msg = "Error getting commits!!";
+				});
 		});
 	}
 

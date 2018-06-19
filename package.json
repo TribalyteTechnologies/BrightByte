@@ -1,66 +1,69 @@
 {
-  "name": "BrightByte",
-  "version": "0.0.1",
-  "author": "Alonso Rodriguez Rodriguez",
-  "homepage": "",
-  "private": true,
-  "scripts": {
-    "start": "npm run ionic:serve",
-    "clean": "ionic-app-scripts clean",
-    "build": "ionic-app-scripts build",
-    "lint": "ionic-app-scripts lint",
-    "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve",
-    "ionic": "ionic cordova run browser",
-    "truffle:migrate": "truffle compile --contracts_build_directory=./src/assets/build"
-  },
-  "dependencies": {
-    "@angular/common": "5.2.11",
-    "@angular/compiler": "5.2.11",
-    "@angular/compiler-cli": "5.2.11",
-    "@angular/core": "5.2.11",
-    "@angular/forms": "5.2.11",
-    "@angular/http": "5.2.11",
-    "@angular/platform-browser": "5.2.11",
-    "@angular/platform-browser-dynamic": "5.2.11",
-    "@machinomy/types-ethereumjs-tx": "0.1.0",
-    "@ngx-translate/core": "8.0.0",
-    "@ngx-translate/http-loader": "1.0.0",
-    "@types/ethereumjs-tx": "1.0.0",
-    "cordova-browser": "5.0.3",
-    "cordova-plugin-device": "2.0.2",
-    "cordova-plugin-ionic-keyboard": "2.1.2",
-    "cordova-plugin-ionic-webview": "1.2.1",
-    "cordova-plugin-whitelist": "1.3.3",
-    "ethereumjs-tx": "1.3.4",
-    "ionic-angular": "3.9.2",
-    "ionicons": "3.0.0",
-    "rxjs": "5.5.11",
-    "sw-toolbox": "3.6.0",
-    "truffle-contract": "^3.0.5",
-    "web3": "^1.0.0-beta.34",
-    "websocket": "1.0.26",
-    "zone.js": "0.8.18"
-  },
-  "devDependencies": {
-    "@ionic/app-scripts": "3.1.8",
-    "@types/node": "^10.1.3",
-    "path": "0.12.7",
-    "ionic": "4.0.0-rc.6",
-    "truffle": "^4.1.9",
-    "types-ethereumjs-util": "0.0.8",
-    "typescript": "2.4.2"
-  },
-  "description": "An Ionic project",
-  "cordova": {
-    "plugins": {
-      "cordova-plugin-whitelist": {},
-      "cordova-plugin-device": {},
-      "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-ionic-keyboard": {}
-    },
-    "platforms": [
-      "browser"
-    ]
-  }
+	"name": "BrightByte",
+	"version": "0.0.1",
+	"author": "Alonso Rodriguez Rodriguez",
+	"homepage": "",
+	"private": true,
+	"scripts": {
+		"start": "npm run ionic:serve",
+		"clean": "ionic-app-scripts clean",
+		"build": "ionic-app-scripts build",
+		"lint": "ionic-app-scripts lint",
+		"ionic:build": "ionic-app-scripts build",
+		"ionic:serve": "ionic-app-scripts serve",
+		"ionic": "ionic cordova run browser",
+		"truffle:migrate": "truffle compile --contracts_build_directory=./src/assets/build"
+	},
+	"dependencies": {
+		"@angular/animations": "^5.2.5",
+		"@angular/cdk": "5.2.5",
+		"@angular/common": "5.2.11",
+		"@angular/compiler": "5.2.11",
+		"@angular/compiler-cli": "5.2.11",
+		"@angular/core": "5.2.11",
+		"@angular/forms": "5.2.11",
+		"@angular/http": "5.2.11",
+		"@angular/material": "5.2.5",
+		"@angular/platform-browser": "5.2.11",
+		"@angular/platform-browser-dynamic": "5.2.11",
+		"@machinomy/types-ethereumjs-tx": "0.1.0",
+		"@ngx-translate/core": "8.0.0",
+		"@ngx-translate/http-loader": "1.0.0",
+		"@types/ethereumjs-tx": "1.0.0",
+		"cordova-browser": "5.0.3",
+		"cordova-plugin-device": "2.0.2",
+		"cordova-plugin-ionic-keyboard": "2.1.2",
+		"cordova-plugin-ionic-webview": "1.2.1",
+		"cordova-plugin-whitelist": "1.3.3",
+		"ethereumjs-tx": "1.3.4",
+		"ionic-angular": "3.9.2",
+		"ionicons": "3.0.0",
+		"rxjs": "5.5.11",
+		"sw-toolbox": "3.6.0",
+		"truffle-contract": "^3.0.5",
+		"web3": "^1.0.0-beta.34",
+		"websocket": "1.0.26",
+		"zone.js": "0.8.18"
+	},
+	"devDependencies": {
+		"@ionic/app-scripts": "3.1.8",
+		"@types/node": "^10.1.3",
+		"path": "0.12.7",
+		"ionic": "4.0.0-rc.6",
+		"truffle": "^4.1.9",
+		"types-ethereumjs-util": "0.0.8",
+		"typescript": "2.4.2"
+	},
+	"description": "An Ionic project",
+	"cordova": {
+		"plugins": {
+			"cordova-plugin-whitelist": {},
+			"cordova-plugin-device": {},
+			"cordova-plugin-ionic-webview": {},
+			"cordova-plugin-ionic-keyboard": {}
+		},
+		"platforms": [
+			"browser"
+		]
+	}
 }

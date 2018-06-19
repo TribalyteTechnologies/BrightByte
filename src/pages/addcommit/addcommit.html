@@ -1,11 +1,11 @@
 <ion-header>
-        <ion-navbar>
-            <ion-title>
+    <ion-navbar>
+        <ion-title>
             Add Commit
-            </ion-title>
-        </ion-navbar>
+        </ion-title>
+    </ion-navbar>
 </ion-header>
-      
+
 <ion-content padding>
     <h2>Add yourcommit</h2>
     <ion-item>
@@ -17,18 +17,61 @@
         <ion-input type="text" placeholder="Name of the project" [(ngModel)]="project"></ion-input>
     </ion-item>
     <ion-label color="primary">Users</ion-label>
-    <ion-item>
-        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-input>
-    </ion-item>
-    <ion-item>
-        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-input>
-    </ion-item>
-    <ion-item>
-        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-input>
-    </ion-item>
-    <ion-item>
-        <ion-input type="text" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-input>
-    </ion-item>
-    <button ion-button (click)="addCommit(url,project)">Add Commit</button>
+
+    <!-- <input type="text" (keydown)="search($event)" placeholder="search movies..." class="input">
+
+<div *ngFor="let email of arraysearch">
+  <h4>{{email}}</h4>
+</div> 
+
+ <div *ngIf="arraysearch < 1">
+  <hr>
+  <p>
+    No results found :(
+  </p>
+</div> -->
+    <!-- <mat-autocomplete>
+    <mat-option *ngFor="let option of options" [value]="option">
+      {{ option }}
+    </mat-option>
+  </mat-autocomplete>
+   -->
+    <!-- <md-autocomplete md-no-cache="true" md-selected-item="selectedItem" md-items="email in arrayemails" md-search-text="searchText" md-item-text="email.display">
+    <span>{{ email.display }}</span>
+  </md-autocomplete> -->
+    <!-- <mat-form-field class="example-full-width">
+        <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of arrayemails" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+    </mat-form-field> -->
+    <p>-----------------------</p>
+    <form (ngSubmit)="addCommit(url,project)" novalidate>
+        <!-- <mat-form-field class="example-full-width"> -->
+        <input type="text" name="user1" placeholder="email@example.com" [(ngModel)]="usersMail[0]" matInput [formControl]="myControl"
+            [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                {{ option }}
+            </mat-option>
+        </mat-autocomplete>
+        <!-- </mat-form-field> -->
+
+
+        <!-- <ion-item>
+            <ion-input type="text" name="user2" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-input type="text" name="user3" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-input type="text" name="user4" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-input type="text" name="user5" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-input>
+        </ion-item> -->
+        <button ion-button type="submit">Add Commit</button>
+    </form>
 </ion-content>
-      

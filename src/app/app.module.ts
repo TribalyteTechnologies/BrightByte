@@ -4,6 +4,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from "ionic-angular";
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
 import { default as Web3 } from "web3";
 
 // Pages
@@ -23,62 +24,69 @@ import { LoggerService } from "../core/logger.service";
 import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../core/contract-manager.service";
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Components
 import { MyApp } from "./app.component";
+//import {MdAutocomplete} from "../core/md-autocomplete";
 
 export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
+	return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
 
 @NgModule({
-  declarations: [
-    MyApp,
-    RankingPage,
-    CommitPage,
-    HomePage,
-    ReviewPage,
-    TabsPage,
-    LoginPage,
-    NewuserPage,
-    AddCommitPopover,
-    SetProfilePage
-  ],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(MyApp),
-    HttpClientModule,
-    TranslateModule.forRoot({
-      loader: {
-          provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
-          deps: [HttpClient]
-      }
-    })
-  ],
-  bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    RankingPage,
-    CommitPage,
-    HomePage,
-    ReviewPage,
-    TabsPage,
-    LoginPage,
-    NewuserPage,
-    AddCommitPopover,
-    SetProfilePage
-  ],
-  providers: [
-    AppConfig,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    {provide: LoggerService,useFactory: () => new LoggerService(AppConfig.LOG_DEBUG)},
-    Web3,
-    Web3Service,
-    LoginService,
-    HttpClientModule,
-    ContractManagerService
-  ]
+	declarations: [
+		MyApp,
+		RankingPage,
+		CommitPage,
+		HomePage,
+		ReviewPage,
+		TabsPage,
+		LoginPage,
+		NewuserPage,
+		AddCommitPopover,
+		SetProfilePage
+	],
+	imports: [
+		BrowserModule,
+		IonicModule.forRoot(MyApp),
+		HttpClientModule,
+		TranslateModule.forRoot({
+			loader: {
+				provide: TranslateLoader,
+				useFactory: HttpLoaderFactory,
+				deps: [HttpClient]
+			}
+		}),
+		BrowserAnimationsModule,
+		MatInputModule,
+		MatAutocompleteModule
+	],
+	bootstrap: [IonicApp],
+	entryComponents: [
+		MyApp,
+		RankingPage,
+		CommitPage,
+		HomePage,
+		ReviewPage,
+		TabsPage,
+		LoginPage,
+		NewuserPage,
+		AddCommitPopover,
+		SetProfilePage
+	],
+	providers: [
+		AppConfig,
+		{ provide: ErrorHandler, useClass: IonicErrorHandler },
+		{ provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG) },
+		Web3,
+		Web3Service,
+		LoginService,
+		HttpClientModule,
+		ContractManagerService
+	]
 })
 
-export class AppModule {}
+export class AppModule { }

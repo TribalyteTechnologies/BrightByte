@@ -14,15 +14,15 @@ export class RankingPage {
 	private log: ILogger;
 
 	constructor(
-		public navCtrl: NavController, 
-		private loggerSrv: LoggerService, 
-		private web3Service: Web3Service, 
+		public navCtrl: NavController,
+		private loggerSrv: LoggerService,
+		private web3Service: Web3Service,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
 		this.log = this.loggerSrv.get("RankingPage");
 		this.account = this.loginService.getAccount();
 
- 	}
+	}
 
 }

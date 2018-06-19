@@ -97,4 +97,10 @@ contract Bright is Ownable {
     function getNumberUserCommits()public view returns(uint){
         return hashUserMap[msg.sender].numbermyCommits;
     }
+    function getAllUserEmail(uint _index) public view returns(string){ //_index starts in 0
+        return allUsersArray[_index].email;
+    }
+    function getAllUserNumber() public view returns(uint){ 
+        return numberOfUsers;
+    }
 }

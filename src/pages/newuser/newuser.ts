@@ -12,7 +12,7 @@ import { ContractManagerService } from "../../core/contract-manager.service";
 })
 
 export class NewuserPage {
-    
+
     public account: any;
     public web3: Web3;
     public file: Blob;
@@ -20,34 +20,34 @@ export class NewuserPage {
     private log: ILogger;
 
     constructor(
-        public navCtrl: NavController, 
-        public http: HttpClient, 
-        private loggerSrv: LoggerService, 
+        public navCtrl: NavController,
+        public http: HttpClient,
+        private loggerSrv: LoggerService,
         private web3Service: Web3Service,
         private contractManager: ContractManagerService
     ) {
         this.log = this.loggerSrv.get("NewUserPage");
         this.web3 = this.web3Service.getWeb3();
-      
+
     }
 
-    public createUser(pass: string){
+    public createUser(pass: string) {
         this.contractManager.createUser(pass)
-        .then((resolve)=>{
-            this.file = resolve;
-            this.saveFileLink(this.file, "Identity.json");
-            this.isUserCreated = true;
-    
-        });
+            .then((resolve) => {
+                this.file = resolve;
+                this.saveFileLink(this.file, "Identity.json");
+                this.isUserCreated = true;
+
+            });
     }
 
-    public saveFileLink(contentinBlob:Blob, filename: string) {
+    public saveFileLink(contentinBlob: Blob, filename: string) {
 
         let reader = new FileReader();
         reader.onload = (event: any) => {// TODO: Should be FileReaderProgressEvent but it can not find it
             let save = document.createElement("a");
             let target = event.target;
-            save.href = target.result; 
+            save.href = target.result;
             save.target = "_blank";
             save.download = filename || "file.dat";
             let clicEvent = new MouseEvent("click", {

@@ -8,18 +8,18 @@ import { NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 
 @Component({
-  templateUrl: "tabs.html"
+	templateUrl: "tabs.html"
 })
 export class TabsPage {
 
-  tab1Root = HomePage;
-  tab2Root = CommitPage;
-  tab3Root = ReviewPage;
-  tab4Root = RankingPage;
-  private log: ILogger;
+	tab1Root = HomePage;
+	tab2Root = CommitPage;
+	tab3Root = ReviewPage;
+	tab4Root = RankingPage;
+	private log: ILogger;
 
-  constructor(private navParams: NavParams, private loggerSrv: LoggerService) {
-    this.log = this.loggerSrv.get("TabsPage");
+	constructor(private navParams: NavParams, private loggerSrv: LoggerService) {
+		this.log = this.loggerSrv.get("TabsPage");
 
-  }
+	}
 }
