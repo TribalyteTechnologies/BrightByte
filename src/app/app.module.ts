@@ -5,6 +5,7 @@ import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { default as Web3 } from "web3";
+import { AutoCompleteModule } from 'ionic2-auto-complete';
 
 // Pages
 import { RankingPage } from "../pages/ranking/ranking";
@@ -42,7 +43,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     LoginPage,
     NewuserPage,
     AddCommitPopover,
-    SetProfilePage
+    SetProfilePage,
+    AutoCompleteModule
   ],
   imports: [
     BrowserModule,
