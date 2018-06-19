@@ -10,7 +10,7 @@ export class Web3Service {
     private log: ILogger;
 
     constructor(
-        private loggerSrv: LoggerService,
+        public loggerSrv: LoggerService,
     ){
         this.log = this.loggerSrv.get("Web3Service");
         this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.URL_NODE));

@@ -5,6 +5,7 @@ import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { default as Web3 } from "web3";
+import { AutoCompleteModule } from 'ionic2-auto-complete';
 
 // Pages
 import { RankingPage } from "../pages/ranking/ranking";
@@ -25,7 +26,7 @@ import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../core/contract-manager.service";
 
 // Components
-import { MyApp } from "./app.component";
+import { BrightByteApp } from "./app.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -33,7 +34,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 @NgModule({
   declarations: [
-    MyApp,
+    BrightByteApp,
     RankingPage,
     CommitPage,
     HomePage,
@@ -42,11 +43,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     LoginPage,
     NewuserPage,
     AddCommitPopover,
-    SetProfilePage
+    SetProfilePage,
+    AutoCompleteModule
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(BrightByteApp),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -58,7 +60,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
+    BrightByteApp,
     RankingPage,
     CommitPage,
     HomePage,
