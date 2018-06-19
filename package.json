@@ -12,7 +12,10 @@
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve",
     "ionic": "ionic cordova run browser",
-    "truffle:migrate": "truffle compile --contracts_build_directory=./src/assets/build"
+    "truffle:migrate": "truffle compile --contracts_build_directory=./src/assets/build",
+    "html-lint": "(htmlhint src || true)",
+    "scss-lint": "sass-lint -v",
+    "linters": "npm run html-lint && npm run scss-lint && npm start"
   },
   "dependencies": {
     "@angular/common": "5.2.11",
@@ -46,8 +49,10 @@
   "devDependencies": {
     "@ionic/app-scripts": "3.1.8",
     "@types/node": "^10.1.3",
-    "path": "0.12.7",
+    "htmlhint": "0.9.13",
     "ionic": "4.0.0-rc.6",
+    "path": "0.12.7",
+    "sass-lint": "1.12.1",
     "truffle": "^4.1.9",
     "types-ethereumjs-util": "0.0.8",
     "typescript": "2.4.2"

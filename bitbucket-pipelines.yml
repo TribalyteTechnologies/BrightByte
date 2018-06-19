@@ -1,0 +1,18 @@
+# This is a sample build configuration for JavaScript.
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+
+image: node:6.12.2
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - node
+        script:
+          - npm install --unsafe-perm
+          - npm run build
+          - npm run lint
+          - npm run html-lint
+          - npm run scss-lint
