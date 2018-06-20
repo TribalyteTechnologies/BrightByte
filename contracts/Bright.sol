@@ -19,8 +19,6 @@ contract Bright is Ownable {
         uint numbermyCommits;
         mapping (uint => Commit) userCommits;
         mapping (uint => Commit) commitsToReview;
-
-        
     }
     struct Commit {
         string id;
@@ -28,10 +26,15 @@ contract Bright is Ownable {
         address author;
         uint timestamp;
         string project;
-        uint reviews;
-
+        uint numberReviews; 
+        uint pending;
+        uint currentNumberReviews;
+        mapping (uint => comment) comments;
     }
-
+    struct comment{
+        string text;
+        address user;
+    }
     function setProfile (string _name, string _email) public {
         //require(_hash == msg.sender);
         if (bytes(hashUserMap[msg.sender].name).length == 0 && bytes(hashUserMap[msg.sender].email).length == 0){
@@ -68,8 +71,14 @@ contract Bright is Ownable {
     }
     
     function setNewCommit (string _id, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
-                
-        storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, 0);
+               uint num = 0;
+               uint pending = 0;
+                if(keccak256(_emailuser1)!=keccak256("")){num++;}
+                if(keccak256(_emailuser2)!=keccak256("")){num++;}
+                if(keccak256(_emailuser3)!=keccak256("")){num++;}
+                if(keccak256(_emailuser4)!=keccak256("")){num++;}
+                if(num>0){pending=1;}
+        storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, num, pending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
         hashUserMap[msg.sender].numbermyCommits++;
         
@@ -102,5 +111,28 @@ contract Bright is Ownable {
     }
     function getAllUserNumber() public view returns(uint){ 
         return numberOfUsers;
+    }
+    function getNumberCommitsToReviewByMe() public view returns(uint){ 
+        return hashUserMap[msg.sender].numberCommitsToReviewbyMe;
+    }
+    function getNumberCommitsReviewedByMe() public view returns(uint){ 
+        return hashUserMap[msg.sender].numberCommitsReviewedbyMe;
+    }
+    
+    function setReview(uint _index, string _text){
+        hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].text = _text;
+        hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].user = msg.sender; 
+        
+        hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews++;
+        if(hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews==hashUserMap[msg.sender].commitsToReview[_index].numberReviews){
+            hashUserMap[msg.sender].commitsToReview[_index].pending;
+        }
+        //User who has to review. 
+        delete hashUserMap[msg.sender].commitsToReview[_index]; //delete review commit
+        hashUserMap[msg.sender].commitsToReview[_index] = hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
+        hashUserMap[msg.sender].numberCommitsToReviewbyMe--; //decrease counter
+        hashUserMap[msg.sender].numberCommitsReviewedbyMe++; //encrease counter
+        
+
     }
 }
