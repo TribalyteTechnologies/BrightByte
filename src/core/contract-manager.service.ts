@@ -7,7 +7,6 @@ import { HttpClient } from "@angular/common/http";
 import { default as contract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
-import { error } from "util";
 
 @Injectable()
 export class ContractManagerService {

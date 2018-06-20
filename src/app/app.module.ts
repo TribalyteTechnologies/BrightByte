@@ -6,7 +6,6 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { default as Web3 } from "web3";
-//import { AutoCompleteModule } from 'ionic2-auto-complete';
 
 // Pages
 import { RankingPage } from "../pages/ranking/ranking";
@@ -25,13 +24,9 @@ import { LoggerService } from "../core/logger.service";
 import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../core/contract-manager.service";
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatInputModule } from '@angular/material/input';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Components
 import { MyApp } from "./app.component";
-//import {MdAutocomplete} from "../core/md-autocomplete";
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -60,10 +55,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 				useFactory: HttpLoaderFactory,
 				deps: [HttpClient]
 			}
-		}),
-		BrowserAnimationsModule,
-		MatInputModule,
-		MatAutocompleteModule
+		})
 	],
 	bootstrap: [IonicApp],
 	entryComponents: [

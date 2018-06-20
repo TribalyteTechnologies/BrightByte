@@ -8,11 +8,7 @@ import { HttpClient } from "@angular/common/http";
 import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
-//import { stringify } from "@angular/core/src/render3/util";
-import { FormControl } from "@angular/forms";
-import { Observable } from "rxjs/Observable";
-import { startWith } from "rxjs/operators/startWith";
-import { map } from "rxjs/operators/map";
+
 
 @Component({
     selector: "popover-addcommit",
@@ -31,7 +27,7 @@ export class AddCommitPopover {
     public usersMail = ["", "", "", ""];
     public arrayemails: string[];
     public arraysearch: string[];
-    public characters = "";
+    public isShowList=[false,false,false,false];
 
     constructor(
         public navCtrl: NavController,
@@ -55,8 +51,6 @@ export class AddCommitPopover {
                 .then((resolve) => {
                     this.log.d("ARRAY Emails: ", resolve);
                     this.arrayemails = resolve;
-                    this.initSearch();
-                    this.characters = "";
                 }).catch((e) => {
                     this.log.d("Error getting emails!!", e);
                     this.msg = "Error getting emails!!";
@@ -78,26 +72,19 @@ export class AddCommitPopover {
                 this.log.d("Error adding new commit!!", e);
                 this.msg = "Error adding new commit";
             });
-        this.characters = "";
 
     }
 
-    myControl: FormControl = new FormControl();
-    filteredOptions: Observable<string[]>;;
-
-    initSearch() {
-        this.filteredOptions = this.myControl.valueChanges
-            .pipe(
-                startWith(""),
-                map(val => this.filter(val))
-            );
-    }
-
-    filter(val: string): string[] {
-
-        return this.arrayemails.filter(option =>
-            option.toLowerCase().indexOf(val.toLowerCase()) === 0);
-
-
+    getItems(ev, id) {
+        this.isShowList=[false,false,false,false];
+          // set val to the value of the ev target
+        let val = ev.target.value;
+        // if the value is an empty string don't filter the items
+        if (val && val.trim() != "") {
+          this.arraysearch = this.arrayemails.filter((item) => {
+            return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
+          })
+        }
+        this.isShowList[id]=true;
     }
 }
