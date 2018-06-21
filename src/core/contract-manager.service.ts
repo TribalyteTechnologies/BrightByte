@@ -230,7 +230,7 @@ export class ContractManagerService {
             data: this.bright.deployedBytecode
         });
     }
-    getCommitsToReview(){
+    public getCommitsToReview(){
         this.account = this.loginService.getAccount();
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
             this.abijson = data;
@@ -255,6 +255,14 @@ export class ContractManagerService {
                 })
         })
             .catch(err => {
+                this.log.e("Error calling BrightByte smart contract :", err);
+            });
+    }
+    public getDetailsCommits(id: string): Promise<Object>{
+        return this.contract.methods.getDetailsCommits(id).call()
+                .then(details => {
+                    return details;
+        }).catch(err => {
                 this.log.e("Error calling BrightByte smart contract :", err);
             });
     }

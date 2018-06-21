@@ -100,7 +100,17 @@ contract Bright is Ownable {
             }
         }
     }
+    function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, uint, uint){ //_index starts in 1
+        return (storedData[_id].url,
+            storedData[_id].author,
+            storedData[_id].timestamp,
+            storedData[_id].project,
+            storedData[_id].numberReviews,
+            storedData[_id].pending,
+            storedData[_id].currentNumberReviews);
+    }
     function getUserCommits(uint _index) public view returns(string){ //_index starts in 1
+    //TODO Change this function to return author, project,numberReviews,pending and currentNumberReviews.
         return hashUserMap[msg.sender].userCommits[_index-1].url;
     }
     function getNumberUserCommits()public view returns(uint){
@@ -121,7 +131,7 @@ contract Bright is Ownable {
     function getCommitsToReviewByMe(uint _index) public view returns(string){ //_index starts in 1
         return hashUserMap[msg.sender].commitsToReview[_index-1].url;
     }
-    function setReview(uint _index, string _text){
+    function setReview(uint _index, string _text)public{
         hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].text = _text;
         hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].user = msg.sender; 
         

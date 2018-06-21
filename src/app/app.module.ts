@@ -16,6 +16,8 @@ import { LoginPage } from "../pages/login/login";
 import { NewuserPage } from "../pages/newuser/newuser";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { SetProfilePage } from "../pages/setprofile/setprofile";
+import { CommitReviewPage } from "../pages/commitreview/commitreview"
+import { CommitDetailsPage } from "../pages/commitdetails/commitdetails"
 
 // Providers
 import { AppConfig } from "../app.config";
@@ -42,7 +44,9 @@ export function HttpLoaderFactory(http: HttpClient) {
 		LoginPage,
 		NewuserPage,
 		AddCommitPopover,
-		SetProfilePage
+		SetProfilePage,
+		CommitReviewPage,
+		CommitDetailsPage
 	],
 	imports: [
 		BrowserModule,
@@ -67,7 +71,9 @@ export function HttpLoaderFactory(http: HttpClient) {
 		LoginPage,
 		NewuserPage,
 		AddCommitPopover,
-		SetProfilePage
+		SetProfilePage,
+		CommitReviewPage,
+		CommitDetailsPage
 	],
 	providers: [
 		AppConfig,

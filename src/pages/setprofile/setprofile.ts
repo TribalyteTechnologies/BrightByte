@@ -49,7 +49,7 @@ export class SetProfilePage {
 	public updateProfile(name: string, mail: string) {
 		this.contractManagerService.setProfile(name, mail)
 			.then((resolve) => {
-				this.log.d("RESPUESTA DEL CONTRACT MAAGER: ", resolve);
+				this.log.d("Contract manager response: ", resolve);
 				if (resolve.status == true) {
 					this.navCtrl.push(TabsPage);
 				}

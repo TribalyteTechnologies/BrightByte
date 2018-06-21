@@ -7,6 +7,7 @@ import { PopoverController } from "ionic-angular";
 import { AddCommitPopover } from "../../pages/addcommit/addcommit";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
+import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 
 @Component({
 	selector: "page-commits",
@@ -63,7 +64,19 @@ export class CommitPage {
 				index = i;
 			}
 		}
-		//TODO: Call contract manager service to execute the function getdetails of the commit
+		let urlSplitted = commit.split("/"); 
+		let id = urlSplitted[6];
+		this.contractManagerService.getDetailsCommits(id)
+		.then(details=>{
+			this.log.d("Details commits: ",details);
+			 this.navCtrl.push(CommitDetailsPage, {
+			 	commitDetails: details
+			  });
+		}).catch((e) => {
+			this.log.d("Error getting details!!");
+			this.msg = "Error getting details!!";
+			return Promise.reject(e);
+		});
 	}
 
 }

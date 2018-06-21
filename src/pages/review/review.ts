@@ -3,9 +3,8 @@ import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
-import { HttpClient } from "@angular/common/http";
-import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
+import { CommitReviewPage } from "../commitreview/commitreview"
 
 @Component({
 	selector: "page-review",
@@ -48,6 +47,19 @@ export class ReviewPage {
 				index = i;
 			}
 		}
+		let urlSplitted = commit.split("/"); 
+		let id = urlSplitted[6];
+		this.contractManagerService.getDetailsCommits(id)
+		.then(details=>{
+			this.log.d("Details commits: ",details);
+			 this.navCtrl.push(CommitReviewPage, {
+			 	commitDetails: details
+			  });
+		}).catch((e) => {
+			this.log.d("Error getting details!!");
+			this.msg = "Error getting details!!";
+			return Promise.reject(e);
+		});
 		//TODO: Call contract manager service to execute the function getdetails of the commit to setreview
 	}
 
