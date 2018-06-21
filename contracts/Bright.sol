@@ -71,13 +71,13 @@ contract Bright is Ownable {
     }
     
     function setNewCommit (string _id, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
-               uint num = 0;
-               uint pending = 0;
-                if(keccak256(_emailuser1)!=keccak256("")){num++;}
-                if(keccak256(_emailuser2)!=keccak256("")){num++;}
-                if(keccak256(_emailuser3)!=keccak256("")){num++;}
-                if(keccak256(_emailuser4)!=keccak256("")){num++;}
-                if(num>0){pending=1;}
+        uint num = 0;
+        uint pending = 0;
+        if(keccak256(_emailuser1)!=keccak256("")){num++;}
+        if(keccak256(_emailuser2)!=keccak256("")){num++;}
+        if(keccak256(_emailuser3)!=keccak256("")){num++;}
+        if(keccak256(_emailuser4)!=keccak256("")){num++;}
+        if(num>0){pending=1;}
         storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, num, pending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
         hashUserMap[msg.sender].numbermyCommits++;
@@ -118,7 +118,9 @@ contract Bright is Ownable {
     function getNumberCommitsReviewedByMe() public view returns(uint){ 
         return hashUserMap[msg.sender].numberCommitsReviewedbyMe;
     }
-    
+    function getCommitsToReviewByMe(uint _index) public view returns(string){ //_index starts in 1
+        return hashUserMap[msg.sender].commitsToReview[_index-1].url;
+    }
     function setReview(uint _index, string _text){
         hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].text = _text;
         hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].user = msg.sender; 

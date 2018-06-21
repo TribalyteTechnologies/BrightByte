@@ -8,7 +8,7 @@
 
 <ion-content padding>
     <h2>Add yourcommit</h2>
-    <form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value,project)" novalidate>
+    <form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value)" novalidate>
     <ion-item>
       <ion-label stacked>Url:</ion-label>
       <ion-input formControlName="url" type="text" placeholder="url"></ion-input>

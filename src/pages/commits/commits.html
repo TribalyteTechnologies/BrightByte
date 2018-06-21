@@ -11,8 +11,10 @@
 		Add Commit
 		<ion-icon name="more"></ion-icon>
   	</button>
-	<div *ngFor="let commit of arrayUrls">
-		<p>{{ commit }}</p>
-	</div>  
+	<ion-list inset>
+		<button ion-item *ngFor="let commit of arrayUrls" (click)="urlSelected(commit)">
+		  {{ commit }}
+		</button> 
+	  </ion-list>
   	<p class="error-message">{{msg}}</p>
 </ion-content>

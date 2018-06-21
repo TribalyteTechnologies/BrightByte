@@ -56,6 +56,14 @@ export class CommitPage {
 				});
 		});
 	}
-
+	public urlSelected(commit){
+		let index: number;
+		for(let i=0; i<this.arrayUrls.length-1; i++){
+			if(this.arrayUrls[i] == commit){
+				index = i;
+			}
+		}
+		//TODO: Call contract manager service to execute the function getdetails of the commit
+	}
 
 }

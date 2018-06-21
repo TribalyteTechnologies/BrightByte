@@ -111,7 +111,8 @@ export class ContractManagerService {
         let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
         this.log.d("Contract Address: ", contractAddress);
         this.log.d("Public Address: ", this.account.address);
-        this.log.d("Variables: url ",url,"and userMail ",usersMail);
+        this.log.d("Variables: url ",url);
+        this.log.d("UsersMail: ",usersMail);
         this.log.d("Contract artifact", this.contract);
 
         return this.web3.eth.getTransactionCount(this.account.address)
@@ -230,5 +231,34 @@ export class ContractManagerService {
             data: this.bright.deployedBytecode
         });
     }
+    getCommitsToReview(){
+        this.account = this.loginService.getAccount();
+        return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
+            this.abijson = data;
+            this.abi = data["abi"];
+            this.bright = contract(this.abijson); //TruffleContract function
+            return this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
+                from: this.account.address,
+                gas: AppConfig.GAS_LIMIT,
+                gasPrice: AppConfig.GASPRICE,
+                data: this.bright.deployedBytecode
+            });
+        }).then(() => {
+            return this.contract.methods.getNumberCommitsToReviewByMe().call()
+                .then(result => {
+                    let numberUserCommits = result;
+                    let promises = new Array<Promise<string>>();
+                    for (let i = 0; i < numberUserCommits; i++) {
+                        let promise = this.contract.methods.getCommitsToReviewByMe(i + 1).call();
+                        promises.push(promise);
+                    }
+                    return Promise.all(promises);
+                })
+        })
+            .catch(err => {
+                this.log.e("Error calling BrightByte smart contract :", err);
+            });
+    }
+
 }
 

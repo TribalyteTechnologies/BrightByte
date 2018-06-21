@@ -11,7 +11,13 @@
         <ion-list-header>Reviews</ion-list-header>
         <ion-item>
             <ion-icon name="ionic" item-start></ion-icon>
-            HERE WE PUT REVIEWS
+            List of commits to review
         </ion-item>
     </ion-list>
+    <ion-list inset>
+		<button ion-item *ngFor="let commit of arrayUrls" (click)="urlSelected(commit)">
+		  {{ commit }}
+		</button> 
+	  </ion-list>
+  	<p class="error-message">{{msg}}</p>
 </ion-content>
