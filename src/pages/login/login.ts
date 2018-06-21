@@ -84,12 +84,13 @@ export class LoginPage {
                 data: this.bright.deployedBytecode
             });
             this.contract.methods.getUser(this.account.address).call()
-                .then((data) => {
-                    if (data[1] == "") {
-                        this.log.d("Email: ", data[1]);
+                .then((dataUser) => {
+                    let posEmail = 1;
+                    if (dataUser[posEmail] == "") {
+                        this.log.d("Email: ", dataUser[1]);
                         this.navCtrl.push(SetProfilePage);
                     } else {
-                        this.log.d("Email: ", data[1]);
+                        this.log.d("Email: ", dataUser[1]);
                         this.navCtrl.push(TabsPage);
                     }
                 }).catch((e) => {

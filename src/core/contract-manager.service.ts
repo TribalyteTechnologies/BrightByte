@@ -46,10 +46,10 @@ export class ContractManagerService {
 
     public createUser(pass: string): Promise<Blob> {
         this.createAccount = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-        let Encrypted = this.web3.eth.accounts.encrypt(this.createAccount.privateKey, pass);
+        let encrypted = this.web3.eth.accounts.encrypt(this.createAccount.privateKey, pass);
         let text = [];
         text.push('{"Keys":{');
-        text.push('"address":' + JSON.stringify(this.createAccount.address) + ',"privateKey":' + JSON.stringify(Encrypted) + '}}');
+        text.push('"address":' + JSON.stringify(this.createAccount.address) + ',"privateKey":' + JSON.stringify(encrypted) + '}}');
         //The blob constructor needs an array as first parameter, so it is not neccessary use toString.
         //The second parameter is the MIME type of the file.
         return new Promise((resolve, reject) => {
@@ -208,8 +208,7 @@ export class ContractManagerService {
             });
         }).then(() => {
             return this.contract.methods.getAllUserNumber().call()
-        }).then(result => {
-                    let numberUsers = result;
+        }).then(numberUsers => {
                     let promises = new Array<Promise<string>>();
                     for (let i = 0; i < numberUsers; i++) {
                         let promise = this.contract.methods.getAllUserEmail(i).call();

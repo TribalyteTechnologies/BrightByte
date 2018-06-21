@@ -9,7 +9,7 @@ import { LoginPage } from "../pages/login/login";
 @Component({
   templateUrl: "app.html"
 })
-export class MyApp {
+export class BrightByteApp {
 
     public rootPage = LoginPage; //TabsPage;
     private log: ILogger;

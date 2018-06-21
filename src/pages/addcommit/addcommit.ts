@@ -25,8 +25,8 @@ export class AddCommitPopover {
     public abijson: any;
     public msg: string;
     public usersMail = ["", "", "", ""];
-    public arrayemails: string[];
-    public arraysearch: string[];
+    public arrayEmails: string[];
+    public arraySearch: string[];
     public isShowList=[false,false,false,false];
     public myForm: FormGroup;
 
@@ -38,7 +38,7 @@ export class AddCommitPopover {
         private loggerSrv: LoggerService,
         private web3Service: Web3Service,
         private contractManagerService: ContractManagerService,
-        private loginService: LoginService
+        public loginService: LoginService
     ) {
         this.web3 = this.web3Service.getWeb3();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -52,7 +52,7 @@ export class AddCommitPopover {
             this.contractManagerService.getAllUserEmail()
                 .then((resolve) => {
                     this.log.d("ARRAY Emails: ", resolve);
-                    this.arrayemails = resolve;
+                    this.arrayEmails = resolve;
                 }).catch((e) => {
                     this.log.d("Error getting emails!!", e);
                     this.msg = "Error getting emails!!";
@@ -85,7 +85,7 @@ export class AddCommitPopover {
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
         if (val && val.trim() != "") {
-          this.arraysearch = this.arrayemails.filter((item) => {
+          this.arraySearch = this.arrayEmails.filter((item) => {
             return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
           })
         }

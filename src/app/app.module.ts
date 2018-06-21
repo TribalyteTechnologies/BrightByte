@@ -25,7 +25,7 @@ import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../core/contract-manager.service";
 
 // Components
-import { MyApp } from "./app.component";
+import { BrightByteApp } from "./app.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -33,7 +33,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 @NgModule({
 	declarations: [
-		MyApp,
+		BrightByteApp,
 		RankingPage,
 		CommitPage,
 		HomePage,
@@ -46,7 +46,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 	],
 	imports: [
 		BrowserModule,
-		IonicModule.forRoot(MyApp),
+		IonicModule.forRoot(BrightByteApp),
 		HttpClientModule,
 		TranslateModule.forRoot({
 			loader: {
@@ -58,7 +58,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 	],
 	bootstrap: [IonicApp],
 	entryComponents: [
-		MyApp,
+		BrightByteApp,
 		RankingPage,
 		CommitPage,
 		HomePage,

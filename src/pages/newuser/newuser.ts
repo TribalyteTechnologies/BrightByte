@@ -33,8 +33,8 @@ export class NewuserPage {
 
     public createUser(pass: string) {
         this.contractManager.createUser(pass)
-            .then((resolve) => {
-                this.file = resolve;
+            .then((dataFile) => {
+                this.file = dataFile;
                 this.saveFileLink(this.file, "Identity.json");
                 this.isUserCreated = true;
 

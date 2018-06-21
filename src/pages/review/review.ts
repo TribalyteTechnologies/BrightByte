@@ -30,21 +30,21 @@ export class ReviewPage {
 		this.log = this.loggerSrv.get("ReviewPage");
 		this.account = this.loginService.getAccount();
 		this.contractManagerService.getCommitsToReview()
-        .then((resolve)=>{
-			this.log.d("ARRAY Commits: ", resolve);
-			this.arrayUrls = resolve;
-        }).catch((e)=>{
-			this.log.d("Error getting commits!!");
-			this.msg = "Error getting commits!!";
-			return Promise.reject(e);
-		});
+			.then((resolve) => {
+				this.log.d("ARRAY Commits: ", resolve);
+				this.arrayUrls = resolve;
+			}).catch((e) => {
+				this.log.d("Error getting commits!!");
+				this.msg = "Error getting commits!!";
+				return Promise.reject(e);
+			});
 
 	}
 
-	public urlSelected(commit){
+	public urlSelected(commit) {
 		let index: number;
-		for(let i=0; i<this.arrayUrls.length-1; i++){
-			if(this.arrayUrls[i] == commit){
+		for (let i = 0; i < this.arrayUrls.length - 1; i++) {
+			if (this.arrayUrls[i] == commit) {
 				index = i;
 			}
 		}
