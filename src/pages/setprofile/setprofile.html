@@ -15,6 +15,6 @@
 		<ion-input type="text" placeholder="email@example.com" [(ngModel)]="mail"></ion-input>
 	</ion-item>
 	<p class="error-message">{{msg}}</p>
-	<button ion-button [disabled]="!mail" (click)="buttonSetProfile(name,mail)">Set Profile (2)</button>
+	<button ion-button [disabled]="!mail" (click)="updateProfile(name,mail)">Set Profile</button>
   
 </ion-content>

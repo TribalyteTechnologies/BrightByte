@@ -8,7 +8,7 @@ import { HttpClient } from "@angular/common/http";
 import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
-
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
     selector: "popover-addcommit",
@@ -28,11 +28,13 @@ export class AddCommitPopover {
     public arrayemails: string[];
     public arraysearch: string[];
     public isShowList=[false,false,false,false];
+    public myForm: FormGroup;
 
     constructor(
         public navCtrl: NavController,
         public viewCtrl: ViewController,
         public http: HttpClient,
+        public fb: FormBuilder,
         private loggerSrv: LoggerService,
         private web3Service: Web3Service,
         private contractManagerService: ContractManagerService,
@@ -59,10 +61,12 @@ export class AddCommitPopover {
             //If you want do after the promise. Code here
             this.log.d("TruffleContract function: ", this.bright);
         });
-
+        this.myForm = this.fb.group({
+            url: ['', [Validators.required, Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]]
+          });
     }
-    public addCommit(url: string, project: string) {
-        this.contractManagerService.addCommit(url, project, this.usersMail)
+    public addCommit(url: string) {
+        this.contractManagerService.addCommit(url, this.usersMail)
             .then((resolve) => {
                 this.log.d("Contract manager response: ", resolve);
                 if (resolve.status == true) {

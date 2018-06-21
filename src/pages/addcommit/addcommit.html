@@ -8,40 +8,42 @@
 
 <ion-content padding>
     <h2>Add yourcommit</h2>
+    <form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value,project)" novalidate>
     <ion-item>
-        <ion-label color="primary">URL</ion-label>
-        <ion-input type="text" placeholder="http://example.com" [(ngModel)]="url"></ion-input>
+      <ion-label stacked>Url:</ion-label>
+      <ion-input formControlName="url" type="text" placeholder="url"></ion-input>
     </ion-item>
-    <ion-item>
-        <ion-label color="primary">Project</ion-label>
-        <ion-input type="text" placeholder="Name of the project" [(ngModel)]="project"></ion-input>
+    <ion-item *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
+      <p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">Field is required</p>
+      <p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">It is not an url</p>
     </ion-item>
-    <ion-label color="primary">Users</ion-label>
+        <button ion-button type="submit" [disabled]="myForm.invalid">Add Commit</button>
+      </form>
 
-        <ion-searchbar (ionInput)="getItems($event, 0)" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-searchbar>
-        <ion-list *ngIf="isShowList[0]">
-          <ion-item *ngFor="let item of arraysearch">
-            {{ item }}
-          </ion-item>
-        </ion-list>
-        <ion-searchbar (ionInput)="getItems($event, 1)" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-searchbar>
-        <ion-list *ngIf="isShowList[1]">
-          <ion-item *ngFor="let item of arraysearch">
-            {{ item }}
-          </ion-item>
-        </ion-list>
-        <ion-searchbar (ionInput)="getItems($event, 2)" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-searchbar>
-        <ion-list *ngIf="isShowList[2]">
-          <ion-item *ngFor="let item of arraysearch">
-            {{ item }}
-          </ion-item>
-        </ion-list>
-        <ion-searchbar (ionInput)="getItems($event, 3)" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-searchbar>
-        <ion-list *ngIf="isShowList[3]">
-          <ion-item *ngFor="let item of arraysearch">
-            {{ item }}
-          </ion-item>
-        </ion-list>
-        
-        <button ion-button (click)="addCommit(url,project)">Add Commit</button>
+      <ion-label color="primary">Users</ion-label>
+
+      <ion-searchbar (ionInput)="getItems($event, 0)" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-searchbar>
+      <ion-list *ngIf="isShowList[0]">
+        <ion-item *ngFor="let item of arraysearch">
+          {{ item }}
+        </ion-item>
+      </ion-list>
+      <ion-searchbar (ionInput)="getItems($event, 1)" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-searchbar>
+      <ion-list *ngIf="isShowList[1]">
+        <ion-item *ngFor="let item of arraysearch">
+          {{ item }}
+        </ion-item>
+      </ion-list>
+      <ion-searchbar (ionInput)="getItems($event, 2)" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-searchbar>
+      <ion-list *ngIf="isShowList[2]">
+        <ion-item *ngFor="let item of arraysearch">
+          {{ item }}
+        </ion-item>
+      </ion-list>
+      <ion-searchbar (ionInput)="getItems($event, 3)" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-searchbar>
+      <ion-list *ngIf="isShowList[3]">
+        <ion-item *ngFor="let item of arraysearch">
+          {{ item }}
+        </ion-item>
+      </ion-list>
 </ion-content>

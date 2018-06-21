@@ -58,31 +58,18 @@ export class ContractManagerService {
             }));
         });
     }
-    public buttonSetProfile(name: string, mail: string): Promise<any>{
-        this.account = this.loginService.getAccount();
+    public setProfile(name: string, mail: string): Promise<any>{
+        this.getAccountAndContract();
+
         this.log.d("account: ", this.account);
-        let account: string = this.account.address;
-        let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
-        this.log.d("Contract Address: ", contractAddress);
-        this.log.d("Public Address: ", account);
-        this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
-            from: this.account.address,
-            gas: AppConfig.GAS_LIMIT,
-            gasPrice: AppConfig.GASPRICE,
-            data: this.bright.deployedBytecode
-        });
+        this.log.d("Contract Address: ", this.bright.networks[AppConfig.NET_ID].address);
+        this.log.d("Public Address: ", this.account.address);
         this.log.d("Contract artifact", this.contract);
 
-        return this.web3.eth.getTransactionCount(account)
+        return this.web3.eth.getTransactionCount(this.account.address)
             .then(result => {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
-                this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
-                    from: this.account.address,
-                    gas: AppConfig.GAS_LIMIT,
-                    gasPrice: AppConfig.GASPRICE,
-                    data: this.bright.deployedBytecode
-                });
                 let data = this.contract.methods.setProfile(name, mail).encodeABI();
                 this.log.d("Introduced name: ", name);
                 this.log.d("Introduced Mail: ", mail);
@@ -92,7 +79,7 @@ export class ContractManagerService {
                     nonce: this.nonce,
                     gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
                     gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
-                    to: contractAddress,
+                    to: this.bright.networks[AppConfig.NET_ID].address,
                     data: data
                 };
                 const tx = new Tx(rawtx);
@@ -119,32 +106,24 @@ export class ContractManagerService {
             });
 
     }
-    public addCommit(url: string, project: string, usersMail: string[]): Promise<any> {
-        this.account = this.loginService.getAccount();
+    public addCommit(url: string, usersMail: string[]): Promise<any> {
+        this.getAccountAndContract();
         let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
         this.log.d("Contract Address: ", contractAddress);
         this.log.d("Public Address: ", this.account.address);
-        this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
-            from: this.account.address,
-            gas: AppConfig.GAS_LIMIT,
-            gasPrice: AppConfig.GASPRICE,
-            data: this.bright.deployedBytecode
-        });
+        this.log.d("Variables: url ",url,"and userMail ",usersMail);
         this.log.d("Contract artifact", this.contract);
 
         return this.web3.eth.getTransactionCount(this.account.address)
             .then(result => {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
-                this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
-                    from: this.account.address,
-                    gas: AppConfig.GAS_LIMIT,
-                    gasPrice: AppConfig.GASPRICE,
-                    data: this.bright.deployedBytecode
-                });
 
+                let urlSplitted = url.split("/"); 
+                this.log.d("Url splited: ",urlSplitted);
+                let project = urlSplitted[4];
+                let id = urlSplitted[6];
 
-                let id = url; //TODO get the id from url
                 let data = this.contract.methods.setNewCommit(id, url, project, usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
                 this.log.d("Introduced url: ", url);
                 this.log.d("Introduced project: ", project);
@@ -241,6 +220,15 @@ export class ContractManagerService {
             .catch(err => {
                 this.log.e("Error getting all user emails :", err);
             })
+    }
+    private getAccountAndContract(){
+        this.account = this.loginService.getAccount();
+        this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
+            from: this.account.address,
+            gas: AppConfig.GAS_LIMIT,
+            gasPrice: AppConfig.GASPRICE,
+            data: this.bright.deployedBytecode
+        });
     }
 }
 

@@ -4,7 +4,6 @@ import { IonicApp, IonicModule, IonicErrorHandler } from "ionic-angular";
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
 import { default as Web3 } from "web3";
 
 // Pages
