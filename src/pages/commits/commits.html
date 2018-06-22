@@ -1,20 +1,20 @@
 <ion-header>
-  	<ion-navbar>
+	<ion-navbar>
 		<ion-title>
-      		Commits
-    	</ion-title>
-  	</ion-navbar>
+			Commits
+		</ion-title>
+	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  	<button ion-button (click)="openAddCommitDialog()">
+	<button ion-button (click)="openAddCommitDialog()">
 		Add Commit
 		<ion-icon name="more"></ion-icon>
-  	</button>
+	</button>
 	<ion-list inset>
 		<button ion-item *ngFor="let commit of arrayUrls" (click)="urlSelected(commit)">
-		  {{ commit }}
-		</button> 
-	  </ion-list>
-  	<p class="error-message">{{msg}}</p>
+			{{ commit }}
+		</button>
+	</ion-list>
+	<p class="error-message">{{msg}}</p>
 </ion-content>

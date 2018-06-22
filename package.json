@@ -50,6 +50,7 @@
 		"path": "0.12.7",
 		"ionic": "4.0.0-rc.6",
 		"sass-lint": "1.12.1",
+		"htmlhint": "0.9.13",
 		"truffle": "^4.1.9",
 		"types-ethereumjs-util": "0.0.8",
 		"typescript": "2.4.2"
