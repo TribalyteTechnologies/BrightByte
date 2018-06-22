@@ -39,21 +39,34 @@ export class ReviewPage {
 			});
 
 	}
-
+	public ionViewWillEnter() {
+		this.contractManagerService.getCommitsToReview()
+			.then((resolve) => {
+				this.log.d("ARRAY Commits: ", resolve);
+				this.arrayUrls = resolve;
+			}).catch((e) => {
+				this.log.d("Error getting commits!!");
+				this.msg = "Error getting commits!!";
+				return Promise.reject(e);
+			});
+	}
 	public urlSelected(commit) {
 		let index: number;
-		for (let i = 0; i < this.arrayUrls.length - 1; i++) {
+		for (let i = 0; i < this.arrayUrls.length; i++) {
 			if (this.arrayUrls[i] == commit) {
 				index = i;
 			}
+			this.log.d("Array length: ",this.arrayUrls.length);
 		}
 		let urlSplitted = commit.split("/"); 
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
 		.then(details=>{
 			this.log.d("Details commits: ",details);
+			this.log.d("Index: ",index);
 			 this.navCtrl.push(CommitReviewPage, {
-			 	commitDetails: details
+				 commitDetails: details,
+				 indexArray: index
 			  });
 		}).catch((e) => {
 			this.log.d("Error getting details!!");

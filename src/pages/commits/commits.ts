@@ -43,6 +43,7 @@ export class CommitPage {
 
 	}
 
+
 	public openAddCommitDialog() {
 		let popover = this.popoverCtrl.create(AddCommitPopover);
 		popover.present();

@@ -14,4 +14,12 @@
 	<p>Number Reviews: {{commitDetails[4]}}</p>
 	<p>Pending Reviews: {{commitDetails[5]}}</p>
 	<p>Current Number Reviews: {{commitDetails[6]}}</p>
+	<ion-item>
+		<ion-textarea placeholder="Enter a description" [(ngModel)]="textComment">Text field</ion-textarea>
+	  </ion-item>
+	  <p class="error-message">{{msg}}</p>
+	  <p>{{msg1}}</p>
+	  <button ion-button [disabled]="isButtonDisabled" (click)="addReview(textComment)">
+		Review
+  	</button>
 </ion-content>

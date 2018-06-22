@@ -236,7 +236,7 @@ export class ContractManagerService {
             this.abijson = data;
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
-            return this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
+            this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
                 from: this.account.address,
                 gas: AppConfig.GAS_LIMIT,
                 gasPrice: AppConfig.GASPRICE,
@@ -246,6 +246,7 @@ export class ContractManagerService {
             return this.contract.methods.getNumberCommitsToReviewByMe().call()
                 .then(result => {
                     let numberUserCommits = result;
+                    this.log.d("NumberuserCommits: ",result);
                     let promises = new Array<Promise<string>>();
                     for (let i = 0; i < numberUserCommits; i++) {
                         let promise = this.contract.methods.getCommitsToReviewByMe(i + 1).call();
@@ -267,5 +268,53 @@ export class ContractManagerService {
             });
     }
 
+    public setReview(index, text: string): Promise<any>{
+        this.getAccountAndContract();
+
+        this.log.d("account: ", this.account);
+        this.log.d("Contract Address: ", this.bright.networks[AppConfig.NET_ID].address);
+        this.log.d("Public Address: ", this.account.address);
+        this.log.d("Contract artifact", this.contract);
+
+        return this.web3.eth.getTransactionCount(this.account.address)
+            .then(result => {
+                this.nonce = "0x" + (result).toString(16);
+                this.log.d("Value NONCE", this.nonce);
+                let data = this.contract.methods.setReview(index, text).encodeABI();
+                this.log.d("Introduced index: ", index);
+                this.log.d("Introduced text: ", text);
+                this.log.d("DATA: ", data);
+
+                let rawtx = {
+                    nonce: this.nonce,
+                    gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
+                    to: this.bright.networks[AppConfig.NET_ID].address,
+                    data: data
+                };
+                const tx = new Tx(rawtx);
+                let priv = this.account.privateKey.substring(2);
+                let privateKey = new Buffer(priv, "hex");
+                tx.sign(privateKey);
+
+                let raw = "0x" + tx.serialize().toString("hex");
+                this.log.d("Rawtx: ", rawtx);
+                this.log.d("Priv si 0x: ", priv);
+                this.log.d("privatekey: ", privateKey);
+                this.log.d("Raw: ", raw);
+                this.log.d("tx unsign: ", tx);
+                return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
+                    if (!err) {
+                        this.log.d("Hash transaction", transactionHash);
+                    } else {
+                        this.log.e(err);
+                    }
+                });
+
+            }).catch(e => {
+                this.log.e("Error getting nonce value: ", e);
+            });
+
+    }
 }
 
