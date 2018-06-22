@@ -5,7 +5,6 @@ import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { NavParams } from "ionic-angular";
 import { ContractManagerService } from "../../core/contract-manager.service";
-import { stringify } from "@angular/compiler/src/util";
 
 @Component({
 	selector: "page-commitReview",
