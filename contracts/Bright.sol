@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 import "./Ownable.sol";
-
+import "./StringUtils.sol";
 contract Bright is Ownable {
     
     event UserProfileSetEvent (string name, address hash);
@@ -72,10 +72,10 @@ contract Bright is Ownable {
     function setNewCommit (string _id, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
         uint num = 0;
         uint pending = 0;
-        if(keccak256(_emailuser1)!=keccak256("")){num++;}
-        if(keccak256(_emailuser2)!=keccak256("")){num++;}
-        if(keccak256(_emailuser3)!=keccak256("")){num++;}
-        if(keccak256(_emailuser4)!=keccak256("")){num++;}
+        if(!StringUtils.equal(_emailuser1,"")){num++;}
+        if(!StringUtils.equal(_emailuser2,"")){num++;}
+        if(!StringUtils.equal(_emailuser3,"")){num++;}
+        if(!StringUtils.equal(_emailuser4,"")){num++;}
         if(num>0){pending=1;}
         storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, num, pending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
@@ -84,16 +84,16 @@ contract Bright is Ownable {
         //Send the notificatios to reviewers
         for(uint i = 0; i < numberOfUsers; i++){
             
-            if(keccak256(allUsersArray[i].email) == keccak256(_emailuser1)){
+            if(StringUtils.equal(allUsersArray[i].email, _emailuser1)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = (hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1);  
-            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser2)){
+            }else if(StringUtils.equal(allUsersArray[i].email, _emailuser2)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1;
-            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser3)){
+            }else if(StringUtils.equal(allUsersArray[i].email, _emailuser3)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1;
-            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser4)){
+            }else if(StringUtils.equal(allUsersArray[i].email, _emailuser4)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1;
             }
