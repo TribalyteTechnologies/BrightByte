@@ -60,7 +60,7 @@ export class CommitPage {
 	}
 	public urlSelected(commit) {
 		let index: number;
-		for (let i = 0; i < this.arrayUrls.length - 1; i++) {
+		for (let i = 0; i < this.arrayUrls.length; i++) {
 			if (this.arrayUrls[i] == commit) {
 				index = i;
 			}
@@ -71,7 +71,8 @@ export class CommitPage {
 		.then(details=>{
 			this.log.d("Details commits: ",details);
 			 this.navCtrl.push(CommitDetailsPage, {
-			 	commitDetails: details
+				 commitDetails: details,
+				 commitIndex: index
 			  });
 		}).catch((e) => {
 			this.log.d("Error getting details!!");

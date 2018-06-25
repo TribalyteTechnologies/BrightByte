@@ -14,4 +14,11 @@
 	<p>Number Reviews: {{commitDetails[4]}}</p>
 	<p>Pending Reviews: {{commitDetails[5]}}</p>
 	<p>Current Number Reviews: {{commitDetails[6]}}</p>
+	<p class="error-message">{{msg}}</p>
+	<ion-list inset>
+		<ion-item *ngFor="let comment of arrayComments">
+			<p>User {{ comment[1] }} commented: </p>
+			<p>{{ comment[0] }}</p>
+		</ion-item>
+	</ion-list>
 </ion-content>

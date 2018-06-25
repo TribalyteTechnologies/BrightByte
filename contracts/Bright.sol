@@ -9,7 +9,6 @@ contract Bright is Ownable {
     mapping (string => Commit) storedData;
     uint numberOfUsers = 0;
 
-
     struct UserProfile {
         string name;
         string email;
@@ -106,7 +105,7 @@ contract Bright is Ownable {
             storedData[_id].timestamp,
             storedData[_id].project,
             storedData[_id].numberReviews,
-            storedData[_id].pending,
+            storedData[_id].pending, //No=>0 and Yes=>1
             storedData[_id].currentNumberReviews);
     }
     function getUserCommits(uint _index) public view returns(string){ //_index starts in 1
@@ -131,17 +130,25 @@ contract Bright is Ownable {
     function getCommitsToReviewByMe(uint _index) public view returns(string){ //_index starts in 1
         return hashUserMap[msg.sender].commitsToReview[_index-1].url;
     }
+    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address){
+        return (storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].text,
+        storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user);
+    }
+    function getNumberComments(uint _index)public view returns(uint){
+        return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;
+    }
     function setReview(uint _index, string _text)public{
-        hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].text = _text;
-        hashUserMap[msg.sender].commitsToReview[_index].comments[hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews].user = msg.sender; 
         
-        hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews++;
-        if(hashUserMap[msg.sender].commitsToReview[_index].currentNumberReviews==hashUserMap[msg.sender].commitsToReview[_index].numberReviews){
-            hashUserMap[msg.sender].commitsToReview[_index].pending;
+        storedData[hashUserMap[msg.sender].commitsToReview[_index].id].comments[storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews].text = _text;
+        storedData[hashUserMap[msg.sender].commitsToReview[_index].id].comments[storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews].user = msg.sender;
+        
+        storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews++;
+        if(storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews==storedData[hashUserMap[msg.sender].commitsToReview[_index].id].numberReviews){
+            storedData[hashUserMap[msg.sender].commitsToReview[_index].id].pending = 0;
         }
         //User who has to review. 
-        delete hashUserMap[msg.sender].commitsToReview[_index]; //delete review commit
-        hashUserMap[msg.sender].commitsToReview[_index] = hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
+        hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe-1].id]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
+        delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe];
         hashUserMap[msg.sender].numberCommitsToReviewbyMe--; //decrease counter
         hashUserMap[msg.sender].numberCommitsReviewedbyMe++; //encrease counter
         

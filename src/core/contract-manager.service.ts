@@ -268,7 +268,7 @@ export class ContractManagerService {
             });
     }
 
-    public setReview(index, text: string): Promise<any>{
+    public setReview(index: number, text: string): Promise<any>{
         this.getAccountAndContract();
 
         this.log.d("account: ", this.account);
@@ -315,6 +315,22 @@ export class ContractManagerService {
                 this.log.e("Error getting nonce value: ", e);
             });
 
+    }
+    public getCommentsOfCommit(index: number): Promise<any>{
+        return this.contract.methods.getNumberComments(index).call()
+                .then(result => {
+                    this.log.d("Number of comments: ",result);
+                    let numberOfComments = result;
+                    let promises = new Array<Promise<any>>();
+                    for (let i = 0; i < numberOfComments; i++) {
+                        let promise = this.contract.methods.getCommentsOfCommit(index, i).call();
+                        promises.push(promise);
+                    }
+                    return Promise.all(promises);
+                
+                }).catch(err => {
+                        this.log.e("Error calling BrightByte smart contract :", err);
+                    });
     }
 }
 
