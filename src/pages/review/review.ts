@@ -13,8 +13,7 @@ import { CommitReviewPage } from "../commitreview/commitreview"
 
 export class ReviewPage {
 	public web3: any;
-	public account: any;
-	public arrayUrls = new Array<string>();
+	public arrayCommits = new Array<string[]>();
 	public msg: string;
 	private log: ILogger;
 
@@ -27,23 +26,13 @@ export class ReviewPage {
 	) {
 		this.web3 = this.web3Service.getWeb3();
 		this.log = this.loggerSrv.get("ReviewPage");
-		this.account = this.loginService.getAccount();
-		this.contractManagerService.getCommitsToReview()
-			.then((resolve) => {
-				this.log.d("ARRAY Commits: ", resolve);
-				this.arrayUrls = resolve;
-			}).catch((e) => {
-				this.log.d("Error getting commits!!");
-				this.msg = "Error getting commits!!";
-				return Promise.reject(e);
-			});
 
 	}
 	public ionViewWillEnter() {
 		this.contractManagerService.getCommitsToReview()
 			.then((resolve) => {
 				this.log.d("ARRAY Commits: ", resolve);
-				this.arrayUrls = resolve;
+				this.arrayCommits = resolve;
 			}).catch((e) => {
 				this.log.d("Error getting commits!!");
 				this.msg = "Error getting commits!!";
@@ -52,13 +41,13 @@ export class ReviewPage {
 	}
 	public urlSelected(commit) {
 		let index: number;
-		for (let i = 0; i < this.arrayUrls.length; i++) {
-			if (this.arrayUrls[i] == commit) {
+		for (let i = 0; i < this.arrayCommits.length; i++) {
+			if (this.arrayCommits[i][0] == commit[0]) {
 				index = i;
 			}
-			this.log.d("Array length: ",this.arrayUrls.length);
+			this.log.d("Array length: ",this.arrayCommits.length);
 		}
-		let urlSplitted = commit.split("/"); 
+		let urlSplitted = commit[0].split("/"); 
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
 		.then(details=>{

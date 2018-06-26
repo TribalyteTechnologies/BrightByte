@@ -17,7 +17,7 @@ import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 export class CommitPage {
 	private log: ILogger;
 	public web3: Web3;
-	public arrayUrls = new Array<string>();
+	public arrayCommits = new Array<string[]>();
 	public msg: string;
 
 	constructor(
@@ -31,16 +31,6 @@ export class CommitPage {
 		this.web3 = this.web3Service.getWeb3();
 		this.log = this.loggerSrv.get("CommitsPage");
 
-		this.contractManagerService.getCommits()
-			.then((resolve) => {
-				this.log.d("ARRAY Commits: ", resolve);
-				this.arrayUrls = resolve;
-			}).catch((e) => {
-				this.log.d("Error getting commits!!");
-				this.msg = "Error getting commits!!";
-				return Promise.reject(e);
-			});
-
 	}
 
 
@@ -51,7 +41,7 @@ export class CommitPage {
 			this.contractManagerService.getCommits()
 				.then((resolve) => {
 					this.log.d("ARRAY Commits: ", resolve);
-					this.arrayUrls = resolve;
+					this.arrayCommits = resolve;
 				}).catch((e) => {
 					this.log.d("Error getting commits!!", e);
 					this.msg = "Error getting commits!!";
@@ -60,16 +50,17 @@ export class CommitPage {
 	}
 	public urlSelected(commit) {
 		let index: number;
-		for (let i = 0; i < this.arrayUrls.length; i++) {
-			if (this.arrayUrls[i] == commit) {
+		for (let i = 0; i < this.arrayCommits.length; i++) {
+			if (this.arrayCommits[i][0] == commit[0]) {
 				index = i;
 			}
 		}
-		let urlSplitted = commit.split("/"); 
+		let urlSplitted = commit[0].split("/"); 
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
 		.then(details=>{
 			this.log.d("Details commits: ",details);
+			this.log.d("Index of row pressed: ",index);
 			 this.navCtrl.push(CommitDetailsPage, {
 				 commitDetails: details,
 				 commitIndex: index
@@ -79,6 +70,17 @@ export class CommitPage {
 			this.msg = "Error getting details!!";
 			return Promise.reject(e);
 		});
+	}
+	public ionViewWillEnter() {
+		this.contractManagerService.getCommits()
+			.then((resolve) => {
+				this.log.d("ARRAY Commits: ", resolve);
+				this.arrayCommits = resolve;
+			}).catch((e) => {
+				this.log.d("Error getting commits!!");
+				this.msg = "Error getting commits!!";
+				return Promise.reject(e);
+			});
 	}
 
 }

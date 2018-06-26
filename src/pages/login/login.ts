@@ -77,6 +77,7 @@ export class LoginPage {
             this.loginService.setAccount(this.account);
 
             let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
+            this.log.d("Contract address: ",contractAddress);
             this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
                 from: this.account.address,
                 gas: AppConfig.GAS_LIMIT,

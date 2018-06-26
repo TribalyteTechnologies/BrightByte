@@ -14,8 +14,8 @@ module.exports = {
 			port: 22000,
 			network_id: "*",
 			gasPrice: 0,
-			gas: 20000000,
-			from: "0x6eb1e76b3b4002eaefb07619da0447d8954d2f99"
+			gas: 20000000
+			//from: "0x6eb1e76b3b4002eaefb07619da0447d8954d2f99"
 		},
 	}
 };

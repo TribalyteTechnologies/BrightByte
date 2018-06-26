@@ -17,7 +17,7 @@
 	<p class="error-message">{{msg}}</p>
 	<ion-list inset>
 		<ion-item *ngFor="let comment of arrayComments">
-			<p>User {{ comment[1] }} commented: </p>
+			<p>User {{ comment[1] }} named {{comment[2]}} commented: </p>
 			<p>{{ comment[0] }}</p>
 		</ion-item>
 	</ion-list>

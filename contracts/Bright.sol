@@ -26,7 +26,7 @@ contract Bright is Ownable {
         uint timestamp;
         string project;
         uint numberReviews; 
-        uint pending;
+        bool pending;
         uint currentNumberReviews;
         mapping (uint => comment) comments;
     }
@@ -71,12 +71,12 @@ contract Bright is Ownable {
     
     function setNewCommit (string _id, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
         uint num = 0;
-        uint pending = 0;
+        bool pending = false;
         if(!StringUtils.equal(_emailuser1,"")){num++;}
         if(!StringUtils.equal(_emailuser2,"")){num++;}
         if(!StringUtils.equal(_emailuser3,"")){num++;}
         if(!StringUtils.equal(_emailuser4,"")){num++;}
-        if(num>0){pending=1;}
+        if(num>0){pending=true;}
         storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, num, pending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
         hashUserMap[msg.sender].numbermyCommits++;
@@ -99,23 +99,24 @@ contract Bright is Ownable {
             }
         }
     }
-    function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, uint, uint){ //_index starts in 1
+    function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, bool, uint){ //_index starts in 1
         return (storedData[_id].url,
             storedData[_id].author,
             storedData[_id].timestamp,
             storedData[_id].project,
             storedData[_id].numberReviews,
-            storedData[_id].pending, //No=>0 and Yes=>1
+            storedData[_id].pending, //No=>false and Yes=>true
             storedData[_id].currentNumberReviews);
     }
-    function getUserCommits(uint _index) public view returns(string){ //_index starts in 1
-    //TODO Change this function to return author, project,numberReviews,pending and currentNumberReviews.
-        return hashUserMap[msg.sender].userCommits[_index-1].url;
+    function getUserCommits(uint _index) public view returns(string, string, bool){
+        return (storedData[hashUserMap[msg.sender].userCommits[_index].id].url,
+        storedData[hashUserMap[msg.sender].userCommits[_index].id].project,
+        storedData[hashUserMap[msg.sender].userCommits[_index].id].pending);
     }
     function getNumberUserCommits()public view returns(uint){
         return hashUserMap[msg.sender].numbermyCommits;
     }
-    function getAllUserEmail(uint _index) public view returns(string){ //_index starts in 0
+    function getAllUserEmail(uint _index) public view returns(string){
         return allUsersArray[_index].email;
     }
     function getAllUserNumber() public view returns(uint){ 
@@ -127,12 +128,14 @@ contract Bright is Ownable {
     function getNumberCommitsReviewedByMe() public view returns(uint){ 
         return hashUserMap[msg.sender].numberCommitsReviewedbyMe;
     }
-    function getCommitsToReviewByMe(uint _index) public view returns(string){ //_index starts in 1
-        return hashUserMap[msg.sender].commitsToReview[_index-1].url;
+    function getCommitsToReviewByMe(uint _index) public view returns(string, string){
+        return (hashUserMap[msg.sender].commitsToReview[_index].url,
+        hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
     }
-    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address){
+    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string){
         return (storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].text,
-        storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user);
+        storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user,
+        hashUserMap[storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user].name);
     }
     function getNumberComments(uint _index)public view returns(uint){
         return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;
@@ -144,7 +147,7 @@ contract Bright is Ownable {
         
         storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews++;
         if(storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews==storedData[hashUserMap[msg.sender].commitsToReview[_index].id].numberReviews){
-            storedData[hashUserMap[msg.sender].commitsToReview[_index].id].pending = 0;
+            storedData[hashUserMap[msg.sender].commitsToReview[_index].id].pending = false;
         }
         //User who has to review. 
         hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe-1].id]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete

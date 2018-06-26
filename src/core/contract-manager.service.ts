@@ -183,7 +183,7 @@ export class ContractManagerService {
                     let numberUserCommits = result;
                     let promises = new Array<Promise<string>>();
                     for (let i = 0; i < numberUserCommits; i++) {
-                        let promise = this.contract.methods.getUserCommits(i + 1).call();
+                        let promise = this.contract.methods.getUserCommits(i).call();
                         promises.push(promise);
                     }
                     return Promise.all(promises);
@@ -249,7 +249,7 @@ export class ContractManagerService {
                     this.log.d("NumberuserCommits: ",result);
                     let promises = new Array<Promise<string>>();
                     for (let i = 0; i < numberUserCommits; i++) {
-                        let promise = this.contract.methods.getCommitsToReviewByMe(i + 1).call();
+                        let promise = this.contract.methods.getCommitsToReviewByMe(i).call();
                         promises.push(promise);
                     }
                     return Promise.all(promises);
