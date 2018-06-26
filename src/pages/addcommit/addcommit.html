@@ -1,13 +1,13 @@
 <ion-header>
     <ion-navbar>
         <ion-title>
-            Add Commit
+          {{ "addcommit.add" | translate }}
         </ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-    <h2>Add yourcommit</h2>
+  <h2>{{ "addcommit.add" | translate }}</h2>
     <form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value)" novalidate>
     <ion-item>
       <ion-label stacked>Url:</ion-label>

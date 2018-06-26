@@ -58,13 +58,18 @@ export class LoginPage {
         let uploadedArray = <FileList>target.files;
         this.log.d("Target: ", target);
         let input = uploadedArray[0];
-        this.log.d("Input: ", input);
-        let reader = new FileReader();
-        reader.readAsText(input);
-        reader.onload = (event: any) => {
-            this.textDebugging = reader.result;
-            this.text = JSON.parse(reader.result);
-        };
+        if (input.type == "application/json") {
+            this.msg = "";
+            this.log.d("Input: ", input);
+            let reader = new FileReader();
+            reader.readAsText(input);
+            reader.onload = (event: any) => {
+                this.textDebugging = reader.result;
+                this.text = JSON.parse(reader.result);
+            };
+        } else {
+            this.msg = "The format of the uploaded file is incorrect";
+        }
     };
 
     public login(pass: string) {
@@ -77,7 +82,7 @@ export class LoginPage {
             this.loginService.setAccount(this.account);
 
             let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
-            this.log.d("Contract address: ",contractAddress);
+            this.log.d("Contract address: ", contractAddress);
             this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
                 from: this.account.address,
                 gas: AppConfig.GAS_LIMIT,
@@ -103,10 +108,22 @@ export class LoginPage {
         catch (e) {
             if (e instanceof TypeError) {
                 this.log.e("File not loaded: ", e);
-                this.msg = "Please, first upload your file";
+                this.translateService.get("app.FileNotLoaded").subscribe(
+                    result => {
+                        this.msg = result;
+                    },
+                    err => {
+                        this.log.e("Error translating string", err);
+                    });
             } else if (e instanceof Error) {
                 this.log.e("Wrong password: ", e);
-                this.msg = "Wrong Password";
+                this.translateService.get("app.WrongPassword").subscribe(
+                    result => {
+                        this.msg = result;
+                    },
+                    err => {
+                        this.log.e("Error translating string", err);
+                    });
             }
         }
 

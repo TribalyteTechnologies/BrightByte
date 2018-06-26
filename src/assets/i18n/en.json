@@ -1,5 +1,47 @@
 {
     "app": {
-        "name": "BrightByte"
+        "title": "BrightByte",
+        "header": "Main",
+        "presentation": "Who are you? Please, upload your identity file or introduce your private key.",
+        "password": "Password",
+        "register": "Register",
+        "FileNotLoaded": "Please check if you have uploaded the correct file",
+        "WrongPassword": "Wrong password"
+    },
+    "addcommit": {
+        "title": "Add Commit",
+        "add": "Add your commit",
+        "project": "Project",
+        "users": "Users"
+    },
+    "commits": {
+        "add": "Add commit"
+    },
+    "home": {
+
+    }, 
+    "newuser": {
+        "title": "New user",
+        "header": "New user",
+        "welcome": "Welcome!",
+        "password": "Password",
+        "register": "Register",
+        "newuser": "Create new user",
+        "download": "Download file"
+
+    },
+    "ranking": {
+
+    },
+    "review": {
+
+    },
+    "setprofile": {
+        "title": "Set profile",
+        "header": "Set your profile",
+        "name": "Name",
+        "set": "Set profile"
+
     }
+
 }

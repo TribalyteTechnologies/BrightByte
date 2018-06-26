@@ -8,6 +8,7 @@ import { default as contract } from "truffle-contract";
 import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../core/contract-manager.service";
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
 	selector: "page-setprofile",
@@ -19,6 +20,7 @@ export class SetProfilePage {
 	public abi: any;
 	public abijson: any;
 	public bright: any;
+	public myForm: FormGroup;
 	public contract: any;
 	public msg: string;
 	public nonce: string;
@@ -28,6 +30,7 @@ export class SetProfilePage {
 		public navCtrl: NavController,
 		private loggerSrv: LoggerService,
 		private web3Service: Web3Service,
+		public fb: FormBuilder,
 		public http: HttpClient,
 		private contractManagerService: ContractManagerService,
 		private loginService: LoginService
@@ -43,6 +46,10 @@ export class SetProfilePage {
 		}, (err) => this.log.e(err), () => {
 			//If you want do after the promise. Code here
 			this.log.d("TruffleContract function: ", this.bright);
+		});
+		this.myForm = this.fb.group({
+			name:  ['', [Validators.required]],
+			email: ['', Validators.compose([Validators.required, Validators.email])]
 		});
 	}
 

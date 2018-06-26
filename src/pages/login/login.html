@@ -1,23 +1,23 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>{{ "app.name" | translate }}</ion-title>
+        <ion-title>{{ "app.title" | translate }}</ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-    <h2>Main</h2>
+    <h2>{{ "app.header" | translate }}</h2>
     <p>
-        Who are you? Please, upload your identity file or introduce your private key.
+        {{ "app.presentation" | translate }}
     </p>
     <input type='file' (change)='openFile($event)'>
     <br>
     <ion-item>
-        <ion-label color="primary">Password</ion-label>
+        <ion-label color="primary">{{ "app.password" | translate }}</ion-label>
         <ion-input type="password" placeholder="pass" [(ngModel)]="pass"></ion-input>
     </ion-item>
     <p class="error-message">{{msg}}</p>
     <button ion-button (click)="login(pass)">Login</button>
-    <button ion-button (click)="register()">Register</button>
+    <button ion-button (click)="register()">{{ "app.register" | translate }}</button>
     <br>
     <div *ngIf="isDebugMode">
         <p>Depuracion</p>
