@@ -6,16 +6,6 @@
 
 <ion-content padding>
 	<h2>{{ "setprofile.header" | translate }}</h2>
-	<!-- <ion-item>
-		<ion-label color="primary">Name</ion-label>
-		<ion-input type="text" placeholder="Name" [(ngModel)]="name"></ion-input>
-	</ion-item>
-	<ion-item>
-		<ion-label color="primary">Email</ion-label>
-		<ion-input type="text" placeholder="email@example.com" [(ngModel)]="mail"></ion-input>
-	</ion-item>
-	<p class="error-message">{{msg}}</p>
-	<button ion-button [disabled]="!mail" (click)="updateProfile(name,mail)">Set Profile</button> -->
 	<form [formGroup]="myForm" (ngSubmit)="updateProfile(myForm.get('name').value,myForm.get('email').value)" novalidate>
 
 		<ion-item>

@@ -16,7 +16,8 @@ export class CommitReviewPage {
 	public commitDetails: Object;
 	public date: string;
 	public indexArray;
-	//public textComment: string;
+	public star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];
+	public rate = 0;
 	public msg: string;
 	public isButtonDisabled = false;
 	public msg1: string;
@@ -58,6 +59,17 @@ export class CommitReviewPage {
 				this.log.d("Transaction Error!!");
 				this.msg = "Transaction Error!!";
 			});
+		}
+	}
+	public setReputation(value){
+		this.star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];
+		switch(value){
+			case 0: this.star[0] = "star";this.rate=1;break;
+			case 1: this.star[0] = "star";this.star[1] = "star";this.rate=2;break;
+			case 2: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.rate=3;break;
+			case 3: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.rate=4;break;
+			case 4: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.star[4] = "star";this.rate=5;break;
+			default: this.star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];this.rate=0;break;
 		}
 	}
 }

@@ -19,6 +19,24 @@
 	</ion-item>
 	<p class="error-message">{{msg}}</p>
 	<p>{{msg1}}</p>
+	<ion-item>
+		<button ion-button icon-only (click)="setReputation(0)">
+			<ion-icon name={{star[0]}}></ion-icon>
+		</button>
+		<button ion-button icon-only (click)="setReputation(1)">
+			<ion-icon name={{star[1]}}></ion-icon>
+		</button>
+		<button ion-button icon-only (click)="setReputation(2)">
+			<ion-icon name={{star[2]}}></ion-icon>
+		</button>
+		<button ion-button icon-only (click)="setReputation(3)">
+			<ion-icon name={{star[3]}}></ion-icon>
+		</button>
+		<button ion-button icon-only (click)="setReputation(4)">
+			<ion-icon name={{star[4]}}></ion-icon>
+		</button>
+
+	</ion-item>
 	<button ion-button [disabled]="isButtonDisabled" (click)="addReview(textComment)">
 		Review
 	</button>
