@@ -23,8 +23,10 @@
 			<p color="danger" ion-text *ngIf="myForm.get('email').hasError('email')">It is not an email</p>
 			<p color="danger" ion-text *ngIf="myForm.get('email').hasError('required')">Field is required</p>
 		</ion-item>
+		<p class="error-message">{{msg}}</p>
 
 		<button ion-button block type="submit" [disabled]="myForm.invalid">{{ "setprofile.set" | translate }}</button>
 
 	</form>
+
 </ion-content>

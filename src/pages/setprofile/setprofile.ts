@@ -8,7 +8,7 @@ import { default as contract } from "truffle-contract";
 import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../core/contract-manager.service";
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
 	selector: "page-setprofile",
@@ -48,21 +48,40 @@ export class SetProfilePage {
 			this.log.d("TruffleContract function: ", this.bright);
 		});
 		this.myForm = this.fb.group({
-			name:  ['', [Validators.required]],
+			name: ['', [Validators.required]],
 			email: ['', Validators.compose([Validators.required, Validators.email])]
 		});
 	}
 
 	public updateProfile(name: string, mail: string) {
-		this.contractManagerService.setProfile(name, mail)
+		this.contractManagerService.getAllUserEmail()
 			.then((resolve) => {
-				this.log.d("Contract manager response: ", resolve);
-				if (resolve.status == true) {
-					this.navCtrl.push(TabsPage);
+				this.log.d("ARRAY Emails: ", resolve);
+				let arrayEmails = resolve;
+				let emailUsed = false;
+				this.log.d("arrayEmails.length:",arrayEmails.length);
+				for(let i=0; i<arrayEmails.length;i++){
+					if(arrayEmails[i] == mail){
+						emailUsed = true;
+					}
 				}
+				
+				if(!emailUsed){
+					this.contractManagerService.setProfile(name, mail)
+					.then((resolve) => {
+						this.log.d("Contract manager response: ",resolve);
+						if (resolve.status == true) {
+							this.navCtrl.push(TabsPage);
+						}
+					}).catch((e) => {
+						this.log.d("Transaction Error!!");
+						this.msg = "Transaction Error!!";
+					});}else{
+						this.msg = "Email already in use";
+					}
 			}).catch((e) => {
-				this.log.d("Transaction Error!!");
-				this.msg = "Transaction Error!!";
+				this.log.d("Error getting emails!!", e);
+				this.msg = "Error getting emails!!";
 			});
 
 

@@ -30,7 +30,6 @@ export class RankingPage {
 		this.log.d("Imported account: ",this.account);
 	}
 	public ionViewWillEnter() {
-		//return this.account.then(() => { si falla poner proteccion de promesas como en tiko
 		this.log.d("Imported account: ",this.account);
 
 		this.contractManagerService.getUserDetails(this.account.address)
@@ -40,7 +39,6 @@ export class RankingPage {
 			}).catch((e) => {
 				this.log.e("Error getting user info!!",e);
 				this.msg = "Error getting user info!!";
-				//return Promise.reject(e);
 			});
 	}
 }
