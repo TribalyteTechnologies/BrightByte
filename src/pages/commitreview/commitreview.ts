@@ -48,15 +48,15 @@ export class CommitReviewPage {
 		}else{
 			this.msg = "";
 			this.log.d("index: ",this.indexArray);
-			this.contractManagerService.setReview(this.indexArray, textComment)
+			this.contractManagerService.setReview(this.indexArray, textComment,this.rate)
 			.then((resolve) => {
 				this.log.d("Contract manager response: ", resolve);
 				if (resolve.status == true) {
-					this.msg1 = "Review done successfully";
+					this.msg1 = "Review successfully done";
 				}
 			}).catch((e) => {
 				this.isButtonDisabled = false;
-				this.log.d("Transaction Error!!");
+				this.log.e("Transaction Error!!",e);
 				this.msg = "Transaction Error!!";
 			});
 		}
@@ -64,11 +64,11 @@ export class CommitReviewPage {
 	public setReputation(value){
 		this.star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];
 		switch(value){
-			case 0: this.star[0] = "star";this.rate=1;break;
-			case 1: this.star[0] = "star";this.star[1] = "star";this.rate=2;break;
-			case 2: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.rate=3;break;
-			case 3: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.rate=4;break;
-			case 4: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.star[4] = "star";this.rate=5;break;
+			case 0: this.star[0] = "star";this.rate=100;break;
+			case 1: this.star[0] = "star";this.star[1] = "star";this.rate=200;break;
+			case 2: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.rate=300;break;
+			case 3: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.rate=400;break;
+			case 4: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.star[4] = "star";this.rate=500;break;
 			default: this.star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];this.rate=0;break;
 		}
 	}

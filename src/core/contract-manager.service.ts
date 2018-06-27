@@ -222,13 +222,24 @@ export class ContractManagerService {
             })
     }
     private getAccountAndContract(){
-        this.account = this.loginService.getAccount();
-        this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
-            from: this.account.address,
-            gas: AppConfig.GAS_LIMIT,
-            gasPrice: AppConfig.GASPRICE,
-            data: this.bright.deployedBytecode
+        return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
+            this.abijson = data;
+            this.abi = data["abi"];
+            this.bright = contract(this.abijson); //TruffleContract function
+            this.contractAddress = this.bright.networks[AppConfig.NET_ID].address;
+            this.account = this.loginService.getAccount();
+            this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
+                from: this.account.address,
+                gas: AppConfig.GAS_LIMIT,
+                gasPrice: AppConfig.GASPRICE,
+                data: this.bright.deployedBytecode
+            });
+        }).then(()=>{
+            this.log.d("TruffleContract function: ", this.bright);
+        }).catch(err => {
+            this.log.e(err);            
         });
+        
     }
     public getCommitsToReview(){
         this.account = this.loginService.getAccount();
@@ -268,7 +279,7 @@ export class ContractManagerService {
             });
     }
 
-    public setReview(index: number, text: string): Promise<any>{
+    public setReview(index: number, text: string, points: number): Promise<any>{
         this.getAccountAndContract();
 
         this.log.d("account: ", this.account);
@@ -280,9 +291,10 @@ export class ContractManagerService {
             .then(result => {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
-                let data = this.contract.methods.setReview(index, text).encodeABI();
+                let data = this.contract.methods.setReview(index, text, points).encodeABI();
                 this.log.d("Introduced index: ", index);
                 this.log.d("Introduced text: ", text);
+                this.log.d("Introduced points: ", points);
                 this.log.d("DATA: ", data);
 
                 let rawtx = {
@@ -330,6 +342,17 @@ export class ContractManagerService {
                 
                 }).catch(err => {
                         this.log.e("Error calling BrightByte smart contract :", err);
+                    });
+    }
+    public getUserDetails(hash: string){
+        return this.getAccountAndContract().then(()=>{
+            return this.contract.methods.getUser(hash).call()
+                    .then(result => {
+                        this.log.d("User data: ",result);
+                        return result;
+                    }).catch(err => {
+                            this.log.e("Error calling BrightByte smart contract :", err);
+                        });
                     });
     }
 }

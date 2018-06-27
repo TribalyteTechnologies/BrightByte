@@ -5,6 +5,7 @@ import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { CommitReviewPage } from "../commitreview/commitreview"
+import { default as Web3 } from "web3";
 
 @Component({
 	selector: "page-review",
@@ -12,7 +13,7 @@ import { CommitReviewPage } from "../commitreview/commitreview"
 })
 
 export class ReviewPage {
-	public web3: any;
+	public web3: Web3;
 	public arrayCommits = new Array<string[]>();
 	public msg: string;
 	private log: ILogger;
