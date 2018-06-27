@@ -8,7 +8,7 @@ import { HttpClient } from "@angular/common/http";
 import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: "popover-addcommit",
@@ -27,7 +27,7 @@ export class AddCommitPopover {
     public usersMail = ["", "", "", ""];
     public arrayEmails: string[];
     public arraySearch: string[];
-    public isShowList=[false,false,false,false];
+    public isShowList = [false, false, false, false];
     public myForm: FormGroup;
 
     constructor(
@@ -63,7 +63,7 @@ export class AddCommitPopover {
         });
         this.myForm = this.fb.group({
             url: ['', [Validators.required, Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]]
-          });
+        });
     }
     public addCommit(url: string) {
         this.contractManagerService.addCommit(url, this.usersMail)
@@ -80,15 +80,15 @@ export class AddCommitPopover {
     }
 
     getItems(ev, id) {
-        this.isShowList=[false,false,false,false];
-          // set val to the value of the ev target
+        this.isShowList = [false, false, false, false];
+        // set val to the value of the ev target
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
         if (val && val.trim() != "") {
-          this.arraySearch = this.arrayEmails.filter((item) => {
-            return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
-          })
+            this.arraySearch = this.arrayEmails.filter((item) => {
+                return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
+            })
         }
-        this.isShowList[id]=true;
+        this.isShowList[id] = true;
     }
 }

@@ -59,26 +59,27 @@ export class SetProfilePage {
 				this.log.d("ARRAY Emails: ", resolve);
 				let arrayEmails = resolve;
 				let emailUsed = false;
-				this.log.d("arrayEmails.length:",arrayEmails.length);
-				for(let i=0; i<arrayEmails.length;i++){
-					if(arrayEmails[i] == mail){
+				this.log.d("arrayEmails.length:", arrayEmails.length);
+				for (let i = 0; i < arrayEmails.length; i++) {
+					if (arrayEmails[i] == mail) {
 						emailUsed = true;
 					}
 				}
-				
-				if(!emailUsed){
+
+				if (!emailUsed) {
 					this.contractManagerService.setProfile(name, mail)
-					.then((resolve) => {
-						this.log.d("Contract manager response: ",resolve);
-						if (resolve.status == true) {
-							this.navCtrl.push(TabsPage);
-						}
-					}).catch((e) => {
-						this.log.d("Transaction Error!!");
-						this.msg = "Transaction Error!!";
-					});}else{
-						this.msg = "Email already in use";
-					}
+						.then((resolve) => {
+							this.log.d("Contract manager response: ", resolve);
+							if (resolve.status == true) {
+								this.navCtrl.push(TabsPage);
+							}
+						}).catch((e) => {
+							this.log.d("Transaction Error!!");
+							this.msg = "Transaction Error!!";
+						});
+				} else {
+					this.msg = "Email already in use";
+				}
 			}).catch((e) => {
 				this.log.d("Error getting emails!!", e);
 				this.msg = "Error getting emails!!";

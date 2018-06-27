@@ -16,7 +16,7 @@ export class CommitReviewPage {
 	public commitDetails: Object;
 	public date: string;
 	public indexArray;
-	public star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];
+	public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
 	public rate = 0;
 	public msg: string;
 	public isButtonDisabled = false;
@@ -36,40 +36,40 @@ export class CommitReviewPage {
 		this.account = this.loginService.getAccount();
 		this.commitDetails = navParams.get("commitDetails");
 		this.indexArray = navParams.get("indexArray");
-		this.log.d("Details Object: ",this.commitDetails);
+		this.log.d("Details Object: ", this.commitDetails);
 		this.date = new Date((this.commitDetails[2] * 1000)).toLocaleString();
 	}
 
-	public addReview(textComment){
+	public addReview(textComment) {
 		this.isButtonDisabled = true;
-		if(!textComment){
+		if (!textComment) {
 			this.msg = "Please, write your review";
 			this.isButtonDisabled = false;
-		}else{
+		} else {
 			this.msg = "";
-			this.log.d("index: ",this.indexArray);
-			this.contractManagerService.setReview(this.indexArray, textComment,this.rate)
-			.then((resolve) => {
-				this.log.d("Contract manager response: ", resolve);
-				if (resolve.status == true) {
-					this.msg1 = "Review successfully done";
-				}
-			}).catch((e) => {
-				this.isButtonDisabled = false;
-				this.log.e("Transaction Error!!",e);
-				this.msg = "Transaction Error!!";
-			});
+			this.log.d("index: ", this.indexArray);
+			this.contractManagerService.setReview(this.indexArray, textComment, this.rate)
+				.then((resolve) => {
+					this.log.d("Contract manager response: ", resolve);
+					if (resolve.status == true) {
+						this.msg1 = "Review successfully done";
+					}
+				}).catch((e) => {
+					this.isButtonDisabled = false;
+					this.log.e("Transaction Error!!", e);
+					this.msg = "Transaction Error!!";
+				});
 		}
 	}
-	public setReputation(value){
-		this.star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];
-		switch(value){
-			case 0: this.star[0] = "star";this.rate=100;break;
-			case 1: this.star[0] = "star";this.star[1] = "star";this.rate=200;break;
-			case 2: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.rate=300;break;
-			case 3: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.rate=400;break;
-			case 4: this.star[0] = "star";this.star[1] = "star";this.star[2] = "star";this.star[3] = "star";this.star[4] = "star";this.rate=500;break;
-			default: this.star = ["star-outline","star-outline","star-outline","star-outline","star-outline"];this.rate=0;break;
+	public setReputation(value) {
+		this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
+		switch (value) {
+			case 0: this.star[0] = "star"; this.rate = 100; break;
+			case 1: this.star[0] = "star"; this.star[1] = "star"; this.rate = 200; break;
+			case 2: this.star[0] = "star"; this.star[1] = "star"; this.star[2] = "star"; this.rate = 300; break;
+			case 3: this.star[0] = "star"; this.star[1] = "star"; this.star[2] = "star"; this.star[3] = "star"; this.rate = 400; break;
+			case 4: this.star[0] = "star"; this.star[1] = "star"; this.star[2] = "star"; this.star[3] = "star"; this.star[4] = "star"; this.rate = 500; break;
+			default: this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]; this.rate = 0; break;
 		}
 	}
 }

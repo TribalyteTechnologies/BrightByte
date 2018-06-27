@@ -46,23 +46,23 @@ export class ReviewPage {
 			if (this.arrayCommits[i][0] == commit[0]) {
 				index = i;
 			}
-			this.log.d("Array length: ",this.arrayCommits.length);
+			this.log.d("Array length: ", this.arrayCommits.length);
 		}
-		let urlSplitted = commit[0].split("/"); 
+		let urlSplitted = commit[0].split("/");
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
-		.then(details=>{
-			this.log.d("Details commits: ",details);
-			this.log.d("Index: ",index);
-			 this.navCtrl.push(CommitReviewPage, {
-				 commitDetails: details,
-				 indexArray: index
-			  });
-		}).catch((e) => {
-			this.log.d("Error getting details!!");
-			this.msg = "Error getting details!!";
-			return Promise.reject(e);
-		});
+			.then(details => {
+				this.log.d("Details commits: ", details);
+				this.log.d("Index: ", index);
+				this.navCtrl.push(CommitReviewPage, {
+					commitDetails: details,
+					indexArray: index
+				});
+			}).catch((e) => {
+				this.log.d("Error getting details!!");
+				this.msg = "Error getting details!!";
+				return Promise.reject(e);
+			});
 	}
 
 }

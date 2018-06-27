@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 import "./Ownable.sol";
 import "./StringUtils.sol";
+
 contract Bright is Ownable {
     
     event UserProfileSetEvent (string name, address hash);
@@ -105,17 +106,17 @@ contract Bright is Ownable {
     }
     function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, bool, uint){ //_index starts in 1
         return (storedData[_id].url,
-            storedData[_id].author,
-            storedData[_id].timestamp,
-            storedData[_id].project,
-            storedData[_id].numberReviews,
-            storedData[_id].pending, //No=>false and Yes=>true
-            storedData[_id].currentNumberReviews);
+                storedData[_id].author,
+                storedData[_id].timestamp,
+                storedData[_id].project,
+                storedData[_id].numberReviews,
+                storedData[_id].pending, //No=>false and Yes=>true
+                storedData[_id].currentNumberReviews);
     }
     function getUserCommits(uint _index) public view returns(string, string, bool){
         return (storedData[hashUserMap[msg.sender].userCommits[_index].id].url,
-        storedData[hashUserMap[msg.sender].userCommits[_index].id].project,
-        storedData[hashUserMap[msg.sender].userCommits[_index].id].pending);
+                storedData[hashUserMap[msg.sender].userCommits[_index].id].project,
+                storedData[hashUserMap[msg.sender].userCommits[_index].id].pending);
     }
     function getNumberUserCommits()public view returns(uint){
         return hashUserMap[msg.sender].numbermyCommits;
@@ -134,12 +135,12 @@ contract Bright is Ownable {
     }
     function getCommitsToReviewByMe(uint _index) public view returns(string, string){
         return (hashUserMap[msg.sender].commitsToReview[_index].url,
-        hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
+            hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
     }
     function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string){
         return (storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].text,
-        storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user,
-        hashUserMap[storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user].name);
+                storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user,
+                hashUserMap[storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user].name);
     }
     function getNumberComments(uint _index)public view returns(uint){
         return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;

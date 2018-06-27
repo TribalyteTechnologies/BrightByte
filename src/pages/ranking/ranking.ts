@@ -13,7 +13,7 @@ import { default as Web3 } from "web3";
 export class RankingPage {
 	public web3: Web3;
 	public account: any;
-	public userDetails = ["","",0,0,0,0];
+	public userDetails = ["", "", 0, 0, 0, 0];
 	public msg: string;
 	private log: ILogger;
 
@@ -27,17 +27,17 @@ export class RankingPage {
 		this.web3 = this.web3Service.getWeb3();
 		this.log = this.loggerSrv.get("RankingPage");
 		this.account = this.loginService.getAccount();
-		this.log.d("Imported account: ",this.account);
+		this.log.d("Imported account: ", this.account);
 	}
 	public ionViewWillEnter() {
-		this.log.d("Imported account: ",this.account);
+		this.log.d("Imported account: ", this.account);
 
 		this.contractManagerService.getUserDetails(this.account.address)
 			.then((resolve) => {
 				this.log.d("User data obtained: ", resolve);
 				this.userDetails = resolve;
 			}).catch((e) => {
-				this.log.e("Error getting user info!!",e);
+				this.log.e("Error getting user info!!", e);
 				this.msg = "Error getting user info!!";
 			});
 	}

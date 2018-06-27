@@ -10,15 +10,15 @@ export class UserAccount {
 @Injectable()
 export class LoginService {
 
-    private account:any;//: UserAccount;
-    
-    constructor(){
+    private account: any;//: UserAccount;
+
+    constructor() {
     }
-    
-    public setAccount(acc){//: UserAccount){
+
+    public setAccount(acc) {//: UserAccount){
         this.account = acc;
     }
-    public getAccount(){//: UserAccount{
+    public getAccount() {//: UserAccount{
         return this.account;
     }
 }

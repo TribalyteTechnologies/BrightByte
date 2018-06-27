@@ -58,7 +58,7 @@ export class ContractManagerService {
             }));
         });
     }
-    public setProfile(name: string, mail: string): Promise<any>{
+    public setProfile(name: string, mail: string): Promise<any> {
         this.getAccountAndContract();
 
         this.log.d("account: ", this.account);
@@ -111,8 +111,8 @@ export class ContractManagerService {
         let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
         this.log.d("Contract Address: ", contractAddress);
         this.log.d("Public Address: ", this.account.address);
-        this.log.d("Variables: url ",url);
-        this.log.d("UsersMail: ",usersMail);
+        this.log.d("Variables: url ", url);
+        this.log.d("UsersMail: ", usersMail);
         this.log.d("Contract artifact", this.contract);
 
         return this.web3.eth.getTransactionCount(this.account.address)
@@ -120,8 +120,8 @@ export class ContractManagerService {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
 
-                let urlSplitted = url.split("/"); 
-                this.log.d("Url splited: ",urlSplitted);
+                let urlSplitted = url.split("/");
+                this.log.d("Url splited: ", urlSplitted);
                 let project = urlSplitted[4];
                 let id = urlSplitted[6];
 
@@ -209,19 +209,19 @@ export class ContractManagerService {
         }).then(() => {
             return this.contract.methods.getAllUserNumber().call()
         }).then(numberUsers => {
-                    let promises = new Array<Promise<string>>();
-                    for (let i = 0; i < numberUsers; i++) {
-                        let promise = this.contract.methods.getAllUserEmail(i).call();
-                        promises.push(promise);
-                    }
-                    return Promise.all(promises);
-                })
-        
+            let promises = new Array<Promise<string>>();
+            for (let i = 0; i < numberUsers; i++) {
+                let promise = this.contract.methods.getAllUserEmail(i).call();
+                promises.push(promise);
+            }
+            return Promise.all(promises);
+        })
+
             .catch(err => {
                 this.log.e("Error getting all user emails :", err);
             })
     }
-    private getAccountAndContract(){
+    private getAccountAndContract() {
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
             this.abijson = data;
             this.abi = data["abi"];
@@ -234,14 +234,14 @@ export class ContractManagerService {
                 gasPrice: AppConfig.GASPRICE,
                 data: this.bright.deployedBytecode
             });
-        }).then(()=>{
+        }).then(() => {
             this.log.d("TruffleContract function: ", this.bright);
         }).catch(err => {
-            this.log.e(err);            
+            this.log.e(err);
         });
-        
+
     }
-    public getCommitsToReview(){
+    public getCommitsToReview() {
         this.account = this.loginService.getAccount();
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
             this.abijson = data;
@@ -257,7 +257,7 @@ export class ContractManagerService {
             return this.contract.methods.getNumberCommitsToReviewByMe().call()
                 .then(result => {
                     let numberUserCommits = result;
-                    this.log.d("NumberuserCommits: ",result);
+                    this.log.d("NumberuserCommits: ", result);
                     let promises = new Array<Promise<string>>();
                     for (let i = 0; i < numberUserCommits; i++) {
                         let promise = this.contract.methods.getCommitsToReviewByMe(i).call();
@@ -270,16 +270,16 @@ export class ContractManagerService {
                 this.log.e("Error calling BrightByte smart contract :", err);
             });
     }
-    public getDetailsCommits(id: string): Promise<Object>{
+    public getDetailsCommits(id: string): Promise<Object> {
         return this.contract.methods.getDetailsCommits(id).call()
-                .then(details => {
-                    return details;
-        }).catch(err => {
+            .then(details => {
+                return details;
+            }).catch(err => {
                 this.log.e("Error calling BrightByte smart contract :", err);
             });
     }
 
-    public setReview(index: number, text: string, points: number): Promise<any>{
+    public setReview(index: number, text: string, points: number): Promise<any> {
         this.getAccountAndContract();
 
         this.log.d("account: ", this.account);
@@ -328,32 +328,31 @@ export class ContractManagerService {
             });
 
     }
-    public getCommentsOfCommit(index: number): Promise<any>{
+    public getCommentsOfCommit(index: number): Promise<any> {
         return this.contract.methods.getNumberComments(index).call()
-                .then(result => {
-                    this.log.d("Number of comments: ",result);
-                    let numberOfComments = result;
-                    let promises = new Array<Promise<any>>();
-                    for (let i = 0; i < numberOfComments; i++) {
-                        let promise = this.contract.methods.getCommentsOfCommit(index, i).call();
-                        promises.push(promise);
-                    }
-                    return Promise.all(promises);
-                
-                }).catch(err => {
-                        this.log.e("Error calling BrightByte smart contract :", err);
-                    });
+            .then(result => {
+                this.log.d("Number of comments: ", result);
+                let numberOfComments = result;
+                let promises = new Array<Promise<any>>();
+                for (let i = 0; i < numberOfComments; i++) {
+                    let promise = this.contract.methods.getCommentsOfCommit(index, i).call();
+                    promises.push(promise);
+                }
+                return Promise.all(promises);
+
+            }).catch(err => {
+                this.log.e("Error calling BrightByte smart contract :", err);
+            });
     }
-    public getUserDetails(hash: string){
-        return this.getAccountAndContract().then(()=>{
+    public getUserDetails(hash: string) {
+        return this.getAccountAndContract().then(() => {
             return this.contract.methods.getUser(hash).call()
-                    .then(result => {
-                        this.log.d("User data: ",result);
-                        return result;
-                    }).catch(err => {
-                            this.log.e("Error calling BrightByte smart contract :", err);
-                        });
-                    });
+                .then(result => {
+                    return result;
+                }).catch(err => {
+                    this.log.e("Error calling BrightByte smart contract :", err);
+                });
+        });
     }
 }
 

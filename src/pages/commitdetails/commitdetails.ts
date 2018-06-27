@@ -34,8 +34,8 @@ export class CommitDetailsPage {
 		this.account = this.loginService.getAccount();
 		this.commitDetails = navParams.get("commitDetails");
 		this.commitIndex = navParams.get("commitIndex");
-		this.log.d("Details Object: ",this.commitDetails);
-		this.log.d("CommitIndex: ",this.commitIndex);
+		this.log.d("Details Object: ", this.commitDetails);
+		this.log.d("CommitIndex: ", this.commitIndex);
 		this.date = new Date((this.commitDetails[2] * 1000)).toLocaleString();
 
 	}

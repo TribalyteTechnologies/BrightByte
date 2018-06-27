@@ -55,21 +55,21 @@ export class CommitPage {
 				index = i;
 			}
 		}
-		let urlSplitted = commit[0].split("/"); 
+		let urlSplitted = commit[0].split("/");
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
-		.then(details=>{
-			this.log.d("Details commits: ",details);
-			this.log.d("Index of row pressed: ",index);
-			 this.navCtrl.push(CommitDetailsPage, {
-				 commitDetails: details,
-				 commitIndex: index
-			  });
-		}).catch((e) => {
-			this.log.d("Error getting details!!");
-			this.msg = "Error getting details!!";
-			return Promise.reject(e);
-		});
+			.then(details => {
+				this.log.d("Details commits: ", details);
+				this.log.d("Index of row pressed: ", index);
+				this.navCtrl.push(CommitDetailsPage, {
+					commitDetails: details,
+					commitIndex: index
+				});
+			}).catch((e) => {
+				this.log.d("Error getting details!!");
+				this.msg = "Error getting details!!";
+				return Promise.reject(e);
+			});
 	}
 	public ionViewWillEnter() {
 		this.contractManagerService.getCommits()
