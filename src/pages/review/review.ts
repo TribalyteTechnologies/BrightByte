@@ -63,7 +63,6 @@ export class ReviewPage {
 			this.msg = "Error getting details!!";
 			return Promise.reject(e);
 		});
-		//TODO: Call contract manager service to execute the function getdetails of the commit to setreview
 	}
 
 }

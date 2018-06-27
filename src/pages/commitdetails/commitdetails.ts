@@ -22,11 +22,11 @@ export class CommitDetailsPage {
 	private log: ILogger;
 
 	constructor(
+		navParams: NavParams,
 		public navCtrl: NavController,
 		private loggerSrv: LoggerService,
 		private web3Service: Web3Service,
 		private contractManagerService: ContractManagerService,
-		private navParams: NavParams,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();

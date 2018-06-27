@@ -42,7 +42,7 @@ export class CommitReviewPage {
 
 	public addReview(textComment){
 		this.isButtonDisabled = true;
-		if(textComment == ""){
+		if(!textComment){
 			this.msg = "Please, write your review";
 			this.isButtonDisabled = false;
 		}else{
