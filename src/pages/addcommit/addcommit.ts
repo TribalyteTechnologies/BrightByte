@@ -19,6 +19,7 @@ export class AddCommitPopover {
     public web3: Web3;
     public account: any;
     public bright: any;
+    public isButtonDisabled = false;
     public abi: any;
     public contract: any;
     public nonce: string;
@@ -66,13 +67,15 @@ export class AddCommitPopover {
         });
     }
     public addCommit(url: string) {
+        this.isButtonDisabled = true;
         this.contractManagerService.addCommit(url, this.usersMail)
             .then((resolve) => {
                 this.log.d("Contract manager response: ", resolve);
-                if (resolve.status == true) {
+                if (resolve.blockNumber > 4929812) {
                     this.viewCtrl.dismiss();
                 }
             }).catch((e) => {
+                this.isButtonDisabled = false;
                 this.log.d("Error adding new commit!!", e);
                 this.msg = "Error adding new commit";
             });

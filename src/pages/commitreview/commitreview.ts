@@ -20,6 +20,7 @@ export class CommitReviewPage {
 	public rate = 0;
 	public msg: string;
 	public isButtonDisabled = false;
+	public isButtonBackDisabled = false;
 	public msg1: string;
 	private log: ILogger;
 
@@ -42,6 +43,7 @@ export class CommitReviewPage {
 
 	public addReview(textComment) {
 		this.isButtonDisabled = true;
+		this.isButtonBackDisabled = true;
 		if (!textComment) {
 			this.msg = "Please, write your review";
 			this.isButtonDisabled = false;
@@ -51,10 +53,12 @@ export class CommitReviewPage {
 			this.contractManagerService.setReview(this.indexArray, textComment, this.rate)
 				.then((resolve) => {
 					this.log.d("Contract manager response: ", resolve);
-					if (resolve.status == true) {
+					if (resolve.blockNumber > 4929812) {
+						this.isButtonBackDisabled = false;
 						this.msg1 = "Review successfully done";
 					}
 				}).catch((e) => {
+					this.isButtonBackDisabled =false;
 					this.isButtonDisabled = false;
 					this.log.e("Transaction Error!!", e);
 					this.msg = "Transaction Error!!";

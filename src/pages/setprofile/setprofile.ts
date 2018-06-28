@@ -70,11 +70,11 @@ export class SetProfilePage {
 					this.contractManagerService.setProfile(name, mail)
 						.then((resolve) => {
 							this.log.d("Contract manager response: ", resolve);
-							if (resolve.status == true) {
+							if (resolve.blockNumber > 4929812) { //This number is the current block when i wrote this line
 								this.navCtrl.push(TabsPage);
 							}
 						}).catch((e) => {
-							this.log.d("Transaction Error!!");
+							this.log.d("Transaction Error!!",e);
 							this.msg = "Transaction Error!!";
 						});
 				} else {
