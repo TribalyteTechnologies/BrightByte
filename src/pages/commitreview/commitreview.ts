@@ -47,6 +47,7 @@ export class CommitReviewPage {
 		if (!textComment) {
 			this.msg = "Please, write your review";
 			this.isButtonDisabled = false;
+			this.isButtonBackDisabled = false;  
 		} else {
 			this.msg = "";
 			this.log.d("index: ", this.indexArray);

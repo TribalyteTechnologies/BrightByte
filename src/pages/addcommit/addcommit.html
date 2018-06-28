@@ -17,6 +17,7 @@
       <p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">Field is required</p>
       <p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">It is not an url</p>
     </ion-item>
+    <p class="error-message">{{msg}}</p>
     <button ion-button type="submit" [disabled]="myForm.invalid || isButtonDisabled">Add Commit</button>
   </form>
 

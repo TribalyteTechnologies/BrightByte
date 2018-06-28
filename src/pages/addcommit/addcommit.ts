@@ -68,17 +68,34 @@ export class AddCommitPopover {
     }
     public addCommit(url: string) {
         this.isButtonDisabled = true;
-        this.contractManagerService.addCommit(url, this.usersMail)
+        this.msg = "";
+        let urlSplitted = url.split("/");
+        let id = urlSplitted[6];
+        this.contractManagerService.getDetailsCommits(id)
             .then((resolve) => {
-                this.log.d("Contract manager response: ", resolve);
-                if (resolve.blockNumber > 4929812) {
-                    this.viewCtrl.dismiss();
+                if (resolve[0] != "") {
+                    this.isButtonDisabled = false;
+                    this.log.d("Error: email already in use");
+                    this.msg = "Error: email already in use";
+                } else {
+                    this.contractManagerService.addCommit(url, this.usersMail)
+                        .then((resolve) => {
+                            this.log.d("Contract manager response: ", resolve);
+                            if (resolve.blockNumber > 4929812) { // current block when i wrote this line
+                                this.viewCtrl.dismiss();
+                            }
+                        }).catch((e) => {
+                            this.isButtonDisabled = false;
+                            this.log.d("Error adding new commit!!", e);
+                            this.msg = "Error adding new commit";
+                        });
                 }
             }).catch((e) => {
                 this.isButtonDisabled = false;
-                this.log.d("Error adding new commit!!", e);
-                this.msg = "Error adding new commit";
+                this.log.d("Error getting commit details!!", e);
+                this.msg = "Error getting commit details!!";
             });
+
 
     }
 
