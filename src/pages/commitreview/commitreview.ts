@@ -15,6 +15,7 @@ export class CommitReviewPage {
 	public account: any;
 	public commitDetails: Object;
 	public date: string;
+	public isButtonBackDisabled = false; 
 	public indexArray;
 	public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
 	public rate = 0;
@@ -42,9 +43,11 @@ export class CommitReviewPage {
 
 	public addReview(textComment) {
 		this.isButtonDisabled = true;
+		this.isButtonBackDisabled = true; 
 		if (!textComment) {
 			this.msg = "Please, write your review";
 			this.isButtonDisabled = false;
+			this.isButtonBackDisabled = false; 
 		} else {
 			this.msg = "";
 			this.log.d("index: ", this.indexArray);
@@ -52,9 +55,11 @@ export class CommitReviewPage {
 				.then((resolve) => {
 					this.log.d("Contract manager response: ", resolve);
 					if (resolve.status == true) {
+						this.isButtonBackDisabled = false; 
 						this.msg1 = "Review successfully done";
 					}
 				}).catch((e) => {
+					this.isButtonBackDisabled = false; 
 					this.isButtonDisabled = false;
 					this.log.e("Transaction Error!!", e);
 					this.msg = "Transaction Error!!";

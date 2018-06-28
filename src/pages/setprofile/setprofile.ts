@@ -74,7 +74,7 @@ export class SetProfilePage {
 								this.navCtrl.push(TabsPage);
 							}
 						}).catch((e) => {
-							this.log.d("Transaction Error!!");
+							this.log.d("Transaction Error!!",e); 
 							this.msg = "Transaction Error!!";
 						});
 				} else {

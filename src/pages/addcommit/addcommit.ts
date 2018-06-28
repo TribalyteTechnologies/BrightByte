@@ -22,6 +22,7 @@ export class AddCommitPopover {
     public abi: any;
     public contract: any;
     public nonce: string;
+    public isButtonDisabled = false;
     public abijson: any;
     public msg: string;
     public usersMail = ["", "", "", ""];
@@ -66,15 +67,33 @@ export class AddCommitPopover {
         });
     }
     public addCommit(url: string) {
-        this.contractManagerService.addCommit(url, this.usersMail)
+        this.isButtonDisabled = true;
+        this.msg = "";
+        let urlSplitted = url.split("/");
+        let id = urlSplitted[6];
+        this.contractManagerService.getDetailsCommits(id)
             .then((resolve) => {
-                this.log.d("Contract manager response: ", resolve);
-                if (resolve.status == true) {
-                    this.viewCtrl.dismiss();
+                if (resolve[0] != "") {
+                    this.isButtonDisabled = false;
+                    this.log.d("Error: email already in use");
+                    this.msg = "Error: email already in use";
+                } else {
+                    this.contractManagerService.addCommit(url, this.usersMail)
+                        .then((resolve) => {
+                            this.log.d("Contract manager response: ", resolve);
+                            if (resolve.status == true) { // current block when i wrote this line
+                                this.viewCtrl.dismiss();
+                            }
+                        }).catch((e) => {
+                            this.isButtonDisabled = false;
+                            this.log.d("Error adding new commit!!", e);
+                            this.msg = "Error adding new commit";
+                        });
                 }
             }).catch((e) => {
-                this.log.d("Error adding new commit!!", e);
-                this.msg = "Error adding new commit";
+                this.isButtonDisabled = false;
+                this.log.d("Error getting commit details!!", e);
+                this.msg = "Error getting commit details!!";
             });
 
     }
