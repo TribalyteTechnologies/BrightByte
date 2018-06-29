@@ -75,8 +75,8 @@ export class AddCommitPopover {
             .then((resolve) => {
                 if (resolve[0] != "") {
                     this.isButtonDisabled = false;
-                    this.log.d("Error: email already in use");
-                    this.msg = "Error: email already in use";
+                    this.log.d("Error: url already added");
+                    this.msg = "Error: url already added";
                 } else {
                     this.contractManagerService.addCommit(url, this.usersMail)
                         .then((resolve) => {

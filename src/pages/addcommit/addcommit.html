@@ -23,27 +23,27 @@
 
   <ion-label color="primary">Users</ion-label>
 
-  <ion-searchbar (ionInput)="getItems($event, 0)" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-searchbar>
+  <ion-searchbar #input0 (ionInput)="getItems($event, 0)" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-searchbar>
   <ion-list *ngIf="isShowList[0]">
-    <ion-item *ngFor="let item of arraySearch">
+    <ion-item *ngFor="let item of arraySearch" (click)="input0.value=item">
       {{ item }}
     </ion-item>
   </ion-list>
-  <ion-searchbar (ionInput)="getItems($event, 1)" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-searchbar>
+  <ion-searchbar #input1 (ionInput)="getItems($event, 1)" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-searchbar>
   <ion-list *ngIf="isShowList[1]">
-    <ion-item *ngFor="let item of arraySearch">
+    <ion-item *ngFor="let item of arraySearch" (click)="input1.value=item">
       {{ item }}
     </ion-item>
   </ion-list>
-  <ion-searchbar (ionInput)="getItems($event, 2)" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-searchbar>
+  <ion-searchbar #input2 (ionInput)="getItems($event, 2)" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-searchbar>
   <ion-list *ngIf="isShowList[2]">
-    <ion-item *ngFor="let item of arraySearch">
+    <ion-item *ngFor="let item of arraySearch" (click)="input2.value=item">
       {{ item }}
     </ion-item>
   </ion-list>
-  <ion-searchbar (ionInput)="getItems($event, 3)" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-searchbar>
+  <ion-searchbar #input3 (ionInput)="getItems($event, 3)" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-searchbar>
   <ion-list *ngIf="isShowList[3]">
-    <ion-item *ngFor="let item of arraySearch">
+    <ion-item *ngFor="let item of arraySearch" (click)="input3.value=item">
       {{ item }}
     </ion-item>
   </ion-list>
