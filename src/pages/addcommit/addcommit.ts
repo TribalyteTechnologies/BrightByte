@@ -54,7 +54,7 @@ export class AddCommitPopover {
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
             this.contractManagerService.getAllUserEmail()
-                .then((resolve) => {
+                .then((resolve: string[]) => {
                     this.log.d("ARRAY Emails: ", resolve);
                     this.arrayEmails = resolve;
                 }).catch((e) => {

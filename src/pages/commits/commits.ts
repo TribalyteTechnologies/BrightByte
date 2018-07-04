@@ -18,7 +18,7 @@ import { TranslateService } from "@ngx-translate/core";
 export class CommitPage {
 	private log: ILogger;
 	public web3: Web3;
-	public arrayCommits = new Array<string[]>();
+	public arrayCommits = new Array<string>();
 	public msg: string;
 
 	constructor(
@@ -41,7 +41,7 @@ export class CommitPage {
 		popover.present();
 		popover.onDidDismiss(() => {
 			this.contractManagerService.getCommits()
-				.then((resolve) => {
+				.then((resolve: string[]) => {
 					this.log.d("ARRAY Commits: ", resolve);
 					this.arrayCommits = resolve;
 				}).catch((e) => {
@@ -86,7 +86,7 @@ export class CommitPage {
 	}
 	public ionViewWillEnter() {
 		this.contractManagerService.getCommits()
-			.then((arrayOfCommits) => {
+			.then((arrayOfCommits: string[]) => {
 				this.log.d("ARRAY Commits: ", arrayOfCommits);
 				this.arrayCommits = arrayOfCommits;
 			}).catch((e) => {

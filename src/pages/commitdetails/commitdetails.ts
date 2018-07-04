@@ -43,7 +43,7 @@ export class CommitDetailsPage {
 	}
 	public ionViewWillEnter() {
 		this.contractManagerService.getCommentsOfCommit(this.commitIndex)
-			.then((arrayOfComments) => {
+			.then((arrayOfComments: string[]) => {
 				this.log.d("Array of Comments: ", arrayOfComments);
 				this.commentsArray = arrayOfComments;
 			}).catch((e) => {

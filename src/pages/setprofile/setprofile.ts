@@ -59,7 +59,7 @@ export class SetProfilePage {
 	public updateProfile(name: string, mail: string) {
 		this.isButtonPressed = true;
 		this.contractManagerService.getAllUserEmail()
-			.then((arrayEmails) => {
+			.then((arrayEmails:string[]) => {
 				this.log.d("ARRAY Emails: ", arrayEmails);
 				let emailUsed = false;
 				this.log.d("arrayEmails.length:", arrayEmails.length);
