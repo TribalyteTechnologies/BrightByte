@@ -14,8 +14,8 @@ contract Bright is Ownable {
         string name;
         string email;
         address hash;
-        uint numberCommitsReviewedbyMe;
-        uint numberCommitsToReviewbyMe;
+        uint numberCommitsReviewedByMe; 
+        uint numberCommitsToReviewByMe; 
         uint numbermyCommits;
         uint reputation;
         uint numberOfTimesReview;
@@ -30,11 +30,11 @@ contract Bright is Ownable {
         uint timestamp;
         string project;
         uint numberReviews; 
-        bool pending;
+        bool isPending;
         uint currentNumberReviews;
-        mapping (uint => comment) comments;
+        mapping (uint => Comment) comments; 
     }
-    struct comment{
+    struct Comment{
         string text;
         address user;
     }
@@ -45,8 +45,8 @@ contract Bright is Ownable {
             hashUserMap[msg.sender].name = _name;
             hashUserMap[msg.sender].email = _email;
 	        hashUserMap[msg.sender].hash = msg.sender;
-	        hashUserMap[msg.sender].numberCommitsReviewedbyMe = 0;
-            hashUserMap[msg.sender].numberCommitsToReviewbyMe = 0;
+	        hashUserMap[msg.sender].numberCommitsReviewedByMe = 0; 
+            hashUserMap[msg.sender].numberCommitsToReviewByMe = 0;
             hashUserMap[msg.sender].numbermyCommits=0;
             allUsersArray[numberOfUsers] = hashUserMap[msg.sender];
             numberOfUsers++;
@@ -62,27 +62,38 @@ contract Bright is Ownable {
     function getUser (address _hash) public view returns (string, string, uint, uint, uint, uint) { //TODO: we need a getuser function using the email address instead of hash
             
         if (msg.sender == _hash){ //If you are calling the function
-        return (hashUserMap[_hash].name,
-                hashUserMap[_hash].email,
-                hashUserMap[_hash].numberCommitsReviewedbyMe,
-                hashUserMap[_hash].numberCommitsToReviewbyMe,
-                hashUserMap[_hash].numbermyCommits,
-                hashUserMap[_hash].reputation
-                );
+            return (hashUserMap[_hash].name, 
+                    hashUserMap[_hash].email, 
+                    hashUserMap[_hash].numberCommitsReviewedByMe, 
+                    hashUserMap[_hash].numberCommitsToReviewByMe, 
+                    hashUserMap[_hash].numbermyCommits, 
+                    hashUserMap[_hash].reputation 
+                    ); 
+
         } else{ //If other person is calling the function
 		    return (hashUserMap[_hash].name,"-",0,0,0,0);
 		}
     }
     
     function setNewCommit (string _id, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
-        uint num = 0;
-        bool pending = false;
-        if(!StringUtils.equal(_emailuser1,"")){num++;}
-        if(!StringUtils.equal(_emailuser2,"")){num++;}
-        if(!StringUtils.equal(_emailuser3,"")){num++;}
-        if(!StringUtils.equal(_emailuser4,"")){num++;}
-        if(num>0){pending=true;}
-        storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, num, pending, 0);
+        uint numUsers = 0;
+        bool isPending = false;
+        if(keccak256(_emailuser1)!=keccak256("")){
+            numUsers++;
+        }
+        if(keccak256(_emailuser2)!=keccak256("")){
+            numUsers++;
+        }
+        if(keccak256(_emailuser3)!=keccak256("")){
+            numUsers++;
+        }
+        if(keccak256(_emailuser4)!=keccak256("")){
+            numUsers++;
+        }
+        if(numUsers>0){
+            isPending=true;
+        }
+        storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, numUsers, isPending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
         hashUserMap[msg.sender].numbermyCommits++;
         
@@ -90,33 +101,34 @@ contract Bright is Ownable {
         for(uint i = 0; i < numberOfUsers; i++){
             
             if(StringUtils.equal(allUsersArray[i].email, _emailuser1)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = (hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1);  
+                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = (hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1);  
             }else if(StringUtils.equal(allUsersArray[i].email, _emailuser2)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1;
+                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
             }else if(StringUtils.equal(allUsersArray[i].email, _emailuser3)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1;
+                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
             }else if(StringUtils.equal(allUsersArray[i].email, _emailuser4)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe] = storedData[_id];
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewbyMe + 1;
+                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
             }
         }
     }
-    function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, bool, uint){ //_index starts in 1
+    function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, bool, uint){
         return (storedData[_id].url,
                 storedData[_id].author,
                 storedData[_id].timestamp,
                 storedData[_id].project,
                 storedData[_id].numberReviews,
-                storedData[_id].pending, //No=>false and Yes=>true
+                storedData[_id].isPending,
                 storedData[_id].currentNumberReviews);
     }
     function getUserCommits(uint _index) public view returns(string, string, bool){
-        return (storedData[hashUserMap[msg.sender].userCommits[_index].id].url,
-                storedData[hashUserMap[msg.sender].userCommits[_index].id].project,
-                storedData[hashUserMap[msg.sender].userCommits[_index].id].pending);
+        string storage id = hashUserMap[msg.sender].userCommits[_index].id;
+        return (storedData[id].url,
+                storedData[id].project,
+                storedData[id].isPending);
     }
     function getNumberUserCommits()public view returns(uint){
         return hashUserMap[msg.sender].numbermyCommits;
@@ -128,43 +140,46 @@ contract Bright is Ownable {
         return numberOfUsers;
     }
     function getNumberCommitsToReviewByMe() public view returns(uint){ 
-        return hashUserMap[msg.sender].numberCommitsToReviewbyMe;
+        return hashUserMap[msg.sender].numberCommitsToReviewByMe;
     }
     function getNumberCommitsReviewedByMe() public view returns(uint){ 
-        return hashUserMap[msg.sender].numberCommitsReviewedbyMe;
+        return hashUserMap[msg.sender].numberCommitsReviewedByMe;
     }
     function getCommitsToReviewByMe(uint _index) public view returns(string, string){
         return (hashUserMap[msg.sender].commitsToReview[_index].url,
             hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
     }
     function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string){
-        return (storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].text,
-                storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user,
-                hashUserMap[storedData[hashUserMap[msg.sender].userCommits[_indexCommit].id].comments[_indexComments].user].name);
+        string storage id = hashUserMap[msg.sender].userCommits[_indexCommit].id; 
+        return (storedData[id].comments[_indexComments].text, 
+                storedData[id].comments[_indexComments].user, 
+                hashUserMap[storedData[id].comments[_indexComments].user].name); 
     }
     function getNumberComments(uint _index)public view returns(uint){
         return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;
     }
     function setReview(uint _index, string _text, uint _points)public{
         
-        storedData[hashUserMap[msg.sender].commitsToReview[_index].id].comments[storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews].text = _text;
-        storedData[hashUserMap[msg.sender].commitsToReview[_index].id].comments[storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews].user = msg.sender;
+        string storage id = hashUserMap[msg.sender].commitsToReview[_index].id;
+        storedData[id].comments[storedData[id].currentNumberReviews].text = _text;
+        storedData[id].comments[storedData[id].currentNumberReviews].user = msg.sender;
         
-        storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews++;
-        if(storedData[hashUserMap[msg.sender].commitsToReview[_index].id].currentNumberReviews==storedData[hashUserMap[msg.sender].commitsToReview[_index].id].numberReviews){
-            storedData[hashUserMap[msg.sender].commitsToReview[_index].id].pending = false;
+        storedData[id].currentNumberReviews++;
+        if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
+            storedData[id].isPending = false;
         }
         //Reputation. The front end has to divide the result by 100
-        hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].numberOfTimesReview++;
-        uint value = hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].numberOfPoints + _points;
-        hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].numberOfPoints = value;
-        hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].reputation = value/hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].numberOfTimesReview;
-
+        address author = hashUserMap[msg.sender].commitsToReview[_index].author;
+        hashUserMap[author].numberOfTimesReview++;
+        uint value = hashUserMap[author].numberOfPoints + _points;
+        hashUserMap[author].numberOfPoints = value;
+        hashUserMap[author].reputation = value/hashUserMap[author].numberOfTimesReview;
+ 
         //User who has to review. 
-        hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe-1].id]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
-        delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewbyMe];
-        hashUserMap[msg.sender].numberCommitsToReviewbyMe--; //decrease counter
-        hashUserMap[msg.sender].numberCommitsReviewedbyMe++; //encrease counter
+        hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe-1].id]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
+        delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe];
+        hashUserMap[msg.sender].numberCommitsToReviewByMe--;
+        hashUserMap[msg.sender].numberCommitsReviewedByMe++;
         
     }
 }
