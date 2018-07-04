@@ -22,15 +22,15 @@ export class LoggerService implements ILogService {
     private msgPrefixes = [["[", "]"], ["[", "] WARN: "], ["[", "] ERROR: "]];
     private logDebug = false;
 
-    constructor(logDebug = false){
-        this.logDebug  = logDebug;
+    constructor(logDebug = false) {
+        this.logDebug = logDebug;
     }
-    
+
     public get(prefix: string) {
         let ret: ILogger = {
-            d: function (...args: any[]) {/*empty block*/},
-            w: function (...args: any[]) {/*empty block*/},
-            e: function (...args: any[]) {/*empty block*/}
+            d: function (...args: any[]) {/*empty block*/ },
+            w: function (...args: any[]) {/*empty block*/ },
+            e: function (...args: any[]) {/*empty block*/ }
         };
         if (this.logDebug) {
             let loggerFns = this.logFns.map((logTempFn, i) => {

@@ -8,6 +8,7 @@ import { AddCommitPopover } from "../../pages/addcommit/addcommit";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-commits",
@@ -24,18 +25,19 @@ export class CommitPage {
 		public popoverCtrl: PopoverController,
 		public navCtrl: NavController,
 		public http: HttpClient,
+		public translateService: TranslateService,
 		private contractManagerService: ContractManagerService,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
 		private web3Service: Web3Service
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("CommitsPage");
+		this.log = loggerSrv.get("CommitsPage");
 
 	}
 
 
 	public openAddCommitDialog() {
-		let popover = this.popoverCtrl.create(AddCommitPopover);
+		let popover = this.popoverCtrl.create(AddCommitPopover, { cssClass: 'custom-popover' });
 		popover.present();
 		popover.onDidDismiss(() => {
 			this.contractManagerService.getCommits()
@@ -43,18 +45,24 @@ export class CommitPage {
 					this.log.d("ARRAY Commits: ", resolve);
 					this.arrayCommits = resolve;
 				}).catch((e) => {
-					this.log.d("Error getting commits!!", e);
-					this.msg = "Error getting commits!!";
+					this.translateService.get("commits.getCommits").subscribe(
+						result => {
+							this.msg = result;
+							this.log.e(result, e);
+						},
+						err => {
+							this.log.e("Error translating string", err);
+						});
 				});
 		});
 	}
-	public urlSelected(commit) {
+	public selectUrl(commit: Object) {
 		let index: number;
 		for (let i = 0; i < this.arrayCommits.length; i++) {
 			if (this.arrayCommits[i][0] == commit[0]) {
 				index = i;
 			}
-		}
+		}  //TODO Use a service to get th id and project from the url
 		let urlSplitted = commit[0].split("/");
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
@@ -66,20 +74,30 @@ export class CommitPage {
 					commitIndex: index
 				});
 			}).catch((e) => {
-				this.log.d("Error getting details!!");
-				this.msg = "Error getting details!!";
-				return Promise.reject(e);
+				this.translateService.get("addCommit.commitDetails").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 			});
 	}
 	public ionViewWillEnter() {
 		this.contractManagerService.getCommits()
-			.then((resolve) => {
-				this.log.d("ARRAY Commits: ", resolve);
-				this.arrayCommits = resolve;
+			.then((arrayOfCommits) => {
+				this.log.d("ARRAY Commits: ", arrayOfCommits);
+				this.arrayCommits = arrayOfCommits;
 			}).catch((e) => {
-				this.log.d("Error getting commits!!");
-				this.msg = "Error getting commits!!";
-				return Promise.reject(e);
+				this.translateService.get("commits.getCommits").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 			});
 	}
 

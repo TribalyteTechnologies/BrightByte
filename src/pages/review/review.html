@@ -1,22 +1,22 @@
 <ion-header>
     <ion-navbar>
         <ion-title>
-            Reviews
+            {{ "review.title" | translate }}
         </ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content>
     <ion-list>
-        <ion-list-header>Reviews</ion-list-header>
+        <ion-list-header>{{ "review.subTitle" | translate }}</ion-list-header>
         <ion-item>
             <ion-icon name="ionic" item-start></ion-icon>
-            List of commits to review
+            {{ "review.titleList" | translate }}
         </ion-item>
     </ion-list>
     <ion-list inset>
-        <button ion-item *ngFor="let commit of arrayCommits" (click)="urlSelected(commit)">
-            Author: {{ commit[1] }}, Url: {{ commit[0] }}
+        <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)">
+            {{ "review.author" | translate }}: {{ commit[1] }}, Url: {{ commit[0] }}
         </button>
     </ion-list>
     <p class="error-message">{{msg}}</p>

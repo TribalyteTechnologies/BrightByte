@@ -5,43 +5,90 @@
         "presentation": "Who are you? Please, upload your identity file or introduce your private key.",
         "password": "Password",
         "register": "Register",
-        "FileNotLoaded": "Please check if you have uploaded the correct file",
-        "WrongPassword": "Wrong password"
+        "fileNotLoaded": "Please check if you have uploaded the correct file",
+        "wrongPassword": "Wrong password",
+        "wrongFile": "The format of the uploaded file is incorrect",
+        "noRpc": "No RPC connetion",
+        "login": "Login",
+        "debug": "Debug"
     },
-    "addcommit": {
+    "addCommit": {
         "title": "Add Commit",
         "add": "Add your commit",
         "project": "Project",
-        "users": "Users"
+        "users": "Users",
+        "errorEmails": "Error getting emails",
+        "urlDuplicated": "Error: url already added",
+        "addingCommit": "Error adding new commit",
+        "commitDetails": "Error getting commit details",
+        "emailDuplicated": "Duplicate email detected",
+        "fieldRequire": "Field is required",
+        "notUrl": "It is not a valid url"
     },
     "commits": {
-        "add": "Add commit"
+        "add": "Add commit",
+        "getCommits": "Error getting commits",
+        "title": "Commits"
     },
     "home": {
-
-    }, 
-    "newuser": {
+        "title": "Home",
+        "subTitle": "Home",
+        "info": "My Commits, My reviews, Ranking"
+    },
+    "newUser": {
         "title": "New user",
         "header": "New user",
         "welcome": "Welcome!",
         "password": "Password",
         "register": "Register",
-        "newuser": "Create new user",
+        "newUser": "Create new user",
         "download": "Download file"
-
     },
     "ranking": {
-
+        "getUserInfo": "Error getting user info",
+        "title": "Ranking",
+        "name": "Name",
+        "mail": "Email",
+        "nCommitsReviewByMe": "Number commits reviewed by me",
+        "nCommitsToReviewByMe": "Number commits to review by me",
+        "totalCommits": "Total number of my commits",
+        "reputation": "Reputation"
     },
     "review": {
-
+        "getCommits": "Error getting commits to review",
+        "getDetails": "Error getting details of commits to review",
+        "title": "Reviews",
+        "subTitle": "Reviews",
+        "titleList": "List of commits to review",
+        "author": "Author"
     },
-    "setprofile": {
+    "setProfile": {
         "title": "Set profile",
         "header": "Set your profile",
         "name": "Name",
-        "set": "Set profile"
-
+        "set": "Set profile",
+        "tx": "Transaction Error",
+        "emailUsed": "Email already in use",
+        "getEmails": "Error getting emails",
+        "notEmail": "It is not an email"
+    },
+    "commitDetails": {
+        "author": "Author",
+        "date": "Date",
+        "title": "Commit Details",
+        "project": "Project",
+        "nReviews": "Total number reviews",
+        "pReviews": "Pending Reviews",
+        "currrentNReviews": "Current Number Reviews",
+        "commented": "has commented",
+        "gettingComments": "Error getting Comments"
+    },
+    "commitReview": {
+        "textField": "Text field",
+        "review": "Review",
+        "title": "Commit Review",
+        "emptyField": "Please, write your review",
+        "reviewDone": "Review successfully done",
+        "txError": "Transaction Error"
     }
-
 }

@@ -1,50 +1,38 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      {{ "addcommit.add" | translate }}
-    </ion-title>
-  </ion-navbar>
+	<ion-navbar>
+		<ion-title>
+			{{ "addCommit.add" | translate }}
+		</ion-title>
+	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h2>{{ "addcommit.add" | translate }}</h2>
-  <form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value)" novalidate>
-    <ion-item>
-      <ion-label stacked>Url:</ion-label>
-      <ion-input formControlName="url" type="text" placeholder="url"></ion-input>
-    </ion-item>
-    <ion-item *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
-      <p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">Field is required</p>
-      <p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">It is not an url</p>
-    </ion-item>
-    <p class="error-message">{{msg}}</p> 
-    <button ion-button type="submit" [disabled]="myForm.invalid || isButtonDisabled">Add Commit</button> 
-  </form>
+	<h2>{{ "addCommit.add" | translate }}</h2>
+	<form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value)" novalidate>
+		<ion-item>
+			<ion-label stacked>Url:</ion-label>
+			<ion-input formControlName="url" type="text" placeholder="url"></ion-input>
+		</ion-item>
+		<ion-item *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
+			<p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
+			<p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">{{ "addCommit.notUrl" | translate }}</p>
+		</ion-item>
+		<p class="error-message">{{msg}}</p>
+		<ion-spinner [hidden]="!isTxOngoing"></ion-spinner>
+		<br>
+		<button ion-button type="submit" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
+	</form>
 
-  <ion-label color="primary">Users</ion-label>
+	<ion-label color="primary">{{ "addCommit.users" | translate }}</ion-label>
 
-  <ion-searchbar #input0 (ionInput)="getItems($event, 0)" placeholder="email@example.com" [(ngModel)]="usersMail[0]"></ion-searchbar>
-  <ion-list *ngIf="isShowList[0]">
-    <ion-item *ngFor="let item of arraySearch" (click)="input0.value=item">
-      {{ item }}
-    </ion-item>
-  </ion-list>
-  <ion-searchbar #input1 (ionInput)="getItems($event, 1)" placeholder="email@example.com" [(ngModel)]="usersMail[1]"></ion-searchbar>
-  <ion-list *ngIf="isShowList[1]">
-    <ion-item *ngFor="let item of arraySearch" (click)="input1.value=item">
-      {{ item }}
-    </ion-item>
-  </ion-list>
-  <ion-searchbar #input2 (ionInput)="getItems($event, 2)" placeholder="email@example.com" [(ngModel)]="usersMail[2]"></ion-searchbar>
-  <ion-list *ngIf="isShowList[2]">
-    <ion-item *ngFor="let item of arraySearch" (click)="input2.value=item">
-      {{ item }}
-    </ion-item>
-  </ion-list>
-  <ion-searchbar #input3 (ionInput)="getItems($event, 3)" placeholder="email@example.com" [(ngModel)]="usersMail[3]"></ion-searchbar>
-  <ion-list *ngIf="isShowList[3]">
-    <ion-item *ngFor="let item of arraySearch" (click)="input3.value=item">
-      {{ item }}
-    </ion-item>
-  </ion-list>
+	<ion-item *ngFor="let number of ['0','1','2','3']">
+		<ion-searchbar (ionInput)="getItems($event, number)" placeholder="email@example.com" [(ngModel)]="usersMail[number]"></ion-searchbar>
+		<ion-list *ngIf="isShowList[number]">
+			<ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(number,item)">
+				{{ item }}
+			</ion-item>
+		</ion-list>
+	</ion-item>
+
+
 </ion-content>

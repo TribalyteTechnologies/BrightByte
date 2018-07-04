@@ -1,7 +1,7 @@
 <ion-header>
 	<ion-navbar>
 		<ion-title>
-			Commits
+			{{ "commits.title" | translate }}
 		</ion-title>
 	</ion-navbar>
 </ion-header>
@@ -12,7 +12,7 @@
 		<ion-icon name="more"></ion-icon>
 	</button>
 	<ion-list inset>
-		<button ion-item *ngFor="let commit of arrayCommits" (click)="urlSelected(commit)">
+		<button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)">
 			Pending: {{commit[2]}}, Project: {{commit[1]}}, url: {{ commit[0] }}
 		</button>
 	</ion-list>

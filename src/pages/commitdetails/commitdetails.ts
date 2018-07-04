@@ -6,6 +6,7 @@ import { LoginService } from "../../core/login.service";
 import { NavParams } from "ionic-angular";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { default as Web3 } from "web3";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-commitdetails",
@@ -14,23 +15,24 @@ import { default as Web3 } from "web3";
 export class CommitDetailsPage {
 	public web3: Web3;
 	public account: any;
-	public commitDetails: Object;
-	public commitIndex;
+	public commitDetails: Array<any>;
+	public commitIndex: number;
 	public msg: string;
-	public arrayComments: any;
+	public commentsArray: string[];
 	public date: string;
 	private log: ILogger;
 
 	constructor(
 		navParams: NavParams,
 		public navCtrl: NavController,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
 		private web3Service: Web3Service,
+		public translateService: TranslateService,
 		private contractManagerService: ContractManagerService,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("CommitDetailsPage");
+		this.log = loggerSrv.get("CommitDetailsPage");
 		this.account = this.loginService.getAccount();
 		this.commitDetails = navParams.get("commitDetails");
 		this.commitIndex = navParams.get("commitIndex");
@@ -41,13 +43,18 @@ export class CommitDetailsPage {
 	}
 	public ionViewWillEnter() {
 		this.contractManagerService.getCommentsOfCommit(this.commitIndex)
-			.then((resolve) => {
-				this.log.d("Object of Comments: ", resolve);
-				this.arrayComments = resolve;
+			.then((arrayOfComments) => {
+				this.log.d("Array of Comments: ", arrayOfComments);
+				this.commentsArray = arrayOfComments;
 			}).catch((e) => {
-				this.log.d("Error getting Comments!!");
-				this.msg = "Error getting Comments!!";
-				return Promise.reject(e);
+				this.translateService.get("commitDetails.gettingComments").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 			});
 	}
 }

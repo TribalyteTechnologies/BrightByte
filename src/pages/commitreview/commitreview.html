@@ -1,43 +1,34 @@
 <ion-header>
-	<ion-navbar [hideBackButton]="isButtonBackDisabled"> 
+	<ion-navbar [hideBackButton]="isBackButtonDisabled">
 		<ion-title>
-			Commit Review
+			{{ "commitDetails.title" | translate }}
 		</ion-title>
 	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
 	<p>Url: {{commitDetails[0]}}</p>
-	<p>Author: {{commitDetails[1]}}</p>
-	<p>Date: {{date}}</p>
-	<p>Project: {{commitDetails[3]}}</p>
-	<p>Number Reviews: {{commitDetails[4]}}</p>
-	<p>Pending Reviews: {{commitDetails[5]}}</p>
-	<p>Current Number Reviews: {{commitDetails[6]}}</p>
+	<p>{{ "commitDetails.author" | translate }}: {{commitDetails[1]}}</p>
+	<p>{{ "commitDetails.date" | translate }}: {{date}}</p>
+	<p>{{ "commitDetails.project" | translate }}: {{commitDetails[3]}}</p>
+	<p>{{ "commitDetails.nReviews" | translate }}: {{commitDetails[4]}}</p>
+	<p>{{ "commitDetails.pReviews" | translate }}: {{commitDetails[5]}}</p>
+	<p>{{ "commitDetails.currrentNReviews" | translate }}: {{commitDetails[6]}}</p>
 	<ion-item>
-		<ion-textarea placeholder="Enter a description" [(ngModel)]="textComment">Text field</ion-textarea>
+		<ion-textarea placeholder="Enter a description" [(ngModel)]="textComment">{{ "commitDetails.textField" | translate }}</ion-textarea>
 	</ion-item>
 	<p class="error-message">{{msg}}</p>
 	<p>{{msg1}}</p>
-	<ion-item>
-		<button ion-button icon-only (click)="setReputation(0)">
-			<ion-icon name={{star[0]}}></ion-icon>
-		</button>
-		<button ion-button icon-only (click)="setReputation(1)">
-			<ion-icon name={{star[1]}}></ion-icon>
-		</button>
-		<button ion-button icon-only (click)="setReputation(2)">
-			<ion-icon name={{star[2]}}></ion-icon>
-		</button>
-		<button ion-button icon-only (click)="setReputation(3)">
-			<ion-icon name={{star[3]}}></ion-icon>
-		</button>
-		<button ion-button icon-only (click)="setReputation(4)">
-			<ion-icon name={{star[4]}}></ion-icon>
-		</button>
 
+	<ion-item>
+		<button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
+			<ion-icon name={{star[number]}}></ion-icon>
+		</button>
 	</ion-item>
+
+	<ion-spinner [hidden]="!isBackButtonDisabled"></ion-spinner>
+	<br>
 	<button ion-button [disabled]="isButtonDisabled" (click)="addReview(textComment)">
-		Review
+		{{ "commitReview.review" | translate }}
 	</button>
 </ion-content>

@@ -3,6 +3,7 @@ import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-home",
@@ -15,12 +16,13 @@ export class HomePage {
 
 	constructor(
 		public navCtrl: NavController,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
 		private web3Service: Web3Service,
+		public translateService: TranslateService,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("HomePage");
+		this.log = loggerSrv.get("HomePage");
 		this.account = this.loginService.getAccount();
 		this.log.d("Home: ", this.account);
 	}

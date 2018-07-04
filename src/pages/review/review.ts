@@ -2,10 +2,10 @@ import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
-import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { CommitReviewPage } from "../commitreview/commitreview"
 import { default as Web3 } from "web3";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-review",
@@ -14,33 +14,39 @@ import { default as Web3 } from "web3";
 
 export class ReviewPage {
 	public web3: Web3;
-	public arrayCommits = new Array<string[]>();
+	public arrayCommits: any;
 	public msg: string;
 	private log: ILogger;
 
 	constructor(
 		public navCtrl: NavController,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
+		public translateService: TranslateService,
 		private web3Service: Web3Service,
 		private contractManagerService: ContractManagerService,
-		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("ReviewPage");
+		this.log = loggerSrv.get("ReviewPage");
 
 	}
-	public ionViewWillEnter() {
+	public ionViewWillEnter(): void {
 		this.contractManagerService.getCommitsToReview()
-			.then((resolve) => {
-				this.log.d("ARRAY Commits: ", resolve);
-				this.arrayCommits = resolve;
+			.then((arrayOfCommits) => {
+				this.log.d("ARRAY Commits: ", arrayOfCommits);
+				this.arrayCommits = arrayOfCommits;
 			}).catch((e) => {
-				this.log.d("Error getting commits!!");
-				this.msg = "Error getting commits!!";
+				this.translateService.get("review.getCommits").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 				return Promise.reject(e);
 			});
 	}
-	public urlSelected(commit) {
+	public selectUrl(commit: Object) {
 		let index: number;
 		for (let i = 0; i < this.arrayCommits.length; i++) {
 			if (this.arrayCommits[i][0] == commit[0]) {
@@ -59,8 +65,14 @@ export class ReviewPage {
 					indexArray: index
 				});
 			}).catch((e) => {
-				this.log.d("Error getting details!!");
-				this.msg = "Error getting details!!";
+				this.translateService.get("review.getDetails").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 				return Promise.reject(e);
 			});
 	}

@@ -9,6 +9,7 @@ import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: "popover-addcommit",
@@ -22,13 +23,13 @@ export class AddCommitPopover {
     public abi: any;
     public contract: any;
     public nonce: string;
-    public isButtonDisabled = false;
+    public isTxOngoing = false;
     public abijson: any;
     public msg: string;
     public usersMail = ["", "", "", ""];
     public arrayEmails: string[];
     public arraySearch: string[];
-    public isShowList = [false, false, false, false];
+    public isShowList: boolean[];
     public myForm: FormGroup;
 
     constructor(
@@ -36,13 +37,15 @@ export class AddCommitPopover {
         public viewCtrl: ViewController,
         public http: HttpClient,
         public fb: FormBuilder,
-        private loggerSrv: LoggerService,
+        public translateService: TranslateService,
+        loggerSrv: LoggerService,
         private web3Service: Web3Service,
         private contractManagerService: ContractManagerService,
         public loginService: LoginService
     ) {
         this.web3 = this.web3Service.getWeb3();
-        this.log = this.loggerSrv.get("AddCommitPage");
+        this.log = loggerSrv.get("AddCommitPage");
+        this.isShowList = [false, false, false, false];
         this.account = this.loginService.getAccount();
         this.account = this.loginService.getAccount();
         this.log.d("Imported account successfully", this.account);
@@ -55,8 +58,14 @@ export class AddCommitPopover {
                     this.log.d("ARRAY Emails: ", resolve);
                     this.arrayEmails = resolve;
                 }).catch((e) => {
-                    this.log.d("Error getting emails!!", e);
-                    this.msg = "Error getting emails!!";
+                    this.translateService.get("addCommit.errorEmails").subscribe(
+                        result => {
+                            this.msg = result;
+                            this.log.e(result, e);
+                        },
+                        err => {
+                            this.log.e("Error translating string", err);
+                        });
                 });
         }, (err) => this.log.e(err), () => {
             //If you want do after the promise. Code here
@@ -67,16 +76,22 @@ export class AddCommitPopover {
         });
     }
     public addCommit(url: string) {
-        this.isButtonDisabled = true;
+        this.isTxOngoing = true;
         this.msg = "";
         let urlSplitted = url.split("/");
         let id = urlSplitted[6];
         this.contractManagerService.getDetailsCommits(id)
             .then((resolve) => {
                 if (resolve[0] != "") {
-                    this.isButtonDisabled = false;
-                    this.log.d("Error: url already added");
-                    this.msg = "Error: url already added";
+                    this.isTxOngoing = false;
+                    this.translateService.get("addCommit.urlDuplicated").subscribe(
+                        result => {
+                            this.msg = result;
+                            this.log.w(result);
+                        },
+                        err => {
+                            this.log.e("Error translating string", err);
+                        });
                 } else {
                     this.contractManagerService.addCommit(url, this.usersMail)
                         .then((resolve) => {
@@ -85,20 +100,32 @@ export class AddCommitPopover {
                                 this.viewCtrl.dismiss();
                             }
                         }).catch((e) => {
-                            this.isButtonDisabled = false;
-                            this.log.d("Error adding new commit!!", e);
-                            this.msg = "Error adding new commit";
+                            this.isTxOngoing = false;
+                            this.translateService.get("addCommit.addingCommit").subscribe(
+                                result => {
+                                    this.msg = result;
+                                    this.log.e(result, e);
+                                },
+                                err => {
+                                    this.log.e("Error translating string", err);
+                                });
                         });
                 }
             }).catch((e) => {
-                this.isButtonDisabled = false;
-                this.log.d("Error getting commit details!!", e);
-                this.msg = "Error getting commit details!!";
+                this.isTxOngoing = false;
+                this.translateService.get("addCommit.commitDetails").subscribe(
+                    result => {
+                        this.msg = result;
+                        this.log.e(result, e);
+                    },
+                    err => {
+                        this.log.e("Error translating string", err);
+                    });
             });
 
     }
 
-    getItems(ev, id) {
+    public getItems(ev: any, id: number) { //TODO: TYpe targetevent or event
         this.isShowList = [false, false, false, false];
         // set val to the value of the ev target
         let val = ev.target.value;
@@ -109,5 +136,25 @@ export class AddCommitPopover {
             })
         }
         this.isShowList[id] = true;
+    }
+    public setEmailFromList(number, item) {
+        let isDuplicated = false;
+        for (let i = 0; i < 4; i++) {
+            if (this.usersMail[i] == item) {
+                this.translateService.get("addCommit.emailDuplicated").subscribe(
+                    result => {
+                        this.msg = result;
+                    },
+                    err => {
+                        this.log.e("Error translating string", err);
+                    });
+                isDuplicated = true;
+            }
+        }
+        if (!isDuplicated) {
+            this.msg = "";
+            this.usersMail[number] = item;
+            this.isShowList[number] = false;
+        }
     }
 }
