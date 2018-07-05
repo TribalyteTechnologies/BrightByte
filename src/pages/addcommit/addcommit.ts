@@ -72,10 +72,11 @@ export class AddCommitPopover {
             this.log.d("TruffleContract function: ", this.bright);
         });
         this.myForm = this.fb.group({
-            url: ['', [Validators.required, Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]]
+            url: ['', [Validators.required, Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
+            title: ['', [Validators.required]]
         });
     }
-    public addCommit(url: string) {
+    public addCommit(url: string, title: string) {
         this.isTxOngoing = true;
         this.msg = "";
         let urlSplitted = url.split("/");
@@ -93,7 +94,7 @@ export class AddCommitPopover {
                             this.log.e("Error translating string", err);
                         });
                 } else {
-                    this.contractManagerService.addCommit(url, this.usersMail)
+                    this.contractManagerService.addCommit(url, title, this.usersMail)
                         .then((resolve) => {
                             this.log.d("Contract manager response: ", resolve);
                             if (resolve.status == true) { // current block when i wrote this line

@@ -23,7 +23,8 @@
         "commitDetails": "Error getting commit details",
         "emailDuplicated": "Duplicate email detected",
         "fieldRequire": "Field is required",
-        "notUrl": "It is not a valid url"
+        "notUrl": "It is not a valid url",
+        "titleCommit": "Title"
     },
     "commits": {
         "add": "Add commit",
@@ -60,7 +61,8 @@
         "title": "Reviews",
         "subTitle": "Reviews",
         "titleList": "List of commits to review",
-        "author": "Author"
+        "author": "Author",
+        "titleCommit": "Title"
     },
     "setProfile": {
         "title": "Set profile",
@@ -81,7 +83,8 @@
         "pReviews": "Pending Reviews",
         "currrentNReviews": "Current Number Reviews",
         "commented": "has commented",
-        "gettingComments": "Error getting Comments"
+        "gettingComments": "Error getting Comments",
+        "titleCommit": "Title"
     },
     "commitReview": {
         "textField": "Text field",

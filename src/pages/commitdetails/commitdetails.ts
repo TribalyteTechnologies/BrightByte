@@ -21,6 +21,7 @@ export class CommitDetailsPage {
 	public commentsArray: string[];
 	public date: string;
 	private log: ILogger;
+	private project: string;
 
 	constructor(
 		navParams: NavParams,
@@ -35,10 +36,11 @@ export class CommitDetailsPage {
 		this.log = loggerSrv.get("CommitDetailsPage");
 		this.account = this.loginService.getAccount();
 		this.commitDetails = navParams.get("commitDetails");
+		this.project = navParams.get("commitProject");
 		this.commitIndex = navParams.get("commitIndex");
 		this.log.d("Details Object: ", this.commitDetails);
 		this.log.d("CommitIndex: ", this.commitIndex);
-		this.date = new Date((this.commitDetails[2] * 1000)).toLocaleString();
+		this.date = new Date((this.commitDetails[3] * 1000)).toLocaleString();
 
 	}
 	public ionViewWillEnter() {
