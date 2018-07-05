@@ -15,7 +15,8 @@
         </ion-item>
     </ion-list>
     <ion-list inset>
-        <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)">
+        <!-- TODO I think this could be done using the index of the ngfor instead of use another for in ts file -->
+        <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)"> 
                 {{ "review.titleCommit" | translate }}: {{ commit[1] }}, {{ "review.author" | translate }}: {{ commit[2] }}, Url: {{ commit[0] }}
         </button>
     </ion-list>
