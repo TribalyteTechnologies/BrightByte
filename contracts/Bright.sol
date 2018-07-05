@@ -25,6 +25,7 @@ contract Bright is Ownable {
     }
     struct Commit {
         string id;
+        string title;
 	    string url;
         address author;
         uint timestamp;
@@ -75,25 +76,19 @@ contract Bright is Ownable {
 		}
     }
     
-    function setNewCommit (string _id, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
+    function setNewCommit (string _id, string _title, string _url, string _project, string _emailuser1, string _emailuser2, string _emailuser3, string _emailuser4) public { //_users separated by commas.
         uint numUsers = 0;
         bool isPending = false;
-        if(keccak256(_emailuser1)!=keccak256("")){
-            numUsers++;
-        }
-        if(keccak256(_emailuser2)!=keccak256("")){
-            numUsers++;
-        }
-        if(keccak256(_emailuser3)!=keccak256("")){
-            numUsers++;
-        }
-        if(keccak256(_emailuser4)!=keccak256("")){
-            numUsers++;
+        string[4] memory users = [_emailuser1,_emailuser2,_emailuser3,_emailuser4];
+        for(uint j=0; j<users.length; j++){
+            if(keccak256(bytes(users[j]))!=keccak256("")){ // Check if it Works
+                numUsers++;
+            }
         }
         if(numUsers>0){
             isPending=true;
         }
-        storedData[_id] = Commit(_id, _url, msg.sender, block.timestamp, _project, numUsers, isPending, 0);
+        storedData[_id] = Commit(_id, _title, _url, msg.sender, block.timestamp, _project, numUsers, isPending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
         hashUserMap[msg.sender].numbermyCommits++;
         
@@ -115,18 +110,19 @@ contract Bright is Ownable {
             }
         }
     }
-    function getDetailsCommits(string _id) public view returns(string, address, uint, string, uint, bool, uint){
+    function getDetailsCommits(string _id) public view returns(string, string, address, uint, uint, bool, uint){
         return (storedData[_id].url,
+                storedData[_id].title,
                 storedData[_id].author,
                 storedData[_id].timestamp,
-                storedData[_id].project,
                 storedData[_id].numberReviews,
                 storedData[_id].isPending,
                 storedData[_id].currentNumberReviews);
     }
-    function getUserCommits(uint _index) public view returns(string, string, bool){
+    function getUserCommits(uint _index) public view returns(string, string, string, bool){
         string storage id = hashUserMap[msg.sender].userCommits[_index].id;
         return (storedData[id].url,
+                storedData[id].title,
                 storedData[id].project,
                 storedData[id].isPending);
     }
@@ -145,8 +141,9 @@ contract Bright is Ownable {
     function getNumberCommitsReviewedByMe() public view returns(uint){ 
         return hashUserMap[msg.sender].numberCommitsReviewedByMe;
     }
-    function getCommitsToReviewByMe(uint _index) public view returns(string, string){
+    function getCommitsToReviewByMe(uint _index) public view returns(string, string, string){
         return (hashUserMap[msg.sender].commitsToReview[_index].url,
+            hashUserMap[msg.sender].commitsToReview[_index].title,
             hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
     }
     function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string){
