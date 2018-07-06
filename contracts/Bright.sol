@@ -29,6 +29,7 @@ contract Bright is Ownable {
         address author;
         uint timestamp;
         string project;
+        bool isReadNeeded;
         uint numberReviews; 
         bool pending;
         uint currentNumberReviews;
@@ -88,7 +89,7 @@ contract Bright is Ownable {
         if(numUsers>0){
             pending=true;
         }
-        storedData[_id] = Commit(_id, _title, _url, msg.sender, block.timestamp, _project, numUsers, isPending, 0);
+        storedData[_id] = Commit(_id, _title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
         hashUserMap[msg.sender].numbermyCommits++;
         
@@ -119,12 +120,13 @@ contract Bright is Ownable {
                 storedData[_id].pending, //No=>false and Yes=>true
                 storedData[_id].currentNumberReviews);
     }
-    function getUserCommits(uint _index) public view returns(string, string, string, bool){
+    function getUserCommits(uint _index) public view returns(string, string, string, bool, bool){
         string storage id = hashUserMap[msg.sender].userCommits[_index].id;
         return (storedData[id].url,
                 storedData[id].title,
                 storedData[id].project,
-                storedData[id].pending);
+                storedData[id].isPending,
+                storedData[id].isReadNeeded);
     }
     function getNumberUserCommits()public view returns(uint){
         return hashUserMap[msg.sender].numbermyCommits;
@@ -162,7 +164,7 @@ contract Bright is Ownable {
         storedData[id].comments[storedData[id].currentNumberReviews].text = _text;
         storedData[id].comments[storedData[id].currentNumberReviews].user = msg.sender;
         storedData[id].comments[storedData[id].currentNumberReviews].stars = _points/100;
-        
+        storedData[id].isReadNeeded = true;
         storedData[id].currentNumberReviews++;
         if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
             storedData[id].pending = false;
@@ -182,8 +184,11 @@ contract Bright is Ownable {
         
     }
     function setVote(string _id, uint _indexComment, uint _vote) public {
-        if(storedData[_id].comments[_indexComment].vote == 0){ //If this protection is not needed, remove the if. It is check if the user has already voted
+        if(storedData[_id].comments[_indexComment].vote == 0){
              storedData[_id].comments[_indexComment].vote = _vote;
         }
+    }
+    function readComments(string _id) public{
+        storedData[_id].isReadNeeded = false;
     }
 }
