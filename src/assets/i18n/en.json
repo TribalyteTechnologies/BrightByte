@@ -85,7 +85,8 @@
         "commented": "has commented",
         "gettingComments": "Error getting Comments",
         "titleCommit": "Title",
-        "stars": "stars"
+        "stars": "stars",
+        "setThumbs": "Can't set the vote"
     },
     "commitReview": {
         "textField": "Text field",

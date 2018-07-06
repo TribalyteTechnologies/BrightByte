@@ -18,6 +18,7 @@ export class CommitDetailsPage {
 	public commitDetails: Array<any>;
 	public commitIndex: number;
 	public msg: string;
+	public isButtonPressArray = new Array<boolean>();
 	public commentsArray: string[];
 	public date: string;
 	private log: ILogger;
@@ -43,8 +44,8 @@ export class CommitDetailsPage {
 		this.date = new Date((this.commitDetails[3] * 1000)).toLocaleString();
 
 	}
-	public ionViewWillEnter() {
-		this.contractManagerService.getCommentsOfCommit(this.commitIndex)
+	public ionViewWillEnter(): Promise<void> {
+		return this.contractManagerService.getCommentsOfCommit(this.commitIndex)
 			.then((arrayOfComments: string[]) => {
 				this.log.d("Array of Comments: ", arrayOfComments);
 				this.commentsArray = arrayOfComments;
@@ -58,5 +59,32 @@ export class CommitDetailsPage {
 						this.log.e("Error translating string", err);
 					});
 			});
+	}
+	public setThumbs(index: number, value: number){
+		this.log.d("Index of the comment: ", index);
+		this.log.d("Value: ", value);
+		let urlSplitted = this.commitDetails[0].split("/");
+		let id = urlSplitted[6];
+		this.isButtonPressArray[index]=true;
+		this.contractManagerService.setThumb(id, index, value)
+		.then((resolve) => {
+			this.log.d("Contract manager response: ", resolve);
+			if (resolve.status == true) {
+				this.ionViewWillEnter().then(() =>{
+					this.isButtonPressArray[index]=false;
+
+				});
+			}
+		}).catch((e) => {
+			this.isButtonPressArray[index]=true;
+			this.log.e("Can't set the vote", e);
+			this.translateService.get("commitDetails.setThumbs").subscribe(
+				result => {
+					this.msg = result;
+				},
+				err => {
+					this.log.e("Error translating string", err);
+				});
+		});
 	}
 }
