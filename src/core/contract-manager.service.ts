@@ -365,5 +365,49 @@ export class ContractManagerService {
                 this.log.e("Error getting nonce value: ", e);
             });
     }
+    public changeFlag(id: string){
+        let contractArtifact;
+        return this.initProm.then(contract => {
+            contractArtifact = contract;
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", contractArtifact);
+        return this.web3.eth.getTransactionCount(this.currentUser.address);
+        }).then(result => {
+                let nonce = "0x" + (result).toString(16);
+                this.log.d("Value NONCE", nonce);
+                let bytecodeData = contractArtifact.methods.readComments(id).encodeABI();
+                this.log.d("Introduced id: ", id);
+                this.log.d("DATA: ", bytecodeData);
+
+                let rawtx = {
+                    nonce: nonce,
+                    gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
+                    to: this.truffleContract.networks[AppConfig.NET_ID].address,
+                    data: bytecodeData
+                };
+                const tx = new Tx(rawtx);
+                let priv = this.currentUser.privateKey.substring(2);
+                let privateKey = new Buffer(priv, "hex");
+                tx.sign(privateKey);
+
+                let raw = "0x" + tx.serialize().toString("hex");
+                this.log.d("Rawtx: ", rawtx);
+                this.log.d("Priv si 0x: ", priv);
+                this.log.d("privatekey: ", privateKey);
+                this.log.d("Raw: ", raw);
+                this.log.d("tx unsign: ", tx);
+                return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
+                    if (!err) {
+                        this.log.d("Hash transaction", transactionHash);
+                    } else {
+                        this.log.e(err);
+                    }
+                });
+
+            }).catch(e => {
+                this.log.e("Error getting nonce value: ", e);
+            });
+    }
 }
 

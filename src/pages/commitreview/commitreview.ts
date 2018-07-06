@@ -69,8 +69,8 @@ export class CommitReviewPage {
 						this.isBackButtonDisabled = false;
 						this.translateService.get("commitReview.reviewDone").subscribe(
 							result => {
-							},
 								this.msg1 = result;
+							},
 							err => {
 								this.log.e("Error translating string", err);
 							});

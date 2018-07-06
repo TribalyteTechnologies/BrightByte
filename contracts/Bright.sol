@@ -31,7 +31,7 @@ contract Bright is Ownable {
         string project;
         bool isReadNeeded;
         uint numberReviews; 
-        bool pending;
+        bool isPending;
         uint currentNumberReviews;
         mapping (uint => Comment) comments;
     }
@@ -87,7 +87,7 @@ contract Bright is Ownable {
             }
         }
         if(numUsers>0){
-            pending=true;
+            isPending=true;
         }
         storedData[_id] = Commit(_id, _title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_id];
@@ -117,7 +117,7 @@ contract Bright is Ownable {
                 storedData[_id].author,
                 storedData[_id].timestamp,
                 storedData[_id].numberReviews,
-                storedData[_id].pending, //No=>false and Yes=>true
+                storedData[_id].isPending, //No=>false and Yes=>true
                 storedData[_id].currentNumberReviews);
     }
     function getUserCommits(uint _index) public view returns(string, string, string, bool, bool){
@@ -167,7 +167,7 @@ contract Bright is Ownable {
         storedData[id].isReadNeeded = true;
         storedData[id].currentNumberReviews++;
         if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
-            storedData[id].pending = false;
+            storedData[id].isPending = false;
         }
         //Reputation. The front end has to divide the result by 100
         address author = hashUserMap[msg.sender].commitsToReview[_index].author;

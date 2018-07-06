@@ -66,8 +66,18 @@ export class CommitPage {
 		let urlSplitted = commit[0].split("/");
 		let project = urlSplitted[4];
 		let id = urlSplitted[6];
+		let changesFlag = commit[4];
 		this.contractManagerService.getDetailsCommits(id)
 			.then(details => {
+				if (changesFlag) {
+					//Change flag
+					this.contractManagerService.changeFlag(id)
+						.then((resolve) => {
+							this.log.d("Contract manager response: ", resolve);
+						}).catch((e) => {
+							this.log.e("Error Changing the state of the flag to false", e);
+						});
+				}
 				this.log.d("Details commits: ", details);
 				this.log.d("Index of row pressed: ", index);
 				this.navCtrl.push(CommitDetailsPage, {

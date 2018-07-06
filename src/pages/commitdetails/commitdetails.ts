@@ -69,7 +69,7 @@ export class CommitDetailsPage {
 		this.contractManagerService.setThumb(id, index, value)
 		.then((resolve) => {
 			this.log.d("Contract manager response: ", resolve);
-			if (resolve.status == true) {
+			if (resolve.blockNumber > 4929812) {
 				this.ionViewWillEnter().then(() =>{
 					this.isButtonPressArray[index]=false;
 
