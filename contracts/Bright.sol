@@ -37,6 +37,7 @@ contract Bright is Ownable {
     struct Comment{
         string text;
         address user;
+        uint stars;
     }
     function setProfile (string _name, string _email) public {
         //require(_hash == msg.sender);
@@ -144,11 +145,12 @@ contract Bright is Ownable {
             hashUserMap[msg.sender].commitsToReview[_index].title,
             hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
     }
-    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string){
-        string storage id = hashUserMap[msg.sender].userCommits[_indexCommit].id;
-        return (storedData[id].comments[_indexComments].text,
-                storedData[id].comments[_indexComments].user,
-                hashUserMap[storedData[id].comments[_indexComments].user].name);
+    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string, uint){
+        string storage id = hashUserMap[msg.sender].userCommits[_indexCommit].id; 
+        return (storedData[id].comments[_indexComments].text, 
+                storedData[id].comments[_indexComments].user, 
+                hashUserMap[storedData[id].comments[_indexComments].user].name,
+                storedData[id].comments[_indexComments].stars); 
     }
     function getNumberComments(uint _index)public view returns(uint){
         return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;
@@ -157,6 +159,7 @@ contract Bright is Ownable {
         string storage id = hashUserMap[msg.sender].commitsToReview[_index].id;
         storedData[id].comments[storedData[id].currentNumberReviews].text = _text;
         storedData[id].comments[storedData[id].currentNumberReviews].user = msg.sender;
+        storedData[id].comments[storedData[id].currentNumberReviews].stars = _points/100;
         
         storedData[id].currentNumberReviews++;
         if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
