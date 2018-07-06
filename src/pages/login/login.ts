@@ -12,6 +12,7 @@ import { LoginService } from "../../core/login.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { AppConfig } from "../../app.config";
 import { SetProfilePage } from "../../pages/setprofile/setprofile";
+import { ContractManagerService } from "../../core/contract-manager.service";
 
 @Component({
     selector: "page-login",
@@ -22,7 +23,6 @@ export class LoginPage {
 
     public web3: Web3;
     public msg: string;
-    public account: any;
     public text: any;
     public contract: any;
     public abi: any;
@@ -36,6 +36,7 @@ export class LoginPage {
         public http: HttpClient,
         public translateService: TranslateService,
         loggerSrv: LoggerService,
+        private contractManager: ContractManagerService,
         private web3Service: Web3Service,
         private loginService: LoginService
     ) {
@@ -80,22 +81,14 @@ export class LoginPage {
 
     public login(pass: string) {
         try {
-            this.log.d(this.text);
-            let privK = this.text.Keys.privateKey;
-
-            this.account = this.web3.eth.accounts.decrypt(privK, pass)
-            this.log.d("Imported account from the login file: ", this.account);
-            this.loginService.setAccount(this.account);
-
-            let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
-            this.log.d("Contract address: ", contractAddress);
-            this.contract = new this.web3.eth.Contract(this.abi, contractAddress, {
-                from: this.account.address,
-                gas: AppConfig.GAS_LIMIT,
-                gasPrice: AppConfig.GASPRICE,
-                data: this.bright.deployedBytecode
-            });
-            this.contract.methods.getUser(this.account.address).call()
+            let privK = this.text;
+            let account = this.web3.eth.accounts.decrypt(privK, pass)
+            this.log.d("Imported account from the login file: ", account);
+            this.loginService.setAccount(account);
+            this.contractManager.init(account);
+            this.log.d("Account setted");
+         
+            this.contractManager.getUserDetails(account.address)
                 .then((dataUser) => {
                     let posEmail = 1;
                     if (dataUser[posEmail] == "") {
@@ -116,33 +109,33 @@ export class LoginPage {
                     this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                 });
 
-        }
-        catch (e) {
-            if (e instanceof TypeError) {
-                this.log.e("File not loaded: ", e);
-                this.translateService.get("app.fileNotLoaded").subscribe(
-                    result => {
-                        this.msg = result;
-                    },
-                    err => {
-                        this.log.e("Error translating string", err);
-                    });
-            } else if (e instanceof Error) {
-                this.translateService.get("app.wrongPassword").subscribe(
-                    result => {
-                        this.msg = result;
-                        this.log.e(result, e);
-                    },
-                    err => {
-                        this.log.e("Error translating string", err);
-                    });
-            }
-        }
-
     }
+    catch(e) {
+        if (e instanceof TypeError) {
+            this.log.e("File not loaded: ", e);
+            this.translateService.get("app.fileNotLoaded").subscribe(
+                result => {
+                    this.msg = result;
+                },
+                err => {
+                    this.log.e("Error translating string", err);
+                });
+        } else if (e instanceof Error) {
+            this.translateService.get("app.wrongPassword").subscribe(
+                result => {
+                    this.msg = result;
+                    this.log.e(result, e);
+                },
+                err => {
+                    this.log.e("Error translating string", err);
+                });
+        }
+    }
+
+}
 
     public register() {
-        this.navCtrl.push(NewuserPage);
-    }
+    this.navCtrl.push(NewuserPage);
+}
 
 }
