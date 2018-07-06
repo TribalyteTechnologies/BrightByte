@@ -9,6 +9,7 @@ import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-setprofile",
@@ -21,6 +22,7 @@ export class SetProfilePage {
 	public abijson: any;
 	public bright: any;
 	public myForm: FormGroup;
+	public isButtonPressed: boolean;
 	public contract: any;
 	public msg: string;
 	public nonce: string;
@@ -28,15 +30,16 @@ export class SetProfilePage {
 
 	constructor(
 		public navCtrl: NavController,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
 		private web3Service: Web3Service,
 		public fb: FormBuilder,
+		public translateService: TranslateService,
 		public http: HttpClient,
 		private contractManagerService: ContractManagerService,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("SetProfilePage");
+		this.log = loggerSrv.get("SetProfilePage");
 		this.account = this.loginService.getAccount();
 		this.log.d("Unlocked account: ", this.account);
 		this.http.get("../assets/build/Bright.json").subscribe(data => {
@@ -54,10 +57,10 @@ export class SetProfilePage {
 	}
 
 	public updateProfile(name: string, mail: string) {
+		this.isButtonPressed = true;
 		this.contractManagerService.getAllUserEmail()
-			.then((resolve) => {
-				this.log.d("ARRAY Emails: ", resolve);
-				let arrayEmails = resolve;
+			.then((arrayEmails) => {
+				this.log.d("ARRAY Emails: ", arrayEmails);
 				let emailUsed = false;
 				this.log.d("arrayEmails.length:", arrayEmails.length);
 				for (let i = 0; i < arrayEmails.length; i++) {
@@ -74,15 +77,34 @@ export class SetProfilePage {
 								this.navCtrl.push(TabsPage);
 							}
 						}).catch((e) => {
-							this.log.d("Transaction Error!!",e);
-							this.msg = "Transaction Error!!";
+							this.translateService.get("setProfile.tx").subscribe(
+								result => {
+									this.msg = result;
+									this.log.e(result, e);
+								},
+								err => {
+									this.log.e("Error translating string", err);
+								});
 						});
 				} else {
-					this.msg = "Email already in use";
+					this.isButtonPressed = false;
+					this.translateService.get("setProfile.emailUsed").subscribe(
+						result => {
+							this.msg = result;
+						},
+						err => {
+							this.log.e("Error translating string", err);
+						});
 				}
 			}).catch((e) => {
-				this.log.d("Error getting emails!!", e);
-				this.msg = "Error getting emails!!";
+				this.translateService.get("setProfile.getEmails").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 			});
 
 

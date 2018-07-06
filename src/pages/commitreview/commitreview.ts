@@ -5,6 +5,7 @@ import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { NavParams } from "ionic-angular";
 import { ContractManagerService } from "../../core/contract-manager.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-commitReview",
@@ -15,6 +16,7 @@ export class CommitReviewPage {
 	public account: any;
 	public commitDetails: Object;
 	public date: string;
+	public isBackButtonDisabled = false;
 	public indexArray;
 	public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
 	public rate = 0;
@@ -26,14 +28,15 @@ export class CommitReviewPage {
 
 	constructor(
 		public navCtrl: NavController,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
 		private web3Service: Web3Service,
-		private navParams: NavParams,
+		public translateService: TranslateService,
+		navParams: NavParams,
 		private contractManagerService: ContractManagerService,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("CommitReviewPage");
+		this.log = loggerSrv.get("CommitReviewPage");
 		this.account = this.loginService.getAccount();
 		this.commitDetails = navParams.get("commitDetails");
 		this.indexArray = navParams.get("indexArray");
@@ -43,11 +46,17 @@ export class CommitReviewPage {
 
 	public addReview(textComment) {
 		this.isButtonDisabled = true;
-		this.isButtonBackDisabled = true;
+		this.isBackButtonDisabled = true;
 		if (!textComment) {
-			this.msg = "Please, write your review";
+			this.translateService.get("commitReview.emptyField").subscribe(
+				result => {
+					this.msg = result;
+				},
+				err => {
+					this.log.e("Error translating string", err);
+				});
 			this.isButtonDisabled = false;
-			this.isButtonBackDisabled = false;  
+			this.isBackButtonDisabled = false;
 		} else {
 			this.msg = "";
 			this.log.d("index: ", this.indexArray);
@@ -55,14 +64,27 @@ export class CommitReviewPage {
 				.then((resolve) => {
 					this.log.d("Contract manager response: ", resolve);
 					if (resolve.blockNumber > 4929812) {
-						this.isButtonBackDisabled = false;
-						this.msg1 = "Review successfully done";
+						this.isBackButtonDisabled = false;
+						this.translateService.get("commitReview.reviewDone").subscribe(
+							result => {
+							},
+								this.msg1 = result;
+							err => {
+								this.log.e("Error translating string", err);
+							});
 					}
 				}).catch((e) => {
-					this.isButtonBackDisabled =false;
+					this.isBackButtonDisabled = false;
 					this.isButtonDisabled = false;
-					this.log.e("Transaction Error!!", e);
-					this.msg = "Transaction Error!!";
+					this.translateService.get("commitReview.txError").subscribe(
+						result => {
+							this.msg = result;
+							this.log.e(result, e);
+						},
+						err => {
+							this.log.e("Error translating string", err);
+						});
+
 				});
 		}
 	}
@@ -70,10 +92,26 @@ export class CommitReviewPage {
 		this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
 		switch (value) {
 			case 0: this.star[0] = "star"; this.rate = 100; break;
-			case 1: this.star[0] = "star"; this.star[1] = "star"; this.rate = 200; break;
-			case 2: this.star[0] = "star"; this.star[1] = "star"; this.star[2] = "star"; this.rate = 300; break;
-			case 3: this.star[0] = "star"; this.star[1] = "star"; this.star[2] = "star"; this.star[3] = "star"; this.rate = 400; break;
-			case 4: this.star[0] = "star"; this.star[1] = "star"; this.star[2] = "star"; this.star[3] = "star"; this.star[4] = "star"; this.rate = 500; break;
+			case 1:
+				for (let i = 0; i < 2; i++) {
+					this.star[i] = "star";
+				}
+				this.rate = 200; break;
+			case 2:
+				for (let i = 0; i < 3; i++) {
+					this.star[i] = "star";
+				}
+				this.rate = 300; break;
+			case 3:
+				for (let i = 0; i < 4; i++) {
+					this.star[i] = "star";
+				}
+				this.rate = 400; break;
+			case 4:
+				for (let i = 0; i < 5; i++) {
+					this.star[i] = "star";
+				}
+				this.rate = 500; break;
 			default: this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]; this.rate = 0; break;
 		}
 	}

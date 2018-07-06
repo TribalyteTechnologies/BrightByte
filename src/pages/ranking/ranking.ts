@@ -5,6 +5,7 @@ import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../core/contract-manager.service";
 import { default as Web3 } from "web3";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
 	selector: "page-ranking",
@@ -19,13 +20,14 @@ export class RankingPage {
 
 	constructor(
 		public navCtrl: NavController,
-		private loggerSrv: LoggerService,
+		loggerSrv: LoggerService,
 		private web3Service: Web3Service,
+		public translateService: TranslateService,
 		private contractManagerService: ContractManagerService,
 		private loginService: LoginService
 	) {
 		this.web3 = this.web3Service.getWeb3();
-		this.log = this.loggerSrv.get("RankingPage");
+		this.log = loggerSrv.get("RankingPage");
 		this.account = this.loginService.getAccount();
 		this.log.d("Imported account: ", this.account);
 	}
@@ -37,8 +39,14 @@ export class RankingPage {
 				this.log.d("User data obtained: ", resolve);
 				this.userDetails = resolve;
 			}).catch((e) => {
-				this.log.e("Error getting user info!!", e);
-				this.msg = "Error getting user info!!";
+				this.translateService.get("ranking.getUserInfo").subscribe(
+					result => {
+						this.msg = result;
+						this.log.e(result, e);
+					},
+					err => {
+						this.log.e("Error translating string", err);
+					});
 			});
 	}
 }

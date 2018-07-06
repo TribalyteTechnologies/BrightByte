@@ -1,31 +1,32 @@
 <ion-header>
 	<ion-navbar>
-		<ion-title>{{ "setprofile.title" | translate }}</ion-title>
+		<ion-title>{{ "setProfile.title" | translate }}</ion-title>
 	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
-	<h2>{{ "setprofile.header" | translate }}</h2>
+	<h2>{{ "setProfile.header" | translate }}</h2>
 	<form [formGroup]="myForm" (ngSubmit)="updateProfile(myForm.get('name').value,myForm.get('email').value)" novalidate>
 
 		<ion-item>
-			<ion-label color="primary">{{ "setprofile.name" | translate }}</ion-label>
+			<ion-label color="primary">{{ "setProfile.name" | translate }}</ion-label>
 			<ion-input formControlName="name" type="text" placeholder="name"></ion-input>
 		</ion-item>
 		<ion-item *ngIf="myForm.get('name').errors && myForm.get('name').dirty">
-			<p color="danger" ion-text *ngIf="myForm.get('name').hasError('required')">Field is required</p>
+			<p color="danger" ion-text *ngIf="myForm.get('name').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
 		</ion-item>
 		<ion-item>
 			<ion-label color="primary">Email</ion-label>
 			<ion-input formControlName="email" type="email" placeholder="email@example.com"></ion-input>
 		</ion-item>
 		<ion-item *ngIf="myForm.get('email').errors && myForm.get('email').dirty">
-			<p color="danger" ion-text *ngIf="myForm.get('email').hasError('email')">It is not an email</p>
-			<p color="danger" ion-text *ngIf="myForm.get('email').hasError('required')">Field is required</p>
+			<p color="danger" ion-text *ngIf="myForm.get('email').hasError('email')">{{ "setProfile.notEmail" | translate }}</p>
+			<p color="danger" ion-text *ngIf="myForm.get('email').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
 		</ion-item>
 		<p class="error-message">{{msg}}</p>
-
-		<button ion-button block type="submit" [disabled]="myForm.invalid">{{ "setprofile.set" | translate }}</button>
+		<ion-spinner [hidden]="!isButtonPressed"></ion-spinner>
+		<br>
+		<button ion-button block type="submit" [disabled]="myForm.invalid">{{ "setProfile.set" | translate }}</button>
 
 	</form>
 

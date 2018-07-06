@@ -22,11 +22,11 @@ export class NewuserPage {
     constructor(
         public navCtrl: NavController,
         public http: HttpClient,
-        private loggerSrv: LoggerService,
+        loggerSrv: LoggerService,
         private web3Service: Web3Service,
         private contractManager: ContractManagerService
     ) {
-        this.log = this.loggerSrv.get("NewUserPage");
+        this.log = loggerSrv.get("NewUserPage");
         this.web3 = this.web3Service.getWeb3();
 
     }

@@ -7,7 +7,7 @@ import { AppConfig } from "../app.config";
 import { LoginPage } from "../pages/login/login";
 
 @Component({
-  templateUrl: "app.html"
+    templateUrl: "app.html"
 })
 export class BrightByteApp {
 
@@ -15,15 +15,15 @@ export class BrightByteApp {
     private log: ILogger;
 
     constructor(private translateService: TranslateService,
-                private loggerSrv: LoggerService,
-                platform: Platform) {
-        
+        private loggerSrv: LoggerService,
+        platform: Platform) {
+
         this.log = this.loggerSrv.get("AppComponent");
-        
-        this.initTranslate();        
-        
+
+        this.initTranslate();
+
         platform.ready().then(() => {
-            this.log.d("Platform Ready")    
+            this.log.d("Platform Ready")
         });
     }
 

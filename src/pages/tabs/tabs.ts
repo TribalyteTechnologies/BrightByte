@@ -18,8 +18,11 @@ export class TabsPage {
 	tab4Root = RankingPage;
 	private log: ILogger;
 
-	constructor(private navParams: NavParams, private loggerSrv: LoggerService) {
-		this.log = this.loggerSrv.get("TabsPage");
+	constructor(
+		private navParams: NavParams, 
+		loggerSrv: LoggerService
+	) {
+		this.log = loggerSrv.get("TabsPage");
 
 	}
 }

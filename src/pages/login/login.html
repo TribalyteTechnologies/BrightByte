@@ -16,11 +16,11 @@
         <ion-input type="password" placeholder="pass" [(ngModel)]="pass"></ion-input>
     </ion-item>
     <p class="error-message">{{msg}}</p>
-    <button ion-button (click)="login(pass)">Login</button>
+    <button ion-button (click)="login(pass)">{{ "app.login" | translate }}</button>
     <button ion-button (click)="register()">{{ "app.register" | translate }}</button>
     <br>
     <div *ngIf="isDebugMode">
-        <p>Depuracion</p>
+        <p>{{ "app.debug" | translate }}</p>
         <p>{{textDebugging}}</p>
     </div>
 

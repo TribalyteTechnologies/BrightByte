@@ -10,9 +10,9 @@ export class Web3Service {
     private log: ILogger;
 
     constructor(
-        public loggerSrv: LoggerService,
+        loggerSrv: LoggerService,
     ) {
-        this.log = this.loggerSrv.get("Web3Service");
+        this.log = loggerSrv.get("Web3Service");
         this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.URL_NODE));
         Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
 

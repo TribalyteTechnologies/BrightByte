@@ -35,12 +35,12 @@ export class LoginPage {
     constructor(public navCtrl: NavController,
         public http: HttpClient,
         public translateService: TranslateService,
-        private loggerSrv: LoggerService,
+        loggerSrv: LoggerService,
         private web3Service: Web3Service,
         private loginService: LoginService
     ) {
         this.web3 = this.web3Service.getWeb3();
-        this.log = this.loggerSrv.get("LoginPage");
+        this.log = loggerSrv.get("LoginPage");
         this.isDebugMode = AppConfig.LOG_DEBUG;
         this.http.get("../assets/build/Bright.json").subscribe(data => {
             this.abijson = data;
@@ -68,7 +68,13 @@ export class LoginPage {
                 this.text = JSON.parse(reader.result);
             };
         } else {
-            this.msg = "The format of the uploaded file is incorrect";
+            this.translateService.get("app.wrongFile").subscribe(
+                result => {
+                    this.msg = result;
+                },
+                err => {
+                    this.log.e("Error translating string", err);
+                });
         }
     };
 
@@ -100,15 +106,21 @@ export class LoginPage {
                         this.navCtrl.push(TabsPage);
                     }
                 }).catch((e) => {
+                    this.translateService.get("app.noRpc").subscribe(
+                        result => {
+                            this.msg = result;
+                        },
+                        err => {
+                            this.log.e("Error translating string", err);
+                        });
                     this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
-                    this.msg = "No RPC connetion";
                 });
 
         }
         catch (e) {
             if (e instanceof TypeError) {
                 this.log.e("File not loaded: ", e);
-                this.translateService.get("app.FileNotLoaded").subscribe(
+                this.translateService.get("app.fileNotLoaded").subscribe(
                     result => {
                         this.msg = result;
                     },
@@ -116,10 +128,10 @@ export class LoginPage {
                         this.log.e("Error translating string", err);
                     });
             } else if (e instanceof Error) {
-                this.log.e("Wrong password: ", e);
-                this.translateService.get("app.WrongPassword").subscribe(
+                this.translateService.get("app.wrongPassword").subscribe(
                     result => {
                         this.msg = result;
+                        this.log.e(result, e);
                     },
                     err => {
                         this.log.e("Error translating string", err);

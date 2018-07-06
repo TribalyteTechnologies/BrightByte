@@ -13,7 +13,6 @@ export class ContractManagerService {
 
     private createAccount: any;
     private log: ILogger;
-    private account: any;
     private nonce: string;
     private web3: Web3;
     public contract: any;
@@ -25,13 +24,11 @@ export class ContractManagerService {
     constructor(
         public http: HttpClient,
         private web3Service: Web3Service,
-        private loggerSrv: LoggerService,
+        loggerSrv: LoggerService,
         private loginService: LoginService
     ) {
-        this.log = this.loggerSrv.get("ContractManagerService");
+        this.log = loggerSrv.get("ContractManagerService");
         this.web3 = this.web3Service.getWeb3();
-        this.account = this.loginService.getAccount();
-        this.log.d("account: ", this.account);
         this.http.get("../assets/build/Bright.json").subscribe(data => {
             this.abijson = data;
             this.abi = data["abi"];
@@ -41,7 +38,6 @@ export class ContractManagerService {
             //If you want do after the promise. Code here
             this.log.d("TruffleContract function: ", this.bright);
         });
-        this.log.d("Constructor account: ", this.account);
     }
 
     public createUser(pass: string): Promise<Blob> {
@@ -60,13 +56,13 @@ export class ContractManagerService {
     }
     public setProfile(name: string, mail: string): Promise<any> {
         this.getAccountAndContract();
-
-        this.log.d("account: ", this.account);
+        let account = this.loginService.getAccount();
+        this.log.d("account: ", account);
         this.log.d("Contract Address: ", this.bright.networks[AppConfig.NET_ID].address);
-        this.log.d("Public Address: ", this.account.address);
+        this.log.d("Public Address: ", account.address);
         this.log.d("Contract artifact", this.contract);
 
-        return this.web3.eth.getTransactionCount(this.account.address)
+        return this.web3.eth.getTransactionCount(account.address)
             .then(result => {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
@@ -83,7 +79,7 @@ export class ContractManagerService {
                     data: data
                 };
                 const tx = new Tx(rawtx);
-                let priv = this.account.privateKey.substring(2);
+                let priv = account.privateKey.substring(2);
                 let privateKey = new Buffer(priv, "hex");
                 tx.sign(privateKey);
 
@@ -97,7 +93,7 @@ export class ContractManagerService {
                     if (!err) {
                         this.log.d("Hash transaction", transactionHash);
                     } else {
-                        this.log.e(err);
+                        this.log.e("Error sending tx: ", err);
                     }
                 });
 
@@ -108,14 +104,15 @@ export class ContractManagerService {
     }
     public addCommit(url: string, usersMail: string[]): Promise<any> {
         this.getAccountAndContract();
+        let account = this.loginService.getAccount();
         let contractAddress = this.bright.networks[AppConfig.NET_ID].address;
         this.log.d("Contract Address: ", contractAddress);
-        this.log.d("Public Address: ", this.account.address);
+        this.log.d("Public Address: ", account.address);
         this.log.d("Variables: url ", url);
         this.log.d("UsersMail: ", usersMail);
         this.log.d("Contract artifact", this.contract);
 
-        return this.web3.eth.getTransactionCount(this.account.address)
+        return this.web3.eth.getTransactionCount(account.address)
             .then(result => {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
@@ -143,7 +140,7 @@ export class ContractManagerService {
                     data: data
                 };
                 const tx = new Tx(rawtx);
-                let priv = this.account.privateKey.substring(2);
+                let priv = account.privateKey.substring(2);
                 let privateKey = new Buffer(priv, "hex");
                 tx.sign(privateKey);
 
@@ -164,15 +161,15 @@ export class ContractManagerService {
                 this.log.e("Error getting nonce in addcommit: ", e);
             });
     }
-    public getCommits(): Promise<any> {
-        this.account = this.loginService.getAccount();
+    public getCommits(): Promise<string[][]> {
+        let account = this.loginService.getAccount();
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
             this.abijson = data;
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
             this.contractAddress = this.bright.networks[AppConfig.NET_ID].address;
             return this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress, {
-                from: this.account.address,
+                from: account.address,
                 gas: AppConfig.GAS_LIMIT,
                 gasPrice: AppConfig.GASPRICE,
                 data: this.bright.deployedBytecode
@@ -194,14 +191,14 @@ export class ContractManagerService {
             });
     }
     public getAllUserEmail(): Promise<any> {
-        this.account = this.loginService.getAccount();
+        let account = this.loginService.getAccount();
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
             this.abijson = data;
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
             this.contractAddress = this.bright.networks[AppConfig.NET_ID].address;
-            return this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress, {
-                from: this.account.address,
+            this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress, {
+                from: account.address,
                 gas: AppConfig.GAS_LIMIT,
                 gasPrice: AppConfig.GASPRICE,
                 data: this.bright.deployedBytecode
@@ -221,73 +218,71 @@ export class ContractManagerService {
                 this.log.e("Error getting all user emails :", err);
             })
     }
-    private getAccountAndContract() {
+    private getAccountAndContract(): Promise<void> {
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
+            this.log.d("Object dataaaaa:", data);
             this.abijson = data;
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
             this.contractAddress = this.bright.networks[AppConfig.NET_ID].address;
-            this.account = this.loginService.getAccount();
+            let account = this.loginService.getAccount();
             this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
-                from: this.account.address,
+                from: account.address,
                 gas: AppConfig.GAS_LIMIT,
                 gasPrice: AppConfig.GASPRICE,
                 data: this.bright.deployedBytecode
             });
-        }).then(() => {
             this.log.d("TruffleContract function: ", this.bright);
+
         }).catch(err => {
-            this.log.e(err);
+            this.log.e("Error reading Bright.json: ", err);
         });
 
     }
-    public getCommitsToReview() {
-        this.account = this.loginService.getAccount();
+    public getCommitsToReview(): Promise<any> {
+        let account = this.loginService.getAccount();
         return this.http.get("../assets/build/Bright.json").toPromise().then(data => {
             this.abijson = data;
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
             this.contract = new this.web3.eth.Contract(this.abi, this.bright.networks[AppConfig.NET_ID].address, {
-                from: this.account.address,
+                from: account.address,
                 gas: AppConfig.GAS_LIMIT,
                 gasPrice: AppConfig.GASPRICE,
                 data: this.bright.deployedBytecode
             });
         }).then(() => {
-            return this.contract.methods.getNumberCommitsToReviewByMe().call()
-                .then(result => {
-                    let numberUserCommits = result;
-                    this.log.d("NumberuserCommits: ", result);
-                    let promises = new Array<Promise<string>>();
-                    for (let i = 0; i < numberUserCommits; i++) {
-                        let promise = this.contract.methods.getCommitsToReviewByMe(i).call();
-                        promises.push(promise);
-                    }
-                    return Promise.all(promises);
-                })
-        })
-            .catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
-            });
+            return this.contract.methods.getNumberCommitsToReviewByMe().call();
+        }).then(result => {
+            let numberUserCommits = result;
+            this.log.d("NumberuserCommits: ", result);
+            let promises = new Array<Promise<string>>();
+            for (let i = 0; i < numberUserCommits; i++) {
+                let promise = this.contract.methods.getCommitsToReviewByMe(i).call();
+                promises.push(promise);
+            }
+            return Promise.all(promises);
+
+        }).catch(err => {
+            this.log.e("Error calling BrightByte smart contract :", err);
+        });
     }
-    public getDetailsCommits(id: string): Promise<Object> {
+    public getDetailsCommits(id: string): Promise<boolean | number | string | null> {
         return this.contract.methods.getDetailsCommits(id).call()
-            .then(details => {
-                return details;
-            }).catch(err => {
+            .catch(err => {
                 this.log.e("Error calling BrightByte smart contract :", err);
             });
     }
 
     public setReview(index: number, text: string, points: number): Promise<any> {
         this.getAccountAndContract();
-
-        this.log.d("account: ", this.account);
+        let account = this.loginService.getAccount();
+        this.log.d("account: ", account);
         this.log.d("Contract Address: ", this.bright.networks[AppConfig.NET_ID].address);
-        this.log.d("Public Address: ", this.account.address);
+        this.log.d("Public Address: ", account.address);
         this.log.d("Contract artifact", this.contract);
 
-        return this.web3.eth.getTransactionCount(this.account.address)
+        return this.web3.eth.getTransactionCount(account.address)
             .then(result => {
                 this.nonce = "0x" + (result).toString(16);
                 this.log.d("Value NONCE", this.nonce);
@@ -305,7 +300,7 @@ export class ContractManagerService {
                     data: data
                 };
                 const tx = new Tx(rawtx);
-                let priv = this.account.privateKey.substring(2);
+                let priv = account.privateKey.substring(2);
                 let privateKey = new Buffer(priv, "hex");
                 tx.sign(privateKey);
 
@@ -328,7 +323,7 @@ export class ContractManagerService {
             });
 
     }
-    public getCommentsOfCommit(index: number): Promise<any> {
+    public getCommentsOfCommit(index: number): Promise<Array<string>> {
         return this.contract.methods.getNumberComments(index).call()
             .then(result => {
                 this.log.d("Number of comments: ", result);
@@ -344,12 +339,10 @@ export class ContractManagerService {
                 this.log.e("Error calling BrightByte smart contract :", err);
             });
     }
-    public getUserDetails(hash: string) {
+    public getUserDetails(hash: string): Promise<Array<string | number>> {
         return this.getAccountAndContract().then(() => {
             return this.contract.methods.getUser(hash).call()
-                .then(result => {
-                    return result;
-                }).catch(err => {
+                .catch(err => {
                     this.log.e("Error calling BrightByte smart contract :", err);
                 });
         });

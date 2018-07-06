@@ -1,23 +1,24 @@
 <ion-header>
 	<ion-navbar>
 		<ion-title>
-			Commit Details
+			{{ "commitDetails.title" | translate }}
 		</ion-title>
 	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
+	<!--TODO the contract service returned a proper class with members like url, author, date, etc. The poor interface with Solidity doesn’t need to reach the Angular views-->
 	<p>Url: {{commitDetails[0]}}</p>
-	<p>Author: {{commitDetails[1]}}</p>
-	<p>Date: {{date}}</p>
-	<p>Project: {{commitDetails[3]}}</p>
-	<p>Number Reviews: {{commitDetails[4]}}</p>
-	<p>Pending Reviews: {{commitDetails[5]}}</p>
-	<p>Current Number Reviews: {{commitDetails[6]}}</p>
+	<p>{{ "commitDetails.author" | translate }}: {{ commitDetails[1] }}</p>
+	<p>{{ "commitDetails.date" | translate }}: {{ date }}</p>
+	<p>{{ "commitDetails.project" | translate }}: {{ commitDetails[3] }}</p>
+	<p>{{ "commitDetails.nReviews" | translate }}: {{ commitDetails[4] }}</p>
+	<p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails[5] }}</p>
+	<p>{{ "commitDetails.currrentNReviews" | translate }}: {{ commitDetails[6] }}</p>
 	<p class="error-message">{{msg}}</p>
 	<ion-list inset>
-		<ion-item *ngFor="let comment of arrayComments">
-			<p>User {{ comment[1] }} named {{comment[2]}} commented: </p>
+		<ion-item *ngFor="let comment of commentsArray">
+			<p>{{ comment[2] }} {{ "commitDetails.commented" | translate }}: </p>
 			<p>{{ comment[0] }}</p>
 		</ion-item>
 	</ion-list>
