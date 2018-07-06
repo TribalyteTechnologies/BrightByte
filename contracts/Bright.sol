@@ -38,6 +38,7 @@ contract Bright is Ownable {
         string text;
         address user;
         uint stars;
+        uint vote; //0 => no vote, 1 => dont agree, 2 => agree
     }
     function setProfile (string _name, string _email) public {
         //require(_hash == msg.sender);
@@ -145,12 +146,13 @@ contract Bright is Ownable {
             hashUserMap[msg.sender].commitsToReview[_index].title,
             hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
     }
-    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string, uint){
+    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string, uint, uint){
         string storage id = hashUserMap[msg.sender].userCommits[_indexCommit].id; 
         return (storedData[id].comments[_indexComments].text, 
                 storedData[id].comments[_indexComments].user, 
                 hashUserMap[storedData[id].comments[_indexComments].user].name,
-                storedData[id].comments[_indexComments].stars); 
+                storedData[id].comments[_indexComments].stars,
+                storedData[id].comments[_indexComments].vote); 
     }
     function getNumberComments(uint _index)public view returns(uint){
         return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;
@@ -178,5 +180,10 @@ contract Bright is Ownable {
         hashUserMap[msg.sender].numberCommitsToReviewByMe--;
         hashUserMap[msg.sender].numberCommitsReviewedByMe++;
         
+    }
+    function setVote(string _id, uint _indexComment, uint _vote) public {
+        if(storedData[_id].comments[_indexComment].vote == 0){ //If this protection is not needed, remove the if. It is check if the user has already voted
+             storedData[_id].comments[_indexComment].vote = _vote;
+        }
     }
 }
