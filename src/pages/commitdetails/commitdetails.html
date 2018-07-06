@@ -19,7 +19,7 @@
 	<p class="error-message">{{msg}}</p>
 	<ion-list inset>
 		<ion-item *ngFor="let comment of commentsArray">
-			<p>{{ comment[2] }} {{ "commitDetails.commented" | translate }}: </p>
+			<p>{{ comment[2] }} {{ "commitDetails.commented" | translate }} ({{comment[3]}} {{ "commitDetails.stars" | translate }}): </p>
 			<p>{{ comment[0] }}</p>
 		</ion-item>
 	</ion-list>

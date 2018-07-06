@@ -84,7 +84,8 @@
         "currrentNReviews": "Current Number Reviews",
         "commented": "has commented",
         "gettingComments": "Error getting Comments",
-        "titleCommit": "Title"
+        "titleCommit": "Title",
+        "stars": "stars"
     },
     "commitReview": {
         "textField": "Text field",
