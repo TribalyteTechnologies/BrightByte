@@ -105,7 +105,7 @@ export class ContractManagerService {
             throw e;
         });
     }
-    public addCommit(url: string, usersMail: string[]): Promise<any> {
+    public addCommit(url: string, title: string,usersMail: string[]): Promise<any> {
         let contractArtifact;
         let contractAddress;
         return this.initProm.then(contract => {
@@ -118,8 +118,8 @@ export class ContractManagerService {
             this.log.d("UsersMail: ", usersMail);
 
             return this.web3.eth.getTransactionCount(this.currentUser.address)
-        }).then(result => {
-            let nonce = "0x" + (result).toString(16);
+        }).then(nonceValue => {
+            let nonce = "0x" + (nonceValue).toString(16);
             this.log.d("Value NONCE", nonce);
 
             let urlSplitted = url.split("/");
@@ -127,9 +127,8 @@ export class ContractManagerService {
             let project = urlSplitted[4];
             let id = urlSplitted[6];
 
-            let data = contractArtifact.methods.setNewCommit(id, url, project, usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
+            let data = contractArtifact.methods.setNewCommit(id, title, url, project, usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
             this.log.d("Introduced url: ", url);
-            this.log.d("Introduced project: ", project);
             this.log.d("Introduced user1: ", usersMail[0]);
             this.log.d("Introduced user2: ", usersMail[1]);
             this.log.d("Introduced user3: ", usersMail[2]);

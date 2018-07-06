@@ -1,16 +1,16 @@
 <ion-header>
 	<ion-navbar [hideBackButton]="isBackButtonDisabled">
 		<ion-title>
-			{{ "commitDetails.title" | translate }}
+			{{ "commitReview.title" | translate }}
 		</ion-title>
 	</ion-navbar>
 </ion-header>
 
 <ion-content padding>
-	<p>Url: {{commitDetails[0]}}</p>
-	<p>{{ "commitDetails.author" | translate }}: {{commitDetails[1]}}</p>
+	<a target="_blank" rel="noopener noreferrer" href={{commitDetails[0]}}>{{commitDetails[0]}}</a>
+	<p>{{ "commitDetails.author" | translate }}: {{commitDetails[2]}}</p>
 	<p>{{ "commitDetails.date" | translate }}: {{date}}</p>
-	<p>{{ "commitDetails.project" | translate }}: {{commitDetails[3]}}</p>
+	<p>{{ "commitDetails.project" | translate }}: {{project}}</p>
 	<p>{{ "commitDetails.nReviews" | translate }}: {{commitDetails[4]}}</p>
 	<p>{{ "commitDetails.pReviews" | translate }}: {{commitDetails[5]}}</p>
 	<p>{{ "commitDetails.currrentNReviews" | translate }}: {{commitDetails[6]}}</p>

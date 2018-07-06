@@ -24,6 +24,7 @@ export class CommitReviewPage {
 	public isButtonDisabled = false;
 	public isButtonBackDisabled = false;
 	public msg1: string;
+	private project: string;
 	private log: ILogger;
 
 	constructor(
@@ -40,8 +41,9 @@ export class CommitReviewPage {
 		this.account = this.loginService.getAccount();
 		this.commitDetails = navParams.get("commitDetails");
 		this.indexArray = navParams.get("indexArray");
+		this.project = navParams.get("commitProject");
 		this.log.d("Details Object: ", this.commitDetails);
-		this.date = new Date((this.commitDetails[2] * 1000)).toLocaleString();
+		this.date = new Date((this.commitDetails[3] * 1000)).toLocaleString();
 	}
 
 	public addReview(textComment) {

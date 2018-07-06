@@ -64,6 +64,7 @@ export class CommitPage {
 			}
 		}  //TODO Use a service to get th id and project from the url
 		let urlSplitted = commit[0].split("/");
+		let project = urlSplitted[4];
 		let id = urlSplitted[6];
 		this.contractManagerService.getDetailsCommits(id)
 			.then(details => {
@@ -71,6 +72,7 @@ export class CommitPage {
 				this.log.d("Index of row pressed: ", index);
 				this.navCtrl.push(CommitDetailsPage, {
 					commitDetails: details,
+					commitProject: project,
 					commitIndex: index
 				});
 			}).catch((e) => {

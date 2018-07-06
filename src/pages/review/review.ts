@@ -56,12 +56,14 @@ export class ReviewPage {
 		}
 		let urlSplitted = commit[0].split("/");
 		let id = urlSplitted[6];
+		let project = urlSplitted[4];
 		this.contractManagerService.getDetailsCommits(id)
 			.then(details => {
 				this.log.d("Details commits: ", details);
 				this.log.d("Index: ", index);
 				this.navCtrl.push(CommitReviewPage, {
 					commitDetails: details,
+					commitProject: project,
 					indexArray: index
 				});
 			}).catch((e) => {
