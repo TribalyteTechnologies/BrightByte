@@ -7,6 +7,7 @@ import { HttpClient } from "@angular/common/http";
 import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
+import { PromiEvent } from "web3/types";
 
 interface TrbSmartContractJson {
     abi: Array<any>;
@@ -76,30 +77,9 @@ export class ContractManagerService {
             let bytecodeData = contractArtifact.methods.setProfile(name, mail).encodeABI();
             this.log.d("Nonce value: ", nonce);
             this.log.d("Bytecode data: ", bytecodeData);
-            let contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
-            this.log.d("Contract address: ", contractAddress);
-            let rawtx = {
-                nonce: nonce,
-                gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice), //web3.eth.getGasPrice() could be used to determine which is the gasPrise needed
-                gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
-                to: contractAddress,
-                data: bytecodeData
-            };
-            const tx = new Tx(rawtx);
-            let priv = this.currentUser.privateKey.substring(2);
-            tx.sign(new Buffer(priv, "hex"));
-            let raw = "0x" + tx.serialize().toString("hex");
-            this.log.d("Rawtx: ", rawtx);
-            this.log.d("Priv si 0x: ", priv);
-            this.log.d("Raw: ", raw);
-            this.log.d("tx unsign: ", tx);
-            return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
-                if (!err) {
-                    this.log.d("Hash transaction", transactionHash);
-                } else {
-                    this.log.e("Error sending signed transaction: ", err);
-                }
-            });
+
+            return this.sendTx(nonce, bytecodeData);
+            
         }).catch(e => {
             this.log.e("Error setting profile: ", e);
             throw e;
@@ -127,40 +107,16 @@ export class ContractManagerService {
             let project = urlSplitted[4];
             let id = urlSplitted[6];
 
-            let data = contractArtifact.methods.setNewCommit(id, title, url, project, usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
+            let bytecodeData = contractArtifact.methods.setNewCommit(id, title, url, project, usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced user1: ", usersMail[0]);
             this.log.d("Introduced user2: ", usersMail[1]);
             this.log.d("Introduced user3: ", usersMail[2]);
             this.log.d("Introduced user4: ", usersMail[3]);
 
-            this.log.d("DATA: ", data);
+            this.log.d("DATA: ", bytecodeData);
+            return this.sendTx(nonce, bytecodeData);
 
-            let rawtx = {
-                nonce: nonce,
-                gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),
-                gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
-                to: contractAddress,
-                data: data
-            };
-            const tx = new Tx(rawtx);
-            let priv = this.currentUser.privateKey.substring(2);
-            let privateKey = new Buffer(priv, "hex");
-            tx.sign(privateKey);
-
-            let raw = "0x" + tx.serialize().toString("hex");
-            this.log.d("Rawtx: ", rawtx);
-            this.log.d("Priv si 0x: ", priv);
-            this.log.d("privatekey: ", privateKey);
-            this.log.d("Raw: ", raw);
-            this.log.d("tx unsign: ", tx);
-            return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
-                if (!err) {
-                    this.log.d("Hash transaction", transactionHash);
-                } else {
-                    this.log.e("Error sending the transaction addcommit: ", err);
-                }
-            });
         }).catch(e => {
             this.log.e("Error getting nonce in addcommit: ", e);
         });
@@ -257,31 +213,7 @@ export class ContractManagerService {
                 this.log.d("Introduced points: ", points);
                 this.log.d("DATA: ", bytecodeData);
 
-                let rawtx = {
-                    nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
-                    to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
-                    data: bytecodeData
-                };
-                const tx = new Tx(rawtx);
-                let priv = this.currentUser.privateKey.substring(2);
-                let privateKey = new Buffer(priv, "hex");
-                tx.sign(privateKey);
-
-                let raw = "0x" + tx.serialize().toString("hex");
-                this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv si 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
-                this.log.d("Raw: ", raw);
-                this.log.d("tx unsign: ", tx);
-                return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
-                    if (!err) {
-                        this.log.d("Hash transaction", transactionHash);
-                    } else {
-                        this.log.e(err);
-                    }
-                });
+                return this.sendTx(nonce, bytecodeData);
 
             }).catch(e => {
                 this.log.e("Error getting nonce value: ", e);
@@ -335,31 +267,7 @@ export class ContractManagerService {
                 this.log.d("Introduced value: ", value);
                 this.log.d("DATA: ", bytecodeData);
 
-                let rawtx = {
-                    nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
-                    to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
-                    data: bytecodeData
-                };
-                const tx = new Tx(rawtx);
-                let priv = this.currentUser.privateKey.substring(2);
-                let privateKey = new Buffer(priv, "hex");
-                tx.sign(privateKey);
-
-                let raw = "0x" + tx.serialize().toString("hex");
-                this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv si 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
-                this.log.d("Raw: ", raw);
-                this.log.d("tx unsign: ", tx);
-                return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
-                    if (!err) {
-                        this.log.d("Hash transaction", transactionHash);
-                    } else {
-                        this.log.e(err);
-                    }
-                });
+                return this.sendTx(nonce, bytecodeData);
 
             }).catch(e => {
                 this.log.e("Error getting nonce value: ", e);
@@ -378,36 +286,39 @@ export class ContractManagerService {
                 let bytecodeData = contractArtifact.methods.readComments(id).encodeABI();
                 this.log.d("Introduced id: ", id);
                 this.log.d("DATA: ", bytecodeData);
-
-                let rawtx = {
-                    nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
-                    to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
-                    data: bytecodeData
-                };
-                const tx = new Tx(rawtx);
-                let priv = this.currentUser.privateKey.substring(2);
-                let privateKey = new Buffer(priv, "hex");
-                tx.sign(privateKey);
-
-                let raw = "0x" + tx.serialize().toString("hex");
-                this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv si 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
-                this.log.d("Raw: ", raw);
-                this.log.d("tx unsign: ", tx);
-                return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
-                    if (!err) {
-                        this.log.d("Hash transaction", transactionHash);
-                    } else {
-                        this.log.e(err);
-                    }
-                });
-
+                return this.sendTx(nonce, bytecodeData);
+                
             }).catch(e => {
                 this.log.e("Error getting nonce value: ", e);
             });
+    }
+    private sendTx(nonce, bytecodeData): PromiEvent<any>{ //PromiEvent<TransactionReceipt>
+        let rawtx = {
+            nonce: nonce,
+            gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+            gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+            to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
+            data: bytecodeData
+        };
+        const tx = new Tx(rawtx);
+        let priv = this.currentUser.privateKey.substring(2);
+        let privateKey = new Buffer(priv, "hex");
+        tx.sign(privateKey);
+
+        let raw = "0x" + tx.serialize().toString("hex");
+        this.log.d("Rawtx: ", rawtx);
+        this.log.d("Priv si 0x: ", priv);
+        this.log.d("privatekey: ", privateKey);
+        this.log.d("Raw: ", raw);
+        this.log.d("tx unsign: ", tx);
+        return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
+            if (!err) {
+                this.log.d("Hash transaction", transactionHash);
+            } else {
+                this.log.e(err);
+            }
+        });
+
     }
 }
 
