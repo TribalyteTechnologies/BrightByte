@@ -39,7 +39,7 @@ contract Bright is Ownable {
     struct Comment{
         string text;
         address user;
-        uint stars;
+        uint score;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
     }
     function setProfile (string _name, string _email) public {
@@ -155,7 +155,7 @@ contract Bright is Ownable {
         return (storedData[id].comments[_indexComments].text, 
                 storedData[id].comments[_indexComments].user, 
                 hashUserMap[storedData[id].comments[_indexComments].user].name,
-                storedData[id].comments[_indexComments].stars,
+                storedData[id].comments[_indexComments].score,
                 storedData[id].comments[_indexComments].vote); 
     }
     function getNumberComments(uint _index)public view returns(uint){
@@ -166,7 +166,7 @@ contract Bright is Ownable {
         string storage id = hashUserMap[msg.sender].commitsToReview[_index].id;
         storedData[id].comments[storedData[id].currentNumberReviews].text = _text;
         storedData[id].comments[storedData[id].currentNumberReviews].user = msg.sender;
-        storedData[id].comments[storedData[id].currentNumberReviews].stars = _points/100;
+        storedData[id].comments[storedData[id].currentNumberReviews].score = _points/100;
         storedData[id].isReadNeeded = true;
         storedData[id].currentNumberReviews++;
         if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
