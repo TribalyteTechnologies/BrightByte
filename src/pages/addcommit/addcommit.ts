@@ -96,10 +96,12 @@ export class AddCommitPopover {
                         });
                 } else {
                     this.contractManagerService.addCommit(url, title, this.usersMail)
-                        .then((resolve) => {
-                            this.log.d("Contract manager response: ", resolve);
-                            if (resolve.blockNumber > 4929812) { // current block when i wrote this line
+                        .then(txResponse => {
+                            this.log.d("Contract manager response: ", txResponse);
+                            if (txResponse) {
                                 this.viewCtrl.dismiss();
+                            } else {
+                                throw "Error: addcommit response is undefine";
                             }
                         }).catch((e) => {
                             this.isTxOngoing = false;

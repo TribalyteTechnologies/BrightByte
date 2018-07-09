@@ -71,10 +71,12 @@ export class SetProfilePage {
 
 				if (!emailUsed) {
 					this.contractManagerService.setProfile(name, mail)
-						.then((resolve) => {
-							this.log.d("Contract manager response: ", resolve);
-							if (resolve.blockNumber > 4929812) { //This number is the current block when i wrote this line
+						.then(txResponse => {
+							this.log.d("Contract manager response: ", txResponse);
+							if (txResponse) {
 								this.navCtrl.push(TabsPage);
+							} else {
+								throw "Error: setreview response is undefine";
 							}
 						}).catch((e) => {
 							this.translateService.get("setProfile.tx").subscribe(
@@ -95,7 +97,7 @@ export class SetProfilePage {
 						err => {
 							this.log.e("Error translating string", err);
 						});
-				}
+                }
 			}).catch((e) => {
 				this.translateService.get("setProfile.getEmails").subscribe(
 					result => {

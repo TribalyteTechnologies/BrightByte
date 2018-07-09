@@ -94,6 +94,7 @@
         "title": "Commit Review",
         "emptyField": "Please, write your review",
         "reviewDone": "Review successfully done",
-        "txError": "Transaction Error"
+        "txError": "Transaction Error",
+        "setReviewUndefine": "Error: setreview response is undefine"
     }
 }
