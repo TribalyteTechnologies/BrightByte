@@ -7,7 +7,7 @@ import { default as Web3 } from "web3";
 import { default as contract } from "truffle-contract";
 import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
-import { ContractManagerService } from "../../core/contract-manager.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from "@ngx-translate/core";
 

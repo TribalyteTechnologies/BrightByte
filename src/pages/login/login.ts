@@ -12,7 +12,7 @@ import { LoginService } from "../../core/login.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { AppConfig } from "../../app.config";
 import { SetProfilePage } from "../../pages/setprofile/setprofile";
-import { ContractManagerService } from "../../core/contract-manager.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 
 @Component({
     selector: "page-login",

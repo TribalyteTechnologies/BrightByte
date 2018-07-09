@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
-import { ContractManagerService } from "../../core/contract-manager.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitReviewPage } from "../commitreview/commitreview"
 import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";

@@ -6,7 +6,7 @@ import { HttpClient } from "@angular/common/http";
 import { PopoverController } from "ionic-angular";
 import { AddCommitPopover } from "../../pages/addcommit/addcommit";
 import { default as Web3 } from "web3";
-import { ContractManagerService } from "../../core/contract-manager.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 import { TranslateService } from "@ngx-translate/core";
 

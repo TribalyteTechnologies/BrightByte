@@ -7,7 +7,7 @@ import { ViewController } from 'ionic-angular';
 import { HttpClient } from "@angular/common/http";
 import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
-import { ContractManagerService } from "../../core/contract-manager.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from "@ngx-translate/core";
 

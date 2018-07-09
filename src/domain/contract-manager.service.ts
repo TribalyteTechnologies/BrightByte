@@ -39,11 +39,11 @@ export class ContractManagerService {
         this.initProm = this.http.get("../assets/build/Bright.json").toPromise()
             .then((jsonContractData: TrbSmartContractJson) => {
                 this.truffleContract = TruffleContract(jsonContractData);
-                let contractAddress = this.truffleContract.networks[AppConfig.NET_ID].address;
+                let contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
                 let contract = new this.web3.eth.Contract(jsonContractData.abi, contractAddress, {
                     from: this.currentUser.address,
-                    gas: AppConfig.GAS_LIMIT,
-                    gasPrice: AppConfig.GASPRICE,
+                    gas: AppConfig.NETWORK_CONFIG.gasLimit,
+                    gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
                     data: this.truffleContract.deployedBytecode
                 });
                 this.log.d("TruffleContract function: ", contract);
@@ -76,12 +76,12 @@ export class ContractManagerService {
             let bytecodeData = contractArtifact.methods.setProfile(name, mail).encodeABI();
             this.log.d("Nonce value: ", nonce);
             this.log.d("Bytecode data: ", bytecodeData);
-            let contractAddress = this.truffleContract.networks[AppConfig.NET_ID].address;
+            let contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
             this.log.d("Contract address: ", contractAddress);
             let rawtx = {
                 nonce: nonce,
-                gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE), //web3.eth.getGasPrice() could be used to determine which is the gasPrise needed
-                gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
+                gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice), //web3.eth.getGasPrice() could be used to determine which is the gasPrise needed
+                gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
                 to: contractAddress,
                 data: bytecodeData
             };
@@ -111,7 +111,7 @@ export class ContractManagerService {
         return this.initProm.then(contract => {
             this.log.d("Contract artifact: ", contract);
             contractArtifact = contract;
-            contractAddress = this.truffleContract.networks[AppConfig.NET_ID].address;
+            contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
             this.log.d("Contract Address: ", contractAddress);
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Variables: url ", url);
@@ -138,8 +138,8 @@ export class ContractManagerService {
 
             let rawtx = {
                 nonce: nonce,
-                gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),
-                gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
+                gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),
+                gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
                 to: contractAddress,
                 data: data
             };
@@ -171,7 +171,7 @@ export class ContractManagerService {
         return this.initProm.then(contract => {
             this.log.d("Contract artifact: ", contract);
             contractArtifact = contract;
-            contractAddress = this.truffleContract.networks[AppConfig.NET_ID].address;
+            contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
             this.log.d("Contract Address: ", contractAddress);
             this.log.d("Public Address: ", this.currentUser.address);
             return contractArtifact.methods.getNumberUserCommits().call();
@@ -259,9 +259,9 @@ export class ContractManagerService {
 
                 let rawtx = {
                     nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
-                    to: this.truffleContract.networks[AppConfig.NET_ID].address,
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+                    to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
                     data: bytecodeData
                 };
                 const tx = new Tx(rawtx);
@@ -337,9 +337,9 @@ export class ContractManagerService {
 
                 let rawtx = {
                     nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
-                    to: this.truffleContract.networks[AppConfig.NET_ID].address,
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+                    to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
                     data: bytecodeData
                 };
                 const tx = new Tx(rawtx);
@@ -381,9 +381,9 @@ export class ContractManagerService {
 
                 let rawtx = {
                     nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.GASPRICE),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasLimit: this.web3.utils.toHex(AppConfig.GAS_LIMIT),
-                    to: this.truffleContract.networks[AppConfig.NET_ID].address,
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+                    to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
                     data: bytecodeData
                 };
                 const tx = new Tx(rawtx);
