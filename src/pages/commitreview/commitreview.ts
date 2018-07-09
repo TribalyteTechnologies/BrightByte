@@ -4,7 +4,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { NavParams } from "ionic-angular";
-import { ContractManagerService } from "../../core/contract-manager.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({

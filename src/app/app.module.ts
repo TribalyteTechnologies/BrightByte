@@ -24,7 +24,7 @@ import { AppConfig } from "../app.config";
 import { LoggerService } from "../core/logger.service";
 import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
-import { ContractManagerService } from "../core/contract-manager.service";
+import { ContractManagerService } from "../domain/contract-manager.service";
 
 // Components
 import { BrightByteApp } from "./app.component";
