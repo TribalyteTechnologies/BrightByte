@@ -13,8 +13,8 @@ contract Bright is Ownable {
         string name;
         string email;
         address hash;
-        uint numberCommitsReviewedByMe;
-        uint numberCommitsToReviewByMe;
+        uint numberCommitsReviewedByMe; 
+        uint numberCommitsToReviewByMe; 
         uint numbermyCommits;
         uint reputation;
         uint numberOfTimesReview;
@@ -33,12 +33,12 @@ contract Bright is Ownable {
         uint numberReviews; 
         bool isPending;
         uint currentNumberReviews;
-        mapping (uint => Comment) comments;
+        mapping (uint => Comment) comments; 
     }
     struct Comment{
         string text;
         address user;
-        uint stars;
+        uint score;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
     }
     function setProfile (string _name, string _email) public {
@@ -48,7 +48,7 @@ contract Bright is Ownable {
             hashUserMap[msg.sender].name = _name;
             hashUserMap[msg.sender].email = _email;
 	        hashUserMap[msg.sender].hash = msg.sender;
-	        hashUserMap[msg.sender].numberCommitsReviewedByMe = 0;
+	        hashUserMap[msg.sender].numberCommitsReviewedByMe = 0; 
             hashUserMap[msg.sender].numberCommitsToReviewByMe = 0;
             hashUserMap[msg.sender].numbermyCommits=0;
             allUsersArray[numberOfUsers] = hashUserMap[msg.sender];
@@ -65,13 +65,14 @@ contract Bright is Ownable {
     function getUser (address _hash) public view returns (string, string, uint, uint, uint, uint) { //TODO: we need a getuser function using the email address instead of hash
             
         if (msg.sender == _hash){ //If you are calling the function
-            return (hashUserMap[_hash].name,
-                    hashUserMap[_hash].email,
-                    hashUserMap[_hash].numberCommitsReviewedByMe,
-                    hashUserMap[_hash].numberCommitsToReviewByMe,
-                    hashUserMap[_hash].numbermyCommits,
-                    hashUserMap[_hash].reputation
-                    );
+            return (hashUserMap[_hash].name, 
+                    hashUserMap[_hash].email, 
+                    hashUserMap[_hash].numberCommitsReviewedByMe, 
+                    hashUserMap[_hash].numberCommitsToReviewByMe, 
+                    hashUserMap[_hash].numbermyCommits, 
+                    hashUserMap[_hash].reputation 
+                    ); 
+
         } else{ //If other person is calling the function
 		    return (hashUserMap[_hash].name,"-",0,0,0,0);
 		}
@@ -96,17 +97,17 @@ contract Bright is Ownable {
         //Send the notificatios to reviewers
         for(uint i = 0; i < numberOfUsers; i++){
             
-            if(keccak256(allUsersArray[i].email)==keccak256(_emailuser1)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id];
+            if(compare(allUsersArray[i].email, _emailuser1)){
+                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = (hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1);  
-            }else if(keccak256(allUsersArray[i].email)==keccak256(_emailuser2)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id];
+            }else if(compare(allUsersArray[i].email, _emailuser2)){
+                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
-            }else if(keccak256(allUsersArray[i].email)==keccak256(_emailuser3)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id];
+            }else if(compare(allUsersArray[i].email, _emailuser3)){
+                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
-            }else if(keccak256(allUsersArray[i].email)==keccak256(_emailuser4)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id];
+            }else if(compare(allUsersArray[i].email, _emailuser4)){
+                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
             }
         }
@@ -117,7 +118,7 @@ contract Bright is Ownable {
                 storedData[_id].author,
                 storedData[_id].timestamp,
                 storedData[_id].numberReviews,
-                storedData[_id].isPending, //No=>false and Yes=>true
+                storedData[_id].isPending,
                 storedData[_id].currentNumberReviews);
     }
     function getUserCommits(uint _index) public view returns(string, string, string, bool, bool){
@@ -153,17 +154,18 @@ contract Bright is Ownable {
         return (storedData[id].comments[_indexComments].text, 
                 storedData[id].comments[_indexComments].user, 
                 hashUserMap[storedData[id].comments[_indexComments].user].name,
-                storedData[id].comments[_indexComments].stars,
+                storedData[id].comments[_indexComments].score,
                 storedData[id].comments[_indexComments].vote); 
     }
     function getNumberComments(uint _index)public view returns(uint){
         return storedData[hashUserMap[msg.sender].userCommits[_index].id].currentNumberReviews;
     }
     function setReview(uint _index, string _text, uint _points)public{
+        
         string storage id = hashUserMap[msg.sender].commitsToReview[_index].id;
         storedData[id].comments[storedData[id].currentNumberReviews].text = _text;
         storedData[id].comments[storedData[id].currentNumberReviews].user = msg.sender;
-        storedData[id].comments[storedData[id].currentNumberReviews].stars = _points/100;
+        storedData[id].comments[storedData[id].currentNumberReviews].score = _points/100;
         storedData[id].isReadNeeded = true;
         storedData[id].currentNumberReviews++;
         if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
@@ -175,7 +177,7 @@ contract Bright is Ownable {
         uint value = hashUserMap[author].numberOfPoints + _points;
         hashUserMap[author].numberOfPoints = value;
         hashUserMap[author].reputation = value/hashUserMap[author].numberOfTimesReview;
-
+ 
         //User who has to review. 
         hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe-1].id]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
         delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe];
@@ -190,5 +192,23 @@ contract Bright is Ownable {
     }
     function readComments(string _id) public{
         storedData[_id].isReadNeeded = false;
+    }
+    function compare(string _a, string _b) private pure returns (bool) {
+        bytes memory a = bytes(_a);
+        bytes memory b = bytes(_b);
+        uint minLength = a.length;
+        if (b.length < minLength) minLength = b.length;
+        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
+                return false;
+            else if (a[i] > b[i])
+                return false;
+        if (a.length < b.length)
+            return false;
+        else if (a.length > b.length)
+            return false;
+        else
+            return true;
     }
 }
