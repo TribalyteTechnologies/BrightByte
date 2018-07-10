@@ -71,10 +71,12 @@ export class SetProfilePage {
 
 				if (!emailUsed) {
 					this.contractManagerService.setProfile(name, mail)
-						.then((resolve) => {
-							this.log.d("Contract manager response: ", resolve);
-							if (resolve.status == true) {
+						.then(txResponse => {
+							this.log.d("Contract manager response: ", txResponse);
+							if (txResponse) {
 								this.navCtrl.push(TabsPage);
+							} else {
+								throw "Error: setreview response is undefine";
 							}
 						}).catch((e) => {
 							this.translateService.get("setProfile.tx").subscribe(

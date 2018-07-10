@@ -1,6 +1,5 @@
 pragma solidity ^0.4.24;
 import "./Ownable.sol";
-import "./StringUtils.sol";
 
 contract Bright is Ownable {
     
@@ -98,16 +97,16 @@ contract Bright is Ownable {
         //Send the notificatios to reviewers
         for(uint i = 0; i < numberOfUsers; i++){
             
-            if(StringUtils.equal(allUsersArray[i].email, _emailuser1)){
+            if(compare(allUsersArray[i].email, _emailuser1)){
                  hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = (hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1);  
-            }else if(StringUtils.equal(allUsersArray[i].email, _emailuser2)){
+            }else if(compare(allUsersArray[i].email, _emailuser2)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
-            }else if(StringUtils.equal(allUsersArray[i].email, _emailuser3)){
+            }else if(compare(allUsersArray[i].email, _emailuser3)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
-            }else if(StringUtils.equal(allUsersArray[i].email, _emailuser4)){
+            }else if(compare(allUsersArray[i].email, _emailuser4)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
                 hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
             }
@@ -193,5 +192,23 @@ contract Bright is Ownable {
     }
     function readComments(string _id) public{
         storedData[_id].isReadNeeded = false;
+    }
+    function compare(string _a, string _b) private pure returns (bool) {
+        bytes memory a = bytes(_a);
+        bytes memory b = bytes(_b);
+        uint minLength = a.length;
+        if (b.length < minLength) minLength = b.length;
+        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
+                return false;
+            else if (a[i] > b[i])
+                return false;
+        if (a.length < b.length)
+            return false;
+        else if (a.length > b.length)
+            return false;
+        else
+            return true;
     }
 }

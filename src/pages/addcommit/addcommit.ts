@@ -20,6 +20,7 @@ export class AddCommitPopover {
     public web3: Web3;
     public account: any;
     public bright: any;
+    public isButtonDisabled = false;
     public abi: any;
     public contract: any;
     public nonce: string;
@@ -95,10 +96,12 @@ export class AddCommitPopover {
                         });
                 } else {
                     this.contractManagerService.addCommit(url, title, this.usersMail)
-                        .then((resolve) => {
-                            this.log.d("Contract manager response: ", resolve);
-                            if (resolve.status == true) { // current block when i wrote this line
+                        .then(txResponse => {
+                            this.log.d("Contract manager response: ", txResponse);
+                            if (txResponse) {
                                 this.viewCtrl.dismiss();
+                            } else {
+                                throw "Error: addcommit response is undefine";
                             }
                         }).catch((e) => {
                             this.isTxOngoing = false;
@@ -123,6 +126,7 @@ export class AddCommitPopover {
                         this.log.e("Error translating string", err);
                     });
             });
+
 
     }
 

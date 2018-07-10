@@ -9,8 +9,8 @@ import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
-	selector: "page-commitdetails",
-	templateUrl: "commitdetails.html"
+    selector: "page-commitdetails",
+    templateUrl: "commitdetails.html"
 })
 export class CommitDetailsPage {
 	public web3: Web3;
@@ -43,48 +43,49 @@ export class CommitDetailsPage {
 		this.log.d("CommitIndex: ", this.commitIndex);
 		this.date = new Date((this.commitDetails[3] * 1000)).toLocaleString();
 
-	}
-	public ionViewWillEnter(): Promise<void> {
-		return this.contractManagerService.getCommentsOfCommit(this.commitIndex)
-			.then((arrayOfComments: string[]) => {
-				this.log.d("Array of Comments: ", arrayOfComments);
-				this.commentsArray = arrayOfComments;
-			}).catch((e) => {
-				this.translateService.get("commitDetails.gettingComments").subscribe(
-					result => {
-						this.msg = result;
-						this.log.e(result, e);
-					},
-					err => {
-						this.log.e("Error translating string", err);
-					});
-			});
-	}
-	public setThumbs(index: number, value: number){
-		this.log.d("Index of the comment: ", index);
-		this.log.d("Value: ", value);
-		let urlSplitted = this.commitDetails[0].split("/");
-		let id = urlSplitted[6];
-		this.isButtonPressArray[index]=true;
-		this.contractManagerService.setThumb(id, index, value)
-		.then((resolve) => {
-			this.log.d("Contract manager response: ", resolve);
-			if (resolve.status == true) {
-				this.ionViewWillEnter().then(() =>{
-					this.isButtonPressArray[index]=false;
-
-				});
-			}
-		}).catch((e) => {
-			this.isButtonPressArray[index]=true;
-			this.log.e("Can't set the vote", e);
-			this.translateService.get("commitDetails.setThumbs").subscribe(
-				result => {
-					this.msg = result;
-				},
-				err => {
-					this.log.e("Error translating string", err);
-				});
-		});
-	}
+    }
+    public ionViewWillEnter(): Promise<void> {
+        return this.contractManagerService.getCommentsOfCommit(this.commitIndex)
+            .then((arrayOfComments: string[]) => {
+                this.log.d("Array of Comments: ", arrayOfComments);
+                this.commentsArray = arrayOfComments;
+            }).catch((e) => {
+                this.translateService.get("commitDetails.gettingComments").subscribe(
+                    result => {
+                        this.msg = result;
+                        this.log.e(result, e);
+                    },
+                    err => {
+                        this.log.e("Error translating string", err);
+                    });
+            });
+    }
+    public setThumbs(index: number, value: number) {
+        this.log.d("Index of the comment: ", index);
+        this.log.d("Value: ", value);
+        let urlSplitted = this.commitDetails[0].split("/");
+        let id = urlSplitted[6];
+        this.isButtonPressArray[index] = true;
+        this.contractManagerService.setThumb(id, index, value)
+            .then((txResponse) => {
+                this.log.d("Contract manager response: ", txResponse);
+                if (txResponse) {
+                    this.ionViewWillEnter().then(() => {
+                        this.isButtonPressArray[index] = false;
+                    });
+                } else {
+                    throw "Error: commitdetails response is undefine";
+                }
+            }).catch((e) => {
+                this.isButtonPressArray[index] = true;
+                this.log.e("Can't set the vote", e);
+                this.translateService.get("commitDetails.setThumbs").subscribe(
+                    result => {
+                        this.msg = result;
+                    },
+                    err => {
+                        this.log.e("Error translating string", err);
+                    });
+            });
+    }
 }
