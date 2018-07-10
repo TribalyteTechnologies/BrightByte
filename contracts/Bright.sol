@@ -40,6 +40,7 @@ contract Bright is Ownable {
         address user;
         uint score;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
+        uint timestamp;
     }
     function setProfile (string _name, string _email) public {
         //require(_hash == msg.sender);
@@ -166,6 +167,7 @@ contract Bright is Ownable {
         storedData[id].comments[storedData[id].currentNumberReviews].text = _text;
         storedData[id].comments[storedData[id].currentNumberReviews].user = msg.sender;
         storedData[id].comments[storedData[id].currentNumberReviews].score = _points/100;
+        storedData[id].comments[storedData[id].currentNumberReviews].timestamp = block.timestamp;
         storedData[id].isReadNeeded = true;
         storedData[id].currentNumberReviews++;
         if(storedData[id].currentNumberReviews==storedData[id].numberReviews){
