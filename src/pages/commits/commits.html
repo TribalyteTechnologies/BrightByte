@@ -11,6 +11,13 @@
 		{{ "commits.add" | translate }}
 		<ion-icon name="more"></ion-icon>
 	</button>
+	<ion-item>
+		<ion-label>{{ "commits.project" | translate }}</ion-label>
+		<ion-select [(ngModel)]="projectSelected" (ionChange)="ionViewWillEnter()">
+		  <ion-option *ngFor="let option of projects; let i=index;" value="{{option}}">{{option}}</ion-option>
+		  <ion-option value="all" selected="true">{{ "commits.allCommits" | translate }}</ion-option>
+		</ion-select>
+	  </ion-item>
 	<ion-list inset>
 		<button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)">
 			Pending: {{commit[3]}}, Changes: {{commit[4]}}, Title: {{commit[1]}}, Project: {{commit[2]}}, url: {{ commit[0] }}

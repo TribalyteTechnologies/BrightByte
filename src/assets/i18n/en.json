@@ -29,7 +29,9 @@
     "commits": {
         "add": "Add commit",
         "getCommits": "Error getting commits",
-        "title": "Commits"
+        "title": "Commits",
+        "project": "Project",
+        "allCommits": "All commits"
     },
     "home": {
         "title": "Home",

@@ -10,6 +10,7 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 import { TranslateService } from "@ngx-translate/core";
 
+
 @Component({
 	selector: "page-commits",
 	templateUrl: "commits.html"
@@ -19,6 +20,8 @@ export class CommitPage {
 	private log: ILogger;
 	public web3: Web3;
 	public arrayCommits = new Array<string>();
+	public projects = new Array<string>();
+	public projectSelected = "all";
 	public msg: string;
 
 	constructor(
@@ -40,20 +43,7 @@ export class CommitPage {
 		let popover = this.popoverCtrl.create(AddCommitPopover, { cssClass: 'custom-popover' });
 		popover.present();
 		popover.onDidDismiss(() => {
-			this.contractManagerService.getCommits()
-				.then((resolve: string[]) => {
-					this.log.d("ARRAY Commits: ", resolve);
-					this.arrayCommits = resolve;
-				}).catch((e) => {
-					this.translateService.get("commits.getCommits").subscribe(
-						result => {
-							this.msg = result;
-							this.log.e(result, e);
-						},
-						err => {
-							this.log.e("Error translating string", err);
-						});
-				});
+			this.ionViewWillEnter();
 		});
 	}
 	public selectUrl(commit: Object) {
@@ -100,7 +90,25 @@ export class CommitPage {
 		this.contractManagerService.getCommits()
 			.then((arrayOfCommits: string[]) => {
 				this.log.d("ARRAY Commits: ", arrayOfCommits);
-				this.arrayCommits = arrayOfCommits;
+				let projects = new Array<string>();
+				for(let i=0;i<arrayOfCommits.length;i++){
+					projects[i] = arrayOfCommits[i][2];
+				}
+				this.projects = Array.from(new Set(projects));
+				this.log.d("Diferent projects: ", this.projects);
+				let index = 0;
+				let array = new Array<string>();
+				for(let j=0;j<arrayOfCommits.length;j++){
+					if(this.projectSelected == arrayOfCommits[j][2]){
+						array[index]=arrayOfCommits[j];
+						index++;
+					}
+				}	
+				if(this.projectSelected=="all"){
+					this.arrayCommits = arrayOfCommits;
+				}else{
+				this.arrayCommits = array;
+				}
 			}).catch((e) => {
 				this.translateService.get("commits.getCommits").subscribe(
 					result => {
@@ -112,5 +120,4 @@ export class CommitPage {
 					});
 			});
 	}
-
 }
