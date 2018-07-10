@@ -32,14 +32,16 @@
 
 	<ion-label color="primary">{{ "addCommit.users" | translate }}</ion-label>
 
-	<ion-item *ngFor="let number of ['0','1','2','3']">
-		<ion-searchbar (ionInput)="getItems($event, number)" placeholder="email@example.com" [(ngModel)]="usersMail[number]"></ion-searchbar>
-		<ion-list *ngIf="isShowList[number]">
-			<ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(number,item)">
+	<ion-item *ngFor="let number of numberInputs; let i=index;">
+		<ion-searchbar (ionInput)="getItems($event, i)" placeholder="email@example.com" [(ngModel)]="usersMail[i]"></ion-searchbar>
+		<ion-list *ngIf="isShowList[i]">
+			<ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(i,item)">
 				{{ item }}
 			</ion-item>
 		</ion-list>
 	</ion-item>
-
+	<button ion-button (click)="addInput()" *ngIf="isAllowed">
+		<ion-icon name="add-circle"></ion-icon>
+	</button>
 
 </ion-content>

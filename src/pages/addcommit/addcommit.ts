@@ -23,7 +23,9 @@ export class AddCommitPopover {
     public isButtonDisabled = false;
     public abi: any;
     public contract: any;
+    public isAllowed = true;
     public nonce: string;
+    public numberInputs = [""];
     public isTxOngoing = false;
     public abijson: any;
     public msg: string;
@@ -160,6 +162,16 @@ export class AddCommitPopover {
             this.msg = "";
             this.usersMail[number] = item;
             this.isShowList[number] = false;
+        }
+    }
+    public addInput(){
+        if(this.numberInputs.length<4){
+            this.numberInputs.push("");
+            if (this.numberInputs.length==4){
+                this.isAllowed = false;
+            }
+        }else{
+            this.log.d("Max fields already created");
         }
     }
 }
