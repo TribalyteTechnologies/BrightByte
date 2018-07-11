@@ -23,7 +23,7 @@ export class BrightByteApp {
         this.initTranslate();
 
         platform.ready().then(() => {
-            this.log.d("Platform Ready")
+            this.log.d("Platform Ready");
         });
     }
 

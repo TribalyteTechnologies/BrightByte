@@ -70,11 +70,8 @@ export class LoginPage {
             };
         } else {
             this.translateService.get("app.wrongFile").subscribe(
-                result => {
-                    this.msg = result;
-                },
-                err => {
-                    this.log.e("Error translating string", err);
+                msg => {
+                    this.msg = msg;
                 });
         }
     };
@@ -87,55 +84,46 @@ export class LoginPage {
             this.loginService.setAccount(account);
             this.contractManager.init(account);
             this.log.d("Account setted");
-         
+
             this.contractManager.getUserDetails(account.address)
-                .then((dataUser) => {
+                .then((detailsUser) => {
                     let posEmail = 1;
-                    if (dataUser[posEmail] == "") {
-                        this.log.d("Email: ", dataUser[1]);
+                    if (detailsUser[posEmail] == "") {
+                        this.log.d("Email: ", detailsUser[1]);
                         this.navCtrl.push(SetProfilePage);
                     } else {
-                        this.log.d("Email: ", dataUser[1]);
+                        this.log.d("Email: ", detailsUser[1]);
                         this.navCtrl.push(TabsPage);
                     }
                 }).catch((e) => {
                     this.translateService.get("app.noRpc").subscribe(
-                        result => {
-                            this.msg = result;
-                        },
-                        err => {
-                            this.log.e("Error translating string", err);
+                        msg => {
+                            this.msg = msg;
                         });
                     this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                 });
 
-    }
-    catch(e) {
-        if (e instanceof TypeError) {
-            this.log.e("File not loaded: ", e);
-            this.translateService.get("app.fileNotLoaded").subscribe(
-                result => {
-                    this.msg = result;
-                },
-                err => {
-                    this.log.e("Error translating string", err);
-                });
-        } else if (e instanceof Error) {
-            this.translateService.get("app.wrongPassword").subscribe(
-                result => {
-                    this.msg = result;
-                    this.log.e(result, e);
-                },
-                err => {
-                    this.log.e("Error translating string", err);
-                });
         }
-    }
+        catch (e) {
+            if (e instanceof TypeError) {
+                this.log.e("File not loaded: ", e);
+                this.translateService.get("app.fileNotLoaded").subscribe(
+                    msg => {
+                        this.msg = msg;
+                    });
+            } else if (e instanceof Error) {
+                this.translateService.get("app.wrongPassword").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            }
+        }
 
-}
+    }
 
     public register() {
-    this.navCtrl.push(NewuserPage);
-}
+        this.navCtrl.push(NewuserPage);
+    }
 
 }

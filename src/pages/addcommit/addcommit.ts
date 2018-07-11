@@ -10,6 +10,7 @@ import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from "@ngx-translate/core";
+import { Split } from "../../domain/split.service";
 
 @Component({
     selector: "popover-addcommit",
@@ -23,16 +24,17 @@ export class AddCommitPopover {
     public isButtonDisabled = false;
     public abi: any;
     public contract: any;
-    public isAllowed = true;
+    public isAddInputAllowed = true;
     public nonce: string;
     public numberInputs = [""];
     public isTxOngoing = false;
     public abijson: any;
     public msg: string;
+    private MAX_REVIEWER_COUNT = 4;
     public usersMail = ["", "", "", ""];
     public arrayEmails: string[];
     public arraySearch: string[];
-    public isShowList: boolean[];
+    public isShowList = new Array<boolean>();
     public myForm: FormGroup;
 
     constructor(
@@ -42,13 +44,13 @@ export class AddCommitPopover {
         public fb: FormBuilder,
         public translateService: TranslateService,
         loggerSrv: LoggerService,
+        private split: Split,
         private web3Service: Web3Service,
         private contractManagerService: ContractManagerService,
         public loginService: LoginService
     ) {
         this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("AddCommitPage");
-        this.isShowList = [false, false, false, false];
         this.account = this.loginService.getAccount();
         this.account = this.loginService.getAccount();
         this.log.d("Imported account successfully", this.account);
@@ -57,17 +59,14 @@ export class AddCommitPopover {
             this.abi = data["abi"];
             this.bright = contract(this.abijson); //TruffleContract function
             this.contractManagerService.getAllUserEmail()
-                .then((resolve: string[]) => {
-                    this.log.d("ARRAY Emails: ", resolve);
-                    this.arrayEmails = resolve;
+                .then((allEmails: string[]) => {
+                    this.log.d("ARRAY Emails: ", allEmails);
+                    this.arrayEmails = allEmails;
                 }).catch((e) => {
                     this.translateService.get("addCommit.errorEmails").subscribe(
-                        result => {
-                            this.msg = result;
-                            this.log.e(result, e);
-                        },
-                        err => {
-                            this.log.e("Error translating string", err);
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
                         });
                 });
         }, (err) => this.log.e(err), () => {
@@ -82,19 +81,16 @@ export class AddCommitPopover {
     public addCommit(url: string, title: string) {
         this.isTxOngoing = true;
         this.msg = "";
-        let urlSplitted = url.split("/");
-        let id = urlSplitted[6];
+        let projectAndId = this.split.splitIDAndProject(url);
+        let id = projectAndId[1];
         this.contractManagerService.getDetailsCommits(id)
-            .then((resolve) => {
-                if (resolve[0] != "") {
+            .then((detailsCommits) => {
+                if (detailsCommits[0] != "") {
                     this.isTxOngoing = false;
                     this.translateService.get("addCommit.urlDuplicated").subscribe(
-                        result => {
-                            this.msg = result;
-                            this.log.w(result);
-                        },
-                        err => {
-                            this.log.e("Error translating string", err);
+                        msg => {
+                            this.msg = msg;
+                            this.log.w(msg);
                         });
                 } else {
                     this.contractManagerService.addCommit(url, title, this.usersMail)
@@ -103,29 +99,23 @@ export class AddCommitPopover {
                             if (txResponse) {
                                 this.viewCtrl.dismiss();
                             } else {
-                                throw "Error: addcommit response is undefine";
+                                throw "Error: addcommit response is undefined";
                             }
                         }).catch((e) => {
                             this.isTxOngoing = false;
                             this.translateService.get("addCommit.addingCommit").subscribe(
-                                result => {
-                                    this.msg = result;
-                                    this.log.e(result, e);
-                                },
-                                err => {
-                                    this.log.e("Error translating string", err);
+                                msg => {
+                                    this.msg = msg;
+                                    this.log.e(msg, e);
                                 });
                         });
                 }
             }).catch((e) => {
                 this.isTxOngoing = false;
                 this.translateService.get("addCommit.commitDetails").subscribe(
-                    result => {
-                        this.msg = result;
-                        this.log.e(result, e);
-                    },
-                    err => {
-                        this.log.e("Error translating string", err);
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
                     });
             });
 
@@ -133,7 +123,9 @@ export class AddCommitPopover {
     }
 
     public getItems(ev: any, id: number) { //TODO: TYpe targetevent or event
-        this.isShowList = [false, false, false, false];
+        for (let i = 0; i < 4; i++) {
+            this.isShowList[i] = false;
+        }
         // set val to the value of the ev target
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
@@ -149,13 +141,11 @@ export class AddCommitPopover {
         for (let i = 0; i < 4; i++) {
             if (this.usersMail[i] == item) {
                 this.translateService.get("addCommit.emailDuplicated").subscribe(
-                    result => {
-                        this.msg = result;
-                    },
-                    err => {
-                        this.log.e("Error translating string", err);
+                    msg => {
+                        this.msg = msg;
                     });
                 isDuplicated = true;
+                break;
             }
         }
         if (!isDuplicated) {
@@ -164,13 +154,11 @@ export class AddCommitPopover {
             this.isShowList[number] = false;
         }
     }
-    public addInput(){
-        if(this.numberInputs.length<4){
+    public addInput() {
+        if (this.isAddInputAllowed) {
             this.numberInputs.push("");
-            if (this.numberInputs.length==4){
-                this.isAllowed = false;
-            }
-        }else{
+            this.isAddInputAllowed = (this.numberInputs.length < this.MAX_REVIEWER_COUNT);
+        } else {
             this.log.d("Max fields already created");
         }
     }

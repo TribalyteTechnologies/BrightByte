@@ -33,9 +33,9 @@ contract Bright is Ownable {
         uint numberReviews; 
         bool isPending;
         uint currentNumberReviews;
-        mapping (uint => Comment) comments; 
+        mapping (uint => CommitReview) comments; 
     }
-    struct Comment{
+    struct CommitReview{
         string text;
         address user;
         uint score;
@@ -84,7 +84,7 @@ contract Bright is Ownable {
         bool isPending = false;
         string[4] memory users = [_emailuser1,_emailuser2,_emailuser3,_emailuser4];
         for(uint j=0; j<users.length; j++){
-            if(keccak256(bytes(users[j]))!=keccak256("")){ // Check if it Works
+            if(keccak256(bytes(users[j]))!=keccak256("")){
                 numUsers++;
             }
         }
@@ -123,7 +123,7 @@ contract Bright is Ownable {
                 storedData[_id].currentNumberReviews);
     }
     function getUserCommits(uint _index) public view returns(string, string, string, bool, bool){
-        string storage id = hashUserMap[msg.sender].userCommits[_index].id;
+        string memory id = hashUserMap[msg.sender].userCommits[_index].id;
         return (storedData[id].url,
                 storedData[id].title,
                 storedData[id].project,
@@ -204,23 +204,26 @@ contract Bright is Ownable {
         bytes memory b = bytes(_b);
         uint minLength = a.length;
         bool ret;
-        if (b.length < minLength) minLength = b.length;
+        if (b.length < minLength){
+            minLength = b.length;
+        }
         //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
         for (uint i = 0; i < minLength; i ++){
-            if (a[i] < b[i])
+            if (a[i] < b[i]){
                 ret = false;
-            else if (a[i] > b[i])
+                break;
+            }else if (a[i] > b[i]){
                 ret = false;
+                break;
+            }
         }
         if (a.length < b.length){
             ret = false;
-        }
-        else if (a.length > b.length){
+        }else if (a.length > b.length){
             ret = false;
         }else{
             ret = true;
         }
         return ret;
     }
-
 }

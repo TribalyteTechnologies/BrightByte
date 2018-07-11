@@ -7,7 +7,8 @@ import { HttpClient } from "@angular/common/http";
 import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
-import { PromiEvent } from "web3/types";
+import { TransactionReceipt } from "web3/types";
+import { Split } from "../domain/split.service";
 
 interface TrbSmartContractJson {
     abi: Array<any>;
@@ -19,7 +20,7 @@ interface TrbSmartContact { //Web3.Eth.Contract
 
 @Injectable()
 export class ContractManagerService {
-    private truffleContract: any;
+    private contractAddress: string;
     private log: ILogger;
     private web3: Web3;
     private initProm: Promise<TrbSmartContact>;
@@ -28,6 +29,7 @@ export class ContractManagerService {
     constructor(
         public http: HttpClient,
         private web3Service: Web3Service,
+        private split: Split,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
@@ -39,13 +41,13 @@ export class ContractManagerService {
         this.log.d("Initializing service with user ", this.currentUser);
         this.initProm = this.http.get("../assets/build/Bright.json").toPromise()
             .then((jsonContractData: TrbSmartContractJson) => {
-                this.truffleContract = TruffleContract(jsonContractData);
-                let contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
-                let contract = new this.web3.eth.Contract(jsonContractData.abi, contractAddress, {
+                let truffleContract = TruffleContract(jsonContractData);
+                this.contractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
+                let contract = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddress, {
                     from: this.currentUser.address,
                     gas: AppConfig.NETWORK_CONFIG.gasLimit,
                     gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
-                    data: this.truffleContract.deployedBytecode
+                    data: truffleContract.deployedBytecode
                 });
                 this.log.d("TruffleContract function: ", contract);
                 return contract;
@@ -71,43 +73,28 @@ export class ContractManagerService {
             this.log.d("Setting profile with name and mail: ", [name, mail]);
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return this.web3.eth.getTransactionCount(this.currentUser.address);
-        }).then(transactionCount => {
-            let nonce = "0x" + transactionCount.toString(16);
             let bytecodeData = contractArtifact.methods.setProfile(name, mail).encodeABI();
-            this.log.d("Nonce value: ", nonce);
             this.log.d("Bytecode data: ", bytecodeData);
 
-            return this.sendTx(nonce, bytecodeData);
-            
+            return this.sendTx(bytecodeData);
+
         }).catch(e => {
             this.log.e("Error setting profile: ", e);
             throw e;
         });
     }
-    public addCommit(url: string, title: string,usersMail: string[]): Promise<any> {
+    public addCommit(url: string, title: string, usersMail: string[]): Promise<any> {
         let contractArtifact;
-        let contractAddress;
         return this.initProm.then(contract => {
             this.log.d("Contract artifact: ", contract);
             contractArtifact = contract;
-            contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
-            this.log.d("Contract Address: ", contractAddress);
+            this.log.d("Contract Address: ", this.contractAddress);
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Variables: url ", url);
             this.log.d("UsersMail: ", usersMail);
+            let projectAndId = this.split.splitIDAndProject(url);
 
-            return this.web3.eth.getTransactionCount(this.currentUser.address)
-        }).then(nonceValue => {
-            let nonce = "0x" + (nonceValue).toString(16);
-            this.log.d("Value NONCE", nonce);
-
-            let urlSplitted = url.split("/");
-            this.log.d("Url splited: ", urlSplitted);
-            let project = urlSplitted[4];
-            let id = urlSplitted[6];
-
-            let bytecodeData = contractArtifact.methods.setNewCommit(id, title, url, project, usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
+            let bytecodeData = contractArtifact.methods.setNewCommit(projectAndId[1], title, url, projectAndId[0], usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced user1: ", usersMail[0]);
             this.log.d("Introduced user2: ", usersMail[1]);
@@ -115,24 +102,23 @@ export class ContractManagerService {
             this.log.d("Introduced user4: ", usersMail[3]);
 
             this.log.d("DATA: ", bytecodeData);
-            return this.sendTx(nonce, bytecodeData);
+            return this.sendTx(bytecodeData);
 
         }).catch(e => {
             this.log.e("Error getting nonce in addcommit: ", e);
+            throw e;
         });
     }
     public getCommits(): Promise<string[] | void> {
         let contractArtifact;
-        let contractAddress;
         return this.initProm.then(contract => {
             this.log.d("Contract artifact: ", contract);
             contractArtifact = contract;
-            contractAddress = this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
-            this.log.d("Contract Address: ", contractAddress);
+            this.log.d("Contract Address: ", this.contractAddress);
             this.log.d("Public Address: ", this.currentUser.address);
             return contractArtifact.methods.getNumberUserCommits().call();
-        }).then(result => {
-            let numberUserCommits = result;
+        }).then(numberOfCommits => {
+            let numberUserCommits = numberOfCommits;
             let promises = new Array<Promise<string>>();
             for (let i = 0; i < numberUserCommits; i++) {
                 let promise = contractArtifact.methods.getUserCommits(i).call();
@@ -141,6 +127,7 @@ export class ContractManagerService {
             return Promise.all(promises);
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
+            throw err;
         });
     }
 
@@ -162,6 +149,7 @@ export class ContractManagerService {
 
             .catch(err => {
                 this.log.e("Error getting all user emails :", err);
+                throw err;
             })
     }
 
@@ -172,9 +160,9 @@ export class ContractManagerService {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
             return contractArtifact.methods.getNumberCommitsToReviewByMe().call();
-        }).then(result => {
-            let numberUserCommits = result;
-            this.log.d("NumberuserCommits: ", result);
+        }).then(numberOfCommits => {
+            let numberUserCommits = numberOfCommits;
+            this.log.d("NumberuserCommits: ", numberOfCommits);
             let promises = new Array<Promise<string>>();
             for (let i = 0; i < numberUserCommits; i++) {
                 let promise = contractArtifact.methods.getCommitsToReviewByMe(i).call();
@@ -184,6 +172,7 @@ export class ContractManagerService {
 
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
+            throw err;
         });
     }
     public getDetailsCommits(id: string): Promise<boolean | number | string | null> {
@@ -191,10 +180,11 @@ export class ContractManagerService {
             let contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-        return contractArtifact.methods.getDetailsCommits(id).call()
+            return contractArtifact.methods.getDetailsCommits(id).call()
         }).catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
-            });
+            this.log.e("Error calling BrightByte smart contract :", err);
+            throw err;
+        });
     }
 
     public setReview(index: number, text: string, points: number): Promise<any> {
@@ -203,21 +193,18 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-        return this.web3.eth.getTransactionCount(this.currentUser.address);
-        }).then(result => {
-                let nonce = "0x" + (result).toString(16);
-                this.log.d("Value NONCE", nonce);
-                let bytecodeData = contractArtifact.methods.setReview(index, text, points).encodeABI();
-                this.log.d("Introduced index: ", index);
-                this.log.d("Introduced text: ", text);
-                this.log.d("Introduced points: ", points);
-                this.log.d("DATA: ", bytecodeData);
+            let bytecodeData = contractArtifact.methods.setReview(index, text, points).encodeABI();
+            this.log.d("Introduced index: ", index);
+            this.log.d("Introduced text: ", text);
+            this.log.d("Introduced points: ", points);
+            this.log.d("DATA: ", bytecodeData);
 
-                return this.sendTx(nonce, bytecodeData);
+            return this.sendTx(bytecodeData);
 
-            }).catch(e => {
-                this.log.e("Error getting nonce value: ", e);
-            });
+        }).catch(e => {
+            this.log.e("Error getting nonce value: ", e);
+            throw e;
+        });
 
     }
     public getCommentsOfCommit(index: number): Promise<string[] | void> {
@@ -226,20 +213,21 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-        return contractArtifact.methods.getNumberComments(index).call()
-        }).then(result => {
-                this.log.d("Number of comments: ", result);
-                let numberOfComments = result;
-                let promises = new Array<Promise<any>>();
-                for (let i = 0; i < numberOfComments; i++) {
-                    let promise = contractArtifact.methods.getCommentsOfCommit(index, i).call();
-                    promises.push(promise);
-                }
-                return Promise.all(promises);
+            return contractArtifact.methods.getNumberComments(index).call()
+        }).then(numberComments => {
+            this.log.d("Number of comments: ", numberComments);
+            let numberOfComments = numberComments;
+            let promises = new Array<Promise<any>>();
+            for (let i = 0; i < numberOfComments; i++) {
+                let promise = contractArtifact.methods.getCommentsOfCommit(index, i).call();
+                promises.push(promise);
+            }
+            return Promise.all(promises);
 
-            }).catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
-            });
+        }).catch(err => {
+            this.log.e("Error calling BrightByte smart contract :", err);
+            throw err;
+        });
     }
     public getUserDetails(hash: string): Promise<Array<string | number>> {
         return this.initProm.then(contract => {
@@ -249,75 +237,74 @@ export class ContractManagerService {
             return contractArtifact.methods.getUser(hash).call()
                 .catch(err => {
                     this.log.e("Error calling BrightByte smart contract :", err);
+                    throw err;
                 });
         });
     }
-    public setThumb(id:string, index: number, value: number): Promise<any>{
+    public setThumb(id: string, index: number, value: number): Promise<any> {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-        return this.web3.eth.getTransactionCount(this.currentUser.address);
-        }).then(result => {
-                let nonce = "0x" + (result).toString(16);
-                this.log.d("Value NONCE", nonce);
-                let bytecodeData = contractArtifact.methods.setVote(id, index, value).encodeABI();
-                this.log.d("Introduced index: ", index);
-                this.log.d("Introduced value: ", value);
-                this.log.d("DATA: ", bytecodeData);
+            let bytecodeData = contractArtifact.methods.setVote(id, index, value).encodeABI();
+            this.log.d("Introduced index: ", index);
+            this.log.d("Introduced value: ", value);
+            this.log.d("DATA: ", bytecodeData);
 
-                return this.sendTx(nonce, bytecodeData);
+            return this.sendTx(bytecodeData);
 
-            }).catch(e => {
-                this.log.e("Error getting nonce value: ", e);
-            });
-    }
-    public changeFlag(id: string){
-        let contractArtifact;
-        return this.initProm.then(contract => {
-            contractArtifact = contract;
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", contractArtifact);
-        return this.web3.eth.getTransactionCount(this.currentUser.address);
-        }).then(result => {
-                let nonce = "0x" + (result).toString(16);
-                this.log.d("Value NONCE", nonce);
-                let bytecodeData = contractArtifact.methods.readComments(id).encodeABI();
-                this.log.d("Introduced id: ", id);
-                this.log.d("DATA: ", bytecodeData);
-                return this.sendTx(nonce, bytecodeData);
-                
-            }).catch(e => {
-                this.log.e("Error getting nonce value: ", e);
-            });
-    }
-    private sendTx(nonce, bytecodeData): PromiEvent<any>{ //PromiEvent<TransactionReceipt>
-        let rawtx = {
-            nonce: nonce,
-            gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-            gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
-            to: this.truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address,
-            data: bytecodeData
-        };
-        const tx = new Tx(rawtx);
-        let priv = this.currentUser.privateKey.substring(2);
-        let privateKey = new Buffer(priv, "hex");
-        tx.sign(privateKey);
-
-        let raw = "0x" + tx.serialize().toString("hex");
-        this.log.d("Rawtx: ", rawtx);
-        this.log.d("Priv si 0x: ", priv);
-        this.log.d("privatekey: ", privateKey);
-        this.log.d("Raw: ", raw);
-        this.log.d("tx unsign: ", tx);
-        return this.web3.eth.sendSignedTransaction(raw, (err, transactionHash) => {
-            if (!err) {
-                this.log.d("Hash transaction", transactionHash);
-            } else {
-                this.log.e(err);
-            }
+        }).catch(e => {
+            this.log.e("Error getting nonce value: ", e);
+            throw e;
         });
+    }
+    public changeFlag(id: string) {
+        let contractArtifact;
+        return this.initProm.then(contract => {
+            contractArtifact = contract;
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", contractArtifact);
+            let bytecodeData = contractArtifact.methods.readComments(id).encodeABI();
+            this.log.d("Introduced id: ", id);
+            this.log.d("DATA: ", bytecodeData);
+            return this.sendTx(bytecodeData);
+
+        }).catch(e => {
+            this.log.e("Error getting nonce value: ", e);
+            throw e;
+        });
+    }
+    private sendTx(bytecodeData): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
+        return this.web3.eth.getTransactionCount(this.currentUser.address)
+            .then(nonceValue => {
+                let nonce = "0x" + (nonceValue).toString(16);
+                this.log.d("Value NONCE", nonce);
+                let rawtx = {
+                    nonce: nonce,
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+                    to: this.contractAddress,
+                    data: bytecodeData
+                };
+                const tx = new Tx(rawtx);
+                let priv = this.currentUser.privateKey.substring(2);
+                let privateKey = new Buffer(priv, "hex");
+                tx.sign(privateKey);
+
+                let raw = "0x" + tx.serialize().toString("hex");
+                this.log.d("Rawtx: ", rawtx);
+                this.log.d("Priv si 0x: ", priv);
+                this.log.d("privatekey: ", privateKey);
+                this.log.d("Raw: ", raw);
+                this.log.d("tx unsign: ", tx);
+                return this.web3.eth.sendSignedTransaction(raw);
+            }).then(transactionHash => {
+                this.log.d("Hash transaction", transactionHash);
+                return transactionHash;
+            }).catch(e => {
+                this.log.e("Error in transaction (sendTx function): ", e);
+            });
 
     }
 }

@@ -24,7 +24,8 @@
         "emailDuplicated": "Duplicate email detected",
         "fieldRequire": "Field is required",
         "notUrl": "It is not a valid url",
-        "titleCommit": "Title"
+        "titleCommit": "Title",
+        "inputTitle": "Write the title"
     },
     "commits": {
         "add": "Add commit",
@@ -96,7 +97,6 @@
         "title": "Commit Review",
         "emptyField": "Please, write your review",
         "reviewDone": "Review successfully done",
-        "txError": "Transaction Error",
-        "setReviewUndefine": "Error: setreview response is undefine"
+        "txError": "Transaction Error"
     }
 }

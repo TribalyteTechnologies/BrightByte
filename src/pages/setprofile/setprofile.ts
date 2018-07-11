@@ -12,103 +12,94 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
-	selector: "page-setprofile",
-	templateUrl: "setprofile.html"
+    selector: "page-setprofile",
+    templateUrl: "setprofile.html"
 })
 export class SetProfilePage {
-	public web3: Web3;
-	public account: any;
-	public abi: any;
-	public abijson: any;
-	public bright: any;
-	public myForm: FormGroup;
-	public isButtonPressed: boolean;
-	public contract: any;
-	public msg: string;
-	public nonce: string;
-	private log: ILogger;
+    public web3: Web3;
+    public account: any;
+    public abi: any;
+    public abijson: any;
+    public bright: any;
+    public myForm: FormGroup;
+    public isButtonPressed: boolean;
+    public contract: any;
+    public msg: string;
+    public nonce: string;
+    private log: ILogger;
 
-	constructor(
-		public navCtrl: NavController,
-		loggerSrv: LoggerService,
-		private web3Service: Web3Service,
-		public fb: FormBuilder,
-		public translateService: TranslateService,
-		public http: HttpClient,
-		private contractManagerService: ContractManagerService,
-		private loginService: LoginService
-	) {
-		this.web3 = this.web3Service.getWeb3();
-		this.log = loggerSrv.get("SetProfilePage");
-		this.account = this.loginService.getAccount();
-		this.log.d("Unlocked account: ", this.account);
-		this.http.get("../assets/build/Bright.json").subscribe(data => {
-			this.abijson = data;
-			this.abi = data["abi"];
-			this.bright = contract(this.abijson); //TruffleContract function
-		}, (err) => this.log.e(err), () => {
-			//If you want do after the promise. Code here
-			this.log.d("TruffleContract function: ", this.bright);
-		});
-		this.myForm = this.fb.group({
-			name: ['', [Validators.required]],
-			email: ['', Validators.compose([Validators.required, Validators.email])]
-		});
-	}
+    constructor(
+        public navCtrl: NavController,
+        loggerSrv: LoggerService,
+        private web3Service: Web3Service,
+        public fb: FormBuilder,
+        public translateService: TranslateService,
+        public http: HttpClient,
+        private contractManagerService: ContractManagerService,
+        private loginService: LoginService
+    ) {
+        this.web3 = this.web3Service.getWeb3();
+        this.log = loggerSrv.get("SetProfilePage");
+        this.account = this.loginService.getAccount();
+        this.log.d("Unlocked account: ", this.account);
+        this.http.get("../assets/build/Bright.json").subscribe(data => {
+            this.abijson = data;
+            this.abi = data["abi"];
+            this.bright = contract(this.abijson); //TruffleContract function
+        }, (err) => this.log.e(err), () => {
+            //If you want do after the promise. Code here
+            this.log.d("TruffleContract function: ", this.bright);
+        });
+        this.myForm = this.fb.group({
+            name: ['', [Validators.required]],
+            email: ['', Validators.compose([Validators.required, Validators.email])]
+        });
+    }
 
-	public updateProfile(name: string, mail: string) {
-		this.isButtonPressed = true;
-		this.contractManagerService.getAllUserEmail()
-			.then((arrayEmails:string[]) => {
-				this.log.d("ARRAY Emails: ", arrayEmails);
-				let emailUsed = false;
-				this.log.d("arrayEmails.length:", arrayEmails.length);
-				for (let i = 0; i < arrayEmails.length; i++) {
-					if (arrayEmails[i] == mail) {
-						emailUsed = true;
-					}
-				}
+    public updateProfile(name: string, mail: string) {
+        this.isButtonPressed = true;
+        this.contractManagerService.getAllUserEmail()
+            .then((arrayEmails: string[]) => {
+                this.log.d("ARRAY Emails: ", arrayEmails);
+                let emailUsed = false;
+                this.log.d("arrayEmails.length:", arrayEmails.length);
+                for (let i = 0; i < arrayEmails.length; i++) {
+                    if (arrayEmails[i] == mail) {
+                        emailUsed = true;
+                    }
+                }
 
-				if (!emailUsed) {
-					this.contractManagerService.setProfile(name, mail)
-						.then(txResponse => {
-							this.log.d("Contract manager response: ", txResponse);
-							if (txResponse) {
-								this.navCtrl.push(TabsPage);
-							} else {
-								throw "Error: setreview response is undefine";
-							}
-						}).catch((e) => {
-							this.translateService.get("setProfile.tx").subscribe(
-								result => {
-									this.msg = result;
-									this.log.e(result, e);
-								},
-								err => {
-									this.log.e("Error translating string", err);
-								});
-						});
-				} else {
-					this.isButtonPressed = false;
-					this.translateService.get("setProfile.emailUsed").subscribe(
-						result => {
-							this.msg = result;
-						},
-						err => {
-							this.log.e("Error translating string", err);
-						});
-				}
-			}).catch((e) => {
-				this.translateService.get("setProfile.getEmails").subscribe(
-					result => {
-						this.msg = result;
-						this.log.e(result, e);
-					},
-					err => {
-						this.log.e("Error translating string", err);
-					});
-			});
+                if (!emailUsed) {
+                    this.contractManagerService.setProfile(name, mail)
+                        .then(txResponse => {
+                            this.log.d("Contract manager response: ", txResponse);
+                            if (txResponse) {
+                                this.navCtrl.push(TabsPage);
+                            } else {
+                                throw "Error: setreview response is undefine";
+                            }
+                        }).catch((e) => {
+                            this.translateService.get("setProfile.tx").subscribe(
+                                msg => {
+                                    this.msg = msg;
+                                    this.log.e(msg, e);
+                                });
+                        });
+                } else {
+                    this.isButtonPressed = false;
+                    this.translateService.get("setProfile.emailUsed").subscribe(
+                        msg => {
+                            this.msg = msg;
+                        });
+                }
+            }).catch((e) => {
+                this.translateService.get("setProfile.getEmails").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            });
 
 
-	}
+    }
 }

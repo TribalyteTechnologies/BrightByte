@@ -11,7 +11,7 @@
 	<form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value, myForm.get('title').value)" novalidate>
 		<ion-item>
 					<ion-label stacked>{{ "addCommit.titleCommit" | translate }}:</ion-label>
-					<ion-input formControlName="title" type="text" placeholder="Write the title"></ion-input>
+					<ion-input formControlName="title" type="text" placeholder="{{ 'addCommit.inputTitle' | translate }}"></ion-input>
 				</ion-item>
 				<ion-item *ngIf="myForm.get('title').errors && myForm.get('title').dirty">
 					<p color="danger" ion-text *ngIf="myForm.get('title').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
@@ -40,7 +40,7 @@
 			</ion-item>
 		</ion-list>
 	</ion-item>
-	<button ion-button (click)="addInput()" *ngIf="isAllowed">
+	<button ion-button (click)="addInput()" *ngIf="isAddInputAllowed">
 		<ion-icon name="add-circle"></ion-icon>
 	</button>
 
