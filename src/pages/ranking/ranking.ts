@@ -5,13 +5,14 @@ import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { Account } from "web3/types";
+import { UserDetails } from "../../models/user-details.model"; 
 
 @Component({
     selector: "page-ranking",
     templateUrl: "ranking.html"
 })
 export class RankingPage {
-    public userDetails = ["", "", 0, 0, 0, 0];
+    public userDetails = new UserDetails();
     public msg: string;
     private log: ILogger;
     private account: Account;
@@ -31,7 +32,7 @@ export class RankingPage {
         this.log.d("Imported account: ", this.account);
 
         this.contractManagerService.getUserDetails(this.account.address)
-            .then((detailsUser) => {
+            .then((detailsUser: UserDetails) => {
                 this.log.d("User data obtained: ", detailsUser);
                 this.userDetails = detailsUser;
             }).catch((e) => {

@@ -7,11 +7,11 @@
 </ion-header>
 
 <ion-content padding>
-    <p>{{ "ranking.name" | translate }}: {{ userDetails[0] }}</p>
-    <p>{{ "ranking.mail" | translate }}: {{ userDetails[1] }}</p>
-    <p>{{ "ranking.nCommitsReviewByMe" | translate }}: {{ userDetails[2] }}</p>
-    <p>{{ "ranking.nCommitsToReviewByMe" | translate }}: {{ userDetails[3] }}</p>
-    <p>{{ "ranking.totalCommits" | translate }}: {{ userDetails[4] }}</p>
-    <p>{{ "ranking.reputation" | translate }}: {{ (userDetails[5]/100) }}</p>
+    <p>{{ "ranking.name" | translate }}: {{ userDetails.name }}</p>
+    <p>{{ "ranking.mail" | translate }}: {{ userDetails.email }}</p>
+    <p>{{ "ranking.nCommitsReviewByMe" | translate }}: {{ userDetails.numberCommitsReviewedByMe }}</p>
+    <p>{{ "ranking.nCommitsToReviewByMe" | translate }}: {{ userDetails.numberCommitsToReviewByMe }}</p>
+    <p>{{ "ranking.totalCommits" | translate }}: {{ userDetails.numbermyCommits }}</p>
+    <p>{{ "ranking.reputation" | translate }}: {{ (userDetails.reputation/100) }}</p>
     <p class="error-message">{{ msg }}</p>
 </ion-content>
