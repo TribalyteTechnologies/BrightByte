@@ -8,6 +8,7 @@ import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
 import { TransactionReceipt, Account } from "web3/types";
 import { SplitService } from "../domain/split.service";
+import { CommitDetails } from "../models/commit-details.model"; 
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -181,12 +182,13 @@ export class ContractManagerService {
             throw err;
         });
     }
-    public getDetailsCommits(id: string): Promise<boolean | number | string | null> {
-        return this.initProm.then(contract => {
-            let contractArtifact = contract;
+    public getDetailsCommits(id: string): Promise<CommitDetails> {
+        return this.initProm.then(contractArtifact => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
             return contractArtifact.methods.getDetailsCommits(id).call();
+        }).then((commitVals: Array<any>) => {
+            return CommitDetails.fromBlockchain(commitVals);
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
             throw err;

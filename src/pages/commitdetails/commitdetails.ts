@@ -1,8 +1,7 @@
 import { Component } from "@angular/core";
-import { NavController } from "ionic-angular";
+import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { LoginService } from "../../core/login.service";
-import { NavParams } from "ionic-angular";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { SplitService } from "../../domain/split.service";
