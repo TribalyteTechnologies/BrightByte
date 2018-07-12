@@ -79,45 +79,45 @@ export class LoginPage {
 
     public login(pass: string) {
         try {
-            let privK = this.text;
-            let account = this.web3.eth.accounts.decrypt(privK, pass);
-            this.log.d("Imported account from the login file: ", account);
-            this.loginService.setAccount(account);
-            this.contractManager.init(account);
-            this.log.d("Account setted");
-
-            this.contractManager.getUserDetails(account.address)
-                .then((detailsUser) => {
-                    let posEmail = 1;
-                    if (detailsUser[posEmail] === "") {
-                        this.log.d("Email: ", detailsUser[1]);
-                        this.navCtrl.push(SetProfilePage);
-                    } else {
-                        this.log.d("Email: ", detailsUser[1]);
-                        this.navCtrl.push(TabsPage);
-                    }
-                }).catch((e) => {
-                    this.translateService.get("app.noRpc").subscribe(
-                        msg => {
-                            this.msg = msg;
-                        });
-                    this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
-                });
-
-        } catch (e) {
-            if (e instanceof TypeError) {
-                this.log.e("File not loaded: ", e);
+            this.log.d("File imported: ", this.text);
+            if (this.text === undefined) {
+                this.log.e("File not loaded");
                 this.translateService.get("app.fileNotLoaded").subscribe(
                     msg => {
                         this.msg = msg;
                     });
-            } else if (e instanceof Error) {
-                this.translateService.get("app.wrongPassword").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
+            } else {
+                let account = this.web3.eth.accounts.decrypt(this.text, pass);
+                this.log.d("Imported account from the login file: ", account);
+                this.loginService.setAccount(account);
+                this.contractManager.init(account);
+                this.log.d("Account setted");
+
+                this.contractManager.getUserDetails(account.address)
+                    .then((detailsUser) => {
+                        let posEmail = 1;
+                        if (detailsUser[posEmail] === "") {
+                            this.log.d("Email: ", detailsUser[1]);
+                            this.navCtrl.push(SetProfilePage);
+                        } else {
+                            this.log.d("Email: ", detailsUser[1]);
+                            this.navCtrl.push(TabsPage);
+                        }
+                    }).catch((e) => {
+                        this.translateService.get("app.noRpc").subscribe(
+                            msg => {
+                                this.msg = msg;
+                            });
+                        this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                     });
             }
+
+        } catch (e) {
+            this.translateService.get("app.wrongPassword").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
         }
 
     }

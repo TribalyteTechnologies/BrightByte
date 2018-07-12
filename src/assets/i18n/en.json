@@ -5,7 +5,7 @@
         "presentation": "Who are you? Please, upload your identity file or introduce your private key.",
         "password": "Password",
         "register": "Register",
-        "fileNotLoaded": "Please check if you have uploaded the correct file",
+        "fileNotLoaded": "Please, first upload a valid file",
         "wrongPassword": "Wrong password",
         "wrongFile": "The format of the uploaded file is incorrect",
         "noRpc": "No RPC connetion",
