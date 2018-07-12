@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { NavParams } from "ionic-angular";
 import { ContractManagerService } from "../../domain/contract-manager.service";
@@ -12,8 +11,6 @@ import { TranslateService } from "@ngx-translate/core";
     templateUrl: "commitreview.html"
 })
 export class CommitReviewPage {
-    public web3: any;
-    public account: any;
     public commitDetails: Object;
     public isBackButtonDisabled = false;
     public indexArray;
@@ -28,22 +25,19 @@ export class CommitReviewPage {
     constructor(
         public navCtrl: NavController,
         loggerSrv: LoggerService,
-        private web3Service: Web3Service,
         public translateService: TranslateService,
         navParams: NavParams,
         private contractManagerService: ContractManagerService,
         private loginService: LoginService
     ) {
-        this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("CommitReviewPage");
-        this.account = this.loginService.getAccount();
         this.commitDetails = navParams.get("commitDetails");
         this.indexArray = navParams.get("indexArray");
         this.project = navParams.get("commitProject");
         this.log.d("Details Object: ", this.commitDetails);
     }
 
-    public addReview(textComment) {
+    public addReview(textComment: string) {
         this.isButtonDisabled = true;
         this.isBackButtonDisabled = true;
         if (!textComment) {
@@ -78,7 +72,7 @@ export class CommitReviewPage {
                 });
         }
     }
-    public setReputation(value) {
+    public setReputation(value: number) {
         this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
         for (let i = 0; i < value + 1; ++i) {
             this.star[i] = "star";

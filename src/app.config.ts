@@ -24,5 +24,5 @@ export class AppConfig {
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_ALASTRIA ? 
     AppConfig.NETWORK_CONFIG_ALASTRIA : AppConfig.NETWORK_CONFIG_LOCALHOST;
-
+    public static readonly MAX_REVIEWER_COUNT = 4;
 }

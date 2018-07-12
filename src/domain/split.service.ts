@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 
 @Injectable()
-export class Split {
+export class SplitService {
 
     private log: ILogger;
 
@@ -11,12 +11,15 @@ export class Split {
     ) {
         this.log = loggerSrv.get("SplitService");
     }
-    public splitIDAndProject(url): string[] {
+    public getId(url): string {
         let urlSplitted = url.split("/");
-        this.log.d("Url splited: ", urlSplitted);
-        let project: string = urlSplitted[4];
         let id: string = urlSplitted[6];
-        return [project, id];
+        return id;
+    }
+    public getProject(url): string {
+        let urlSplitted = url.split("/");
+        let project: string = urlSplitted[4];
+        return project;
 
     }
 }

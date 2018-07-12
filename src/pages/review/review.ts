@@ -1,12 +1,10 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { Web3Service } from "../../core/web3.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitReviewPage } from "../commitreview/commitreview";
-import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";
-import { Split } from "../../domain/split.service";
+import { SplitService } from "../../domain/split.service";
 
 @Component({
     selector: "page-review",
@@ -14,7 +12,6 @@ import { Split } from "../../domain/split.service";
 })
 
 export class ReviewPage {
-    public web3: Web3;
     public arrayCommits: any;
     public msg: string;
     private log: ILogger;
@@ -22,12 +19,10 @@ export class ReviewPage {
     constructor(
         public navCtrl: NavController,
         public translateService: TranslateService,
-        private web3Service: Web3Service,
-        private split: Split,
+        private splitService: SplitService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
     ) {
-        this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("ReviewPage");
 
     }
@@ -53,10 +48,8 @@ export class ReviewPage {
             }
             this.log.d("Array length: ", this.arrayCommits.length);
         }
-        let projectAndId = this.split.splitIDAndProject(commit[0]);
-
-        let id = projectAndId[1];
-        let project = projectAndId[0];
+        let id = this.splitService.getId(commit[0]);
+        let project = this.splitService.getProject(commit[0]);
         this.contractManagerService.getDetailsCommits(id)
             .then(detailsCommit => {
                 this.log.d("Details commits: ", detailsCommit);

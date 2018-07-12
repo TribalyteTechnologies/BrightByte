@@ -1,15 +1,13 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { Web3Service } from "../../core/web3.service";
 import { HttpClient } from "@angular/common/http";
 import { PopoverController } from "ionic-angular";
 import { AddCommitPopover } from "../../pages/addcommit/addcommit";
-import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 import { TranslateService } from "@ngx-translate/core";
-import { Split } from "../../domain/split.service";
+import { SplitService } from "../../domain/split.service";
 
 @Component({
     selector: "page-commits",
@@ -18,7 +16,6 @@ import { Split } from "../../domain/split.service";
 
 export class CommitPage {
     public readonly ALL = "all";
-    public web3: Web3;
     public arrayCommits = new Array<string>();
     public projects = new Array<string>();
     public projectSelected = this.ALL;
@@ -29,13 +26,11 @@ export class CommitPage {
         public popoverCtrl: PopoverController,
         public navCtrl: NavController,
         public http: HttpClient,
-        private split: Split,
+        private splitService: SplitService,
         public translateService: TranslateService,
         private contractManagerService: ContractManagerService,
-        loggerSrv: LoggerService,
-        private web3Service: Web3Service
+        loggerSrv: LoggerService
     ) {
-        this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("CommitsPage");
 
     }
@@ -53,17 +48,17 @@ export class CommitPage {
         for (let i = 0; i < this.arrayCommits.length; i++) {
             if (this.arrayCommits[i][0] === commit[0]) {
                 index = i;
+                break;
             }
         }
-        let projectAndId = this.split.splitIDAndProject(commit[0]);
-        let project = projectAndId[0];
-        let id = projectAndId[1];
+        let id = this.splitService.getId(commit[0]);
+        let project = this.splitService.getProject(commit[0]);
         let isReadReviewNeeded = commit[4];
         this.contractManagerService.getDetailsCommits(id)
             .then(detailsCommit => {
                 if (isReadReviewNeeded) {
                     //Change flag
-                    this.contractManagerService.changeFlag(id)
+                    this.contractManagerService.reviewChangesCommitFlag(id)
                         .then((txResponse) => {
                             this.log.d("Contract manager response: ", txResponse);
                         }).catch((e) => {

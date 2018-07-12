@@ -23,7 +23,7 @@
             <ion-icon name="notifications" *ngIf="commit[4]"></ion-icon>
             <ion-icon name="checkmark" *ngIf="commit[3]"></ion-icon>
             <ion-icon name="done-all" *ngIf="!commit[3]"></ion-icon>
-            Title: {{ commit[1] }}, Project: {{ commit[2] }}, url: {{ commit[0] }}
+            {{ "addCommit.titleCommit" | translate }}: {{ commit[1] }}, {{ "addCommit.project" | translate }}: {{ commit[2] }}, url: {{ commit[0] }}
         </button>
     </ion-list>
     <p class="error-message">{{ msg }}</p>

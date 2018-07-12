@@ -2,8 +2,6 @@ import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { Web3Service } from "../../core/web3.service";
-import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 
 @Component({
@@ -13,8 +11,6 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 
 export class NewuserPage {
 
-    public account: any;
-    public web3: Web3;
     public file: Blob;
     public isUserCreated = false;
     private log: ILogger;
@@ -23,11 +19,9 @@ export class NewuserPage {
         public navCtrl: NavController,
         public http: HttpClient,
         loggerSrv: LoggerService,
-        private web3Service: Web3Service,
         private contractManager: ContractManagerService
     ) {
         this.log = loggerSrv.get("NewUserPage");
-        this.web3 = this.web3Service.getWeb3();
 
     }
 

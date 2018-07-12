@@ -21,16 +21,12 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 
 export class LoginPage {
 
-    public web3: Web3;
     public msg: string;
     public text: any;
-    public contract: any;
-    public abi: any;
-    public abijson: any;
-    public bright: any;
     public textDebugging: string;
     public isDebugMode: boolean;
     private log: ILogger;
+    private web3: Web3;
 
     constructor(
         public navCtrl: NavController,
@@ -44,14 +40,6 @@ export class LoginPage {
         this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("LoginPage");
         this.isDebugMode = AppConfig.LOG_DEBUG;
-        this.http.get("../assets/build/Bright.json").subscribe(
-            data => {
-                this.abijson = data;
-                this.abi = data["abi"];
-                this.bright = contract(this.abijson); //TruffleContract function
-                this.log.d("TruffleContract function: ", this.bright);
-            },
-            err => this.log.e(err));
     }
 
     public openFile = (event: Event) => {

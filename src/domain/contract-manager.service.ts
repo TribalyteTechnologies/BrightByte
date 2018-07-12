@@ -1,14 +1,13 @@
 import { Injectable } from "@angular/core";
 import { default as Web3 } from "web3";
 import { Web3Service } from "../core/web3.service";
-import { UserAccount } from "../core/login.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { HttpClient } from "@angular/common/http";
 import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
-import { TransactionReceipt } from "web3/types";
-import { Split } from "../domain/split.service";
+import { TransactionReceipt, Account } from "web3/types";
+import { SplitService } from "../domain/split.service";
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -24,19 +23,19 @@ export class ContractManagerService {
     private log: ILogger;
     private web3: Web3;
     private initProm: Promise<ItrbSmartContact>;
-    private currentUser: UserAccount;
+    private currentUser: Account;
 
     constructor(
         public http: HttpClient,
         private web3Service: Web3Service,
-        private split: Split,
+        private splitService: SplitService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = this.web3Service.getWeb3();
     }
 
-    public init(user: UserAccount): Promise<ItrbSmartContact> {
+    public init(user: Account): Promise<ItrbSmartContact> {
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         this.initProm = this.http.get("../assets/build/Bright.json").toPromise()
@@ -92,13 +91,13 @@ export class ContractManagerService {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Variables: url ", url);
             this.log.d("UsersMail: ", usersMail);
-            let projectAndId = this.split.splitIDAndProject(url);
-
+            let id = this.splitService.getId(url);
+            let project = this.splitService.getProject(url);
             let bytecodeData = contractArtifact.methods.setNewCommit(
-                projectAndId[1],
+                id,
                 title,
                 url,
-                projectAndId[0],
+                project,
                 usersMail[0],
                 usersMail[1],
                 usersMail[2],
@@ -127,9 +126,8 @@ export class ContractManagerService {
             this.log.d("Public Address: ", this.currentUser.address);
             return contractArtifact.methods.getNumberUserCommits().call();
         }).then(numberOfCommits => {
-            let numberUserCommits = numberOfCommits;
             let promises = new Array<Promise<string>>();
-            for (let i = 0; i < numberUserCommits; i++) {
+            for (let i = 0; i < numberOfCommits; i++) {
                 let promise = contractArtifact.methods.getUserCommits(i).call();
                 promises.push(promise);
             }
@@ -170,10 +168,9 @@ export class ContractManagerService {
             this.log.d("Contract artifact", contractArtifact);
             return contractArtifact.methods.getNumberCommitsToReviewByMe().call();
         }).then(numberOfCommits => {
-            let numberUserCommits = numberOfCommits;
             this.log.d("NumberuserCommits: ", numberOfCommits);
             let promises = new Array<Promise<string>>();
-            for (let i = 0; i < numberUserCommits; i++) {
+            for (let i = 0; i < numberOfCommits; i++) {
                 let promise = contractArtifact.methods.getCommitsToReviewByMe(i).call();
                 promises.push(promise);
             }
@@ -250,7 +247,7 @@ export class ContractManagerService {
                 });
         });
     }
-    public setThumb(id: string, index: number, value: number): Promise<any> {
+    public setThumbReviewForComment(id: string, index: number, value: number): Promise<any> {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
@@ -268,7 +265,7 @@ export class ContractManagerService {
             throw e;
         });
     }
-    public changeFlag(id: string) {
+    public reviewChangesCommitFlag(id: string) {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
@@ -314,6 +311,7 @@ export class ContractManagerService {
                 return transactionHash;
             }).catch(e => {
                 this.log.e("Error in transaction (sendTx function): ", e);
+                throw e;
             });
 
     }
