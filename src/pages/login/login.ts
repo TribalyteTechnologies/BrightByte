@@ -5,7 +5,7 @@ import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";
 
-import { NewuserPage } from "../newuser/newuser"
+import { NewuserPage } from "../newuser/newuser";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
@@ -32,7 +32,8 @@ export class LoginPage {
     public isDebugMode: boolean;
     private log: ILogger;
 
-    constructor(public navCtrl: NavController,
+    constructor(
+        public navCtrl: NavController,
         public http: HttpClient,
         public translateService: TranslateService,
         loggerSrv: LoggerService,
@@ -43,14 +44,14 @@ export class LoginPage {
         this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("LoginPage");
         this.isDebugMode = AppConfig.LOG_DEBUG;
-        this.http.get("../assets/build/Bright.json").subscribe(data => {
-            this.abijson = data;
-            this.abi = data["abi"];
-            this.bright = contract(this.abijson); //TruffleContract function
-        }, (err) => this.log.e(err), () => {
-            //If you want do after the promise. Code here
-            this.log.d("TruffleContract function: ", this.bright);
-        });
+        this.http.get("../assets/build/Bright.json").subscribe(
+            data => {
+                this.abijson = data;
+                this.abi = data["abi"];
+                this.bright = contract(this.abijson); //TruffleContract function
+                this.log.d("TruffleContract function: ", this.bright);
+            },
+            err => this.log.e(err));
     }
 
     public openFile = (event: Event) => {
@@ -59,12 +60,12 @@ export class LoginPage {
         let uploadedArray = <FileList>target.files;
         this.log.d("Target: ", target);
         let input = uploadedArray[0];
-        if (input.type == "application/json") {
+        if (input.type === "application/json") {
             this.msg = "";
             this.log.d("Input: ", input);
             let reader = new FileReader();
             reader.readAsText(input);
-            reader.onload = (event: any) => {
+            reader.onload = () => {
                 this.textDebugging = reader.result;
                 this.text = JSON.parse(reader.result);
             };
@@ -74,12 +75,12 @@ export class LoginPage {
                     this.msg = msg;
                 });
         }
-    };
+    }
 
     public login(pass: string) {
         try {
             let privK = this.text;
-            let account = this.web3.eth.accounts.decrypt(privK, pass)
+            let account = this.web3.eth.accounts.decrypt(privK, pass);
             this.log.d("Imported account from the login file: ", account);
             this.loginService.setAccount(account);
             this.contractManager.init(account);
@@ -88,7 +89,7 @@ export class LoginPage {
             this.contractManager.getUserDetails(account.address)
                 .then((detailsUser) => {
                     let posEmail = 1;
-                    if (detailsUser[posEmail] == "") {
+                    if (detailsUser[posEmail] === "") {
                         this.log.d("Email: ", detailsUser[1]);
                         this.navCtrl.push(SetProfilePage);
                     } else {
@@ -103,8 +104,7 @@ export class LoginPage {
                     this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                 });
 
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TypeError) {
                 this.log.e("File not loaded: ", e);
                 this.translateService.get("app.fileNotLoaded").subscribe(

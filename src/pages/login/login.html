@@ -15,13 +15,13 @@
         <ion-label color="primary">{{ "app.password" | translate }}</ion-label>
         <ion-input type="password" placeholder="pass" [(ngModel)]="pass"></ion-input>
     </ion-item>
-    <p class="error-message">{{msg}}</p>
+    <p class="error-message">{{ msg }}</p>
     <button ion-button (click)="login(pass)">{{ "app.login" | translate }}</button>
     <button ion-button (click)="register()">{{ "app.register" | translate }}</button>
     <br>
     <div *ngIf="isDebugMode">
         <p>{{ "app.debug" | translate }}</p>
-        <p>{{textDebugging}}</p>
+        <p>{{ textDebugging }}</p>
     </div>
 
 </ion-content>

@@ -8,7 +8,7 @@ import { default as contract } from "truffle-contract";
 import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
@@ -42,17 +42,19 @@ export class SetProfilePage {
         this.log = loggerSrv.get("SetProfilePage");
         this.account = this.loginService.getAccount();
         this.log.d("Unlocked account: ", this.account);
-        this.http.get("../assets/build/Bright.json").subscribe(data => {
-            this.abijson = data;
-            this.abi = data["abi"];
-            this.bright = contract(this.abijson); //TruffleContract function
-        }, (err) => this.log.e(err), () => {
-            //If you want do after the promise. Code here
-            this.log.d("TruffleContract function: ", this.bright);
-        });
+        this.http.get("../assets/build/Bright.json").subscribe(
+            data => {
+                this.abijson = data;
+                this.abi = data["abi"];
+                this.bright = contract(this.abijson); //TruffleContract function
+            },
+            err => this.log.e(err), () => {
+                //If you want do after the promise. Code here
+                this.log.d("TruffleContract function: ", this.bright);
+            });
         this.myForm = this.fb.group({
-            name: ['', [Validators.required]],
-            email: ['', Validators.compose([Validators.required, Validators.email])]
+            name: ["", [Validators.required]],
+            email: ["", Validators.compose([Validators.required, Validators.email])]
         });
     }
 
@@ -64,7 +66,7 @@ export class SetProfilePage {
                 let emailUsed = false;
                 this.log.d("arrayEmails.length:", arrayEmails.length);
                 for (let i = 0; i < arrayEmails.length; i++) {
-                    if (arrayEmails[i] == mail) {
+                    if (arrayEmails[i] === mail) {
                         emailUsed = true;
                     }
                 }

@@ -2,8 +2,8 @@ import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { IonicApp, IonicModule, IonicErrorHandler } from "ionic-angular";
 import { HttpClientModule, HttpClient } from "@angular/common/http";
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { default as Web3 } from "web3";
 
 // Pages
@@ -16,8 +16,8 @@ import { LoginPage } from "../pages/login/login";
 import { NewuserPage } from "../pages/newuser/newuser";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { SetProfilePage } from "../pages/setprofile/setprofile";
-import { CommitReviewPage } from "../pages/commitreview/commitreview"
-import { CommitDetailsPage } from "../pages/commitdetails/commitdetails"
+import { CommitReviewPage } from "../pages/commitreview/commitreview";
+import { CommitDetailsPage } from "../pages/commitdetails/commitdetails";
 
 // Providers
 import { AppConfig } from "../app.config";
@@ -31,62 +31,62 @@ import { Split } from "../domain/split.service";
 import { BrightByteApp } from "./app.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
-	return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
+    return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
 
 @NgModule({
-	declarations: [
-		BrightByteApp,
-		RankingPage,
-		CommitPage,
-		HomePage,
-		ReviewPage,
-		TabsPage,
-		LoginPage,
-		NewuserPage,
-		AddCommitPopover,
-		SetProfilePage,
-		CommitReviewPage,
-		CommitDetailsPage
-	],
-	imports: [
-		BrowserModule,
-		IonicModule.forRoot(BrightByteApp),
-		HttpClientModule,
-		TranslateModule.forRoot({
-			loader: {
-				provide: TranslateLoader,
-				useFactory: HttpLoaderFactory,
-				deps: [HttpClient]
-			}
-		})
-	],
-	bootstrap: [IonicApp],
-	entryComponents: [
-		BrightByteApp,
-		RankingPage,
-		CommitPage,
-		HomePage,
-		ReviewPage,
-		TabsPage,
-		LoginPage,
-		NewuserPage,
-		AddCommitPopover,
-		SetProfilePage,
-		CommitReviewPage,
-		CommitDetailsPage
-	],
-	providers: [
-		AppConfig,
-		{ provide: ErrorHandler, useClass: IonicErrorHandler },
-		{ provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG) },
-		Web3,
-		Web3Service,
-		LoginService,
-		HttpClientModule,
+    declarations: [
+        BrightByteApp,
+        RankingPage,
+        CommitPage,
+        HomePage,
+        ReviewPage,
+        TabsPage,
+        LoginPage,
+        NewuserPage,
+        AddCommitPopover,
+        SetProfilePage,
+        CommitReviewPage,
+        CommitDetailsPage
+    ],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot(BrightByteApp),
+        HttpClientModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient]
+            }
+        })
+    ],
+    bootstrap: [IonicApp],
+    entryComponents: [
+        BrightByteApp,
+        RankingPage,
+        CommitPage,
+        HomePage,
+        ReviewPage,
+        TabsPage,
+        LoginPage,
+        NewuserPage,
+        AddCommitPopover,
+        SetProfilePage,
+        CommitReviewPage,
+        CommitDetailsPage
+    ],
+    providers: [
+        AppConfig,
+        { provide: ErrorHandler, useClass: IonicErrorHandler },
+        { provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG) },
+        Web3,
+        Web3Service,
+        LoginService,
+        HttpClientModule,
         ContractManagerService,
         Split
-	]
+    ]
 })
 
 export class AppModule { }

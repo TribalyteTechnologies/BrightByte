@@ -17,13 +17,13 @@ import { Split } from "../../domain/split.service";
 })
 
 export class CommitPage {
-    private log: ILogger;
+    public readonly ALL = "all";
     public web3: Web3;
     public arrayCommits = new Array<string>();
     public projects = new Array<string>();
-    private readonly ALL = "all";
     public projectSelected = this.ALL;
     public msg: string;
+    private log: ILogger;
 
     constructor(
         public popoverCtrl: PopoverController,
@@ -51,7 +51,7 @@ export class CommitPage {
     public selectUrl(commit: Object) {
         let index: number;
         for (let i = 0; i < this.arrayCommits.length; i++) {
-            if (this.arrayCommits[i][0] == commit[0]) {
+            if (this.arrayCommits[i][0] === commit[0]) {
                 index = i;
             }
         }
@@ -105,12 +105,12 @@ export class CommitPage {
                 let index = 0;
                 let array = new Array<string>();
                 for (let j = 0; j < arrayOfCommits.length; j++) {
-                    if (this.projectSelected == arrayOfCommits[j][2]) {
+                    if (this.projectSelected === arrayOfCommits[j][2]) {
                         array[index] = arrayOfCommits[j];
                         index++;
                     }
                 }
-                if (this.projectSelected == this.ALL) {
+                if (this.projectSelected === this.ALL) {
                     this.arrayCommits = arrayOfCommits;
                 } else {
                     this.arrayCommits = array;

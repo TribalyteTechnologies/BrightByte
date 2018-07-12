@@ -1,34 +1,34 @@
 <ion-header>
-	<ion-navbar [hideBackButton]="isBackButtonDisabled">
-		<ion-title>
-			{{ "commitReview.title" | translate }}
-		</ion-title>
-	</ion-navbar>
+    <ion-navbar [hideBackButton]="isBackButtonDisabled">
+        <ion-title>
+            {{ "commitReview.title" | translate }}
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-	<a target="_blank" href="{{commitDetails[0]}}">{{commitDetails[0]}}</a>
-	<p>{{ "commitDetails.author" | translate }}: {{commitDetails[2]}}</p>
-	<p>{{ "commitDetails.date" | translate }}: {{commitDetails[3]*1000 | date:'fullDate'}}</p>
-	<p>{{ "commitDetails.project" | translate }}: {{project}}</p>
-	<p>{{ "commitDetails.nReviews" | translate }}: {{commitDetails[4]}}</p>
-	<p>{{ "commitDetails.pReviews" | translate }}: {{commitDetails[5]}}</p>
-	<p>{{ "commitDetails.currrentNReviews" | translate }}: {{commitDetails[6]}}</p>
-	<ion-item>
-		<ion-textarea placeholder="Enter a description" [(ngModel)]="textComment">{{ "commitDetails.textField" | translate }}</ion-textarea>
-	</ion-item>
-	<p class="error-message">{{msg}}</p>
-	<p>{{msg1}}</p>
+    <a target="_blank" href="{{ commitDetails[0] }}">{{ commitDetails[0] }}</a>
+    <p>{{ "commitDetails.author" | translate }}: {{ commitDetails[2] }}</p>
+    <p>{{ "commitDetails.date" | translate }}: {{ commitDetails[3]*1000 | date:'fullDate' }}</p>
+    <p>{{ "commitDetails.project" | translate }}: {{ project }}</p>
+    <p>{{ "commitDetails.nReviews" | translate }}: {{ commitDetails[4] }}</p>
+    <p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails[5] }}</p>
+    <p>{{ "commitDetails.currrentNReviews" | translate }}: {{ commitDetails[6] }}</p>
+    <ion-item>
+        <ion-textarea placeholder="Enter a description" [(ngModel)]="textComment">{{ "commitDetails.textField" | translate }}</ion-textarea>
+    </ion-item>
+    <p class="error-message">{{ msg }}</p>
+    <p>{{ msg1 }}</p>
 
-	<ion-item>
-		<button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
-			<ion-icon name={{star[number]}}></ion-icon>
-		</button>
-	</ion-item>
+    <ion-item>
+        <button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
+            <ion-icon name="{{ star[number] }}"></ion-icon>
+        </button>
+    </ion-item>
 
-	<ion-spinner [hidden]="!isBackButtonDisabled"></ion-spinner>
-	<br>
-	<button ion-button [disabled]="isButtonDisabled" (click)="addReview(textComment)">
-		{{ "commitReview.review" | translate }}
-	</button>
+    <ion-spinner [hidden]="!isBackButtonDisabled"></ion-spinner>
+    <br>
+    <button ion-button [disabled]="isButtonDisabled" (click)="addReview(textComment)">
+        {{ "commitReview.review" | translate }}
+    </button>
 </ion-content>

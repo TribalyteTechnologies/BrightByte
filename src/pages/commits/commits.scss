@@ -1,8 +1,11 @@
 page-commits {
     .error-message {
-		color: red;
-	}
-	.custom-popover .popover-content {
-		width: 60%;
+        color: red;
+    }
+    .custom-popover .popover-content {
+        width: 60%;
+    }
+    .commit-button:hover {
+        color: blue;
     }
 }

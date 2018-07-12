@@ -3,7 +3,7 @@ import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
-import { CommitReviewPage } from "../commitreview/commitreview"
+import { CommitReviewPage } from "../commitreview/commitreview";
 import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";
 import { Split } from "../../domain/split.service";
@@ -48,7 +48,7 @@ export class ReviewPage {
     public selectUrl(commit: Object) {
         let index: number;
         for (let i = 0; i < this.arrayCommits.length; i++) {
-            if (this.arrayCommits[i][0] == commit[0]) {
+            if (this.arrayCommits[i][0] === commit[0]) {
                 index = i;
             }
             this.log.d("Array length: ", this.arrayCommits.length);

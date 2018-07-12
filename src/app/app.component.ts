@@ -14,7 +14,8 @@ export class BrightByteApp {
     public rootPage = LoginPage; //TabsPage;
     private log: ILogger;
 
-    constructor(private translateService: TranslateService,
+    constructor(
+        private translateService: TranslateService,
         private loggerSrv: LoggerService,
         platform: Platform) {
 
@@ -31,9 +32,9 @@ export class BrightByteApp {
         // Set the default language for translation strings, and the current language.
         this.translateService.setDefaultLang(AppConfig.DEFAULT_LANGUAGE);
         let userLang = this.translateService.getBrowserLang();
-        this.log.d("Browser Language: ", userLang)
+        this.log.d("Browser Language: ", userLang);
         userLang = (AppConfig.AVAILABLE_LANGUAGE_KEYS.indexOf(userLang) > -1) ? userLang : AppConfig.DEFAULT_LANGUAGE;
-        this.log.d("Used language to translate: ", userLang)
+        this.log.d("Used language to translate: ", userLang);
 
         this.translateService.use(userLang || AppConfig.DEFAULT_LANGUAGE);
     }

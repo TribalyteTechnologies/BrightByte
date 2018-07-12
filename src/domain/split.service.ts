@@ -7,11 +7,11 @@ export class Split {
     private log: ILogger;
 
     constructor(
-        loggerSrv: LoggerService,
+        loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("SplitService");
     }
-    public splitIDAndProject(url): string[]{
+    public splitIDAndProject(url): string[] {
         let urlSplitted = url.split("/");
         this.log.d("Url splited: ", urlSplitted);
         let project: string = urlSplitted[4];

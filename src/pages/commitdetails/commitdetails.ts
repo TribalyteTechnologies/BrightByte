@@ -21,8 +21,8 @@ export class CommitDetailsPage {
     public msg: string;
     public isButtonPressArray = new Array<boolean>();
     public commentsArray: string[];
-    private log: ILogger;
     public project: string;
+    private log: ILogger;
 
     constructor(
         navParams: NavParams,

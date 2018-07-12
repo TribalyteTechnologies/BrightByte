@@ -3,12 +3,12 @@ import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
-import { ViewController } from 'ionic-angular';
+import { ViewController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { ContractManagerService } from "../../domain/contract-manager.service";
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { Split } from "../../domain/split.service";
 
@@ -17,7 +17,6 @@ import { Split } from "../../domain/split.service";
     templateUrl: "addcommit.html"
 })
 export class AddCommitPopover {
-    private log: ILogger;
     public web3: Web3;
     public account: any;
     public bright: any;
@@ -30,12 +29,13 @@ export class AddCommitPopover {
     public isTxOngoing = false;
     public abijson: any;
     public msg: string;
-    private MAX_REVIEWER_COUNT = 4;
     public usersMail = ["", "", "", ""];
     public arrayEmails: string[];
     public arraySearch: string[];
     public isShowList = new Array<boolean>();
     public myForm: FormGroup;
+    private log: ILogger;
+    private MAX_REVIEWER_COUNT = 4;
 
     constructor(
         public navCtrl: NavController,
@@ -54,28 +54,29 @@ export class AddCommitPopover {
         this.account = this.loginService.getAccount();
         this.account = this.loginService.getAccount();
         this.log.d("Imported account successfully", this.account);
-        this.http.get("../assets/build/Bright.json").subscribe(data => {
-            this.abijson = data;
-            this.abi = data["abi"];
-            this.bright = contract(this.abijson); //TruffleContract function
-            this.contractManagerService.getAllUserEmail()
-                .then((allEmails: string[]) => {
-                    this.log.d("ARRAY Emails: ", allEmails);
-                    this.arrayEmails = allEmails;
-                }).catch((e) => {
-                    this.translateService.get("addCommit.errorEmails").subscribe(
-                        msg => {
-                            this.msg = msg;
-                            this.log.e(msg, e);
-                        });
-                });
-        }, (err) => this.log.e(err), () => {
-            //If you want do after the promise. Code here
-            this.log.d("TruffleContract function: ", this.bright);
-        });
+        this.http.get("../assets/build/Bright.json").subscribe(
+            data => {
+                this.abijson = data;
+                this.abi = data["abi"];
+                this.bright = contract(this.abijson); //TruffleContract function
+                this.contractManagerService.getAllUserEmail()
+                    .then((allEmails: string[]) => {
+                        this.log.d("ARRAY Emails: ", allEmails);
+                        this.arrayEmails = allEmails;
+                    }).catch((e) => {
+                        this.translateService.get("addCommit.errorEmails").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                    });
+                this.log.d("TruffleContract function: ", this.bright);
+            },
+            err => this.log.e(err));
         this.myForm = this.fb.group({
-            url: ['', [Validators.required, Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
-            title: ['', [Validators.required]]
+            url: ["", [Validators.required,
+            Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
+            title: ["", [Validators.required]]
         });
     }
     public addCommit(url: string, title: string) {
@@ -85,7 +86,7 @@ export class AddCommitPopover {
         let id = projectAndId[1];
         this.contractManagerService.getDetailsCommits(id)
             .then((detailsCommits) => {
-                if (detailsCommits[0] != "") {
+                if (detailsCommits[0] !== "") {
                     this.isTxOngoing = false;
                     this.translateService.get("addCommit.urlDuplicated").subscribe(
                         msg => {
@@ -129,17 +130,17 @@ export class AddCommitPopover {
         // set val to the value of the ev target
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
-        if (val && val.trim() != "") {
+        if (val && val.trim() !== "") {
             this.arraySearch = this.arrayEmails.filter((item) => {
                 return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
-            })
+            });
         }
         this.isShowList[id] = true;
     }
-    public setEmailFromList(number, item) {
+    public setEmailFromList(num, item) {
         let isDuplicated = false;
         for (let i = 0; i < 4; i++) {
-            if (this.usersMail[i] == item) {
+            if (this.usersMail[i] === item) {
                 this.translateService.get("addCommit.emailDuplicated").subscribe(
                     msg => {
                         this.msg = msg;
@@ -150,8 +151,8 @@ export class AddCommitPopover {
         }
         if (!isDuplicated) {
             this.msg = "";
-            this.usersMail[number] = item;
-            this.isShowList[number] = false;
+            this.usersMail[num] = item;
+            this.isShowList[num] = false;
         }
     }
     public addInput() {

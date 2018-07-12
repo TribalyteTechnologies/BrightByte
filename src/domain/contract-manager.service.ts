@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { default as Web3 } from 'web3';
+import { default as Web3 } from "web3";
 import { Web3Service } from "../core/web3.service";
 import { UserAccount } from "../core/login.service";
 import { ILogger, LoggerService } from "../core/logger.service";
@@ -10,11 +10,11 @@ import Tx from "ethereumjs-tx";
 import { TransactionReceipt } from "web3/types";
 import { Split } from "../domain/split.service";
 
-interface TrbSmartContractJson {
+interface ItrbSmartContractJson {
     abi: Array<any>;
 }
 
-interface TrbSmartContact { //Web3.Eth.Contract
+interface ItrbSmartContact { //Web3.Eth.Contract
     [key: string]: any;
 }
 
@@ -23,7 +23,7 @@ export class ContractManagerService {
     private contractAddress: string;
     private log: ILogger;
     private web3: Web3;
-    private initProm: Promise<TrbSmartContact>;
+    private initProm: Promise<ItrbSmartContact>;
     private currentUser: UserAccount;
 
     constructor(
@@ -36,11 +36,11 @@ export class ContractManagerService {
         this.web3 = this.web3Service.getWeb3();
     }
 
-    public init(user: UserAccount): Promise<TrbSmartContact> {
+    public init(user: UserAccount): Promise<ItrbSmartContact> {
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         this.initProm = this.http.get("../assets/build/Bright.json").toPromise()
-            .then((jsonContractData: TrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContract = TruffleContract(jsonContractData);
                 this.contractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
                 let contract = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddress, {
@@ -94,7 +94,16 @@ export class ContractManagerService {
             this.log.d("UsersMail: ", usersMail);
             let projectAndId = this.split.splitIDAndProject(url);
 
-            let bytecodeData = contractArtifact.methods.setNewCommit(projectAndId[1], title, url, projectAndId[0], usersMail[0], usersMail[1], usersMail[2], usersMail[3]).encodeABI();
+            let bytecodeData = contractArtifact.methods.setNewCommit(
+                projectAndId[1],
+                title,
+                url,
+                projectAndId[0],
+                usersMail[0],
+                usersMail[1],
+                usersMail[2],
+                usersMail[3]
+            ).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced user1: ", usersMail[0]);
             this.log.d("Introduced user2: ", usersMail[1]);
@@ -137,7 +146,7 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getAllUserNumber().call()
+            return contractArtifact.methods.getAllUserNumber().call();
         }).then(numberUsers => {
             let promises = new Array<Promise<string>>();
             for (let i = 0; i < numberUsers; i++) {
@@ -150,7 +159,7 @@ export class ContractManagerService {
             .catch(err => {
                 this.log.e("Error getting all user emails :", err);
                 throw err;
-            })
+            });
     }
 
     public getCommitsToReview(): Promise<any> {
@@ -180,7 +189,7 @@ export class ContractManagerService {
             let contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getDetailsCommits(id).call()
+            return contractArtifact.methods.getDetailsCommits(id).call();
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
             throw err;
@@ -213,7 +222,7 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getNumberComments(index).call()
+            return contractArtifact.methods.getNumberComments(index).call();
         }).then(numberComments => {
             this.log.d("Number of comments: ", numberComments);
             let numberOfComments = numberComments;
@@ -282,7 +291,8 @@ export class ContractManagerService {
                 this.log.d("Value NONCE", nonce);
                 let rawtx = {
                     nonce: nonce,
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),// I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),
                     gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
                     to: this.contractAddress,
                     data: bytecodeData

@@ -4,25 +4,23 @@ import { CommitPage } from "../commits/commits";
 import { ReviewPage } from "../review/review";
 import { HomePage } from "../home/home";
 import { RankingPage } from "../ranking/ranking";
-import { NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 
 @Component({
-	templateUrl: "tabs.html"
+    templateUrl: "tabs.html"
 })
 export class TabsPage {
 
-	tab1Root = HomePage;
-	tab2Root = CommitPage;
-	tab3Root = ReviewPage;
-	tab4Root = RankingPage;
-	private log: ILogger;
+    public tab1Root = HomePage;
+    public tab2Root = CommitPage;
+    public tab3Root = ReviewPage;
+    public tab4Root = RankingPage;
+    private log: ILogger;
 
-	constructor(
-		private navParams: NavParams, 
-		loggerSrv: LoggerService
-	) {
-		this.log = loggerSrv.get("TabsPage");
+    constructor(
+        loggerSrv: LoggerService
+    ) {
+        this.log = loggerSrv.get("TabsPage");
 
-	}
+    }
 }

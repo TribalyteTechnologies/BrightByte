@@ -14,14 +14,17 @@
     <ion-item>
         <ion-label>{{ "commits.project" | translate }}</ion-label>
         <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh()">
-            <ion-option *ngFor="let option of projects" value="{{option}}">{{option}}</ion-option>
+            <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
             <ion-option value="all" selected="true">{{ "commits.allCommits" | translate }}</ion-option>
         </ion-select>
     </ion-item>
     <ion-list inset>
-        <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)">
-            <ion-icon name="notifications" *ngIf="commit[4]"></ion-icon><ion-icon name="checkmark" *ngIf="commit[3]"></ion-icon><ion-icon name="done-all" *ngIf="!commit[3]"></ion-icon> Title: {{commit[1]}}, Project: {{commit[2]}}, url: {{ commit[0] }}
+        <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)" class="commit-button">
+            <ion-icon name="notifications" *ngIf="commit[4]"></ion-icon>
+            <ion-icon name="checkmark" *ngIf="commit[3]"></ion-icon>
+            <ion-icon name="done-all" *ngIf="!commit[3]"></ion-icon>
+            Title: {{ commit[1] }}, Project: {{ commit[2] }}, url: {{ commit[0] }}
         </button>
     </ion-list>
-    <p class="error-message">{{msg}}</p>
+    <p class="error-message">{{ msg }}</p>
 </ion-content>

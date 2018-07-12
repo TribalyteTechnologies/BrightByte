@@ -1,47 +1,47 @@
 <ion-header>
-	<ion-navbar>
-		<ion-title>
-			{{ "addCommit.add" | translate }}
-		</ion-title>
-	</ion-navbar>
+    <ion-navbar>
+        <ion-title>
+            {{ "addCommit.add" | translate }}
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-	<h2>{{ "addCommit.add" | translate }}</h2>
-	<form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value, myForm.get('title').value)" novalidate>
-		<ion-item>
-					<ion-label stacked>{{ "addCommit.titleCommit" | translate }}:</ion-label>
-					<ion-input formControlName="title" type="text" placeholder="{{ 'addCommit.inputTitle' | translate }}"></ion-input>
-				</ion-item>
-				<ion-item *ngIf="myForm.get('title').errors && myForm.get('title').dirty">
-					<p color="danger" ion-text *ngIf="myForm.get('title').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
-		</ion-item>
-		<ion-item>
-			<ion-label stacked>Url:</ion-label>
-			<ion-input formControlName="url" type="text" placeholder="url"></ion-input>
-		</ion-item>
-		<ion-item *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
-			<p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
-			<p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">{{ "addCommit.notUrl" | translate }}</p>
-		</ion-item>
-		<p class="error-message">{{msg}}</p>
-		<ion-spinner [hidden]="!isTxOngoing"></ion-spinner>
-		<br>
-		<button ion-button type="submit" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-	</form>
+    <h2>{{ "addCommit.add" | translate }}</h2>
+    <form [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value, myForm.get('title').value)" novalidate>
+        <ion-item>
+            <ion-label stacked>{{ "addCommit.titleCommit" | translate }}:</ion-label>
+            <ion-input formControlName="title" type="text" placeholder="{{ 'addCommit.inputTitle' | translate }}"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="myForm.get('title').errors && myForm.get('title').dirty">
+            <p color="danger" ion-text *ngIf="myForm.get('title').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>Url:</ion-label>
+            <ion-input formControlName="url" type="text" placeholder="url"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
+            <p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
+            <p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">{{ "addCommit.notUrl" | translate }}</p>
+        </ion-item>
+        <p class="error-message">{{ msg }}</p>
+        <ion-spinner [hidden]="!isTxOngoing"></ion-spinner>
+        <br>
+        <button ion-button type="submit" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
+    </form>
 
-	<ion-label color="primary">{{ "addCommit.users" | translate }}</ion-label>
+    <ion-label color="primary">{{ "addCommit.users" | translate }}</ion-label>
 
-	<ion-item *ngFor="let number of numberInputs; let i=index;">
-		<ion-searchbar (ionInput)="getItems($event, i)" placeholder="email@example.com" [(ngModel)]="usersMail[i]"></ion-searchbar>
-		<ion-list *ngIf="isShowList[i]">
-			<ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(i,item)">
-				{{ item }}
-			</ion-item>
-		</ion-list>
-	</ion-item>
-	<button ion-button (click)="addInput()" *ngIf="isAddInputAllowed">
-		<ion-icon name="add-circle"></ion-icon>
-	</button>
+    <ion-item *ngFor="let number of numberInputs; let i=index;">
+        <ion-searchbar (ionInput)="getItems($event, i)" placeholder="email@example.com" [(ngModel)]="usersMail[i]"></ion-searchbar>
+        <ion-list *ngIf="isShowList[i]">
+            <ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(i,item)">
+                {{ item }}
+            </ion-item>
+        </ion-list>
+    </ion-item>
+    <button ion-button (click)="addInput()" *ngIf="isAddInputAllowed">
+        <ion-icon name="add-circle"></ion-icon>
+    </button>
 
 </ion-content>

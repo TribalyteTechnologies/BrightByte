@@ -8,18 +8,18 @@
 
 <ion-content padding>
 	<!--TODO the contract service returned a proper class with members like url, author, date, etc. The poor interface with Solidity doesn’t need to reach the Angular views-->
-	<a target="_blank" href="{{commitDetails[0]}}">{{commitDetails[0]}}</a>
+	<a target="_blank" href="{{ commitDetails[0] }}">{{ commitDetails[0] }}</a>
 	<p>{{ "commitDetails.titleCommit" | translate }}: {{ commitDetails[1] }}</p>
 	<p>{{ "commitDetails.author" | translate }}: {{ commitDetails[2] }}</p>
-	<p>{{ "commitDetails.date" | translate }}: {{commitDetails[3]*1000 | date:'fullDate'}}</p>
+	<p>{{ "commitDetails.date" | translate }}: {{ commitDetails[3]*1000 | date:'fullDate' }}</p>
 	<p>{{ "commitDetails.project" | translate }}: {{ project }}</p>
 	<p>{{ "commitDetails.nReviews" | translate }}: {{ commitDetails[4] }}</p>
 	<p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails[5] }}</p>
 	<p>{{ "commitDetails.currrentNReviews" | translate }}: {{ commitDetails[6] }}</p>
-	<p class="error-message">{{msg}}</p>
+	<p class="error-message">{{ msg }}</p>
 	<ion-list inset>
 		<ion-item *ngFor="let comment of commentsArray; let i = index">
-			<p>{{ comment[2] }} {{ "commitDetails.commented" | translate }} ({{comment[3]}} {{ "commitDetails.stars" | translate }}):
+			<p>{{ comment[2] }} {{ "commitDetails.commented" | translate }} ({{ comment[3] }} {{ "commitDetails.stars" | translate }}):
 				<button ion-button icon-only (click)="setThumbs(i, 2)" *ngIf="comment[4]==0 && !isButtonPressArray[i]">
 						<ion-icon name="thumbs-up"></ion-icon>
 				</button>

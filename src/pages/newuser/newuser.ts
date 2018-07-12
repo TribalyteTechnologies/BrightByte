@@ -59,7 +59,7 @@ export class NewuserPage {
             (window.URL).revokeObjectURL(save.href);
         };
         reader.readAsDataURL(contentinBlob);
-    };
+    }
 
 }
 
