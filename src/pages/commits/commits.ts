@@ -7,6 +7,8 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 import { TranslateService } from "@ngx-translate/core";
 import { SplitService } from "../../domain/split.service";
+import { UserCommit } from "../../models/user-commit.model";
+import { CommitDetails } from "../../models/commit-details.model";
 
 @Component({
     selector: "page-commits",
@@ -15,7 +17,7 @@ import { SplitService } from "../../domain/split.service";
 
 export class CommitPage {
     public readonly ALL = "all";
-    public arrayCommits = new Array<string>();
+    public arrayCommits = new Array<UserCommit>();
     public projects = new Array<string>();
     public projectSelected = this.ALL;
     public msg: string;
@@ -42,19 +44,19 @@ export class CommitPage {
             this.refresh();
         });
     }
-    public selectUrl(commit: Object) {
+    public selectUrl(commit: UserCommit) {
         let index: number;
         for (let i = 0; i < this.arrayCommits.length; i++) {
-            if (this.arrayCommits[i][0] === commit[0]) {
+            if (this.arrayCommits[i].url === commit.url) {
                 index = i;
                 break;
             }
         }
-        let id = this.splitService.getId(commit[0]);
-        let project = this.splitService.getProject(commit[0]);
-        let isReadReviewNeeded = commit[4];
+        let id = this.splitService.getId(commit.url);
+        let project = this.splitService.getProject(commit.url);
+        let isReadReviewNeeded = commit.isReadNeeded;
         this.contractManagerService.getDetailsCommits(id)
-            .then(detailsCommit => {
+            .then((detailsCommit: CommitDetails) => {
                 if (isReadReviewNeeded) {
                     //Change flag
                     this.contractManagerService.reviewChangesCommitFlag(id)
@@ -84,12 +86,12 @@ export class CommitPage {
     }
     public refresh() {
         this.contractManagerService.getCommits()
-            .then((arrayOfCommits: string[]) => {
+            .then((arrayOfCommits: UserCommit[]) => {
                 this.log.d("ARRAY Commits: ", arrayOfCommits);
 
                 let projects = new Array<string>();
                 for (let commitVals of arrayOfCommits) {
-                    let commitProject = commitVals[2]; //TODO: create a model class for commits
+                    let commitProject = commitVals.project;
                     if (projects.indexOf(commitProject) < 0) {
                         projects.push(commitProject);
                     }
@@ -97,9 +99,9 @@ export class CommitPage {
                 this.projects = projects;
                 this.log.d("Diferent projects: ", this.projects);
                 let index = 0;
-                let array = new Array<string>();
+                let array = new Array<UserCommit>();
                 for (let j = 0; j < arrayOfCommits.length; j++) {
-                    if (this.projectSelected === arrayOfCommits[j][2]) {
+                    if (this.projectSelected === arrayOfCommits[j].project) {
                         array[index] = arrayOfCommits[j];
                         index++;
                     }

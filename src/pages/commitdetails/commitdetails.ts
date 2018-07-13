@@ -55,6 +55,7 @@ export class CommitDetailsPage {
     public setThumbs(index: number, value: number) {
         this.log.d("Index of the comment: ", index);
         this.log.d("Value: ", value);
+        this.log.d("url: ",this.commitDetails.url);
         let id = this.splitService.getId(this.commitDetails.url);
         this.contractManagerService.setThumbReviewForComment(id, index, value)
             .then((txResponse) => {

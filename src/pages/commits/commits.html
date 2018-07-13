@@ -20,10 +20,10 @@
     </ion-item>
     <ion-list inset>
         <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)" class="commit-button">
-            <ion-icon name="notifications" *ngIf="commit[4]"></ion-icon>
-            <ion-icon name="checkmark" *ngIf="commit[3]"></ion-icon>
-            <ion-icon name="done-all" *ngIf="!commit[3]"></ion-icon>
-            {{ "addCommit.titleCommit" | translate }}: {{ commit[1] }}, {{ "addCommit.project" | translate }}: {{ commit[2] }}, url: {{ commit[0] }}
+            <ion-icon name="notifications" *ngIf="commit.isReadNeeded"></ion-icon>
+            <ion-icon name="checkmark" *ngIf="commit.isPending"></ion-icon>
+            <ion-icon name="done-all" *ngIf="!commit.isPending"></ion-icon>
+            {{ "addCommit.titleCommit" | translate }}: {{ commit.title }}, {{ "addCommit.project" | translate }}: {{ commit.project }}, url: {{ commit.url }}
         </button>
     </ion-list>
     <p class="error-message">{{ msg }}</p>

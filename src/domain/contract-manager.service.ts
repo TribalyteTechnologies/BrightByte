@@ -11,6 +11,7 @@ import { SplitService } from "../domain/split.service";
 import { CommitDetails } from "../models/commit-details.model";
 import { UserDetails } from "../models/user-details.model";
 import { CommitComments } from "../models/commit-comments.model";
+import { UserCommit } from "../models/user-commit.model";
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -120,7 +121,7 @@ export class ContractManagerService {
             throw e;
         });
     }
-    public getCommits(): Promise<string[] | void> {
+    public getCommits(): Promise<UserCommit[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
             this.log.d("Contract artifact: ", contract);
@@ -129,10 +130,13 @@ export class ContractManagerService {
             this.log.d("Public Address: ", this.currentUser.address);
             return contractArtifact.methods.getNumberUserCommits().call();
         }).then(numberOfCommits => {
-            let promises = new Array<Promise<string>>();
+            let promises = new Array<Promise<UserCommit>>();
             for (let i = 0; i < numberOfCommits; i++) {
-                let promise = contractArtifact.methods.getUserCommits(i).call();
-                promises.push(promise);
+                let promise = contractArtifact.methods.getUserCommits(i).call()
+                .then((commitsVals: Array<any>) => {
+                    return UserCommit.fromSmartContract(commitsVals);
+                });
+                promises.push(promise); 
             }
             return Promise.all(promises);
         }).catch(err => {
