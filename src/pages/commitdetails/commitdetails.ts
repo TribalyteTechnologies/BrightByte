@@ -4,17 +4,19 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { SplitService } from "../../domain/split.service";
+import { CommitComments } from "../../models/commit-comments.model"; 
+import { CommitDetails } from "../../models/commit-details.model";
 
 @Component({
     selector: "page-commitdetails",
     templateUrl: "commitdetails.html"
 })
 export class CommitDetailsPage {
-    public commitDetails: Array<any>;
+    public commitDetails: CommitDetails;
     public commitIndex: number;
     public msg: string;
     public isButtonPressArray = new Array<boolean>();
-    public commentsArray: string[];
+    public commentsArray = new Array<CommitComments>();
     public project: string;
     private log: ILogger;
 
@@ -39,7 +41,7 @@ export class CommitDetailsPage {
     }
     public refresh(): Promise<void> {
         return this.contractManagerService.getCommentsOfCommit(this.commitIndex)
-            .then((arrayOfComments: string[]) => {
+            .then((arrayOfComments: CommitComments[]) => {
                 this.log.d("Array of Comments: ", arrayOfComments);
                 this.commentsArray = arrayOfComments;
             }).catch((e) => {
@@ -53,7 +55,7 @@ export class CommitDetailsPage {
     public setThumbs(index: number, value: number) {
         this.log.d("Index of the comment: ", index);
         this.log.d("Value: ", value);
-        let id = this.splitService.getId(this.commitDetails[0]);
+        let id = this.splitService.getId(this.commitDetails.url);
         this.contractManagerService.setThumbReviewForComment(id, index, value)
             .then((txResponse) => {
                 this.log.d("Contract manager response: ", txResponse);

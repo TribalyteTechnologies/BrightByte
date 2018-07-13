@@ -8,8 +8,9 @@ import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
 import { TransactionReceipt, Account } from "web3/types";
 import { SplitService } from "../domain/split.service";
-import { CommitDetails } from "../models/commit-details.model"; 
-import { UserDetails } from "../models/user-details.model"; 
+import { CommitDetails } from "../models/commit-details.model";
+import { UserDetails } from "../models/user-details.model";
+import { CommitComments } from "../models/commit-comments.model";
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -216,19 +217,21 @@ export class ContractManagerService {
         });
 
     }
-    public getCommentsOfCommit(index: number): Promise<string[] | void> {
+    public getCommentsOfCommit(index: number): Promise<CommitComments[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
             return contractArtifact.methods.getNumberComments(index).call();
-        }).then(numberComments => {
+        }).then((numberComments: number) => {
             this.log.d("Number of comments: ", numberComments);
-            let numberOfComments = numberComments;
-            let promises = new Array<Promise<any>>();
-            for (let i = 0; i < numberOfComments; i++) {
-                let promise = contractArtifact.methods.getCommentsOfCommit(index, i).call();
+            let promises = new Array<Promise<CommitComments>>();
+            for (let i = 0; i < numberComments; i++) {
+                let promise = contractArtifact.methods.getCommentsOfCommit(index, i).call()
+                    .then((commentVals: Array<any>) => {
+                        return CommitComments.fromSmartContract(commentVals);
+                    });
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -247,9 +250,9 @@ export class ContractManagerService {
         }).then((userVals: Array<any>) => {
             return UserDetails.fromSmartContract(userVals);
         }).catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
-                throw err;
-            });
+            this.log.e("Error calling BrightByte smart contract :", err);
+            throw err;
+        });
     }
     public setThumbReviewForComment(id: string, index: number, value: number): Promise<any> {
         let contractArtifact;

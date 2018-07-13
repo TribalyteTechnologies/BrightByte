@@ -97,6 +97,7 @@
         "title": "Commit Review",
         "emptyField": "Please, write your review",
         "reviewDone": "Review successfully done",
-        "txError": "Transaction Error"
+        "txError": "Transaction Error",
+        "description": "Enter a description"
     }
 }

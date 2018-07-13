@@ -3,13 +3,14 @@ import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
+import { CommitDetails } from "../../models/commit-details.model";
 
 @Component({
     selector: "page-commitReview",
     templateUrl: "commitreview.html"
 })
 export class CommitReviewPage {
-    public commitDetails: Object;
+    public commitDetails: CommitDetails;
     public isBackButtonDisabled = false;
     public indexArray;
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
