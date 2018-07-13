@@ -189,7 +189,7 @@ export class ContractManagerService {
             this.log.d("Contract artifact", contractArtifact);
             return contractArtifact.methods.getDetailsCommits(id).call();
         }).then((commitVals: Array<any>) => {
-            return CommitDetails.fromBlockchain(commitVals);
+            return CommitDetails.fromSmartContract(commitVals);
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
             throw err;
@@ -245,7 +245,7 @@ export class ContractManagerService {
             this.log.d("Contract artifact", contractArtifact);
             return contractArtifact.methods.getUser(hash).call();
         }).then((userVals: Array<any>) => {
-            return UserDetails.fromBlockchain(userVals);
+            return UserDetails.fromSmartContract(userVals);
         }).catch(err => {
                 this.log.e("Error calling BrightByte smart contract :", err);
                 throw err;

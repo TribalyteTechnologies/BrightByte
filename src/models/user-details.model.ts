@@ -5,14 +5,14 @@ export class UserDetails {
     public numberCommitsToReviewByMe: number; 
     public numbermyCommits: number; 
     public reputation: number;
-    public static fromBlockchain(userVals: Array<any>): UserDetails{ 
+    public static fromSmartContract(userVals: Array<any>): UserDetails{ 
         let user = new UserDetails(); 
         user.name = userVals[0]; 
         user.email = userVals[1]; 
         user.numberCommitsReviewedByMe = userVals[2]; 
         user.numberCommitsToReviewByMe = userVals[3]; 
         user.numbermyCommits = userVals[4]; 
-        user.reputation = userVals[5]; 
+        user.reputation = userVals[5]/100; 
         return user; 
     } 
 } 

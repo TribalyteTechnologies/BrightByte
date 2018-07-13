@@ -55,7 +55,6 @@ export class CommitPage {
         let isReadReviewNeeded = commit[4];
         this.contractManagerService.getDetailsCommits(id)
             .then(detailsCommit => {
-                //this.log.d("URL OBTENIDO DEL MODELO",detailsCommit.url);
                 if (isReadReviewNeeded) {
                     //Change flag
                     this.contractManagerService.reviewChangesCommitFlag(id)

@@ -6,7 +6,7 @@ export class CommitDetails {
     public numberReviews: number; 
     public isPending: boolean; 
     public currentNumberReviews: number; 
-    public static fromBlockchain(commitVals: Array<any>): CommitDetails{ 
+    public static fromSmartContract(commitVals: Array<any>): CommitDetails{ 
         let commit = new CommitDetails(); 
         commit.url = commitVals[0]; 
         commit.title = commitVals[1]; 

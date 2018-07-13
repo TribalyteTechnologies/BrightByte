@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { LoginService } from "../../core/login.service";
 import { HttpClient } from "@angular/common/http";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
@@ -24,8 +23,7 @@ export class SetProfilePage {
         public fb: FormBuilder,
         public translateService: TranslateService,
         public http: HttpClient,
-        private contractManagerService: ContractManagerService,
-        private loginService: LoginService
+        private contractManagerService: ContractManagerService
     ) {
         this.log = loggerSrv.get("SetProfilePage");
         this.myForm = this.fb.group({

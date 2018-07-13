@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { SplitService } from "../../domain/split.service";
@@ -25,8 +24,7 @@ export class CommitDetailsPage {
         loggerSrv: LoggerService,
         private splitService: SplitService,
         public translateService: TranslateService,
-        private contractManagerService: ContractManagerService,
-        private loginService: LoginService
+        private contractManagerService: ContractManagerService
     ) {
         this.log = loggerSrv.get("CommitDetailsPage");
         this.commitDetails = navParams.get("commitDetails");

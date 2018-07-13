@@ -51,7 +51,7 @@ export class AddCommitPopover {
             });
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
-            Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/(tribalyte)\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
+            Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/[a-z]+\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
             title: ["", [Validators.required]]
         });
     }
@@ -61,7 +61,7 @@ export class AddCommitPopover {
         let id = this.splitService.getId(url);
         this.contractManagerService.getDetailsCommits(id)
             .then((detailsCommits) => {
-                if (detailsCommits[0] !== "") {
+                if (detailsCommits.url !== "") {
                     this.isTxOngoing = false;
                     this.translateService.get("addCommit.urlDuplicated").subscribe(
                         msg => {
@@ -105,14 +105,14 @@ export class AddCommitPopover {
         // set val to the value of the ev target
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
-        if (val && val.trim() !== "") {
+        if (val && val.trim()) {
             this.arraySearch = this.arrayEmails.filter((item) => {
                 return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
             });
         }
         this.isShowList[id] = true;
     }
-    public setEmailFromList(num, item) {
+    public setEmailFromList(num: number, item: string) {
         let isDuplicated = false;
         for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
             if (this.usersMail[i] === item) {

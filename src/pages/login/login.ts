@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
-import { default as contract } from "truffle-contract";
 import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";
 
@@ -13,6 +12,7 @@ import { TabsPage } from "../../pages/tabs/tabs";
 import { AppConfig } from "../../app.config";
 import { SetProfilePage } from "../../pages/setprofile/setprofile";
 import { ContractManagerService } from "../../domain/contract-manager.service";
+import { UserDetails } from "../../models/user-details.model";
 
 @Component({
     selector: "page-login",
@@ -23,7 +23,7 @@ export class LoginPage {
 
     public msg: string;
     public text: any;
-    public textDebugging: string;
+    public debuggingText: string;
     public isDebugMode: boolean;
     private log: ILogger;
     private web3: Web3;
@@ -54,7 +54,7 @@ export class LoginPage {
             let reader = new FileReader();
             reader.readAsText(input);
             reader.onload = () => {
-                this.textDebugging = reader.result;
+                this.debuggingText = reader.result;
                 this.text = JSON.parse(reader.result);
             };
         } else {
@@ -78,17 +78,16 @@ export class LoginPage {
                 let account = this.web3.eth.accounts.decrypt(this.text, pass);
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
-                this.contractManager.init(account);
-                this.log.d("Account setted");
-
-                this.contractManager.getUserDetails(account.address)
-                    .then((detailsUser) => {
-                        let posEmail = 1;
-                        if (detailsUser[posEmail] === "") {
-                            this.log.d("Email: ", detailsUser[1]);
+                this.contractManager.init(account)
+                    .then(() => {
+                        this.log.d("Account setted");
+                        return this.contractManager.getUserDetails(account.address);
+                    }).then((detailsUser: UserDetails) => {
+                        if (!detailsUser.email) {
+                            this.log.d("Email: ", detailsUser.email);
                             this.navCtrl.push(SetProfilePage);
                         } else {
-                            this.log.d("Email: ", detailsUser[1]);
+                            this.log.d("Email: ", detailsUser.email);
                             this.navCtrl.push(TabsPage);
                         }
                     }).catch((e) => {
@@ -98,6 +97,7 @@ export class LoginPage {
                             });
                         this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                     });
+
             }
 
         } catch (e) {

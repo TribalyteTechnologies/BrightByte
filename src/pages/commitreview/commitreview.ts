@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 
@@ -26,8 +25,7 @@ export class CommitReviewPage {
         loggerSrv: LoggerService,
         public translateService: TranslateService,
         navParams: NavParams,
-        private contractManagerService: ContractManagerService,
-        private loginService: LoginService
+        private contractManagerService: ContractManagerService
     ) {
         this.log = loggerSrv.get("CommitReviewPage");
         this.commitDetails = navParams.get("commitDetails");
