@@ -5,6 +5,7 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitReviewPage } from "../commitreview/commitreview";
 import { TranslateService } from "@ngx-translate/core";
 import { SplitService } from "../../domain/split.service";
+import { CommitToReview } from "../../models/commit-to-review.model";
 
 @Component({
     selector: "page-review",
@@ -12,7 +13,7 @@ import { SplitService } from "../../domain/split.service";
 })
 
 export class ReviewPage {
-    public arrayCommits: any;
+    public arrayCommits: CommitToReview[];
     public msg: string;
     private log: ILogger;
 
@@ -28,7 +29,7 @@ export class ReviewPage {
     }
     public ionViewWillEnter(): void {
         this.contractManagerService.getCommitsToReview()
-            .then((arrayOfCommits) => {
+            .then((arrayOfCommits: CommitToReview[]) => {
                 this.log.d("ARRAY Commits: ", arrayOfCommits);
                 this.arrayCommits = arrayOfCommits;
             }).catch((e) => {
@@ -40,16 +41,16 @@ export class ReviewPage {
                 return Promise.reject(e);
             });
     }
-    public selectUrl(commit: Object) {
+    public selectUrl(commit: CommitToReview) {
         let index: number;
         for (let i = 0; i < this.arrayCommits.length; i++) {
-            if (this.arrayCommits[i][0] === commit[0]) {
+            if (this.arrayCommits[i].url === commit.url) {
                 index = i;
             }
             this.log.d("Array length: ", this.arrayCommits.length);
         }
-        let id = this.splitService.getId(commit[0]);
-        let project = this.splitService.getProject(commit[0]);
+        let id = this.splitService.getId(commit.url);
+        let project = this.splitService.getProject(commit.url);
         this.contractManagerService.getDetailsCommits(id)
             .then(detailsCommit => {
                 this.log.d("Details commits: ", detailsCommit);

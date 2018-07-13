@@ -16,7 +16,7 @@
     </ion-list>
     <ion-list inset>
         <button ion-item *ngFor="let commit of arrayCommits" (click)="selectUrl(commit)">
-            {{ "review.titleCommit" | translate }}: {{ commit[1] }}, {{ "review.author" | translate }}: {{ commit[2] }}, Url: {{ commit[0] }}
+            {{ "review.titleCommit" | translate }}: {{ commit.title }}, {{ "review.author" | translate }}: {{ commit.name }}, Url: {{ commit.url }}
         </button>
     </ion-list>
     <p class="error-message">{{ msg }}</p>

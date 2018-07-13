@@ -12,6 +12,7 @@ import { CommitDetails } from "../models/commit-details.model";
 import { UserDetails } from "../models/user-details.model";
 import { CommitComments } from "../models/commit-comments.model";
 import { UserCommit } from "../models/user-commit.model";
+import { CommitToReview } from "../models/commit-to-review.model";
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -167,7 +168,7 @@ export class ContractManagerService {
             });
     }
 
-    public getCommitsToReview(): Promise<any> {
+    public getCommitsToReview(): Promise<CommitToReview[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
@@ -176,9 +177,12 @@ export class ContractManagerService {
             return contractArtifact.methods.getNumberCommitsToReviewByMe().call();
         }).then(numberOfCommits => {
             this.log.d("NumberuserCommits: ", numberOfCommits);
-            let promises = new Array<Promise<string>>();
+            let promises = new Array<Promise<CommitToReview>>();
             for (let i = 0; i < numberOfCommits; i++) {
-                let promise = contractArtifact.methods.getCommitsToReviewByMe(i).call();
+                let promise = contractArtifact.methods.getCommitsToReviewByMe(i).call()
+                .then((commitsVals: Array<any>) => {
+                    return CommitToReview.fromSmartContract(commitsVals);
+                });
                 promises.push(promise);
             }
             return Promise.all(promises);
