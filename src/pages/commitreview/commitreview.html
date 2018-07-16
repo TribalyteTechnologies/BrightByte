@@ -9,7 +9,7 @@
 <ion-content padding>
     <a target="_blank" href="{{ commitDetails[0] }}">{{ commitDetails.url }}</a>
     <p>{{ "commitDetails.author" | translate }}: {{ commitDetails.author }}</p>
-    <p>{{ "commitDetails.date" | translate }}: {{ commitDetails.timestamp*1000 | date:'fullDate' }}</p>
+    <p>{{ "commitDetails.date" | translate }}: {{ commitDetails.timestampMs | date:"fullDate" }}</p>
     <p>{{ "commitDetails.project" | translate }}: {{ project }}</p>
     <p>{{ "commitDetails.nReviews" | translate }}: {{ commitDetails.numberReviews }}</p>
     <p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails.isPending }}</p>
