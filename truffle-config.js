@@ -1,4 +1,16 @@
+var path = require("path");
+var truffleCustomConfig = require("truffle-config.custom");
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
+
+	contracts_build_directory: path.join(__dirname, "./src/assets/build"),
+		networks: {
+			development: {
+			host: "localhost",
+			port: 9545,
+			network_id: "*", // Match any network id
+			websockets: true    
+		},
+		custom: truffleCustomConfig,
+    }
+
 };

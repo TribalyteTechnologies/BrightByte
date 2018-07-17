@@ -1,6 +1,6 @@
 const Web3 = require("web3");
 
-const TruffleConfig = require("../truffle");
+const TruffleConfig = require("../truffle-config");
 
 var Migrations = artifacts.require("./Migrations.sol");
 
