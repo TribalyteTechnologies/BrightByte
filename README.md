@@ -1,4 +1,13 @@
-# truffle-ionic
-Truffle box for Ionic Framework
+# BrightByte
+This is the BrightByte developer reputation project.
 
-[Truffle Box](http://truffleframework.com/boxes/) with [Ionic Framework](http://ionicframework.com) for cross platform hybrid-mobile development. Develop beautiful mobile experiences for distributed applications on the Ethereum network.
+The following commands are available:
+
+- Install the dependencies by running `npm install`.
+- To deploy the smart contracts to the blockchain: `npm run truffle:migrate`.
+- To run the frontend locally `npm start`.
+- More commands are available in `package.json`.
+
+For more information please contact [Tribalyte Technologies](http://tribalyte.com).
+
+Licensed under the conditions of `LICENSE.md`.
