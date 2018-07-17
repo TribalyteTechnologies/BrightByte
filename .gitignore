@@ -36,3 +36,5 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 
 src/assets/build/
+src/app.config.custom.ts
+truffle-config.custom.js
