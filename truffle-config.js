@@ -1,5 +1,5 @@
 var path = require("path");
-var truffleCustomConfig = require("truffle-config.custom");
+var truffleCustomConfig = require("./truffle-config.custom");
 module.exports = {
 
 	contracts_build_directory: path.join(__dirname, "./src/assets/build"),
