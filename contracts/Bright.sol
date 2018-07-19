@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
-import "./Ownable.sol";
 
-contract Bright is Ownable {
+contract Bright {
     
     event UserProfileSetEvent (string name, address hash);
     mapping (address => UserProfile) public hashUserMap;
@@ -98,18 +97,18 @@ contract Bright is Ownable {
         //Send the notificatios to reviewers
         for(uint i = 0; i < numberOfUsers; i++){
             
-            if(compareStrings(allUsersArray[i].email, _emailuser1)){
+            if(keccak256(allUsersArray[i].email) == keccak256(_emailuser1)){
                  hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = (hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1);  
-            }else if(compareStrings(allUsersArray[i].email, _emailuser2)){
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;  
+            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser2)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
-            }else if(compareStrings(allUsersArray[i].email, _emailuser3)){
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;
+            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser3)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
-            }else if(compareStrings(allUsersArray[i].email, _emailuser4)){
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;
+            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser4)){
                 hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_id]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe = hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe + 1;
+                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;
             }
         }
     }
@@ -136,10 +135,10 @@ contract Bright is Ownable {
     function getAllUserEmail(uint _index) public view returns(string){
         return allUsersArray[_index].email;
     }
-    /*function getAllUserReputation(uint _index) public view returns(string, uint){ 
+    function getAllUserReputation(uint _index) public view returns(string, uint){ 
         return (allUsersArray[_index].email,
-                allUsersArray[_index].reputation); 
-    } */
+                hashUserMap[allUsersArray[_index].hash].reputation); 
+    }
     function getAllUserNumber() public view returns(uint){ 
         return numberOfUsers;
     }
@@ -198,32 +197,5 @@ contract Bright is Ownable {
     }
     function readComments(string _id) public{
         storedData[_id].isReadNeeded = false;
-    }
-    function compareStrings(string _a, string _b) private pure returns (bool) {
-        bytes memory a = bytes(_a);
-        bytes memory b = bytes(_b);
-        uint minLength = a.length;
-        bool ret;
-        if (b.length < minLength){
-            minLength = b.length;
-        }
-        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
-        for (uint i = 0; i < minLength; i ++){
-            if (a[i] < b[i]){
-                ret = false;
-                break;
-            }else if (a[i] > b[i]){
-                ret = false;
-                break;
-            }
-        }
-        if (a.length < b.length){
-            ret = false;
-        }else if (a.length > b.length){
-            ret = false;
-        }else{
-            ret = true;
-        }
-        return ret;
     }
 }
