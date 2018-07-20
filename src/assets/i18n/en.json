@@ -56,7 +56,8 @@
         "nCommitsReviewByMe": "Number commits reviewed by me",
         "nCommitsToReviewByMe": "Number commits to review by me",
         "totalCommits": "Total number of my commits",
-        "reputation": "Reputation"
+        "reputation": "Reputation",
+        "getReputation": "Error getting reputations"
     },
     "review": {
         "getCommits": "Error getting commits to review",

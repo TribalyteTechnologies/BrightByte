@@ -14,4 +14,9 @@
     <p>{{ "ranking.totalCommits" | translate }}: {{ userDetails.numbermyCommits }}</p>
     <p>{{ "ranking.reputation" | translate }}: {{ (userDetails.reputation) }}</p>
     <p class="error-message">{{ msg }}</p>
+    <ion-list inset>
+        <button ion-item *ngFor="let user of usersRep | slice:0:5;">
+            {{ user.email }} has {{ user.reputation }}
+        </button>
+    </ion-list>
 </ion-content>

@@ -13,6 +13,7 @@ import { UserDetails } from "../models/user-details.model";
 import { CommitComments } from "../models/commit-comments.model";
 import { UserCommit } from "../models/user-commit.model";
 import { CommitToReview } from "../models/commit-to-review.model";
+import { UserReputation } from "../models/user-reputation.model";
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -329,6 +330,28 @@ export class ContractManagerService {
                 throw e;
             });
 
+    }
+    public getAllUserReputation(): Promise<UserReputation[]> { 
+        let contractArtifact;
+        return this.initProm.then(contract => {
+            contractArtifact = contract;
+            return contractArtifact.methods.getAllUserNumber().call();
+        }).then(numberUsers => {
+            let promises = new Array<Promise<UserReputation>>();
+            for (let i = 0; i < numberUsers; i++) {
+                let promise = contractArtifact.methods.getAllUserReputation(i).call()
+                .then((commitsVals: Array<any>) => {
+                    return UserReputation.fromSmartContract(commitsVals);
+                });
+                promises.push(promise);
+            }
+            return Promise.all(promises);
+        })
+
+            .catch(err => {
+                this.log.e("Error getting ranking :", err);
+                throw err;
+            });
     }
 }
 

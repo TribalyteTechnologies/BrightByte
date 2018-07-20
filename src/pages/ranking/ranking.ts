@@ -5,7 +5,8 @@ import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { Account } from "web3/types";
-import { UserDetails } from "../../models/user-details.model"; 
+import { UserDetails } from "../../models/user-details.model";
+import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
     selector: "page-ranking",
@@ -14,6 +15,7 @@ import { UserDetails } from "../../models/user-details.model";
 export class RankingPage {
     public userDetails = new UserDetails();
     public msg: string;
+    public usersRep = new Array<UserReputation>();
     private log: ILogger;
     private account: Account;
 
@@ -37,6 +39,18 @@ export class RankingPage {
                 this.userDetails = detailsUser;
             }).catch((e) => {
                 this.translateService.get("ranking.getUserInfo").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            });
+        this.contractManagerService.getAllUserReputation()
+            .then((usersRep: UserReputation[]) => {
+                this.log.d("Users reputation obtained: ", usersRep);
+                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation });
+                this.log.d("Array of usersRep organized: ", this.usersRep);
+            }).catch((e) => {
+                this.translateService.get("ranking.getReputation").subscribe(
                     msg => {
                         this.msg = msg;
                         this.log.e(msg, e);
