@@ -32,6 +32,8 @@ contract Bright {
         bool isPending;
         uint currentNumberReviews;
         uint lastModificationDate;
+        uint score;
+        uint points;
         mapping (uint => CommitReview) comments; 
     }
     struct CommitReview{
@@ -89,7 +91,7 @@ contract Bright {
         if(numUsers>0){
             isPending = true;
         }
-        storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0, block.timestamp);
+        storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0, block.timestamp, 0, 0);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_url];
         hashUserMap[msg.sender].numbermyCommits++;
         
@@ -121,12 +123,14 @@ contract Bright {
                 storedData[_url].currentNumberReviews
         );
     }
-    function getUserCommits(uint _index) public view returns(string, string, bool, bool){
+    function getUserCommits(uint _index) public view returns(string, string, string, bool, bool, uint){
         string memory url = hashUserMap[msg.sender].userCommits[_index].url;
-        return (storedData[url].title,
+        return (storedData[url].url,
+                storedData[url].title,
                 storedData[url].project,
                 storedData[url].isPending,
-                storedData[url].isReadNeeded
+                storedData[url].isReadNeeded,
+                storedData[url].score
         );
     }
     function getNumberUserCommits()public view returns(uint){
@@ -185,13 +189,17 @@ contract Bright {
         uint value = hashUserMap[author].numberOfPoints + _points;
         hashUserMap[author].numberOfPoints = value;
         hashUserMap[author].reputation = value/hashUserMap[author].numberOfTimesReview;
+        
+        //score per commit
+        uint points = storedData[url].points;
+        storedData[url].points = points + _points;
+        storedData[url].score = storedData[url].points/storedData[url].currentNumberReviews;
  
         //User who has to review. 
         hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe-1].url]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
         delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe];
         hashUserMap[msg.sender].numberCommitsToReviewByMe--;
         hashUserMap[msg.sender].numberCommitsReviewedByMe++;
-        
     }
     function setVote(string _url, uint _indexComment, uint _vote) public {
         if(storedData[_url].comments[_indexComment].vote == 0){
