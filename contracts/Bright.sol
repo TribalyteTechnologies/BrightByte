@@ -25,12 +25,13 @@ contract Bright {
         string title;
         string url;
         address author;
-        uint timestamp;
+        uint creationDate;
         string project;
         bool isReadNeeded;
         uint numberReviews; 
         bool isPending;
         uint currentNumberReviews;
+        uint lastModificationDate;
         mapping (uint => CommitReview) comments; 
     }
     struct CommitReview{
@@ -38,7 +39,8 @@ contract Bright {
         address user;
         uint score;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
-        uint timestamp;
+        uint creationDate;
+        uint lastModificationDate;
     }
     function setProfile (string _name, string _email) public {
         //require(_hash == msg.sender);
@@ -87,7 +89,7 @@ contract Bright {
         if(numUsers>0){
             isPending = true;
         }
-        storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0);
+        storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0, block.timestamp);
         hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_url];
         hashUserMap[msg.sender].numbermyCommits++;
         
@@ -113,7 +115,7 @@ contract Bright {
         return (storedData[_url].url,
                 storedData[_url].title,
                 storedData[_url].author,
-                storedData[_url].timestamp,
+                storedData[_url].creationDate,
                 storedData[_url].numberReviews,
                 storedData[_url].isPending,
                 storedData[_url].currentNumberReviews
@@ -170,9 +172,10 @@ contract Bright {
         storedData[url].comments[storedData[url].currentNumberReviews].text = _text;
         storedData[url].comments[storedData[url].currentNumberReviews].user = msg.sender;
         storedData[url].comments[storedData[url].currentNumberReviews].score = _points/100;
-        storedData[url].comments[storedData[url].currentNumberReviews].timestamp = block.timestamp;
+        storedData[url].comments[storedData[url].currentNumberReviews].creationDate = block.timestamp;
         storedData[url].isReadNeeded = true;
         storedData[url].currentNumberReviews++;
+        storedData[url].lastModificationDate = block.timestamp;
         if(storedData[url].currentNumberReviews==storedData[url].numberReviews){
             storedData[url].isPending = false;
         }
@@ -193,6 +196,7 @@ contract Bright {
     function setVote(string _url, uint _indexComment, uint _vote) public {
         if(storedData[_url].comments[_indexComment].vote == 0){
             storedData[_url].comments[_indexComment].vote = _vote;
+            storedData[_url].comments[_indexComment].lastModificationDate = block.timestamp;
         }
     }
     function readComments(string _url) public{
