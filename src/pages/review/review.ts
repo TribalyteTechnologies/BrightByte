@@ -41,17 +41,9 @@ export class ReviewPage {
                 return Promise.reject(e);
             });
     }
-    public selectUrl(commit: CommitToReview) {
-        let index: number;
-        for (let i = 0; i < this.arrayCommits.length; i++) {
-            if (this.arrayCommits[i].url === commit.url) {
-                index = i;
-            }
-            this.log.d("Array length: ", this.arrayCommits.length);
-        }
-        let id = commit.url; //this.splitService.getId(commit.url);
+    public selectUrl(commit: CommitToReview, index: number) {
         let project = this.splitService.getProject(commit.url);
-        this.contractManagerService.getDetailsCommits(id)
+        this.contractManagerService.getDetailsCommits(commit.url)
             .then(detailsCommit => {
                 this.log.d("Details commits: ", detailsCommit);
                 this.log.d("Index: ", index);

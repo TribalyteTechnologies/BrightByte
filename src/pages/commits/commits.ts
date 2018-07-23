@@ -44,22 +44,14 @@ export class CommitPage {
             this.refresh();
         });
     }
-    public selectUrl(commit: UserCommit) {
-        let index: number;
-        for (let i = 0; i < this.arrayCommits.length; i++) {
-            if (this.arrayCommits[i].url === commit.url) {
-                index = i;
-                break;
-            }
-        }
-        let id = commit.url; //this.splitService.getId(commit.url);
+    public selectUrl(commit: UserCommit, index: number) {
         let project = this.splitService.getProject(commit.url);
         let isReadReviewNeeded = commit.isReadNeeded;
-        this.contractManagerService.getDetailsCommits(id)
+        this.contractManagerService.getDetailsCommits(commit.url)
             .then((detailsCommit: CommitDetails) => {
                 if (isReadReviewNeeded) {
                     //Change flag
-                    this.contractManagerService.reviewChangesCommitFlag(id)
+                    this.contractManagerService.reviewChangesCommitFlag(commit.url)
                         .then((txResponse) => {
                             this.log.d("Contract manager response: ", txResponse);
                         }).catch((e) => {
