@@ -97,10 +97,8 @@ export class ContractManagerService {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Variables: url ", url);
             this.log.d("UsersMail: ", usersMail);
-            let id = this.splitService.getId(url);
             let project = this.splitService.getProject(url);
             let bytecodeData = contractArtifact.methods.setNewCommit(
-                id,
                 title,
                 url,
                 project,
@@ -193,11 +191,11 @@ export class ContractManagerService {
             throw err;
         });
     }
-    public getDetailsCommits(id: string): Promise<CommitDetails> {
+    public getDetailsCommits(url: string): Promise<CommitDetails> {
         return this.initProm.then(contractArtifact => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getDetailsCommits(id).call();
+            return contractArtifact.methods.getDetailsCommits(url).call();
         }).then((commitVals: Array<any>) => {
             return CommitDetails.fromSmartContract(commitVals);
         }).catch(err => {
@@ -263,13 +261,13 @@ export class ContractManagerService {
             throw err;
         });
     }
-    public setThumbReviewForComment(id: string, index: number, value: number): Promise<any> {
+    public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            let bytecodeData = contractArtifact.methods.setVote(id, index, value).encodeABI();
+            let bytecodeData = contractArtifact.methods.setVote(url, index, value).encodeABI();
             this.log.d("Introduced index: ", index);
             this.log.d("Introduced value: ", value);
             this.log.d("DATA: ", bytecodeData);
@@ -281,14 +279,14 @@ export class ContractManagerService {
             throw e;
         });
     }
-    public reviewChangesCommitFlag(id: string) {
+    public reviewChangesCommitFlag(url: string) {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            let bytecodeData = contractArtifact.methods.readComments(id).encodeABI();
-            this.log.d("Introduced id: ", id);
+            let bytecodeData = contractArtifact.methods.readComments(url).encodeABI();
+            this.log.d("Introduced url: ", url);
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData);
 
@@ -296,6 +294,28 @@ export class ContractManagerService {
             this.log.e("Error getting nonce value: ", e);
             throw e;
         });
+    }
+    public getAllUserReputation(): Promise<UserReputation[]> { 
+        let contractArtifact;
+        return this.initProm.then(contract => {
+            contractArtifact = contract;
+            return contractArtifact.methods.getAllUserNumber().call();
+        }).then(numberUsers => {
+            let promises = new Array<Promise<UserReputation>>();
+            for (let i = 0; i < numberUsers; i++) {
+                let promise = contractArtifact.methods.getAllUserReputation(i).call()
+                .then((commitsVals: Array<any>) => {
+                    return UserReputation.fromSmartContract(commitsVals);
+                });
+                promises.push(promise);
+            }
+            return Promise.all(promises);
+        })
+
+            .catch(err => {
+                this.log.e("Error getting ranking :", err);
+                throw err;
+            });
     }
     private sendTx(bytecodeData): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
         return this.web3.eth.getTransactionCount(this.currentUser.address)
@@ -330,28 +350,6 @@ export class ContractManagerService {
                 throw e;
             });
 
-    }
-    public getAllUserReputation(): Promise<UserReputation[]> { 
-        let contractArtifact;
-        return this.initProm.then(contract => {
-            contractArtifact = contract;
-            return contractArtifact.methods.getAllUserNumber().call();
-        }).then(numberUsers => {
-            let promises = new Array<Promise<UserReputation>>();
-            for (let i = 0; i < numberUsers; i++) {
-                let promise = contractArtifact.methods.getAllUserReputation(i).call()
-                .then((commitsVals: Array<any>) => {
-                    return UserReputation.fromSmartContract(commitsVals);
-                });
-                promises.push(promise);
-            }
-            return Promise.all(promises);
-        })
-
-            .catch(err => {
-                this.log.e("Error getting ranking :", err);
-                throw err;
-            });
     }
 }
 

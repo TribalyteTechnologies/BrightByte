@@ -16,7 +16,7 @@
     <p class="error-message">{{ msg }}</p>
     <ion-list inset>
         <button ion-item *ngFor="let user of usersRep | slice:0:5;">
-            {{ user.email }} has {{ user.reputation }}
+            {{ user.email }} has {{ user.reputation }} stars
         </button>
     </ion-list>
 </ion-content>

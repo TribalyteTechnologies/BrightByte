@@ -49,7 +49,7 @@ export class ReviewPage {
             }
             this.log.d("Array length: ", this.arrayCommits.length);
         }
-        let id = this.splitService.getId(commit.url);
+        let id = commit.url; //this.splitService.getId(commit.url);
         let project = this.splitService.getProject(commit.url);
         this.contractManagerService.getDetailsCommits(id)
             .then(detailsCommit => {

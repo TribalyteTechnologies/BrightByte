@@ -7,7 +7,6 @@ import { HttpClient } from "@angular/common/http";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
-import { SplitService } from "../../domain/split.service";
 import { AppConfig } from "../../app.config";
 
 @Component({
@@ -33,7 +32,6 @@ export class AddCommitPopover {
         public fb: FormBuilder,
         public translateService: TranslateService,
         loggerSrv: LoggerService,
-        private splitService: SplitService,
         private contractManagerService: ContractManagerService,
         public loginService: LoginService
     ) {
@@ -58,8 +56,7 @@ export class AddCommitPopover {
     public addCommit(url: string, title: string) {
         this.isTxOngoing = true;
         this.msg = "";
-        let id = this.splitService.getId(url);
-        this.contractManagerService.getDetailsCommits(id)
+        this.contractManagerService.getDetailsCommits(url)
             .then((detailsCommits) => {
                 if (detailsCommits.url !== "") {
                     this.isTxOngoing = false;

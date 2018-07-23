@@ -47,7 +47,7 @@ export class RankingPage {
         this.contractManagerService.getAllUserReputation()
             .then((usersRep: UserReputation[]) => {
                 this.log.d("Users reputation obtained: ", usersRep);
-                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation });
+                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
                 this.log.d("Array of usersRep organized: ", this.usersRep);
             }).catch((e) => {
                 this.translateService.get("ranking.getReputation").subscribe(

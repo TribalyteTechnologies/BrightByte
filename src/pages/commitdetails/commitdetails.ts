@@ -3,7 +3,6 @@ import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
-import { SplitService } from "../../domain/split.service";
 import { CommitComments } from "../../models/commit-comments.model"; 
 import { CommitDetails } from "../../models/commit-details.model";
 
@@ -24,7 +23,6 @@ export class CommitDetailsPage {
         navParams: NavParams,
         public navCtrl: NavController,
         loggerSrv: LoggerService,
-        private splitService: SplitService,
         public translateService: TranslateService,
         private contractManagerService: ContractManagerService
     ) {
@@ -56,8 +54,7 @@ export class CommitDetailsPage {
         this.log.d("Index of the comment: ", index);
         this.log.d("Value: ", value);
         this.log.d("url: ", this.commitDetails.url);
-        let id = this.splitService.getId(this.commitDetails.url);
-        this.contractManagerService.setThumbReviewForComment(id, index, value)
+        this.contractManagerService.setThumbReviewForComment(this.commitDetails.url, index, value)
             .then((txResponse) => {
                 this.log.d("Contract manager response: ", txResponse);
                 if (txResponse) {

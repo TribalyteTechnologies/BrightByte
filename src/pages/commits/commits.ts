@@ -52,7 +52,7 @@ export class CommitPage {
                 break;
             }
         }
-        let id = this.splitService.getId(commit.url);
+        let id = commit.url; //this.splitService.getId(commit.url);
         let project = this.splitService.getProject(commit.url);
         let isReadReviewNeeded = commit.isReadNeeded;
         this.contractManagerService.getDetailsCommits(id)
