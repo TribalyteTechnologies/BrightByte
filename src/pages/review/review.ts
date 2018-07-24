@@ -82,6 +82,7 @@ export class ReviewPage {
                         comment = arrayOfComments[i]
                     }
                 }
+                this.log.d("Comment: ", comment);
                 this.navCtrl.push(CommitReviewPage, {
                     commitDetails: detailsCommit,
                     commitProject: project,

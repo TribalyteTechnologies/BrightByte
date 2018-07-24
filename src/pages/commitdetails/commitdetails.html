@@ -19,6 +19,7 @@
 	<ion-list inset>
 		<ion-item *ngFor="let comment of commentsArray; let i = index">
 			<p>{{ comment.name }} {{ "commitDetails.commented" | translate }} ({{ comment.score }} {{ "commitDetails.stars" | translate }}):
+				{{ comment.lastModificationDateMs | date:"fullDate" }}
 				<button ion-button icon-only (click)="setThumbs(i, 2)" *ngIf="comment.vote==0 && !isButtonPressArray[i]">
 						<ion-icon name="thumbs-up"></ion-icon>
 				</button>

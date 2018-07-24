@@ -128,10 +128,10 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Contract Address: ", this.contractAddress);
             this.log.d("Public Address: ", this.currentUser.address);
-            return contractArtifact.methods.getNumberUserCommits().call();
-        }).then(numberOfCommits => {
+            return contractArtifact.methods.getNumbers().call();
+        }).then((numberOfCommits: number[]) => {
             let promises = new Array<Promise<UserCommit>>();
-            for (let i = 0; i < numberOfCommits; i++) {
+            for (let i = 0; i < numberOfCommits[0]; i++) {
                 let promise = contractArtifact.methods.getUserCommits(i).call()
                 .then((commitsVals: Array<any>) => {
                     return UserCommit.fromSmartContract(commitsVals);
@@ -151,10 +151,10 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getAllUserNumber().call();
-        }).then(numberUsers => {
+            return contractArtifact.methods.getNumbers().call();
+        }).then((numberUsers: number[]) => {
             let promises = new Array<Promise<string>>();
-            for (let i = 0; i < numberUsers; i++) {
+            for (let i = 0; i < numberUsers[1]; i++) {
                 let promise = contractArtifact.methods.getAllUserEmail(i).call();
                 promises.push(promise);
             }
@@ -173,11 +173,11 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getNumberCommitsToReviewByMe().call();
-        }).then(numberOfCommits => {
+            return contractArtifact.methods.getNumbers().call();
+        }).then((numberOfCommits: number[]) => {
             this.log.d("NumberuserCommits: ", numberOfCommits);
             let promises = new Array<Promise<CommitToReview>>();
-            for (let i = 0; i < numberOfCommits; i++) {
+            for (let i = 0; i < numberOfCommits[2]; i++) {
                 let promise = contractArtifact.methods.getCommitsToReviewByMe(i).call()
                 .then((commitsVals: Array<any>) => {
                     return CommitToReview.fromSmartContract(commitsVals);
@@ -230,11 +230,11 @@ export class ContractManagerService {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getNumberComments(url).call();
-        }).then((numberComments: number) => {
+            return contractArtifact.methods.getNumbersNeedUrl(url).call();
+        }).then((numberComments: number[]) => {
             this.log.d("Number of comments: ", numberComments);
             let promises = new Array<Promise<CommitComments>>();
-            for (let i = 0; i < numberComments; i++) {
+            for (let i = 0; i < numberComments[0]; i++) {
                 let promise = contractArtifact.methods.getCommentsOfCommit(url, i).call()
                     .then((commentVals: Array<any>) => {
                         return CommitComments.fromSmartContract(commentVals);
@@ -299,10 +299,10 @@ export class ContractManagerService {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
-            return contractArtifact.methods.getAllUserNumber().call();
-        }).then(numberUsers => {
+            return contractArtifact.methods.getNumbers().call();
+        }).then((numberUsers: number[]) => {
             let promises = new Array<Promise<UserReputation>>();
-            for (let i = 0; i < numberUsers; i++) {
+            for (let i = 0; i < numberUsers[1]; i++) {
                 let promise = contractArtifact.methods.getAllUserReputation(i).call()
                 .then((commitsVals: Array<any>) => {
                     return UserReputation.fromSmartContract(commitsVals);
@@ -321,11 +321,11 @@ export class ContractManagerService {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
-            return contractArtifact.methods.getNumberFeedback(url).call();
-        }).then(numberUsers => {
+            return contractArtifact.methods.getNumbersNeedUrl(url).call();
+        }).then((numberUsers: number[]) => {
             this.log.d("numberbooleans",numberUsers);
             let promises = new Array<Promise<boolean>>();
-            for (let i = 0; i < numberUsers; i++) {
+            for (let i = 0; i < numberUsers[1]; i++) {
                 let promise = contractArtifact.methods.isFeedback(i, url).call();
                 promises.push(promise);
             }
