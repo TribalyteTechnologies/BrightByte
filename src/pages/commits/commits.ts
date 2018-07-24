@@ -63,7 +63,8 @@ export class CommitPage {
                 this.navCtrl.push(CommitDetailsPage, {
                     commitDetails: detailsCommit,
                     commitProject: project,
-                    commitIndex: index
+                    commitIndex: index,
+                    url: commit.url
                 });
             }).catch((e) => {
                 this.translateService.get("addCommit.commitDetails").subscribe(

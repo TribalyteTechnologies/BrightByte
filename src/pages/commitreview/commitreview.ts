@@ -4,6 +4,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { CommitDetails } from "../../models/commit-details.model";
+import { CommitComments } from "../../models/commit-comments.model";
 
 @Component({
     selector: "page-commitReview",
@@ -16,9 +17,12 @@ export class CommitReviewPage {
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public msg: string;
+    public comment: CommitComments;
+    public url: string;
     public isButtonDisabled = false;
     public msg1: string;
     public project: string;
+    public isReviewed: boolean;
     private log: ILogger;
 
     constructor(
@@ -31,6 +35,9 @@ export class CommitReviewPage {
         this.log = loggerSrv.get("CommitReviewPage");
         this.commitDetails = navParams.get("commitDetails");
         this.indexArray = navParams.get("indexArray");
+        this.url = navParams.get("url");
+        this.isReviewed = navParams.get("isReviewed");
+        this.comment = navParams.get("comment");
         this.project = navParams.get("commitProject");
         this.log.d("Details Object: ", this.commitDetails);
     }
@@ -55,6 +62,7 @@ export class CommitReviewPage {
                     if (txResponse) {
                         this.translateService.get("commitReview.reviewDone")
                             .subscribe(result => this.msg1 = result);
+                        this.isReviewed = true;
                     } else {
                         throw "Error: setreview response is undefined";
                     }
@@ -76,5 +84,13 @@ export class CommitReviewPage {
             this.star[i] = "star";
         }
         this.rate = (value + 1) * 100;
+    }
+    public ionViewWillEnter(): void {
+        this.contractManagerService.reviewChangesCommitFlag(this.url)
+            .catch((e) => {
+                this.log.e("Error Changing the state of the flag to false", e);
+                throw e;
+            });
+            
     }
 }

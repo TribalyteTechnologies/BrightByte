@@ -14,6 +14,7 @@ export class CommitDetailsPage {
     public commitDetails: CommitDetails;
     public commitIndex: number;
     public msg: string;
+    public url: string;
     public isButtonPressArray = new Array<boolean>();
     public commentsArray = new Array<CommitComments>();
     public project: string;
@@ -30,6 +31,7 @@ export class CommitDetailsPage {
         this.commitDetails = navParams.get("commitDetails");
         this.project = navParams.get("commitProject");
         this.commitIndex = navParams.get("commitIndex");
+        this.url = navParams.get("url");
         this.log.d("Details Object: ", this.commitDetails);
         this.log.d("CommitIndex: ", this.commitIndex);
 
@@ -38,7 +40,7 @@ export class CommitDetailsPage {
         return this.refresh();
     }
     public refresh(): Promise<void> {
-        return this.contractManagerService.getCommentsOfCommit(this.commitIndex)
+        return this.contractManagerService.getCommentsOfCommit(this.url)
             .then((arrayOfComments: CommitComments[]) => {
                 this.log.d("Array of Comments: ", arrayOfComments);
                 this.commentsArray = arrayOfComments;

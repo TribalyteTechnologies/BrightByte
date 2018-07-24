@@ -14,13 +14,13 @@
     <p>{{ "commitDetails.nReviews" | translate }}: {{ commitDetails.numberReviews }}</p>
     <p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails.isPending }}</p>
     <p>{{ "commitDetails.currrentNReviews" | translate }}: {{ commitDetails.currentNumberReviews }}</p>
-    <ion-item>
+    <ion-item *ngIf="!isReviewed">
         <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">{{ "commitDetails.textField" | translate }}</ion-textarea>
     </ion-item>
     <p class="error-message">{{ msg }}</p>
     <p>{{ msg1 }}</p>
 
-    <ion-item>
+    <ion-item *ngIf="!isReviewed">
         <button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
             <ion-icon name="{{ star[number] }}"></ion-icon>
         </button>
@@ -28,7 +28,14 @@
 
     <ion-spinner [hidden]="!isBackButtonDisabled"></ion-spinner>
     <br>
-    <button ion-button [disabled]="isButtonDisabled" (click)="addReview(textComment)">
+    <button ion-button *ngIf="!isReviewed" [disabled]="isButtonDisabled" (click)="addReview(textComment)">
         {{ "commitReview.review" | translate }}
     </button>
+    <ion-item *ngIf="isReviewed && comment">
+			<p>{{ comment.name }} {{ "commitDetails.commented" | translate }} ({{ comment.score }} {{ "commitDetails.stars" | translate }}):
+				<ion-icon name="thumbs-up" *ngIf="comment.vote==2"></ion-icon>
+				<ion-icon name="thumbs-down" *ngIf="comment.vote==1"></ion-icon>
+			</p>
+			<p>{{ comment.text }}</p>
+		</ion-item>
 </ion-content>

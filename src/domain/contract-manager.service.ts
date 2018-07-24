@@ -224,18 +224,18 @@ export class ContractManagerService {
         });
 
     }
-    public getCommentsOfCommit(index: number): Promise<CommitComments[]> {
+    public getCommentsOfCommit(url: string): Promise<CommitComments[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
             contractArtifact = contract;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getNumberComments(index).call();
+            return contractArtifact.methods.getNumberComments(url).call();
         }).then((numberComments: number) => {
             this.log.d("Number of comments: ", numberComments);
             let promises = new Array<Promise<CommitComments>>();
             for (let i = 0; i < numberComments; i++) {
-                let promise = contractArtifact.methods.getCommentsOfCommit(index, i).call()
+                let promise = contractArtifact.methods.getCommentsOfCommit(url, i).call()
                     .then((commentVals: Array<any>) => {
                         return CommitComments.fromSmartContract(commentVals);
                     });
@@ -314,6 +314,26 @@ export class ContractManagerService {
 
             .catch(err => {
                 this.log.e("Error getting ranking :", err);
+                throw err;
+            });
+    }
+    public getFeedback(url): Promise<boolean[]>{
+        let contractArtifact;
+        return this.initProm.then(contract => {
+            contractArtifact = contract;
+            return contractArtifact.methods.getNumberFeedback(url).call();
+        }).then(numberUsers => {
+            this.log.d("numberbooleans",numberUsers);
+            let promises = new Array<Promise<boolean>>();
+            for (let i = 0; i < numberUsers; i++) {
+                let promise = contractArtifact.methods.isFeedback(i, url).call();
+                promises.push(promise);
+            }
+            return Promise.all(promises);
+        })
+
+            .catch(err => {
+                this.log.e("Error getting urls (Feedback) :", err);
                 throw err;
             });
     }
