@@ -3,10 +3,10 @@ pragma solidity ^0.4.24;
 contract Bright {
     
     event UserProfileSetEvent (string name, address hash);
-    mapping (address => UserProfile) public hashUserMap;
-    mapping (uint => UserProfile) allUsersArray;
-    mapping (string => Commit) storedData;
-    uint numberOfUsers = 0;
+    mapping (address => UserProfile) private hashUserMap;
+    address[] private allUsersArray;
+    //mapping (uint => UserProfile) allUsersArray;
+    mapping (string => Commit) private storedData;
 
     struct UserProfile {
         string name;
@@ -18,8 +18,10 @@ contract Bright {
         uint reputation;
         uint numberOfTimesReview;
         uint numberOfPoints;
-        mapping (uint => Commit) userCommits;
-        mapping (uint => Commit) commitsToReview;
+        string[] userCommits;
+        string[] commitsToReview;
+        //mapping (uint => Commit) userCommits;
+        //mapping (uint => Commit) commitsToReview;
     }
     struct Commit {
         string title;
@@ -34,6 +36,7 @@ contract Bright {
         uint lastModificationDate;
         uint score;
         uint points;
+        address[] commitReviewFeedback;
         mapping (uint => CommitReview) comments; 
     }
     struct CommitReview{
@@ -53,8 +56,7 @@ contract Bright {
             hashUserMap[msg.sender].numberCommitsReviewedByMe = 0; 
             hashUserMap[msg.sender].numberCommitsToReviewByMe = 0;
             hashUserMap[msg.sender].numbermyCommits = 0;
-            allUsersArray[numberOfUsers] = hashUserMap[msg.sender];
-            numberOfUsers++;
+            allUsersArray.push(msg.sender);
         }
         if(bytes(hashUserMap[msg.sender].name).length > 0 || bytes(hashUserMap[msg.sender].email).length > 0){
             hashUserMap[msg.sender].name = _name;
@@ -91,25 +93,31 @@ contract Bright {
         if(numUsers>0){
             isPending = true;
         }
-        storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0, block.timestamp, 0, 0);
-        hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_url];
+        address[] memory array;
+        storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0, block.timestamp, 0, 0, array);
+        //hashUserMap[msg.sender].userCommits[hashUserMap[msg.sender].numbermyCommits] = storedData[_url];
+        hashUserMap[msg.sender].userCommits.push(_url);
         hashUserMap[msg.sender].numbermyCommits++;
         
         //Send the notificatios to reviewers
-        for(uint i = 0; i < numberOfUsers; i++){
+        for(uint i = 0; i < allUsersArray.length; i++){
             
-            if(keccak256(allUsersArray[i].email) == keccak256(_emailuser1)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_url]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;  
-            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser2)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_url]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;
-            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser3)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_url]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;
-            }else if(keccak256(allUsersArray[i].email) == keccak256(_emailuser4)){
-                hashUserMap[allUsersArray[i].hash].commitsToReview[hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe] = storedData[_url]; 
-                hashUserMap[allUsersArray[i].hash].numberCommitsToReviewByMe++;
+            if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser1)){
+                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
+                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
+                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
+            }else if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser2)){
+                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
+                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
+                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
+            }else if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser3)){
+                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
+                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
+                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
+            }else if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser4)){
+                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
+                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
+                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
             }
         }
     }
@@ -124,7 +132,7 @@ contract Bright {
         );
     }
     function getUserCommits(uint _index) public view returns(string, string, string, bool, bool, uint){
-        string memory url = hashUserMap[msg.sender].userCommits[_index].url;
+        string memory url = hashUserMap[msg.sender].userCommits[_index];
         return (storedData[url].url,
                 storedData[url].title,
                 storedData[url].project,
@@ -137,15 +145,15 @@ contract Bright {
         return hashUserMap[msg.sender].numbermyCommits;
     }
     function getAllUserEmail(uint _index) public view returns(string){
-        return allUsersArray[_index].email;
+        return hashUserMap[allUsersArray[_index]].email;
     }
     function getAllUserReputation(uint _index) public view returns(string, uint){ 
-        return (allUsersArray[_index].email,
-                hashUserMap[allUsersArray[_index].hash].reputation
+        return (hashUserMap[allUsersArray[_index]].email,
+                hashUserMap[allUsersArray[_index]].reputation
         ); 
     }
     function getAllUserNumber() public view returns(uint){ 
-        return numberOfUsers;
+        return allUsersArray.length;
     }
     function getNumberCommitsToReviewByMe() public view returns(uint){ 
         return hashUserMap[msg.sender].numberCommitsToReviewByMe;
@@ -154,25 +162,26 @@ contract Bright {
         return hashUserMap[msg.sender].numberCommitsReviewedByMe;
     }
     function getCommitsToReviewByMe(uint _index) public view returns(string, string, string){
-        return (hashUserMap[msg.sender].commitsToReview[_index].url,
-            hashUserMap[msg.sender].commitsToReview[_index].title,
-            hashUserMap[hashUserMap[msg.sender].commitsToReview[_index].author].name);
+        string memory url = hashUserMap[msg.sender].commitsToReview[_index];
+        return (url,
+            storedData[url].title,
+            hashUserMap[storedData[url].author].name);
     }
-    function getCommentsOfCommit(uint _indexCommit, uint _indexComments)public view returns(string, address, string, uint, uint){
-        string storage url = hashUserMap[msg.sender].userCommits[_indexCommit].url; 
-        return (storedData[url].comments[_indexComments].text, 
-                storedData[url].comments[_indexComments].user, 
-                hashUserMap[storedData[url].comments[_indexComments].user].name,
-                storedData[url].comments[_indexComments].score,
-                storedData[url].comments[_indexComments].vote
+    function getCommentsOfCommit(string _url, uint _indexComments)public view returns(string, address, string, uint, uint){
+        //string memory url = hashUserMap[msg.sender].userCommits[_indexCommit]; 
+        return (storedData[_url].comments[_indexComments].text, 
+                storedData[_url].comments[_indexComments].user, 
+                hashUserMap[storedData[_url].comments[_indexComments].user].name,
+                storedData[_url].comments[_indexComments].score,
+                storedData[_url].comments[_indexComments].vote
         ); 
     }
-    function getNumberComments(uint _index)public view returns(uint){
-        return storedData[hashUserMap[msg.sender].userCommits[_index].url].currentNumberReviews;
+    function getNumberComments(string _url)public view returns(uint){
+        return storedData[_url].currentNumberReviews;
     }
     function setReview(uint _index, string _text, uint _points)public{
         
-        string storage url = hashUserMap[msg.sender].commitsToReview[_index].url;
+        string memory url = hashUserMap[msg.sender].commitsToReview[_index];
         storedData[url].comments[storedData[url].currentNumberReviews].text = _text;
         storedData[url].comments[storedData[url].currentNumberReviews].user = msg.sender;
         storedData[url].comments[storedData[url].currentNumberReviews].score = _points/100;
@@ -184,7 +193,7 @@ contract Bright {
             storedData[url].isPending = false;
         }
         //Reputation. The front end has to divide the result by 100
-        address author = hashUserMap[msg.sender].commitsToReview[_index].author;
+        address author = storedData[url].author;
         hashUserMap[author].numberOfTimesReview++;
         uint value = hashUserMap[author].numberOfPoints + _points;
         hashUserMap[author].numberOfPoints = value;
@@ -196,18 +205,45 @@ contract Bright {
         storedData[url].score = storedData[url].points/storedData[url].currentNumberReviews;
  
         //User who has to review. 
-        hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe-1].url]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
-        delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe];
-        hashUserMap[msg.sender].numberCommitsToReviewByMe--;
+        //hashUserMap[msg.sender].commitsToReview[_index] = storedData[hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe-1].url]; //the last commit of the list commitsToReviewByMe is on the position which had the commit i delete
+        //delete hashUserMap[msg.sender].commitsToReview[hashUserMap[msg.sender].numberCommitsToReviewByMe];
+        //hashUserMap[msg.sender].numberCommitsToReviewByMe--;
         hashUserMap[msg.sender].numberCommitsReviewedByMe++;
     }
     function setVote(string _url, uint _indexComment, uint _vote) public {
         if(storedData[_url].comments[_indexComment].vote == 0){
             storedData[_url].comments[_indexComment].vote = _vote;
             storedData[_url].comments[_indexComment].lastModificationDate = block.timestamp;
+            storedData[_url].commitReviewFeedback.push(storedData[_url].comments[_indexComment].user);
         }
     }
     function readComments(string _url) public{
-        storedData[_url].isReadNeeded = false;
+        if(storedData[_url].author == msg.sender){
+            storedData[_url].isReadNeeded = false;
+        } else{
+            bool isCopy = false;
+            for(uint i = 0; i < storedData[_url].commitReviewFeedback.length; i++){
+                if(!isCopy && storedData[_url].commitReviewFeedback[i] == msg.sender){
+                    isCopy = true;
+                }
+                if(isCopy && i < storedData[_url].commitReviewFeedback.length - 1){
+                    storedData[_url].commitReviewFeedback[i] = storedData[_url].commitReviewFeedback[i + 1];
+                }
+            }
+            if(isCopy){
+                storedData[_url].commitReviewFeedback.length--;
+            }
+        }
+    }
+    function getNumberFeedback(string _url)public view returns (uint){
+        return storedData[_url].commitReviewFeedback.length;
+    }
+    function isFeedback(uint _index, string _url)public view returns(bool){
+        bool res = false;
+        if(storedData[_url].commitReviewFeedback[_index] == msg.sender){
+            res = true;
+        }
+        return res;
+        
     }
 }
