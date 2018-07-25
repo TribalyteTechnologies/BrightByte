@@ -25,7 +25,8 @@
         "fieldRequire": "Field is required",
         "notUrl": "It is not a valid url",
         "titleCommit": "Title",
-        "inputTitle": "Write the title"
+        "inputTitle": "Write the title",
+        "ownEmail": "You can't review your own commit"
     },
     "commits": {
         "add": "Add commit",

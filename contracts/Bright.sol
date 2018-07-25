@@ -98,19 +98,7 @@ contract Bright {
         //Send the notificatios to reviewers
         for(uint i = 0; i < allUsersArray.length; i++){
             
-            if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser1)){
-                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
-                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
-                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
-            }else if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser2)){
-                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
-                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
-                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
-            }else if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser3)){
-                hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
-                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
-                storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
-            }else if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser4)){
+            if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser1) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser2) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser3) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser4)){
                 hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
                 hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
                 storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
@@ -138,10 +126,7 @@ contract Bright {
                 storedData[url].creationDate,
                 storedData[url].lastModificationDate
         );
-    }/*
-    function getNumberUserCommits()public view returns(uint){
-        return hashUserMap[msg.sender].numbermyCommits;
-    }*/
+    }
     function getAllUserEmail(uint _index) public view returns(string){
         return hashUserMap[allUsersArray[_index]].email;
     }
@@ -156,15 +141,6 @@ contract Bright {
                 hashUserMap[msg.sender].numberCommitsToReviewByMe
         );
     }
-    /*function getNumberCommitsToReviewByMe() public view returns(uint){ 
-        return hashUserMap[msg.sender].numberCommitsToReviewByMe;
-    }
-    function getNumberCommitsReviewedByMe() public view returns(uint){ 
-        return hashUserMap[msg.sender].numberCommitsReviewedByMe;
-    }
-    function getNumberComments(string _url)public view returns(uint){
-        return storedData[_url].currentNumberReviews;
-    }*/
     function getNumbersNeedUrl(string _url)public view returns (uint, uint){
         return (storedData[_url].currentNumberReviews,
                 storedData[_url].commitReviewFeedback.length
@@ -215,7 +191,6 @@ contract Bright {
         storedData[url].points = points + _points;
         storedData[url].score = storedData[url].points/storedData[url].currentNumberReviews;
  
-        //User who has to review. 
         hashUserMap[msg.sender].numberCommitsReviewedByMe++;
     }
     function setVote(string _url, uint _indexComment, uint _vote) public {
