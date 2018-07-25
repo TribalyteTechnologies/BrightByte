@@ -22,8 +22,8 @@
             <ion-icon name="notifications" *ngIf="commit.isReadNeeded"></ion-icon>
             <ion-icon name="checkmark" *ngIf="commit.isPending"></ion-icon>
             <ion-icon name="done-all" *ngIf="!commit.isPending"></ion-icon>
-            {{ "addCommit.titleCommit" | translate }}: {{ commit.title }}, {{ "addCommit.project" | translate }}: {{ commit.project }}, score: {{ commit.score }}
-            {{ commit.lastModificationDateMs | date:"fullDate" }}
+            {{ "addCommit.titleCommit" | translate }}: {{ commit.title }}, {{ "addCommit.project" | translate }}: {{ commit.project }},
+            {{ "commitDetails.stars" | translate }}: {{ commit.score }} {{ commit.lastModificationDateMs | date:"fullDate" }}
         </button>
     </ion-list>
     <p class="error-message">{{ msg }}</p>

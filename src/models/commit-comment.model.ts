@@ -1,4 +1,4 @@
-export class CommitComments { 
+export class CommitComment { 
     public text: string; 
     public user: string; 
     public name: string; 
@@ -6,8 +6,8 @@ export class CommitComments {
     public vote: number;
     public creationDateMs: number;
     public lastModificationDateMs: number;
-    public static fromSmartContract(commentVals: Array<any>): CommitComments{ 
-        let comment = new CommitComments(); 
+    public static fromSmartContract(commentVals: Array<any>): CommitComment{ 
+        let comment = new CommitComment(); 
         comment.text = commentVals[0]; 
         comment.user = commentVals[1]; 
         comment.name = commentVals[2]; 

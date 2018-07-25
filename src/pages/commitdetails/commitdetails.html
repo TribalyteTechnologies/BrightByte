@@ -21,10 +21,10 @@
 			<p>{{ comment.name }} {{ "commitDetails.commented" | translate }} ({{ comment.score }} {{ "commitDetails.stars" | translate }}):
 				{{ comment.lastModificationDateMs | date:"fullDate" }}
 				<button ion-button icon-only (click)="setThumbs(i, 2)" *ngIf="comment.vote==0 && !isButtonPressArray[i]">
-						<ion-icon name="thumbs-up"></ion-icon>
+					<ion-icon name="thumbs-up"></ion-icon>
 				</button>
 				<button ion-button icon-only (click)="setThumbs(i, 1)" *ngIf="comment.vote==0 && !isButtonPressArray[i]">
-						<ion-icon name="thumbs-down"></ion-icon>
+					<ion-icon name="thumbs-down"></ion-icon>
 				</button>
 				<ion-icon name="thumbs-up" *ngIf="comment.vote==2"></ion-icon>
 				<ion-icon name="thumbs-down" *ngIf="comment.vote==1"></ion-icon>

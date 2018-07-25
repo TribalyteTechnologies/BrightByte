@@ -9,8 +9,8 @@ export class CommitToReview {
         commit.url = commitVals[0]; 
         commit.title = commitVals[1]; 
         commit.name = commitVals[2];
-        commit.creationDateMs = commitVals[3]*1000;
-        commit.lastModificationDateMs = commitVals[4]*1000;
+        commit.creationDateMs = commitVals[3] * 1000;
+        commit.lastModificationDateMs = commitVals[4] * 1000;
         return commit;
     } 
 }

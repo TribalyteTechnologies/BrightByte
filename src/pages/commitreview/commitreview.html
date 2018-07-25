@@ -32,11 +32,11 @@
         {{ "commitReview.review" | translate }}
     </button>
     <ion-item *ngIf="isReviewed && comment">
-			<p>{{ comment.name }} {{ "commitDetails.commented" | translate }} ({{ comment.score }} {{ "commitDetails.stars" | translate }}):
-                {{ comment.lastModificationDateMs | date:"fullDate" }}
-                <ion-icon name="thumbs-up" *ngIf="comment.vote==2"></ion-icon>
-				<ion-icon name="thumbs-down" *ngIf="comment.vote==1"></ion-icon>
-			</p>
-			<p>{{ comment.text }}</p>
-		</ion-item>
+        <p>{{ comment.name }} {{ "commitDetails.commented" | translate }} ({{ comment.score }} {{ "commitDetails.stars" | translate }}):
+            {{ comment.lastModificationDateMs | date:"fullDate" }}
+            <ion-icon name="thumbs-up" *ngIf="comment.vote==2"></ion-icon>
+            <ion-icon name="thumbs-down" *ngIf="comment.vote==1"></ion-icon>
+        </p>
+        <p>{{ comment.text }}</p>
+    </ion-item>
 </ion-content>

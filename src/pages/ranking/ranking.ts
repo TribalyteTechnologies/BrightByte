@@ -7,6 +7,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Account } from "web3/types";
 import { UserDetails } from "../../models/user-details.model";
 import { UserReputation } from "../../models/user-reputation.model";
+import { AppConfig } from "../../app.config";
 
 @Component({
     selector: "page-ranking",
@@ -16,6 +17,7 @@ export class RankingPage {
     public userDetails = new UserDetails();
     public msg: string;
     public usersRep = new Array<UserReputation>();
+    public numberUserList = AppConfig.N_USER_RANKING_LIST;
     private log: ILogger;
     private account: Account;
 

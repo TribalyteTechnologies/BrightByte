@@ -4,7 +4,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { CommitDetails } from "../../models/commit-details.model";
-import { CommitComments } from "../../models/commit-comments.model";
+import { CommitComment } from "../../models/commit-comment.model";
 
 @Component({
     selector: "page-commitReview",
@@ -17,7 +17,7 @@ export class CommitReviewPage {
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public msg: string;
-    public comment: CommitComments;
+    public comment: CommitComment;
     public url: string;
     public isButtonDisabled = false;
     public msg1: string;

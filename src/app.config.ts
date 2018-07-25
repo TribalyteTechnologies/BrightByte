@@ -17,7 +17,10 @@ export class AppConfig {
         urlNode: "http://localhost:9545"
     };
 
-    public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
+    public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ?
         NETWORK_CONFIG_CUSTOM : AppConfig.NETWORK_CONFIG_LOCALHOST;
     public static readonly MAX_REVIEWER_COUNT = 4;
+    public static readonly SCORE_DIVISION_FACTOR = 100;
+    public static readonly N_USER_RANKING_LIST = 5;
+
 }

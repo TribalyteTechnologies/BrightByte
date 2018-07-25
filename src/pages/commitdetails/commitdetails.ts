@@ -3,7 +3,7 @@ import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
-import { CommitComments } from "../../models/commit-comments.model"; 
+import { CommitComment } from "../../models/commit-comment.model";
 import { CommitDetails } from "../../models/commit-details.model";
 
 @Component({
@@ -16,7 +16,7 @@ export class CommitDetailsPage {
     public msg: string;
     public url: string;
     public isButtonPressArray = new Array<boolean>();
-    public commentsArray = new Array<CommitComments>();
+    public commentsArray = new Array<CommitComment>();
     public project: string;
     private log: ILogger;
 
@@ -41,7 +41,7 @@ export class CommitDetailsPage {
     }
     public refresh(): Promise<void> {
         return this.contractManagerService.getCommentsOfCommit(this.url)
-            .then((arrayOfComments: CommitComments[]) => {
+            .then((arrayOfComments: CommitComment[]) => {
                 this.log.d("Array of Comments: ", arrayOfComments);
                 this.commentsArray = arrayOfComments;
             }).catch((e) => {
