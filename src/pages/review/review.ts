@@ -40,11 +40,10 @@ export class ReviewPage {
                 let promises = new Array<Promise<void>>();
                 for (let j = 0; j < arrayOfCommits.length; j++) {
                     let promise = this.contractManagerService.getFeedback(arrayOfCommits[j].url)
-                        .then((arrayOfBooleans: boolean[]) => {
-                            this.log.d("ArrayBooleans: ", arrayOfBooleans);
-                            for (let i = 0; i < arrayOfBooleans.length; i++) {
-                                this.isFeedback[j] = false;
-                                if (arrayOfBooleans[i] === true) {
+                        .then((notifyArray: boolean[]) => {
+                            this.log.d("Array of Bells: ", notifyArray);
+                            for (let i = 0; i < notifyArray.length; i++) {
+                                if (notifyArray[i] === true) {
                                     this.isFeedback[j] = true;
                                 }
                             }
