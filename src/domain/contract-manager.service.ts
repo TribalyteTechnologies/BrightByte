@@ -323,16 +323,13 @@ export class ContractManagerService {
             contractArtifact = contract;
             return contractArtifact.methods.getNumbersNeedUrl(url).call();
         }).then((numberUsers: number[]) => {
-            this.log.d("numberbooleans", numberUsers);
             let promises = new Array<Promise<boolean>>();
             for (let i = 0; i < numberUsers[1]; i++) {
                 let promise = contractArtifact.methods.isFeedback(i, url).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
-        })
-
-            .catch(err => {
+        }).catch(err => {
                 this.log.e("Error getting urls (Feedback) :", err);
                 throw err;
             });
