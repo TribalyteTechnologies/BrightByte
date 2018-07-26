@@ -16,8 +16,11 @@ import { CommitDetails } from "../../models/commit-details.model";
 })
 
 export class ReviewPage {
+    public readonly ALL = "all";
     public arrayCommits: CommitToReview[];
     public msg: string;
+    public projects = new Array<string>();
+    public projectSelected = this.ALL;
     public isFeedback = new Array<boolean>();
     private log: ILogger;
 
@@ -33,39 +36,7 @@ export class ReviewPage {
     }
     
     public ionViewWillEnter(): void {
-        this.contractManagerService.getCommitsToReview()
-            .then((arrayOfCommits: CommitToReview[]) => {
-                this.log.d("ARRAY Commits: ", arrayOfCommits);
-                this.arrayCommits = arrayOfCommits;
-                let promises = new Array<Promise<void>>();
-                for (let j = 0; j < arrayOfCommits.length; j++) {
-                    let promise = this.contractManagerService.getFeedback(arrayOfCommits[j].url)
-                        .then((notifyArray: boolean[]) => {
-                            this.log.d("Array of Bells: ", notifyArray);
-                            for (let i = 0; i < notifyArray.length; i++) {
-                                if (notifyArray[i] === true) {
-                                    this.isFeedback[j] = true;
-                                }
-                            }
-                        }).catch((e) => {
-                            this.translateService.get("review.getCommits").subscribe(
-                                msg => {
-                                    this.msg = msg;
-                                    this.log.e(msg, e);
-                                });
-                            return Promise.reject(e);
-                        });
-                    promises.push(promise);
-                }
-                return Promise.all(promises);
-            }).catch((e) => {
-                this.translateService.get("review.getCommits").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-                return Promise.reject(e);
-            });
+            this.refresh();
     }
     public selectUrl(commit: CommitToReview, index: number) {
         let project = this.splitService.getProject(commit.url);
@@ -110,5 +81,62 @@ export class ReviewPage {
                 return Promise.reject(e);
             });
     }
-
+    public refresh() {
+        this.contractManagerService.getCommitsToReview()
+            .then((arrayOfCommits: CommitToReview[]) => {
+                this.log.d("ARRAY Commits: ", arrayOfCommits);
+                this.arrayCommits = arrayOfCommits;
+                let promises = new Array<Promise<void>>();
+                for (let j = 0; j < arrayOfCommits.length; j++) {
+                    let promise = this.contractManagerService.getFeedback(arrayOfCommits[j].url)
+                        .then((notifyArray: boolean[]) => {
+                            this.log.d("Array of Bells: ", notifyArray);
+                            for (let i = 0; i < notifyArray.length; i++) {
+                                if (notifyArray[i] === true) {
+                                    this.isFeedback[j] = true;
+                                }
+                            }
+                        }).catch((e) => {
+                            this.translateService.get("review.getCommits").subscribe(
+                                msg => {
+                                    this.msg = msg;
+                                    this.log.e(msg, e);
+                                });
+                            return Promise.reject(e);
+                        });
+                    promises.push(promise);
+                }
+                
+                this.log.d("Array of commits: ", arrayOfCommits);
+                let projects = new Array<string>();
+                for (let commitVals of arrayOfCommits) {
+                    let commitProject = commitVals.project;
+                    if (projects.indexOf(commitProject) < 0) {
+                        projects.push(commitProject);
+                    }
+                }
+                this.projects = projects;
+                this.log.d("Diferent projects: ", this.projects);
+                let index = 0;
+                let array = new Array<CommitToReview>();
+                for (let j = 0; j < arrayOfCommits.length; j++) {
+                    if (this.projectSelected === arrayOfCommits[j].project) {
+                        array[index] = arrayOfCommits[j];
+                        index++;
+                    }
+                }
+                if (this.projectSelected === this.ALL) {
+                    this.arrayCommits = arrayOfCommits;
+                } else {
+                    this.arrayCommits = array;
+                }
+                return Promise.all(promises);
+            }).catch((e) => {
+                this.translateService.get("review.getCommits").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            });
+    }
 }

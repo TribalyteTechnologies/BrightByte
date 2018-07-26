@@ -4,6 +4,7 @@ export class CommitToReview {
     public name: string;
     public creationDateMs: number;
     public lastModificationDateMs: number;
+    public project: string;
     public static fromSmartContract(commitVals: Array<any>): CommitToReview{ 
         let commit = new CommitToReview(); 
         commit.url = commitVals[0]; 
@@ -11,6 +12,7 @@ export class CommitToReview {
         commit.name = commitVals[2];
         commit.creationDateMs = commitVals[3] * 1000;
         commit.lastModificationDateMs = commitVals[4] * 1000;
+        commit.project = commitVals[5];
         return commit;
     } 
 }

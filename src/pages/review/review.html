@@ -10,6 +10,13 @@
     <ion-list>
         <ion-list-header>{{ "review.subTitle" | translate }}</ion-list-header>
         <ion-item>
+            <ion-label>{{ "commits.project" | translate }}</ion-label>
+            <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh()">
+                <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
+                <ion-option value="all" selected="true">{{ "commits.allCommits" | translate }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
             <ion-icon name="ionic" item-start></ion-icon>
             {{ "review.titleList" | translate }}
         </ion-item>

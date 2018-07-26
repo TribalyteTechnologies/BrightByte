@@ -146,13 +146,14 @@ contract Bright {
                 storedData[_url].commitReviewFeedback.length
         );
     }
-    function getCommitsToReviewByMe(uint _index) public view returns(string, string, string, uint, uint){
+    function getCommitsToReviewByMe(uint _index) public view returns(string, string, string, uint, uint, string){
         string memory url = hashUserMap[msg.sender].commitsToReview[_index];
         return (url,
             storedData[url].title,
             hashUserMap[storedData[url].author].name,
             storedData[url].creationDate,
-            storedData[url].lastModificationDate
+            storedData[url].lastModificationDate,
+            storedData[url].project
             );
     }
     function getCommentsOfCommit(string _url, uint _indexComments)public view returns(string, address, string, uint, uint, uint){
