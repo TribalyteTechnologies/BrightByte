@@ -91,6 +91,6 @@ export class CommitReviewPage {
                 this.log.e("Error Changing the state of the flag to false", e);
                 throw e;
             });
-            
+
     }
 }

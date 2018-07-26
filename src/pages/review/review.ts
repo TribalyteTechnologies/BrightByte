@@ -30,8 +30,8 @@ export class ReviewPage {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
-
     }
+    
     public ionViewWillEnter(): void {
         this.contractManagerService.getCommitsToReview()
             .then((arrayOfCommits: CommitToReview[]) => {
@@ -47,7 +47,6 @@ export class ReviewPage {
                                     this.isFeedback[j] = true;
                                 }
                             }
-
                         }).catch((e) => {
                             this.translateService.get("review.getCommits").subscribe(
                                 msg => {
@@ -108,7 +107,6 @@ export class ReviewPage {
                         this.msg = msg;
                         this.log.e(msg, e);
                     });
-
                 return Promise.reject(e);
             });
     }

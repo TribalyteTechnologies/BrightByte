@@ -56,29 +56,52 @@ export class AddCommitPopover {
             title: ["", [Validators.required]]
         });
         this.initProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address)
-        .then((userDetails: UserDetails) => {
-            this.userDetails = userDetails;
-        }).catch((e) => {
-            this.log.d("Error checking if you are trying to review your own commit: ", e);
-        });
+            .then((userDetails: UserDetails) => {
+                this.userDetails = userDetails;
+            }).catch((e) => {
+                this.log.d("Error checking if you are trying to review your own commit: ", e);
+            });
     }
     public addCommit(url: string, title: string) {
         this.isTxOngoing = true;
         this.msg = "";
         let isPermitted = true;
         this.initProm.then(() => {
+            if (this.usersMail[0] === "" && this.usersMail[1] === "" && this.usersMail[2] === "" && this.usersMail[3] === "") {
+                this.translateService.get("addCommit.emptyInput").subscribe(
+                    msg => {
+                        this.msg = msg;
+                    });
+                isPermitted = false;
+                this.isTxOngoing = false;
+            }
             for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
-                for(let j=0;j<AppConfig.MAX_REVIEWER_COUNT; j++){
-                if (this.usersMail[i] === this.usersMail[j] && i !== j && this.usersMail[i] !== "") {
-                    this.translateService.get("addCommit.emailDuplicated").subscribe(
-                        msg => {
-                            this.msg = msg;
-                        });
+                if (this.usersMail[i] !== "") {
+                    let isValid = false;
+                    for (let y = 0; y < this.arrayEmails.length; y++) {
+                        if (this.usersMail[i] === this.arrayEmails[y]) {
+                            isValid = true;
+                        }
+                    }
+                    if (!isValid) {
+                        this.translateService.get("addCommit.unknownEmail").subscribe(
+                            msg => {
+                                this.msg = msg;
+                            });
                         isPermitted = false;
                         this.isTxOngoing = false;
-                        this.log.d("ERROR: inside first check");
+                    }
                 }
-            }
+                for (let j = 0; j < AppConfig.MAX_REVIEWER_COUNT; j++) {
+                    if (this.usersMail[i] === this.usersMail[j] && i !== j && this.usersMail[i] !== "") {
+                        this.translateService.get("addCommit.emailDuplicated").subscribe(
+                            msg => {
+                                this.msg = msg;
+                            });
+                        isPermitted = false;
+                        this.isTxOngoing = false;
+                    }
+                }
                 if (this.usersMail[i] === this.userDetails.email) {
                     this.translateService.get("addCommit.ownEmail").subscribe(
                         msg => {
@@ -88,7 +111,6 @@ export class AddCommitPopover {
                     this.isTxOngoing = false;
                     break;
                 }
-                
             }
             if (isPermitted) {
                 this.contractManagerService.getDetailsCommits(url)
@@ -126,14 +148,8 @@ export class AddCommitPopover {
                                 this.log.e(msg, e);
                             });
                     });
-        
-                }
+            }
         });
-            
-                
-        
-        
-
     }
 
     public getItems(ev: any, id: number) { //TODO: TYpe targetevent or event
@@ -153,30 +169,30 @@ export class AddCommitPopover {
     public setEmailFromList(num: number, item: string) {
         let isDuplicated = false;
         this.initProm.then(() => {
-        for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
-            if(item === this.userDetails.email){
-                this.translateService.get("addCommit.ownEmail").subscribe(
-                    msg => {
-                        this.msg = msg;
-                    });
-                isDuplicated = true;
-                break;
+            for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
+                if (item === this.userDetails.email) {
+                    this.translateService.get("addCommit.ownEmail").subscribe(
+                        msg => {
+                            this.msg = msg;
+                        });
+                    isDuplicated = true;
+                    break;
+                }
+                if (this.usersMail[i] === item) {
+                    this.translateService.get("addCommit.emailDuplicated").subscribe(
+                        msg => {
+                            this.msg = msg;
+                        });
+                    isDuplicated = true;
+                    break;
+                }
             }
-            if (this.usersMail[i] === item) {
-                this.translateService.get("addCommit.emailDuplicated").subscribe(
-                    msg => {
-                        this.msg = msg;
-                    });
-                isDuplicated = true;
-                break;
+            if (!isDuplicated) {
+                this.msg = "";
+                this.usersMail[num] = item;
+                this.isShowList[num] = false;
             }
-        }
-        if (!isDuplicated) {
-            this.msg = "";
-            this.usersMail[num] = item;
-            this.isShowList[num] = false;
-        }
-    });
+        });
     }
     public addInput() {
         if (this.isAddInputAllowed) {
