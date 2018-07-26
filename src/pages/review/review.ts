@@ -84,9 +84,6 @@ export class ReviewPage {
     public refresh() {
         this.contractManagerService.getCommitsToReview()
             .then((arrayOfCommits: CommitToReview[]) => {
-                this.log.d("ARRAY Commits: ", arrayOfCommits);
-                //this.arrayCommits = arrayOfCommits;
-
                 this.log.d("Array of commits: ", arrayOfCommits);
                 let projects = new Array<string>();
                 for (let commitVals of arrayOfCommits) {

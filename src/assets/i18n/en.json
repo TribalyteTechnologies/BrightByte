@@ -35,7 +35,10 @@
         "getCommits": "Error getting commits",
         "title": "Commits",
         "project": "Project",
-        "allCommits": "All commits"
+        "allCommits": "All commits",
+        "pending": "Pending",
+        "reviewed": "Reviewed",
+        "getCommitsPending": "Error getting pending commits"
     },
     "home": {
         "title": "Home",

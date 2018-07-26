@@ -112,4 +112,51 @@ export class CommitPage {
                     });
             });
     }
+    public pendingReviewedSelector(value: number) {
+        switch (value) {
+            case 0:
+                this.contractManagerService.getCommits()
+                    .then((arrayOfCommits: UserCommit[]) => {
+                        this.log.d("ARRAY Commits: ", arrayOfCommits);
+                        let index = 0;
+                        let array = new Array<UserCommit>();
+                        for (let j = 0; j < arrayOfCommits.length; j++) {
+                            if (arrayOfCommits[j].isPending && (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
+                                array[index] = arrayOfCommits[j];
+                                index++;
+                            }
+                        }
+                        this.arrayCommits = array;
+                    }).catch((e) => {
+                        this.translateService.get("commits.getCommitsPending").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                    });
+                break;
+            case 1:
+                this.contractManagerService.getCommits()
+                    .then((arrayOfCommits: UserCommit[]) => {
+                        this.log.d("ARRAY Commits: ", arrayOfCommits);
+                        let index = 0;
+                        let array = new Array<UserCommit>();
+                        for (let j = 0; j < arrayOfCommits.length; j++) {
+                            if (!arrayOfCommits[j].isPending && (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
+                                array[index] = arrayOfCommits[j];
+                                index++;
+                            }
+                        }
+                        this.arrayCommits = array;
+                    }).catch((e) => {
+                        this.translateService.get("commits.getCommitsPending").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                    });
+                break;
+            default: this.refresh(); break;
+        }
+    }
 }
