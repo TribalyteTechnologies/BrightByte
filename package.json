@@ -12,7 +12,8 @@
         "ionic:build": "ionic-app-scripts build",
         "ionic:serve": "ionic-app-scripts serve",
         "ionic": "ionic cordova run browser",
-        "truffle:migrate": "truffle compile --contracts_build_directory=./src/assets/build",
+        "truffle:migrate": "./node_modules/.bin/truffle migrate --reset",
+        "truffle:develop": "./node_modules/.bin/truffle develop",
         "html-lint": "(htmlhint src || true)",
         "scss-lint": "sass-lint -v",
         "linters": "npm run html-lint && npm run scss-lint && npm start"
