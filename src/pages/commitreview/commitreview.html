@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content padding>
-    <a target="_blank" href="{{ commitDetails[0] }}">{{ commitDetails.url }}</a>
+    <a target="_blank" href="{{ commitDetails.url }}">{{ commitDetails.url }}</a>
     <p>{{ "commitDetails.author" | translate }}: {{ commitDetails.author }}</p>
     <p>{{ "commitDetails.date" | translate }}: {{ commitDetails.timestampMs | date:"fullDate" }}</p>
     <p>{{ "commitDetails.project" | translate }}: {{ project }}</p>
