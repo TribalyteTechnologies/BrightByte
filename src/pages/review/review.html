@@ -21,6 +21,15 @@
             {{ "review.titleList" | translate }}
         </ion-item>
     </ion-list>
+    <button ion-button (click)="pendingReviewedSelector(0)">
+        {{ "commits.pending" | translate }}
+    </button>
+    <button ion-button (click)="pendingReviewedSelector(1)">
+        {{ "commits.reviewed" | translate }}
+    </button>
+    <button ion-button (click)="pendingReviewedSelector()">
+        {{ "commits.allCommits" | translate }}
+    </button>
     <ion-list inset *ngIf="arrayCommits">
         <button ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="selectUrl(commit, i)">
             <ion-icon name="notifications" *ngIf="isFeedback[i]==true"></ion-icon>

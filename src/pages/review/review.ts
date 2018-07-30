@@ -139,4 +139,160 @@ export class ReviewPage {
                     });
             });
     }
+    public pendingReviewedSelector(value: number){
+        switch (value) {
+            case 0:
+                this.contractManagerService.getCommitsToReview()
+                    .then((arrayOfCommits: CommitToReview[]) => {
+                        this.log.d("Array of commits: ", arrayOfCommits);
+                let projects = new Array<string>();
+                for (let commitVals of arrayOfCommits) {
+                    let commitProject = commitVals.project;
+                    if (projects.indexOf(commitProject) < 0) {
+                        projects.push(commitProject);
+                    }
+                }
+                this.projects = projects;
+                this.log.d("Diferent projects: ", this.projects);
+                let index = 0;
+                let array = new Array<CommitToReview>();
+                for (let j = 0; j < arrayOfCommits.length; j++) {
+                    if (this.projectSelected === arrayOfCommits[j].project) {
+                        array[index] = arrayOfCommits[j];
+                        index++;
+                    }
+                }
+                if (this.projectSelected === this.ALL) {
+                    this.arrayCommits = arrayOfCommits.reverse();
+                } else {
+                    this.arrayCommits = array.reverse();
+                }
+                let promises = new Array<Promise<void>>();
+                for (let j = 0; j < this.arrayCommits.length; j++) {
+                    this.isFeedback[j] = false;
+                    let filteredArray = new Array<CommitToReview>();
+                    let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
+                        .then((notifyArray: boolean[]) => {
+                            this.log.d("Array of Bells: ", notifyArray);
+                            for (let i = 0; i < notifyArray.length; i++) {
+                                if (notifyArray[i] === true) {
+                                    this.isFeedback[j] = true;
+                                    filteredArray[j] = this.arrayCommits[i];
+                                }
+                            }
+                        }).catch((e) => {
+                            this.translateService.get("review.getCommits").subscribe(
+                                msg => {
+                                    this.msg = msg;
+                                    this.log.e(msg, e);
+                                });
+                            return Promise.reject(e);
+                        });
+                    promises.push(promise);
+                }
+                Promise.all(promises)
+                .then(() =>{
+                this.log.d("Full Array filtered by project: ", this.arrayCommits);
+                this.log.d("isFeedback Array: ", this.isFeedback);
+                let index = 0;
+                let arrayFiltered = new Array<CommitToReview>();
+                        for (let j = 0; j < arrayOfCommits.length; j++) {
+                            if (this.isFeedback[j]===true && (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
+                                arrayFiltered[index] = arrayOfCommits[j];
+                                index++;
+                            }
+                        }
+                        for(let u=0;u<arrayFiltered.length;u++){
+                        this.isFeedback[u] = true;
+                        }
+                        this.arrayCommits = arrayFiltered;
+                        this.log.d("Filtered Array: ", this.arrayCommits);
+                    }).catch((e) => {
+                        this.translateService.get("commits.getCommitsPending").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                    });
+                    });
+                break;
+
+            case 1:
+            this.contractManagerService.getCommitsToReview()
+            .then((arrayOfCommits: CommitToReview[]) => {
+                this.log.d("Array of commits: ", arrayOfCommits);
+        let projects = new Array<string>();
+        for (let commitVals of arrayOfCommits) {
+            let commitProject = commitVals.project;
+            if (projects.indexOf(commitProject) < 0) {
+                projects.push(commitProject);
+            }
+        }
+        this.projects = projects;
+        this.log.d("Diferent projects: ", this.projects);
+        let index = 0;
+        let array = new Array<CommitToReview>();
+        for (let j = 0; j < arrayOfCommits.length; j++) {
+            if (this.projectSelected === arrayOfCommits[j].project) {
+                array[index] = arrayOfCommits[j];
+                index++;
+            }
+        }
+        if (this.projectSelected === this.ALL) {
+            this.arrayCommits = arrayOfCommits.reverse();
+        } else {
+            this.arrayCommits = array.reverse();
+        }
+        let promises = new Array<Promise<void>>();
+        for (let j = 0; j < this.arrayCommits.length; j++) {
+            this.isFeedback[j] = false;
+            let filteredArray = new Array<CommitToReview>();
+            let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
+                .then((notifyArray: boolean[]) => {
+                    this.log.d("Array of Bells: ", notifyArray);
+                    for (let i = 0; i < notifyArray.length; i++) {
+                        if (notifyArray[i] === true) {
+                            this.isFeedback[j] = true;
+                            filteredArray[j] = this.arrayCommits[i];
+                        }
+                    }
+                }).catch((e) => {
+                    this.translateService.get("review.getCommits").subscribe(
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
+                        });
+                    return Promise.reject(e);
+                });
+            promises.push(promise);
+        }
+        Promise.all(promises)
+        .then(() =>{
+        this.log.d("Full Array filtered by project: ", this.arrayCommits);
+        this.log.d("isFeedback Array: ", this.isFeedback);
+        let index = 0;
+        let arrayFiltered = new Array<CommitToReview>();
+                for (let j = 0; j < arrayOfCommits.length; j++) {
+                    if (!this.isFeedback[j] && (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
+                        arrayFiltered[index] = arrayOfCommits[j];
+                        index++;
+                    }
+                }
+                for(let u=0;u<arrayFiltered.length;u++){
+                    this.isFeedback[u] = false;
+                    }
+                this.arrayCommits = arrayFiltered;
+                this.log.d("Filtered Array: ", this.arrayCommits);
+            }).catch((e) => {
+                this.translateService.get("commits.getCommitsPending").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            });
+            });
+        break;
+            default: this.refresh(); break;
+        }
+    }
 }
