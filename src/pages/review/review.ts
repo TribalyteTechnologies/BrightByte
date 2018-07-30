@@ -103,9 +103,9 @@ export class ReviewPage {
                     }
                 }
                 if (this.projectSelected === this.ALL) {
-                    this.arrayCommits = arrayOfCommits;
+                    this.arrayCommits = arrayOfCommits.reverse();
                 } else {
-                    this.arrayCommits = array;
+                    this.arrayCommits = array.reverse();
                 }
                 let promises = new Array<Promise<void>>();
                 for (let j = 0; j < this.arrayCommits.length; j++) {

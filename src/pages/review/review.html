@@ -21,7 +21,7 @@
             {{ "review.titleList" | translate }}
         </ion-item>
     </ion-list>
-    <ion-list inset>
+    <ion-list inset *ngIf="arrayCommits">
         <button ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="selectUrl(commit, i)">
             <ion-icon name="notifications" *ngIf="isFeedback[i]==true"></ion-icon>
             {{ "review.titleCommit" | translate }}: {{ commit.title }}, {{ "review.author" | translate }}: {{ commit.name }}, Url: {{ commit.url }}

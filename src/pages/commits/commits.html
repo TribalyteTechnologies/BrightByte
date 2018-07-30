@@ -27,7 +27,7 @@
         {{ "commits.allCommits" | translate }}
     </button>
     <ion-list inset>
-        <button ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="selectUrl(commit, i)" class="commit-button">
+        <button ion-item *ngFor="let commit of arrayCommits.reverse(); let i = index" (click)="selectUrl(commit, i)" class="commit-button">
             <ion-icon name="notifications" *ngIf="commit.isReadNeeded"></ion-icon>
             <ion-icon name="checkmark" *ngIf="commit.isPending"></ion-icon>
             <ion-icon name="done-all" *ngIf="!commit.isPending"></ion-icon>
