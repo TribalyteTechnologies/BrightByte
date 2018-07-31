@@ -100,9 +100,9 @@ export class CommitPage {
                     }
                 }
                 if (this.projectSelected === this.ALL) {
-                    this.arrayCommits = arrayOfCommits;
+                    this.arrayCommits = arrayOfCommits.reverse();
                 } else {
-                    this.arrayCommits = array;
+                    this.arrayCommits = array.reverse();
                 }
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
@@ -127,7 +127,7 @@ export class CommitPage {
                                 index++;
                             }
                         }
-                        this.arrayCommits = array;
+                        this.arrayCommits = array.reverse();
                     }).catch((e) => {
                         this.translateService.get("commits.getCommitsPending").subscribe(
                             msg => {
@@ -149,7 +149,7 @@ export class CommitPage {
                                 index++;
                             }
                         }
-                        this.arrayCommits = array;
+                        this.arrayCommits = array.reverse();
                     }).catch((e) => {
                         this.translateService.get("commits.getCommitsPending").subscribe(
                             msg => {
