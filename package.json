@@ -8,15 +8,17 @@
         "start": "npm run ionic:serve",
         "clean": "ionic-app-scripts clean",
         "build": "ionic-app-scripts build",
-        "lint": "ionic-app-scripts lint",
+        "build-browser-release": "ionic cordova build browser --prod --release",
         "ionic:build": "ionic-app-scripts build",
         "ionic:serve": "ionic-app-scripts serve",
-        "ionic": "ionic cordova run browser",
-        "truffle:migrate": "./node_modules/.bin/truffle migrate --reset",
-        "truffle:develop": "./node_modules/.bin/truffle develop",
-        "html-lint": "(htmlhint src || true)",
+        "browser": "ionic cordova run browser",
+        "lint": "IONIC_TYPE_CHECK_ON_LINT=true IONIC_BAIL_ON_LINT_ERROR=true ionic-app-scripts lint",
+        "truffle:migrate": "truffle migrate --reset",
+        "truffle:develop": "truffle develop",
+        "html-lint": "htmlhint src",
         "scss-lint": "sass-lint -v",
-        "linters": "npm run html-lint && npm run scss-lint && npm start"
+        "linters-ci": "npm run html-lint && npm run scss-lint && npm run lint",
+        "prepush": "npm run linters-ci"
     },
     "dependencies": {
         "@angular/common": "5.2.11",
@@ -32,7 +34,6 @@
         "@types/ethereumjs-tx": "1.0.0",
         "cordova-browser": "5.0.3",
         "cordova-plugin-device": "2.0.2",
-        "cordova-plugin-ionic-keyboard": "2.1.2",
         "cordova-plugin-whitelist": "1.3.3",
         "ethereumjs-tx": "1.3.4",
         "ionic-angular": "3.9.2",
@@ -55,15 +56,14 @@
         "sass-lint": "1.12.1",
         "truffle": "4.1.9",
         "types-ethereumjs-util": "0.0.8",
-        "typescript": "2.4.2"
+        "typescript": "2.4.2",
+        "husky": "0.14.3"
     },
     "description": "A Blockchain project",
     "cordova": {
         "plugins": {
             "cordova-plugin-whitelist": {},
-            "cordova-plugin-device": {},
-            "cordova-plugin-ionic-webview": {},
-            "cordova-plugin-ionic-keyboard": {}
+            "cordova-plugin-device": {}
         },
         "platforms": [
             "browser"
