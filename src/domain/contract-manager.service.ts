@@ -33,12 +33,13 @@ export class ContractManagerService {
 
     constructor(
         public http: HttpClient,
-        private web3Service: Web3Service,
+        
         private splitService: SplitService,
+        web3Service: Web3Service,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
-        this.web3 = this.web3Service.getWeb3();
+        this.web3 = web3Service.getWeb3();
     }
 
     public init(user: Account): Promise<ItrbSmartContact> {

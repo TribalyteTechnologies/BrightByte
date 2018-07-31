@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
-import { default as Web3 } from "web3";
 import { TranslateService } from "@ngx-translate/core";
 
 import { NewuserPage } from "../newuser/newuser";
@@ -26,7 +25,6 @@ export class LoginPage {
     public debuggingText: string;
     public isDebugMode: boolean;
     private log: ILogger;
-    private web3: Web3;
 
     constructor(
         public navCtrl: NavController,
@@ -37,7 +35,6 @@ export class LoginPage {
         private web3Service: Web3Service,
         private loginService: LoginService
     ) {
-        this.web3 = this.web3Service.getWeb3();
         this.log = loggerSrv.get("LoginPage");
         this.isDebugMode = AppConfig.LOG_DEBUG;
     }
@@ -75,7 +72,7 @@ export class LoginPage {
                         this.msg = msg;
                     });
             } else {
-                let account = this.web3.eth.accounts.decrypt(this.text, pass);
+                let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
                 this.contractManager.init(account)
