@@ -31,7 +31,7 @@
         {{ "commits.allCommits" | translate }}
     </button>
     <ion-list inset *ngIf="arrayCommits">
-        <button ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="selectUrl(commit, i)">
+        <button ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="selectUrl(commit, arrayCommits.length - i - 1)">
             <ion-icon name="notifications" *ngIf="isFeedback[i]==true"></ion-icon>
             {{ "review.titleCommit" | translate }}: {{ commit.title }}, {{ "review.author" | translate }}: {{ commit.name }}, Url: {{ commit.url }}
             {{ commit.lastModificationDateMs | date:"fullDate" }}
