@@ -1,8 +1,3 @@
-import { Injectable } from "@angular/core";
-
-export interface ILogService {
-    get(name: string): ILogger;
-}
 
 export interface ILogger {
     d: ILogCall; //log
@@ -14,8 +9,8 @@ export interface ILogCall {
     (...args: any[]): void;
 }
 
-@Injectable()
-export class LoggerService implements ILogService {
+//NOTE: not using @Injectable as this class is only instantiated by a custom factory, not Angular
+export class LoggerService {
 
     public static readonly logFnsThis = [console, console, console];
     private logFns = [console.log, console.warn ? console.warn : console.log, console.error ? console.error : console.log];
