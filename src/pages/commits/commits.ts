@@ -121,7 +121,8 @@ export class CommitPage {
                         let index = 0;
                         let array = new Array<UserCommit>();
                         for (let j = 0; j < arrayOfCommits.length; j++) {
-                            if (arrayOfCommits[j].isPending && (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
+                            if (arrayOfCommits[j].isPending && 
+                                (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
                                 array[index] = arrayOfCommits[j];
                                 index++;
                             }
@@ -142,7 +143,8 @@ export class CommitPage {
                         let index = 0;
                         let array = new Array<UserCommit>();
                         for (let j = 0; j < arrayOfCommits.length; j++) {
-                            if (!arrayOfCommits[j].isPending && (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
+                            if (!arrayOfCommits[j].isPending && 
+                                (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
                                 array[index] = arrayOfCommits[j];
                                 index++;
                             }
