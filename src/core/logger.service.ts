@@ -47,7 +47,7 @@ export class LoggerService implements ILogService {
                 w: loggerFns[1],
                 e: loggerFns[2]
             };
-            ret.d("[" + prefix + "] Logger created");
+            ret.d("Logger created");
         }
         return ret;
     }
