@@ -53,6 +53,7 @@ export class CommitDetailsPage {
             });
     }
     public setThumbs(index: number, value: number) {
+        this.isButtonPressArray[index] = true;
         this.log.d("Index of the comment: ", index);
         this.log.d("Value: ", value);
         this.log.d("url: ", this.commitDetails.url);
@@ -67,7 +68,7 @@ export class CommitDetailsPage {
                     throw "Error: commitdetails response is undefine";
                 }
             }).catch((e) => {
-                this.isButtonPressArray[index] = true;
+                this.isButtonPressArray[index] = false;
                 this.log.e("Can't set the vote", e);
                 this.translateService.get("commitDetails.setThumbs").subscribe(
                     msg => {
