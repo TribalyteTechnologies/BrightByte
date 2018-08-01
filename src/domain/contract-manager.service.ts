@@ -146,28 +146,6 @@ export class ContractManagerService {
         });
     }
 
-    public getAllUserEmail(): Promise<string[] | void> {
-        let contractArtifact;
-        return this.initProm.then(contract => {
-            contractArtifact = contract;
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", contractArtifact);
-            return contractArtifact.methods.getNumbers().call();
-        }).then((numberUsers: number[]) => {
-            let promises = new Array<Promise<string>>();
-            for (let i = 0; i < numberUsers[1]; i++) {
-                let promise = contractArtifact.methods.getAllUserEmail(i).call();
-                promises.push(promise);
-            }
-            return Promise.all(promises);
-        })
-
-            .catch(err => {
-                this.log.e("Error getting all user emails :", err);
-                throw err;
-            });
-    }
-
     public getCommitsToReview(): Promise<CommitToReview[]> {
         let contractArtifact;
         return this.initProm.then(contract => {

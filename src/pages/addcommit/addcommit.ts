@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
+import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -20,7 +21,7 @@ export class AddCommitPopover {
     public isTxOngoing = false;
     public msg: string;
     public usersMail = ["", "", "", ""];
-    public arrayEmails: string[];
+    public arrayEmails = Array<string>();
     public arraySearch: string[];
     public userDetails: UserDetails;
     public isShowList = new Array<boolean>();
@@ -39,10 +40,12 @@ export class AddCommitPopover {
         public loginService: LoginService
     ) {
         this.log = loggerSrv.get("AddCommitPage");
-        this.contractManagerService.getAllUserEmail()
-            .then((allEmails: string[]) => {
+        this.contractManagerService.getAllUserReputation()
+            .then((allEmails: UserReputation[]) => {
                 this.log.d("ARRAY Emails: ", allEmails);
-                this.arrayEmails = allEmails;
+                for (let i = 0; i < allEmails.length; i++) {
+                    this.arrayEmails.push(allEmails[i].email);
+                }
             }).catch((e) => {
                 this.translateService.get("addCommit.errorEmails").subscribe(
                     msg => {

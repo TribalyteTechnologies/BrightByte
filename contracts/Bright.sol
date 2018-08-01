@@ -6,14 +6,13 @@ contract Bright {
     mapping (address => UserProfile) private hashUserMap;
     address[] private allUsersArray;
     mapping (string => Commit) private storedData;
-
+    address public owner;
+        
     struct UserProfile {
         string name;
         string email;
         address hash;
         uint numberCommitsReviewedByMe; 
-        uint numberCommitsToReviewByMe; 
-        uint numbermyCommits;
         uint reputation;
         uint numberOfTimesReview;
         uint numberOfPoints;
@@ -44,6 +43,13 @@ contract Bright {
         uint creationDate;
         uint lastModificationDate;
     }
+    constructor () public { 
+        owner = msg.sender;
+    }
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
     function setProfile (string _name, string _email) public {
         //require(_hash == msg.sender);
         if (bytes(hashUserMap[msg.sender].name).length == 0 && bytes(hashUserMap[msg.sender].email).length == 0){ 
@@ -51,8 +57,6 @@ contract Bright {
             hashUserMap[msg.sender].email = _email;
             hashUserMap[msg.sender].hash = msg.sender;
             hashUserMap[msg.sender].numberCommitsReviewedByMe = 0; 
-            hashUserMap[msg.sender].numberCommitsToReviewByMe = 0;
-            hashUserMap[msg.sender].numbermyCommits = 0;
             allUsersArray.push(msg.sender);
         }
         if(bytes(hashUserMap[msg.sender].name).length > 0 || bytes(hashUserMap[msg.sender].email).length > 0){
@@ -61,15 +65,15 @@ contract Bright {
         }
         emit UserProfileSetEvent(_name, msg.sender);
     }
-
+    
     function getUser (address _hash) public view returns (string, string, uint, uint, uint, uint) {
             
         if (msg.sender == _hash){ //If you are calling the function
             return (hashUserMap[_hash].name, 
                     hashUserMap[_hash].email, 
                     hashUserMap[_hash].numberCommitsReviewedByMe, 
-                    hashUserMap[_hash].numberCommitsToReviewByMe, 
-                    hashUserMap[_hash].numbermyCommits, 
+                    hashUserMap[_hash].commitsToReview.length, 
+                    hashUserMap[_hash].userCommits.length, 
                     hashUserMap[_hash].reputation 
             ); 
 
@@ -93,14 +97,12 @@ contract Bright {
         address[] memory array;
         storedData[_url] = Commit(_title, _url, msg.sender, block.timestamp, _project, false, numUsers, isPending, 0, block.timestamp, 0, 0, array);
         hashUserMap[msg.sender].userCommits.push(_url);
-        hashUserMap[msg.sender].numbermyCommits++;
-        
+
         //Send the notificatios to reviewers
         for(uint i = 0; i < allUsersArray.length; i++){
             
             if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser1) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser2) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser3) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser4)){
                 hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
-                hashUserMap[allUsersArray[i]].numberCommitsToReviewByMe++;
                 storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
             }
         }
@@ -127,18 +129,20 @@ contract Bright {
                 storedData[url].lastModificationDate
         );
     }
-    function getAllUserEmail(uint _index) public view returns(string){
-        return hashUserMap[allUsersArray[_index]].email;
+    function getAllUser(uint _index) public view onlyOwner returns (address){
+        return allUsersArray[_index];
     }
-    function getAllUserReputation(uint _index) public view returns(string, uint){ 
+    function getAllUserReputation(uint _index) public view returns(string, uint, uint, uint){ 
         return (hashUserMap[allUsersArray[_index]].email,
-                hashUserMap[allUsersArray[_index]].reputation
+                hashUserMap[allUsersArray[_index]].reputation,
+                hashUserMap[allUsersArray[_index]].numberOfTimesReview,
+                hashUserMap[allUsersArray[_index]].numberOfPoints
         ); 
     }
     function getNumbers() public view returns(uint, uint, uint){ 
-        return (hashUserMap[msg.sender].numbermyCommits,
+        return (hashUserMap[msg.sender].userCommits.length,
                 allUsersArray.length,
-                hashUserMap[msg.sender].numberCommitsToReviewByMe
+                hashUserMap[msg.sender].commitsToReview.length
         );
     }
     function getNumbersNeedUrl(string _url)public view returns (uint, uint){

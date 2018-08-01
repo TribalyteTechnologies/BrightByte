@@ -6,6 +6,7 @@ import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
+import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
     selector: "page-setprofile",
@@ -34,10 +35,14 @@ export class SetProfilePage {
 
     public updateProfile(name: string, mail: string) {
         this.isButtonPressed = true;
-        this.contractManagerService.getAllUserEmail()
-            .then((arrayEmails: string[]) => {
+        this.contractManagerService.getAllUserReputation()
+            .then((arrayEmails: UserReputation[]) => {
+                let emails = new Array<string>();
+                for (let i = 0; i < arrayEmails.length; i++) {
+                    emails.push(arrayEmails[i].email);
+                }
                 this.log.d("ARRAY Emails: ", arrayEmails);
-                let isEmailUsed = (arrayEmails.indexOf(mail) >= 0);
+                let isEmailUsed = (emails.indexOf(mail) >= 0);
                 if (!isEmailUsed) {
                     this.contractManagerService.setProfile(name, mail)
                         .then(txResponse => {
