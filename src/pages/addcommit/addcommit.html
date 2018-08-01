@@ -8,7 +8,7 @@
 
 <ion-content padding>
     <h2>{{ "addCommit.add" | translate }}</h2>
-    <form id="AddForm" [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value, myForm.get('title').value)" novalidate>
+    <form id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value, myForm.get('title').value)" novalidate>
         <ion-item>
             <ion-label stacked>{{ "addCommit.titleCommit" | translate }}:</ion-label>
             <ion-input formControlName="title" type="text" placeholder="{{ 'addCommit.inputTitle' | translate }}"></ion-input>
@@ -42,7 +42,7 @@
     <button ion-button (click)="addInput()" *ngIf="isAddInputAllowed">
         <ion-icon name="add-circle"></ion-icon>
     </button>
-    <button ion-button type="submit" form="AddForm" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
+    <button ion-button type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
 
 
 </ion-content>
