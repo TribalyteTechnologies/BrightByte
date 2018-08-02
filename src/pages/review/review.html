@@ -21,13 +21,13 @@
             {{ "review.titleList" | translate }}
         </ion-item>
     </ion-list>
-    <button ion-button (click)="pendingReviewedSelector(0)">
+    <button ion-button (click)="setReviewFilter(0)">
         {{ "commits.pending" | translate }}
     </button>
-    <button ion-button (click)="pendingReviewedSelector(1)">
+    <button ion-button (click)="setReviewFilter(1)">
         {{ "commits.reviewed" | translate }}
     </button>
-    <button ion-button (click)="pendingReviewedSelector()">
+    <button ion-button (click)="setReviewFilter()">
         {{ "commits.allCommits" | translate }}
     </button>
     <ion-list inset *ngIf="arrayCommits">

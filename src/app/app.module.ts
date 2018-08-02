@@ -1,6 +1,6 @@
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { IonicApp, IonicModule, IonicErrorHandler } from "ionic-angular";
+import { IonicApp, IonicModule } from "ionic-angular";
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
@@ -78,7 +78,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     ],
     providers: [
         AppConfig,
-        { provide: ErrorHandler, useClass: IonicErrorHandler },
         { provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG) },
         Web3Service,
         LoginService,

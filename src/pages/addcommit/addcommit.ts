@@ -27,7 +27,7 @@ export class AddCommitPopover {
     public isShowList = new Array<boolean>();
     public myForm: FormGroup;
     private log: ILogger;
-    private initProm;
+    private userDetailsProm: Promise<UserDetails>;
 
     constructor(
         public navCtrl: NavController,
@@ -41,35 +41,30 @@ export class AddCommitPopover {
     ) {
         this.log = loggerSrv.get("AddCommitPage");
         this.contractManagerService.getAllUserReputation()
-            .then((allEmails: UserReputation[]) => {
-                this.log.d("ARRAY Emails: ", allEmails);
-                for (let i = 0; i < allEmails.length; i++) {
-                    this.arrayEmails.push(allEmails[i].email);
-                }
-            }).catch((e) => {
-                this.translateService.get("addCommit.errorEmails").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-            });
+        .then((allEmails: UserReputation[]) => {
+            this.log.d("ARRAY Emails: ", allEmails);
+            for (let i = 0; i < allEmails.length; i++) {
+                this.arrayEmails.push(allEmails[i].email);
+            }
+        }).catch((e) => {
+            this.translateService.get("addCommit.errorEmails").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+        });
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
             Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/[a-z0-9]+\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
             title: ["", [Validators.required]]
         });
-        this.initProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address)
-            .then((userDetails: UserDetails) => {
-                this.userDetails = userDetails;
-            }).catch((e) => {
-                this.log.d("Error checking if you are trying to review your own commit: ", e);
-            });
+        this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
     }
     public addCommit(url: string, title: string) {
         this.isTxOngoing = true;
         this.msg = "";
         let isPermitted = true;
-        this.initProm.then(() => {
+        this.userDetailsProm.then((userDetails: UserDetails) => {
             if (this.usersMail[0] === "" && this.usersMail[1] === "" && this.usersMail[2] === "" && this.usersMail[3] === "") {
                 this.translateService.get("addCommit.emptyInput").subscribe(
                     msg => {
@@ -105,7 +100,7 @@ export class AddCommitPopover {
                         this.isTxOngoing = false;
                     }
                 }
-                if (this.usersMail[i] === this.userDetails.email) {
+                if (this.usersMail[i] === userDetails.email) {
                     this.translateService.get("addCommit.ownEmail").subscribe(
                         msg => {
                             this.msg = msg;
@@ -117,40 +112,40 @@ export class AddCommitPopover {
             }
             if (isPermitted) {
                 this.contractManagerService.getDetailsCommits(url)
-                    .then((detailsCommits) => {
-                        if (detailsCommits.url !== "") {
-                            this.isTxOngoing = false;
-                            this.translateService.get("addCommit.urlDuplicated").subscribe(
-                                msg => {
-                                    this.msg = msg;
-                                    this.log.w(msg);
-                                });
-                        } else {
-                            this.contractManagerService.addCommit(url, title, this.usersMail)
-                                .then(txResponse => {
-                                    this.log.d("Contract manager response: ", txResponse);
-                                    if (txResponse) {
-                                        this.viewCtrl.dismiss();
-                                    } else {
-                                        throw "Error: addcommit response is undefined";
-                                    }
-                                }).catch((e) => {
-                                    this.isTxOngoing = false;
-                                    this.translateService.get("addCommit.addingCommit").subscribe(
-                                        msg => {
-                                            this.msg = msg;
-                                            this.log.e(msg, e);
-                                        });
-                                });
-                        }
-                    }).catch((e) => {
+                .then((detailsCommits) => {
+                    if (detailsCommits.url) {
                         this.isTxOngoing = false;
-                        this.translateService.get("addCommit.commitDetails").subscribe(
+                        this.translateService.get("addCommit.urlDuplicated").subscribe(
                             msg => {
                                 this.msg = msg;
-                                this.log.e(msg, e);
+                                this.log.w(msg);
                             });
-                    });
+                    } else {
+                        this.contractManagerService.addCommit(url, title, this.usersMail)
+                            .then(txResponse => {
+                                this.log.d("Contract manager response: ", txResponse);
+                                if (txResponse) {
+                                    this.viewCtrl.dismiss();
+                                } else {
+                                    throw "Error: addcommit response is undefined";
+                                }
+                            }).catch((e) => {
+                                this.isTxOngoing = false;
+                                this.translateService.get("addCommit.addingCommit").subscribe(
+                                    msg => {
+                                        this.msg = msg;
+                                        this.log.e(msg, e);
+                                    });
+                            });
+                    }
+                }).catch((e) => {
+                    this.isTxOngoing = false;
+                    this.translateService.get("addCommit.commitDetails").subscribe(
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
+                        });
+                });
             }
         });
     }
@@ -171,23 +166,24 @@ export class AddCommitPopover {
     }
     public setEmailFromList(num: number, item: string) {
         let isDuplicated = false;
-        this.initProm.then(() => {
-            for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
-                if (item === this.userDetails.email) {
-                    this.translateService.get("addCommit.ownEmail").subscribe(
-                        msg => {
-                            this.msg = msg;
-                        });
-                    isDuplicated = true;
-                    break;
-                }
-                if (this.usersMail[i] === item) {
-                    this.translateService.get("addCommit.emailDuplicated").subscribe(
-                        msg => {
-                            this.msg = msg;
-                        });
-                    isDuplicated = true;
-                    break;
+        this.userDetailsProm.then((userDetails: UserDetails) => {
+            if (item === userDetails.email) {
+                this.translateService.get("addCommit.ownEmail").subscribe(
+                    msg => {
+                        this.msg = msg;
+                    });
+                isDuplicated = true;
+            }
+            if (!isDuplicated) {
+                for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
+                    if (this.usersMail[i] === item) {
+                        this.translateService.get("addCommit.emailDuplicated").subscribe(
+                            msg => {
+                                this.msg = msg;
+                            });
+                        isDuplicated = true;
+                        break;
+                    }
                 }
             }
             if (!isDuplicated) {

@@ -33,7 +33,7 @@ export class ContractManagerService {
 
     constructor(
         public http: HttpClient,
-        
+
         private splitService: SplitService,
         web3Service: Web3Service,
         loggerSrv: LoggerService
@@ -134,9 +134,9 @@ export class ContractManagerService {
             let promises = new Array<Promise<UserCommit>>();
             for (let i = 0; i < numberOfCommits[0]; i++) {
                 let promise = contractArtifact.methods.getUserCommits(i).call()
-                    .then((commitsVals: Array<any>) => {
-                        return UserCommit.fromSmartContract(commitsVals);
-                    });
+                .then((commitsVals: Array<any>) => {
+                    return UserCommit.fromSmartContract(commitsVals);
+                });
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -158,9 +158,9 @@ export class ContractManagerService {
             let promises = new Array<Promise<CommitToReview>>();
             for (let i = 0; i < numberOfCommits[2]; i++) {
                 let promise = contractArtifact.methods.getCommitsToReviewByMe(i).call()
-                    .then((commitsVals: Array<any>) => {
-                        return CommitToReview.fromSmartContract(commitsVals);
-                    });
+                .then((commitsVals: Array<any>) => {
+                    return CommitToReview.fromSmartContract(commitsVals);
+                });
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -283,9 +283,9 @@ export class ContractManagerService {
             let promises = new Array<Promise<UserReputation>>();
             for (let i = 0; i < numberUsers[1]; i++) {
                 let promise = contractArtifact.methods.getAllUserReputation(i).call()
-                    .then((commitsVals: Array<any>) => {
-                        return UserReputation.fromSmartContract(commitsVals);
-                    });
+                .then((commitsVals: Array<any>) => {
+                    return UserReputation.fromSmartContract(commitsVals);
+                });
                 promises.push(promise);
             }
             return Promise.all(promises);

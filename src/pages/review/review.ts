@@ -40,107 +40,108 @@ export class ReviewPage {
     }
     public selectUrl(commit: CommitToReview, index: number) {
         let project = this.splitService.getProject(commit.url);
-        let detailCommit;
+        let commitDetails;
         this.contractManagerService.getDetailsCommits(commit.url)
-            .then((detailsCommit: CommitDetails) => {
-                detailCommit = detailsCommit;
-                this.log.d("Details commits: ", detailsCommit);
-                this.log.d("Index: ", index);
-                this.isFeedback[index] = false;
-                return this.contractManagerService.getCommentsOfCommit(commit.url);
-            }).catch((e) => {
-                this.translateService.get("review.getDetails").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-            }).then((arrayOfComments: CommitComment[]) => {
-                let isReviewed = false;
-                let comment: CommitComment;
-                for (let i = 0; i < arrayOfComments.length; i++) {
-                    if (arrayOfComments[i].user === this.loginService.getAccount().address) {
-                        isReviewed = true;
-                        comment = arrayOfComments[i];
-                    }
-                }
-                this.log.d("Comment: ", comment);
-                this.navCtrl.push(CommitReviewPage, {
-                    commitDetails: detailCommit,
-                    commitProject: project,
-                    indexArray: index,
-                    url: commit.url,
-                    isReviewed: isReviewed,
-                    comment: comment
+        .then((detailsCommit: CommitDetails) => {
+            commitDetails = detailsCommit;
+            this.log.d("Details commits: ", detailsCommit);
+            this.log.d("Index: ", index);
+            this.isFeedback[index] = false;
+            return this.contractManagerService.getCommentsOfCommit(commit.url);
+        }).catch((e) => {
+            this.translateService.get("review.getDetails").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
                 });
-            }).catch((e) => {
-                this.translateService.get("commitDetails.gettingComments").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-                return Promise.reject(e);
+        }).then((arrayOfComments: CommitComment[]) => {
+            let isReviewed = false;
+            let comment: CommitComment;
+            for (let i = 0; i < arrayOfComments.length; i++) {
+                if (arrayOfComments[i].user === this.loginService.getAccount().address) {
+                    isReviewed = true;
+                    comment = arrayOfComments[i];
+                    break;
+                }
+            }
+            this.log.d("Comment: ", comment);
+            this.navCtrl.push(CommitReviewPage, {
+                commitDetails: commitDetails,
+                commitProject: project,
+                indexArray: index,
+                url: commit.url,
+                isReviewed: isReviewed,
+                comment: comment
             });
+        }).catch((e) => {
+            this.translateService.get("commitDetails.gettingComments").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+            return Promise.reject(e);
+        });
     }
     public refresh() {
         this.contractManagerService.getCommitsToReview()
-            .then((arrayOfCommits: CommitToReview[]) => {
-                this.log.d("Array of commits: ", arrayOfCommits);
-                let projects = new Array<string>();
-                for (let commitVals of arrayOfCommits) {
-                    let commitProject = commitVals.project;
-                    if (projects.indexOf(commitProject) < 0) {
-                        projects.push(commitProject);
-                    }
+        .then((arrayOfCommits: CommitToReview[]) => {
+            this.log.d("Array of commits: ", arrayOfCommits);
+            let projects = new Array<string>();
+            for (let commitVals of arrayOfCommits) {
+                let commitProject = commitVals.project;
+                if (projects.indexOf(commitProject) < 0) {
+                    projects.push(commitProject);
                 }
-                this.projects = projects;
-                this.log.d("Diferent projects: ", this.projects);
-                let index = 0;
-                let array = new Array<CommitToReview>();
-                for (let j = 0; j < arrayOfCommits.length; j++) {
-                    if (this.projectSelected === arrayOfCommits[j].project) {
-                        array[index] = arrayOfCommits[j];
-                        index++;
-                    }
+            }
+            this.projects = projects;
+            this.log.d("Diferent projects: ", this.projects);
+            let index = 0;
+            let array = new Array<CommitToReview>();
+            for (let j = 0; j < arrayOfCommits.length; j++) {
+                if (this.projectSelected === arrayOfCommits[j].project) {
+                    array[index] = arrayOfCommits[j];
+                    index++;
                 }
-                if (this.projectSelected === this.ALL) {
-                    this.arrayCommits = arrayOfCommits.reverse();
-                } else {
-                    this.arrayCommits = array.reverse();
-                }
-                let promises = new Array<Promise<void>>();
-                for (let j = 0; j < this.arrayCommits.length; j++) {
-                    this.isFeedback[j] = false;
-                    let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
-                        .then((notifyArray: boolean[]) => {
-                            this.log.d("Array of Bells: ", notifyArray);
-                            for (let i = 0; i < notifyArray.length; i++) {
-                                if (notifyArray[i] === true) {
-                                    this.isFeedback[j] = true;
-                                }
+            }
+            if (this.projectSelected === this.ALL) {
+                this.arrayCommits = arrayOfCommits.reverse();
+            } else {
+                this.arrayCommits = array.reverse();
+            }
+            let promises = new Array<Promise<void>>();
+            for (let j = 0; j < this.arrayCommits.length; j++) {
+                this.isFeedback[j] = false;
+                let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
+                    .then((notifyArray: boolean[]) => {
+                        this.log.d("Array of Bells: ", notifyArray);
+                        for (let i = 0; i < notifyArray.length; i++) {
+                            if (notifyArray[i] === true) {
+                                this.isFeedback[j] = true;
                             }
-                        }).catch((e) => {
-                            this.translateService.get("review.getCommits").subscribe(
-                                msg => {
-                                    this.msg = msg;
-                                    this.log.e(msg, e);
-                                });
-                            return Promise.reject(e);
-                        });
-                    promises.push(promise);
-                }
-
-
-                return Promise.all(promises);
-            }).catch((e) => {
-                this.translateService.get("review.getCommits").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
+                        }
+                    }).catch((e) => {
+                        this.translateService.get("review.getCommits").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                        return Promise.reject(e);
                     });
-            });
+                promises.push(promise);
+            }
+
+
+            return Promise.all(promises);
+        }).catch((e) => {
+            this.translateService.get("review.getCommits").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+        });
     }
-    public pendingReviewedSelector(value: number) {
-        switch (value) {
+    public setReviewFilter(filterId: number) {
+        switch (filterId) {
             case 0:
                 this.contractManagerService.getCommitsToReview()
                     .then((arrayOfCommits: CommitToReview[]) => {
