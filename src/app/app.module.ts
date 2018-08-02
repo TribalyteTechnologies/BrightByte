@@ -25,6 +25,7 @@ import { Web3Service } from "../core/web3.service";
 import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../domain/contract-manager.service";
 import { SplitService } from "../domain/split.service";
+import { ErrorHandlerService } from "../domain/error-handler.service";
 
 // Components
 import { BrightByteApp } from "./app.component";
@@ -82,6 +83,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         Web3Service,
         LoginService,
         HttpClientModule,
+        {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         SplitService
     ]
