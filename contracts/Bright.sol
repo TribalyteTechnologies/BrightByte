@@ -101,7 +101,10 @@ contract Bright {
         //Send the notificatios to reviewers
         for(uint i = 0; i < allUsersArray.length; i++){
             
-            if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser1) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser2) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser3) || keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser4)){
+            if(keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser1) ||
+            keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser2) ||
+            keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser3) ||
+            keccak256(hashUserMap[allUsersArray[i]].email) == keccak256(_emailuser4)){
                 hashUserMap[allUsersArray[i]].commitsToReview.push(_url); 
                 storedData[_url].commitReviewFeedback.push(hashUserMap[allUsersArray[i]].hash);
             }
