@@ -64,7 +64,8 @@
         "totalCommits": "Total number of my commits",
         "reputation": "Reputation",
         "getReputation": "Error getting reputations",
-        "has": "has"
+        "has": "has",
+        "reviewsReceived": "reviews received"
     },
     "review": {
         "getCommits": "Error getting commits to review",

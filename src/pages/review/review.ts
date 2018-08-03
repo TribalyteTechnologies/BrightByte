@@ -54,6 +54,7 @@ export class ReviewPage {
                     this.msg = msg;
                     this.log.e(msg, e);
                 });
+            throw e;
         }).then((arrayOfComments: CommitComment[]) => {
             let isReviewed = false;
             let comment: CommitComment;
@@ -93,40 +94,38 @@ export class ReviewPage {
                     projects.push(commitProject);
                 }
             }
+        
             this.projects = projects;
             this.log.d("Diferent projects: ", this.projects);
             let index = 0;
-            let array = new Array<CommitToReview>();
+            let commitsToReviewArray = new Array<CommitToReview>();
             for (let j = 0; j < arrayOfCommits.length; j++) {
                 if (this.projectSelected === arrayOfCommits[j].project) {
-                    array[index] = arrayOfCommits[j];
+                    commitsToReviewArray[index] = arrayOfCommits[j];
                     index++;
                 }
             }
-            if (this.projectSelected === this.ALL) {
-                this.arrayCommits = arrayOfCommits.reverse();
-            } else {
-                this.arrayCommits = array.reverse();
-            }
+        
+            this.arrayCommits = (this.projectSelected === this.ALL ? arrayOfCommits : commitsToReviewArray).reverse();
             let promises = new Array<Promise<void>>();
             for (let j = 0; j < this.arrayCommits.length; j++) {
                 this.isFeedback[j] = false;
                 let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
-                    .then((notifyArray: boolean[]) => {
-                        this.log.d("Array of Bells: ", notifyArray);
-                        for (let i = 0; i < notifyArray.length; i++) {
-                            if (notifyArray[i] === true) {
-                                this.isFeedback[j] = true;
-                            }
+                .then((notifyArray: boolean[]) => {
+                    this.log.d("Array of Bells: ", notifyArray);
+                    for (let i = 0; i < notifyArray.length; i++) {
+                        if (notifyArray[i] === true) {
+                            this.isFeedback[j] = true;
                         }
-                    }).catch((e) => {
-                        this.translateService.get("review.getCommits").subscribe(
-                            msg => {
-                                this.msg = msg;
-                                this.log.e(msg, e);
-                            });
-                        return Promise.reject(e);
-                    });
+                    }
+                }).catch((e) => {
+                    this.translateService.get("review.getCommits").subscribe(
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
+                        });
+                    return Promise.reject(e);
+                });
                 promises.push(promise);
             }
 

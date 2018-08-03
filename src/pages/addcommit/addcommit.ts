@@ -21,9 +21,8 @@ export class AddCommitPopover {
     public isTxOngoing = false;
     public msg: string;
     public usersMail = ["", "", "", ""];
-    public arrayEmails = Array<string>();
+    public emailsArray = new Array<string>();
     public arraySearch: string[];
-    public userDetails: UserDetails;
     public isShowList = new Array<boolean>();
     public myForm: FormGroup;
     private log: ILogger;
@@ -41,11 +40,9 @@ export class AddCommitPopover {
     ) {
         this.log = loggerSrv.get("AddCommitPage");
         this.contractManagerService.getAllUserReputation()
-        .then((allEmails: UserReputation[]) => {
+        .then((allEmails: Array<UserReputation>) => {
             this.log.d("ARRAY Emails: ", allEmails);
-            for (let i = 0; i < allEmails.length; i++) {
-                this.arrayEmails.push(allEmails[i].email);
-            }
+            this.emailsArray = allEmails.map(userRep => userRep.email);
         }).catch((e) => {
             this.translateService.get("addCommit.errorEmails").subscribe(
                 msg => {
@@ -76,8 +73,8 @@ export class AddCommitPopover {
             for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
                 if (this.usersMail[i] !== "") {
                     let isValid = false;
-                    for (let y = 0; y < this.arrayEmails.length; y++) {
-                        if (this.usersMail[i] === this.arrayEmails[y]) {
+                    for (let y = 0; y < this.emailsArray.length; y++) {
+                        if (this.usersMail[i] === this.emailsArray[y]) {
                             isValid = true;
                         }
                     }
@@ -158,7 +155,7 @@ export class AddCommitPopover {
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
         if (val && val.trim()) {
-            this.arraySearch = this.arrayEmails.filter((item) => {
+            this.arraySearch = this.emailsArray.filter((item) => {
                 return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
             });
         }
@@ -175,15 +172,9 @@ export class AddCommitPopover {
                 isDuplicated = true;
             }
             if (!isDuplicated) {
-                for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
-                    if (this.usersMail[i] === item) {
-                        this.translateService.get("addCommit.emailDuplicated").subscribe(
-                            msg => {
-                                this.msg = msg;
-                            });
-                        isDuplicated = true;
-                        break;
-                    }
+                isDuplicated = (this.usersMail.indexOf(item) >= 0);
+                if(isDuplicated){
+                    this.translateService.get("addCommit.emailDuplicated").subscribe(msg => this.msg = msg);
                 }
             }
             if (!isDuplicated) {

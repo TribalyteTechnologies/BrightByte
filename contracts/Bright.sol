@@ -6,7 +6,7 @@ contract Bright {
     mapping (address => UserProfile) private hashUserMap;
     address[] private allUsersArray;
     mapping (string => Commit) private storedData;
-    address public owner;
+    address private owner;
         
     struct UserProfile {
         string name;

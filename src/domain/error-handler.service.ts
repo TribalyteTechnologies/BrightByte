@@ -5,19 +5,21 @@ import { AlertController } from "ionic-angular";
 export class ErrorHandlerService implements ErrorHandler {
     private log: ILogger;
     constructor(loggerSrv: LoggerService, public alertCtrl: AlertController){ 
-        this.log = loggerSrv.get("LoginPage");
+        this.log = loggerSrv.get("ErrorHandlerService");
 
     }
     
     public handleError(error: any): void {
         if(error){
-            this.log.d("Uncatched error: ", error);
+            this.log.e("Uncatched error: ", error.toString());
             const alert = this.alertCtrl.create({
                 title: "Upss, Something has happened",
-                subTitle: error,
+                subTitle: error.toString(),
                 buttons: ["OK"]
               });
             alert.present();
+        } else {
+            this.log.e("No error object to handle");
         }
     }    
 }

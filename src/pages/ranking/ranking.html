@@ -15,8 +15,8 @@
     <p>{{ "ranking.reputation" | translate }}: {{ (userDetails.reputation) }}</p>
     <p class="error-message">{{ msg }}</p>
     <ion-list inset>
-        <button ion-item *ngFor="let user of usersRep | slice:0:numberUserList;">
-            {{ user.email }} {{ "ranking.has" | translate }} {{ user.reputation }} {{ "commitDetails.stars" | translate }} ({{ user.numReviews }})
+        <button ion-item *ngFor="let user of usersRep">
+            {{ user.email }} {{ "ranking.has" | translate }} {{ user.reputation }} {{ "commitDetails.stars" | translate }} ({{ user.numReviews }} {{ "ranking.reviewsReceived" | translate }})
         </button>
     </ion-list>
 </ion-content>

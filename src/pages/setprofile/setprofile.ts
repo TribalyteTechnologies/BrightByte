@@ -36,44 +36,39 @@ export class SetProfilePage {
     public updateProfile(name: string, mail: string) {
         this.isButtonPressed = true;
         this.contractManagerService.getAllUserReputation()
-            .then((arrayEmails: UserReputation[]) => {
-                let emails = new Array<string>();
-                for (let i = 0; i < arrayEmails.length; i++) {
-                    emails.push(arrayEmails[i].email);
-                }
-                this.log.d("ARRAY Emails: ", arrayEmails);
-                let isEmailUsed = (emails.indexOf(mail) >= 0);
-                if (!isEmailUsed) {
-                    this.contractManagerService.setProfile(name, mail)
-                        .then(txResponse => {
-                            this.log.d("Contract manager response: ", txResponse);
-                            if (txResponse) {
-                                this.navCtrl.push(TabsPage);
-                            } else {
-                                throw "Error: setreview response is undefine";
-                            }
-                        }).catch((e) => {
-                            this.translateService.get("setProfile.tx").subscribe(
-                                msg => {
-                                    this.msg = msg;
-                                    this.log.e(msg, e);
-                                });
-                        });
-                } else {
-                    this.isButtonPressed = false;
-                    this.translateService.get("setProfile.emailUsed").subscribe(
-                        msg => {
-                            this.msg = msg;
-                        });
-                }
-            }).catch((e) => {
-                this.translateService.get("setProfile.getEmails").subscribe(
+        .then((arrayEmails: UserReputation[]) => {
+            let emails = arrayEmails.map(ur => ur.email);
+            this.log.d("ARRAY Emails: ", arrayEmails);
+            let isEmailUsed = (emails.indexOf(mail) >= 0);
+            if (!isEmailUsed) {
+                this.contractManagerService.setProfile(name, mail)
+                    .then(txResponse => {
+                        this.log.d("Contract manager response: ", txResponse);
+                        if (txResponse) {
+                            this.navCtrl.push(TabsPage);
+                        } else {
+                            throw "Error: setreview response is undefine";
+                        }
+                    }).catch((e) => {
+                        this.translateService.get("setProfile.tx").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                    });
+            } else {
+                this.isButtonPressed = false;
+                this.translateService.get("setProfile.emailUsed").subscribe(
                     msg => {
                         this.msg = msg;
-                        this.log.e(msg, e);
                     });
-            });
-
-
+            }
+        }).catch((e) => {
+            this.translateService.get("setProfile.getEmails").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+        });
     }
 }
