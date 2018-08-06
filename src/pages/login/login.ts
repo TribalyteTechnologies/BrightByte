@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
 import { NavController } from "ionic-angular";
-import { HttpClient } from "@angular/common/http";
 import { TranslateService } from "@ngx-translate/core";
 
 import { NewuserPage } from "../newuser/newuser";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
+import { AppVersionService } from "../../core/app-version.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { AppConfig } from "../../app.config";
 import { SetProfilePage } from "../../pages/setprofile/setprofile";
@@ -24,19 +24,24 @@ export class LoginPage {
     public text: any;
     public debuggingText: string;
     public isDebugMode: boolean;
+    public appVersion = "DEV";
     private log: ILogger;
 
     constructor(
-        public navCtrl: NavController,
-        public http: HttpClient,
-        public translateService: TranslateService,
-        loggerSrv: LoggerService,
+        private navCtrl: NavController,
+        private translateService: TranslateService,
         private contractManager: ContractManagerService,
         private web3Service: Web3Service,
-        private loginService: LoginService
+        private loginService: LoginService,
+        loggerSrv: LoggerService,
+        appVersionSrv: AppVersionService
     ) {
         this.log = loggerSrv.get("LoginPage");
         this.isDebugMode = AppConfig.LOG_DEBUG;
+        appVersionSrv.getAppVersion().subscribe(
+            ver => this.appVersion = ver,
+            err => this.log.w("No app version could be detected")
+        );
     }
 
     public openFile = (event: Event) => {
