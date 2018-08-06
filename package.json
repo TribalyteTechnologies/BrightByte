@@ -15,6 +15,7 @@
         "lint": "IONIC_TYPE_CHECK_ON_LINT=true IONIC_BAIL_ON_LINT_ERROR=true ionic-app-scripts lint",
         "truffle:migrate": "truffle migrate --reset",
         "truffle:develop": "truffle develop",
+        "truffle:custom-deploy": "ACCOUNT_PASSWORD=$ACCOUNT_PASSWORD truffle migrate --network custom --reset",
         "html-lint": "htmlhint src",
         "scss-lint": "sass-lint -v",
         "linters-ci": "npm run html-lint && npm run scss-lint && npm run lint",
