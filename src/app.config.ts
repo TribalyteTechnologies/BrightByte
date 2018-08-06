@@ -2,8 +2,8 @@ import { default as NETWORK_CONFIG_CUSTOM } from "./app.config.custom";
 
 export class AppConfig {
 
-    public static readonly LOG_DEBUG = true;
-    public static readonly IS_CUSTOM_NET = false;
+    public static readonly LOG_DEBUG = false;
+    public static readonly IS_CUSTOM_NET = true;
 
     public static readonly DEFAULT_LANGUAGE = "en";
     public static readonly DEFAULT_DATE_FORMAT = "en-EU";
