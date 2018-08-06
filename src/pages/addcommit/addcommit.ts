@@ -171,13 +171,11 @@ export class AddCommitPopover {
                     });
                 isDuplicated = true;
             }
-            if (!isDuplicated) {
-                isDuplicated = (this.usersMail.indexOf(item) >= 0);
-                if(isDuplicated){
-                    this.translateService.get("addCommit.emailDuplicated").subscribe(msg => this.msg = msg);
-                }
-            }
-            if (!isDuplicated) {
+            
+            isDuplicated = isDuplicated || (this.usersMail.indexOf(item) >= 0);
+            if(isDuplicated){
+                this.translateService.get("addCommit.emailDuplicated").subscribe(msg => this.msg = msg);
+            }else{
                 this.msg = "";
                 this.usersMail[num] = item;
                 this.isShowList[num] = false;

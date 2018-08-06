@@ -42,20 +42,20 @@ export class SetProfilePage {
             let isEmailUsed = (emails.indexOf(mail) >= 0);
             if (!isEmailUsed) {
                 this.contractManagerService.setProfile(name, mail)
-                    .then(txResponse => {
-                        this.log.d("Contract manager response: ", txResponse);
-                        if (txResponse) {
-                            this.navCtrl.push(TabsPage);
-                        } else {
-                            throw "Error: setreview response is undefine";
-                        }
-                    }).catch((e) => {
-                        this.translateService.get("setProfile.tx").subscribe(
-                            msg => {
-                                this.msg = msg;
-                                this.log.e(msg, e);
-                            });
-                    });
+                .then(txResponse => {
+                    this.log.d("Contract manager response: ", txResponse);
+                    if (txResponse) {
+                        this.navCtrl.push(TabsPage);
+                    } else {
+                        throw "Error: setreview response is undefine";
+                    }
+                }).catch((e) => {
+                    this.translateService.get("setProfile.tx").subscribe(
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
+                        });
+                });
             } else {
                 this.isButtonPressed = false;
                 this.translateService.get("setProfile.emailUsed").subscribe(

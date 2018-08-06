@@ -54,7 +54,7 @@ export class ReviewPage {
                     this.msg = msg;
                     this.log.e(msg, e);
                 });
-            throw e;
+            return Promise.reject(e);
         }).then((arrayOfComments: CommitComment[]) => {
             let isReviewed = false;
             let comment: CommitComment;
