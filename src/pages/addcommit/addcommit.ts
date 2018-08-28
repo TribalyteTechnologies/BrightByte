@@ -151,14 +151,23 @@ export class AddCommitPopover {
         for (let i = 0; i < 4; i++) {
             this.isShowList[i] = false;
         }
+        let array;
         // set val to the value of the ev target
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
         if (val && val.trim()) {
-            this.arraySearch = this.emailsArray.filter((item) => {
+            array = this.emailsArray.filter((item) => {
                 return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
             });
+            this.userDetailsProm.then((userDetails: UserDetails) => {
+                array.find((value, index) => {
+                    if (value == userDetails.email) {
+                        array.splice(index,1);
+                    }
+                });
+            });
         }
+        this.arraySearch = array;
         this.isShowList[id] = true;
     }
     public setEmailFromList(num: number, item: string) {
