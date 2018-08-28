@@ -8,8 +8,9 @@
 
 <ion-content padding>
     <a target="_blank" href="{{ commitDetails.url }}">{{ commitDetails.url }}</a>
+    <p>{{ "commitDetails.titleCommit" | translate }}: {{ commitDetails.title }}</p>
     <p>{{ "commitDetails.author" | translate }}: {{ commitDetails.author }}</p>
-    <p>{{ "commitDetails.date" | translate }}: {{ commitDetails.timestampMs | date:"fullDate" }}</p>
+    <p>{{ "commitDetails.date" | translate }}: {{ commitDetails.timestampMs | date : "HH:mm d/M/yyyy" }}</p>
     <p>{{ "commitDetails.project" | translate }}: {{ project }}</p>
     <p>{{ "commitDetails.nReviews" | translate }}: {{ commitDetails.numberReviews }}</p>
     <p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails.isPending }}</p>
@@ -33,7 +34,7 @@
     </button>
     <ion-item *ngIf="isReviewed && comment">
         <p>{{ comment.name }} {{ "commitDetails.commented" | translate }} ({{ comment.score }} {{ "commitDetails.stars" | translate }}):
-            {{ comment.lastModificationDateMs | date:"fullDate" }}
+            {{ comment.lastModificationDateMs | date : "HH:mm d/M/yyyy" }}
             <ion-icon name="thumbs-up" *ngIf="comment.vote==2"></ion-icon>
             <ion-icon name="thumbs-down" *ngIf="comment.vote==1"></ion-icon>
         </p>
