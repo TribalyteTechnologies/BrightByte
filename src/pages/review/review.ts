@@ -57,22 +57,19 @@ export class ReviewPage {
             throw e;
         }).then((arrayOfComments: CommitComment[]) => {
             let isReviewed = false;
-            let comment: CommitComment;
             for (let i = 0; i < arrayOfComments.length; i++) {
                 if (arrayOfComments[i].user === this.loginService.getAccount().address) {
                     isReviewed = true;
-                    comment = arrayOfComments[i];
                     break;
                 }
             }
-            this.log.d("Comment: ", comment);
             this.navCtrl.push(CommitReviewPage, {
                 commitDetails: commitDetails,
                 commitProject: project,
                 indexArray: index,
                 url: commit.url,
                 isReviewed: isReviewed,
-                comment: comment
+                comments: arrayOfComments
             });
         }).catch((e) => {
             this.translateService.get("commitDetails.gettingComments").subscribe(

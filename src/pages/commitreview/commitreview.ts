@@ -17,7 +17,7 @@ export class CommitReviewPage {
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public msg: string;
-    public comment: CommitComment;
+    public comments: CommitComment[];
     public url: string;
     public isButtonDisabled = false;
     public msg1: string;
@@ -37,7 +37,7 @@ export class CommitReviewPage {
         this.indexArray = navParams.get("indexArray");
         this.url = navParams.get("url");
         this.isReviewed = navParams.get("isReviewed");
-        this.comment = navParams.get("comment");
+        this.comments = navParams.get("comments");
         this.project = navParams.get("commitProject");
         this.log.d("Details Object: ", this.commitDetails);
     }
