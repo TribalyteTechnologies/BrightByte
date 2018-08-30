@@ -184,7 +184,7 @@ contract Bright {
         storedData[url].isReadNeeded = true;
         storedData[url].currentNumberReviews++;
         storedData[url].lastModificationDate = block.timestamp;
-        if(storedData[url].currentNumberReviews==storedData[url].numberReviews){
+        if(storedData[url].currentNumberReviews>=storedData[url].numberReviews){
             storedData[url].isPending = false;
         }
         //Reputation. The front end has to divide the result by 100

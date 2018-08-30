@@ -35,6 +35,7 @@ export class CommitReviewPage {
         this.log = loggerSrv.get("CommitReviewPage");
         this.commitDetails = navParams.get("commitDetails");
         this.indexArray = navParams.get("indexArray");
+        this.log.d("List of commits to review position: ", this.indexArray);
         this.url = navParams.get("url");
         this.isReviewed = navParams.get("isReviewed");
         this.comments = navParams.get("comments");

@@ -161,8 +161,8 @@ export class AddCommitPopover {
             });
             this.userDetailsProm.then((userDetails: UserDetails) => {
                 array.find((value, index) => {
-                    if (value == userDetails.email) {
-                        array.splice(index,1);
+                    if (value === userDetails.email) {
+                        array.splice(index, 1);
                     }
                 });
             });
