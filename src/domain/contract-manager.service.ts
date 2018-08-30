@@ -45,7 +45,7 @@ export class ContractManagerService {
     public init(user: Account): Promise<ItrbSmartContact> {
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
-        this.initProm = this.http.get("../assets/build/Bright.json").toPromise()
+        this.initProm = this.http.get("assets/build/Bright.json").toPromise()
             .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContract = TruffleContract(jsonContractData);
                 this.contractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;

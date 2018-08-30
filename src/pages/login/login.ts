@@ -8,7 +8,6 @@ import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { AppVersionService } from "../../core/app-version.service";
 import { TabsPage } from "../../pages/tabs/tabs";
-import { AppConfig } from "../../app.config";
 import { SetProfilePage } from "../../pages/setprofile/setprofile";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { UserDetails } from "../../models/user-details.model";
@@ -23,7 +22,7 @@ export class LoginPage {
     public msg: string;
     public text: any;
     public debuggingText: string;
-    public isDebugMode: boolean;
+    public isDebugMode = false;
     public appVersion = "DEV";
     private log: ILogger;
 
@@ -37,7 +36,6 @@ export class LoginPage {
         appVersionSrv: AppVersionService
     ) {
         this.log = loggerSrv.get("LoginPage");
-        this.isDebugMode = AppConfig.LOG_DEBUG;
         appVersionSrv.getAppVersion().subscribe(
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
@@ -56,8 +54,8 @@ export class LoginPage {
             let reader = new FileReader();
             reader.readAsText(input);
             reader.onload = () => {
-                this.debuggingText = reader.result;
-                this.text = JSON.parse(reader.result);
+                this.debuggingText = String(reader.result);
+                this.text = JSON.parse(String(reader.result));
             };
         } else {
             this.translateService.get("app.wrongFile").subscribe(
