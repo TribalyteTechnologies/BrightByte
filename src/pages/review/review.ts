@@ -18,6 +18,7 @@ import { CommitDetails } from "../../models/commit-details.model";
 export class ReviewPage {
     public readonly ALL = "all";
     public arrayCommits: CommitToReview[];
+    public allCommitsArray: CommitToReview[];
     public msg: string;
     public projects = new Array<string>();
     public projectSelected = this.ALL;
@@ -39,6 +40,14 @@ export class ReviewPage {
         this.refresh();
     }
     public selectUrl(commit: CommitToReview, index: number) {
+        let indx: number;
+        for(let i = 0; i < this.allCommitsArray.length; i++){
+            if(this.allCommitsArray[i].url === commit.url){
+                indx = this.allCommitsArray.length - i - 1;
+                break;
+            }
+        }
+        this.log.d("True Index of the commit: ", indx);
         let project = this.splitService.getProject(commit.url);
         let commitDetails;
         this.contractManagerService.getDetailsCommits(commit.url)
@@ -57,22 +66,19 @@ export class ReviewPage {
             return Promise.reject(e);
         }).then((arrayOfComments: CommitComment[]) => {
             let isReviewed = false;
-            let comment: CommitComment;
             for (let i = 0; i < arrayOfComments.length; i++) {
                 if (arrayOfComments[i].user === this.loginService.getAccount().address) {
                     isReviewed = true;
-                    comment = arrayOfComments[i];
                     break;
                 }
             }
-            this.log.d("Comment: ", comment);
             this.navCtrl.push(CommitReviewPage, {
                 commitDetails: commitDetails,
                 commitProject: project,
-                indexArray: index,
+                indexArray: indx,
                 url: commit.url,
                 isReviewed: isReviewed,
-                comment: comment
+                comments: arrayOfComments
             });
         }).catch((e) => {
             this.translateService.get("commitDetails.gettingComments").subscribe(
@@ -86,6 +92,7 @@ export class ReviewPage {
     public refresh() {
         this.contractManagerService.getCommitsToReview()
         .then((arrayOfCommits: CommitToReview[]) => {
+            this.allCommitsArray = arrayOfCommits;
             this.log.d("Array of commits: ", arrayOfCommits);
             let projects = new Array<string>();
             for (let commitVals of arrayOfCommits) {
