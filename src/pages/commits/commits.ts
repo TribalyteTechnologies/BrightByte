@@ -79,11 +79,13 @@ export class CommitPage {
     }
     public refresh() {
         this.contractManagerService.getCommits()
-            .then((arrayOfCommits: UserCommit[]) => {
-                this.log.d("ARRAY Commits: ", arrayOfCommits);
+            .then((arrayOfCommits: UserCommit[][]) => {
+                this.log.d(arrayOfCommits[0]);
+                let CommitsArray = [].concat(arrayOfCommits[1],arrayOfCommits[0]);
+                this.log.d("ARRAY Commits: ", CommitsArray);
 
                 let projects = new Array<string>();
-                for (let commitVals of arrayOfCommits) {
+                for (let commitVals of CommitsArray) {
                     let commitProject = commitVals.project;
                     if (projects.indexOf(commitProject) < 0) {
                         projects.push(commitProject);
@@ -93,14 +95,14 @@ export class CommitPage {
                 this.log.d("Diferent projects: ", this.projects);
                 let index = 0;
                 let array = new Array<UserCommit>();
-                for (let j = 0; j < arrayOfCommits.length; j++) {
-                    if (this.projectSelected === arrayOfCommits[j].project) {
-                        array[index] = arrayOfCommits[j];
+                for (let j = 0; j < CommitsArray.length; j++) {
+                    if (this.projectSelected === CommitsArray[j].project) {
+                        array[index] = CommitsArray[j];
                         index++;
                     }
                 }
                 if (this.projectSelected === this.ALL) {
-                    this.arrayCommits = arrayOfCommits.reverse();
+                    this.arrayCommits = CommitsArray.reverse();
                 } else {
                     this.arrayCommits = array.reverse();
                 }
@@ -116,14 +118,14 @@ export class CommitPage {
         switch (value) {
             case 0:
                 this.contractManagerService.getCommits()
-                .then((arrayOfCommits: UserCommit[]) => {
-                    this.log.d("ARRAY Commits: ", arrayOfCommits);
+                .then((arrayOfCommits: UserCommit[][]) => {
+                    this.log.d("ARRAY Commits: ", arrayOfCommits[value]);
                     let index = 0;
                     let array = new Array<UserCommit>();
-                    for (let j = 0; j < arrayOfCommits.length; j++) {
-                        if (arrayOfCommits[j].isPending && 
-                            (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
-                            array[index] = arrayOfCommits[j];
+                    for (let j = 0; j < arrayOfCommits[value].length; j++) {
+                        if (arrayOfCommits[value][j].isPending && 
+                            (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
+                            array[index] = arrayOfCommits[value][j];
                             index++;
                         }
                     }
@@ -138,14 +140,14 @@ export class CommitPage {
                 break;
             case 1:
                 this.contractManagerService.getCommits()
-                    .then((arrayOfCommits: UserCommit[]) => {
+                    .then((arrayOfCommits: UserCommit[][]) => {
                         this.log.d("ARRAY Commits: ", arrayOfCommits);
                         let index = 0;
                         let array = new Array<UserCommit>();
                         for (let j = 0; j < arrayOfCommits.length; j++) {
-                            if (!arrayOfCommits[j].isPending && 
-                                (this.projectSelected === arrayOfCommits[j].project || this.projectSelected === this.ALL)) {
-                                array[index] = arrayOfCommits[j];
+                            if (!arrayOfCommits[value][j].isPending && 
+                                (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
+                                array[index] = arrayOfCommits[value][j];
                                 index++;
                             }
                         }
