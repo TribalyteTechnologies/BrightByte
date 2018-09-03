@@ -3,12 +3,21 @@ import "./Bright.sol";
 import "./Commits.sol";
 
 contract Root{
+<<<<<<< HEAD
   Bright remoteBright;
   address brightAddress;
   Commits remoteCommits;
   address commitsAddress;
   address owner;
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+=======
+    Bright remoteBright;
+    address brightAddress;
+    Commits remoteCommits;
+    address commitsAddress;
+    address owner;
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+>>>>>>> origin/dev_arr
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -34,11 +43,16 @@ contract Root{
         brightAddress = _bright;
         remoteCommits = Commits(_commits);
         commitsAddress = _commits;
+<<<<<<< HEAD
+=======
+        remoteCommits.init(address(this));
+>>>>>>> origin/dev_arr
     }
     function getHelperAddress() public view returns(address,address){
         return(brightAddress,commitsAddress);
     }
 
+<<<<<<< HEAD
   function changeContractAddress(address _bright, address _commits) onlyOwner public{
     if(_bright != address(0)){
         remoteBright = Bright(_bright);
@@ -59,12 +73,35 @@ contract Root{
         remoteBright.setCommit(url);
     }
     function notifyCommit (string url, bytes32[] _emails) onlyUser public {
+=======
+    function changeContractAddress(address _bright, address _commits) public onlyOwner {
+        if(_bright != address(0)){
+            remoteBright = Bright(_bright);
+            brightAddress = _bright;
+        }
+        if(_commits != address(0)){
+            remoteCommits = Commits(_commits);
+            commitsAddress = _commits;
+	    }
+    }
+    function getUserAddressByEmail(string email) public onlyUser view returns(address){
+        bytes32 index = keccak256(email);
+        address a = remoteBright.getAddressByEmail(index);
+        return a;
+    }
+    //sendNotificationOfNewCommit function must be called from the front after call setNewCommit
+    function setNewCommit(bytes32 url) public onlyCommit {
+        remoteBright.setCommit(url);
+    }
+    function notifyCommit (string url, bytes32[] _emails) public onlyUser {
+>>>>>>> origin/dev_arr
         bytes32 _id = keccak256(url);
         address a;
         bool yes;
         bool auth;
         (yes, auth) = remoteCommits.isCommit(_id);
         require(auth);
+<<<<<<< HEAD
         for (uint i=0;i<_emails.length;i++){
            a = remoteBright.getAddressByEmail(_emails[i]);
            if(a != address(0) && a != msg.sender){
@@ -81,5 +118,23 @@ contract Root{
     }
     function setVote(bytes32 url, address user, uint8 vote) onlyUser public {
         remoteCommits.setVote(url,user,vote);
+=======
+        for (uint i = 0;i<_emails.length;i++){
+            a = remoteBright.getAddressByEmail(_emails[i]);
+            if(a != address(0) && a != msg.sender){
+                remoteCommits.notifyCommit(_id,a);
+                remoteBright.notifyCommit(url, _emails[i]);
+            }
+        }
+    }
+    function readCommit(string url) public onlyUser {
+        remoteCommits.readCommit(keccak256(url));
+    }
+    function setReview(bytes32 url,address a, uint256 points) public onlyCommit {
+        remoteBright.setReview(url,a,points);
+    }
+    function setVote(string url, address user, uint8 vote) public onlyUser {
+        remoteCommits.setVote(keccak256(url),user,vote);
+>>>>>>> origin/dev_arr
     }
 }

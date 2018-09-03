@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.tribalyte.brightbyteapp" version="0.0.1" xmlns="http://tech.tribalyte.eu/" xmlns:cdv="">
+<widget id="com.tribalyte.brightbyteapp" version="0.1.2" xmlns="http://tech.tribalyte.eu/" xmlns:cdv="">
     <name>BrightByte</name>
     <description>BrightByte</description>
     <author email="info@tribalyte.com" href="http://tech.tribalyte.eu/">The Tribalyte team. Alonso Rodriguez Rodriguez</author>

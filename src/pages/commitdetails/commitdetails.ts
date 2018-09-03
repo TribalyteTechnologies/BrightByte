@@ -41,9 +41,9 @@ export class CommitDetailsPage {
     }
     public refresh(): Promise<void> {
         return this.contractManagerService.getCommentsOfCommit(this.url)
-            .then((arrayOfComments: CommitComment[]) => {
+            .then((arrayOfComments: CommitComment[][]) => {
                 this.log.d("Array of Comments: ", arrayOfComments);
-                this.commentsArray = arrayOfComments;
+                this.commentsArray = arrayOfComments[0].concat(arrayOfComments[1]);
             }).catch((e) => {
                 this.translateService.get("commitDetails.gettingComments").subscribe(
                     msg => {

@@ -1,8 +1,8 @@
 const config = {
-    gasLimit: 0,
+    gasLimit: 2000000,
     gasPrice: 0,
-    netId: 0,
-    urlNode: "0"
+    netId: 82584648528,
+    urlNode: "http://52.209.188.78:22000"
 };
 
 export default config;
