@@ -13,7 +13,7 @@
     <br>
     <ion-item>
         <ion-label color="primary">{{ "app.password" | translate }}</ion-label>
-        <ion-input type="password" placeholder="pass" [(ngModel)]="pass" (keyup.enter)="login(pass)"></ion-input>
+        <ion-input type="password" placeholder="passphrase" [(ngModel)]="pass" (keyup.enter)="login(pass)"></ion-input>
     </ion-item>
     <p class="error-message">{{ msg }}</p>
     <button ion-button (click)="login(pass)">{{ "app.login" | translate }}</button>

@@ -2,7 +2,7 @@
     "app": {
         "title": "BrightByte",
         "header": "Sign in",
-        "presentation": "Who are you? Please, select your identity file and the security passphrase. Login in is a local operation, no information will be sent to any server or node.",
+        "presentation": "Who are you? Please, select your identity file and enter the security passphrase. Login in is a local operation, no information will be sent to any server or node.",
         "password": "Password",
         "register": "Register",
         "fileNotLoaded": "Please, first select a valid identity file",
@@ -13,7 +13,7 @@
         "debug": "Debug"
     },
     "addCommit": {
-        "title": "Add Commit",
+        "title": "Add commit",
         "add": "Add your commit",
         "project": "Project",
         "date": "Date",
