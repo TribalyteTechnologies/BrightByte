@@ -71,6 +71,7 @@ export class ContractManagerService {
             reject("Not initialized");
         });
     }
+    
     public setProfile(name: string, mail: string): Promise<any> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -89,6 +90,7 @@ export class ContractManagerService {
             throw e;
         });
     }
+    
     public addCommit(url: string, title: string, usersMail: string[]): Promise<any> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -122,6 +124,7 @@ export class ContractManagerService {
             throw e;
         });
     }
+    
     public getCommits(): Promise<UserCommit[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -170,6 +173,7 @@ export class ContractManagerService {
             throw err;
         });
     }
+    
     public getDetailsCommits(url: string): Promise<CommitDetails> {
         return this.initProm.then(contractArtifact => {
             this.log.d("Public Address: ", this.currentUser.address);
@@ -203,6 +207,7 @@ export class ContractManagerService {
         });
 
     }
+    
     public getCommentsOfCommit(url: string): Promise<CommitComment[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -227,6 +232,7 @@ export class ContractManagerService {
             throw err;
         });
     }
+    
     public getUserDetails(hash: string): Promise<UserDetails> {
         return this.initProm.then(contract => {
             let contractArtifact = contract;
@@ -240,6 +246,7 @@ export class ContractManagerService {
             throw err;
         });
     }
+    
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -258,6 +265,7 @@ export class ContractManagerService {
             throw e;
         });
     }
+    
     public reviewChangesCommitFlag(url: string) {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -274,6 +282,7 @@ export class ContractManagerService {
             throw e;
         });
     }
+    
     public getAllUserReputation(): Promise<UserReputation[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -296,6 +305,7 @@ export class ContractManagerService {
                 throw err;
             });
     }
+    
     public getFeedback(url): Promise<boolean[]> {
         let contractArtifact;
         return this.initProm.then(contract => {
@@ -313,6 +323,7 @@ export class ContractManagerService {
             throw err;
         });
     }
+    
     private sendTx(bytecodeData): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
         return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
             .then(nonceValue => {

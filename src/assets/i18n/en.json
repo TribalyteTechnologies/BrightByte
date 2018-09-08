@@ -16,6 +16,7 @@
         "title": "Add Commit",
         "add": "Add your commit",
         "project": "Project",
+        "date": "Date",
         "users": "Users",
         "errorEmails": "Error getting emails",
         "urlDuplicated": "Error: url already added",

@@ -88,10 +88,10 @@ export class CommitReviewPage {
     }
     public ionViewWillEnter(): void {
         this.contractManagerService.reviewChangesCommitFlag(this.url)
-            .catch((e) => {
-                this.log.e("Error Changing the state of the flag to false", e);
-                throw e;
-            });
+        .catch((e) => {
+            this.log.e("Error Changing the state of the flag to false", e);
+            throw e;
+        });
 
     }
 }
