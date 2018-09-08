@@ -5,7 +5,7 @@
     "homepage": "",
     "private": true,
     "scripts": {
-        "start": "cp config.xml www; npm run ionic:serve",
+        "start": "mkdir -p www; cp config.xml www; npm run ionic:serve",
         "clean": "ionic-app-scripts clean",
         "build": "ionic-app-scripts build",
         "build-browser-release": "ionic cordova build browser --prod --release",
