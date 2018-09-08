@@ -44,39 +44,35 @@ export class ReviewPage {
     }
 
     public refresh(): Promise<any> {
+        this.log.d("Refreshing list of commits to review");
         return this.contractManagerService.getCommitsToReview()
         .then((commits: CommitToReview[]) => {
             this.blkchCommitsToReview = commits;
             this.log.d("Blockchain commits to review: ", commits);
             this.projects = new Array<string>();
-            this.displayCommitsToReview = new Array<CommitToReview>();
-            let feedbackPromises = new Array<Promise<boolean[]>>();
+            let displayCommits = new Array<CommitToReview>();
             for (let commit of commits) {
                 let commitProject = commit.project;
                 if (this.projects.indexOf(commitProject) < 0) {
                     this.projects.push(commitProject);
                 }
                 if (this.projectSelected === this.ALL || this.projectSelected === commitProject){
-                    this.displayCommitsToReview.push(commit);
-                    this.isFeedback[commit.url] = false;
-                    let feedbackProm = this.contractManagerService.getFeedback(commit.url)
+                    displayCommits.push(commit);
+                    //Async notification icons, not waiting for them to finish
+                    this.contractManagerService.getFeedback(commit.url)
                     .then((notifyArray: boolean[]) => {
                         this.log.d("Array of bells: ", notifyArray);
-                        for (let i = 0; i < notifyArray.length; i++) {
-                            if (notifyArray[i]) {
-                                this.isFeedback[commit.url] = true;
-                            }
-                        }
+                        this.isFeedback[commit.url] = notifyArray && notifyArray.some(isFeedback => isFeedback);
                         return notifyArray;
                     });
-                    feedbackPromises.push(feedbackProm);
                 }
             }
             this.log.d("Diferent projects found: ", this.projects);
-            this.displayCommitsToReview.sort((c1, c2) => {
+            displayCommits.sort((c1, c2) => {
                 return c2.creationDateMs - c1.creationDateMs;
             });
-            return Promise.all(feedbackPromises).then(() => this.displayCommitsToReview);
+            this.displayCommitsToReview = displayCommits;
+            return this.displayCommitsToReview;
         }).catch((e) => {
             this.translateService.get("review.getCommits").subscribe(
                 msg => {
@@ -90,7 +86,7 @@ export class ReviewPage {
         let filterProm = this.refresh();
         switch (filterId) {
             case 0:
-            this.log.d("Filter: pending");
+                this.log.d("Filter: pending");
                 filterProm = filterProm.then((displayCommitsToReview: CommitToReview[]) => {
                     return displayCommitsToReview.filter(
                         commit => this.isFeedback[commit.url]
@@ -103,7 +99,7 @@ export class ReviewPage {
                     return displayCommitsToReview.filter(
                         commit => !this.isFeedback[commit.url]
                     );
-                })
+                });
                 break;
             default:
                 this.log.d("Default filter: all");

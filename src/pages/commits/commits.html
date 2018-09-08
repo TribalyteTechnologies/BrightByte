@@ -13,8 +13,8 @@
     <ion-item>
         <ion-label>{{ "commits.project" | translate }}</ion-label>
         <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh()">
-            <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
             <ion-option value="all" selected="true">{{ "commits.allCommits" | translate }}</ion-option>
+            <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
         </ion-select>
     </ion-item>
     <button ion-button (click)="setReviewFilter(0)">
@@ -32,7 +32,7 @@
             <ion-icon name="checkmark" *ngIf="commit.isPending"></ion-icon>
             <ion-icon name="done-all" *ngIf="!commit.isPending"></ion-icon>
             {{ "addCommit.titleCommit" | translate }}: {{ commit.title }}, {{ "addCommit.project" | translate }}: {{ commit.project }},
-            {{ "commitDetails.stars" | translate }}: {{ commit.score }}, {{ "addCommit.date" | translate }}: {{ commit.lastModificationDateMs | date : "HH:mm d/M/yyyy" }}
+            {{ "commitDetails.stars" | translate }}: {{ commit.score }}, {{ "addCommit.date" | translate }}: {{ commit.lastModificationDateMs | dateFormat }}
         </button>
     </ion-list>
     <p class="error-message">{{ msg }}</p>

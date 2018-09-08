@@ -12,8 +12,8 @@
         <ion-item>
             <ion-label>{{ "commits.project" | translate }}</ion-label>
             <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh()">
-                <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
                 <ion-option value="all" selected="true">{{ "commits.allCommits" | translate }}</ion-option>
+                <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
             </ion-select>
         </ion-item>
         <ion-item>
@@ -33,8 +33,16 @@
     <ion-list inset *ngIf="displayCommitsToReview">
         <button ion-item *ngFor="let commit of displayCommitsToReview" (click)="selectCommit(commit)">
             <ion-icon name="notifications" *ngIf="isFeedback[commit.url]"></ion-icon>
-            {{ "review.titleCommit" | translate }}: {{ commit.title }}, {{ "review.author" | translate }}: {{ commit.name }}, URL: {{ commit.url }}
-            {{ commit.lastModificationDateMs | date : "HH:mm d/M/yyyy" }}
+            [{{ commit.lastModificationDateMs | dateFormat }}]
+            <span *ngIf="projectSelected === ALL">
+                {{ "commits.project" | translate }}:
+                {{ commit.project }}.
+            </span>
+            {{ "review.author" | translate }}:
+            {{ commit.name }}.
+            {{ "review.titleCommit" | translate }}:
+            {{ commit.title }}.
+            URL: {{ commit.url }}
         </button>
     </ion-list>
     <p class="error-message">{{ msg }}</p>

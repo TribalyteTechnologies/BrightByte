@@ -27,6 +27,7 @@ import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../domain/contract-manager.service";
 import { SplitService } from "../domain/split.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
+import { DateFormatPipe } from "../core/date-format.pipe";
 
 // Components
 import { BrightByteApp } from "./app.component";
@@ -48,7 +49,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         AddCommitPopover,
         SetProfilePage,
         CommitReviewPage,
-        CommitDetailsPage
+        CommitDetailsPage,
+        DateFormatPipe
     ],
     imports: [
         BrowserModule,
