@@ -1,13 +1,13 @@
 {
     "app": {
         "title": "BrightByte",
-        "header": "Main",
-        "presentation": "Who are you? Please, upload your identity file or introduce your private key.",
+        "header": "Sign in",
+        "presentation": "Who are you? Please, select your identity file and the security passphrase. Login in is a local operation, no information will be sent to any server or node.",
         "password": "Password",
         "register": "Register",
-        "fileNotLoaded": "Please, first upload a valid file",
+        "fileNotLoaded": "Please, first select a valid identity file",
         "wrongPassword": "Wrong password",
-        "wrongFile": "The format of the uploaded file is incorrect",
+        "wrongFile": "The format of the selected file is incorrect",
         "noRpc": "No RPC connetion",
         "login": "Login",
         "debug": "Debug"
@@ -19,12 +19,12 @@
         "date": "Date",
         "users": "Users",
         "errorEmails": "Error getting emails",
-        "urlDuplicated": "Error: url already added",
+        "urlDuplicated": "Error: URL already added",
         "addingCommit": "Error adding new commit",
         "commitDetails": "Error getting commit details",
         "emailDuplicated": "Duplicate email detected",
         "fieldRequire": "Field is required",
-        "notUrl": "It is not a valid url",
+        "notUrl": "It is not a valid URL",
         "titleCommit": "Title",
         "inputTitle": "Write the title",
         "ownEmail": "You can't review your own commit",
@@ -37,6 +37,7 @@
         "title": "Commits",
         "project": "Project",
         "allCommits": "All commits",
+        "allProjects": "All projects",
         "pending": "Pending",
         "reviewed": "Reviewed",
         "getCommitsPending": "Error getting pending commits"
@@ -44,7 +45,7 @@
     "home": {
         "title": "Home",
         "subTitle": "Home",
-        "info": "My Commits, My reviews, Ranking"
+        "info": "Welcome to BrightByte! Choose the available tabs to see your commits, reviews or the ranking"
     },
     "newUser": {
         "title": "New user",
@@ -53,15 +54,15 @@
         "password": "Password",
         "register": "Register",
         "newUser": "Create new user",
-        "download": "Download file"
+        "download": "Download identity file"
     },
     "ranking": {
-        "getUserInfo": "Error getting user info",
+        "getUserInfo": "Error getting user information",
         "title": "Ranking",
         "name": "Name",
         "mail": "Email",
-        "nCommitsReviewByMe": "Number commits reviewed by me",
-        "nCommitsToReviewByMe": "Number commits to review by me",
+        "nCommitsReviewByMe": "Number of commits reviewed by me",
+        "nCommitsToReviewByMe": "Number of commits to review by me",
         "totalCommits": "Total number of my commits",
         "reputation": "Reputation",
         "getReputation": "Error getting reputations",
@@ -78,11 +79,11 @@
         "titleCommit": "Title"
     },
     "setProfile": {
-        "title": "Set profile",
-        "header": "Set your profile",
+        "title": "Welcome",
+        "header": "Set your user profile information",
         "name": "Name",
         "set": "Set profile",
-        "tx": "Transaction Error",
+        "tx": "Transaction error",
         "emailUsed": "Email already in use",
         "getEmails": "Error getting emails",
         "notEmail": "It is not an email"
@@ -90,24 +91,23 @@
     "commitDetails": {
         "author": "Author",
         "date": "Date",
-        "title": "Commit Details",
+        "title": "Commit details",
         "project": "Project",
-        "nReviews": "Total number reviews",
-        "pReviews": "Pending Reviews",
-        "currrentNReviews": "Current Number Reviews",
+        "nReviews": "Total number of reviews",
+        "pReviews": "Pending reviews",
+        "currrentNReviews": "Current number of reviews",
         "commented": "has commented",
-        "gettingComments": "Error getting Comments",
+        "gettingComments": "Error getting comments",
         "titleCommit": "Title",
         "stars": "stars",
-        "setThumbs": "Can't set the vote"
+        "setThumbs": "Can't set the thumbs"
     },
     "commitReview": {
-        "textField": "Text field",
         "review": "Review",
-        "title": "Commit Review",
+        "title": "Commit review",
         "emptyField": "Please, write your review",
         "reviewDone": "Review successfully done",
-        "txError": "Transaction Error",
-        "description": "Enter a description"
+        "txError": "Transaction error",
+        "description": "Enter the explanation of your review"
     }
 }

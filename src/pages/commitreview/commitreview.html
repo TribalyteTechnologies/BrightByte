@@ -16,7 +16,8 @@
     <p>{{ "commitDetails.pReviews" | translate }}: {{ commitDetails.isPending }}</p>
     <p>{{ "commitDetails.currrentNReviews" | translate }}: {{ commitDetails.currentNumberReviews }}</p>
     <ion-item *ngIf="!isReviewed">
-        <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">{{ "commitDetails.textField" | translate }}</ion-textarea>
+        <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
+        </ion-textarea>
     </ion-item>
     <p class="error-message">{{ msg }}</p>
     <p>{{ msg1 }}</p>
