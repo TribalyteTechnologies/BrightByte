@@ -9,24 +9,26 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
-import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
     selector: "popover-addcommit",
     templateUrl: "addcommit.html"
 })
 export class AddCommitPopover {
+    
     public isAddInputAllowed = true;
-    public numberInputs = [""];
     public isTxOngoing = false;
     public msg: string;
-    public usersMail = ["", "", "", ""];
-    public emailsArray = new Array<string>();
-    public arraySearch: string[];
+    public usersMail = new Array<string>();
     public isShowList = new Array<boolean>();
+    public mockInputElementList = new Array<any>();
+    public arraySearch: string[];
     public myForm: FormGroup;
-    private log: ILogger;
+    
+    private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
+    private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
+    private log: ILogger;
 
     constructor(
         public navCtrl: NavController,
@@ -39,124 +41,81 @@ export class AddCommitPopover {
         public loginService: LoginService
     ) {
         this.log = loggerSrv.get("AddCommitPage");
-        this.contractManagerService.getAllUserReputation()
-        .then((allEmails: Array<UserReputation>) => {
-            this.log.d("ARRAY Emails: ", allEmails);
-            this.emailsArray = allEmails.map(userRep => userRep.email);
-        }).catch((e) => {
-            this.translateService.get("addCommit.errorEmails").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                });
-        });
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
             Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/[a-z0-9]+\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
             title: ["", [Validators.required]]
         });
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
+        this.addReviewerInput();
+        this.contractManagerService.getAllUserReputation()
+        .then(allReputations => {
+            this.log.d("All user reputations: ", allReputations);
+            this.allEmails = allReputations.map(userRep => userRep.email);
+        }).catch((e) => {
+            this.showGuiMessage("addCommit.errorEmails", e);
+        });
     }
+    
     public addCommit(url: string, title: string) {
         this.isTxOngoing = true;
-        this.msg = "";
-        let isPermitted = true;
-        this.userDetailsProm.then((userDetails: UserDetails) => {
-            if (this.usersMail[0] === "" && this.usersMail[1] === "" && this.usersMail[2] === "" && this.usersMail[3] === "") {
-                this.translateService.get("addCommit.emptyInput").subscribe(
-                    msg => {
-                        this.msg = msg;
-                    });
-                isPermitted = false;
+        this.clearGuiMessage();
+        let errMsgId = null;
+        this.userDetailsProm.then(userDetails => {
+            for (let userEmail of this.usersMail) {
+                if (this.allEmails.indexOf(userEmail) < 0) {
+                    errMsgId = "addCommit.unknownEmail";
+                }
+                if (this.usersMail.reduce((prevCount, mail) => (mail === userEmail ? prevCount + 1 : prevCount), 0) > 1){
+                    errMsgId = "addCommit.emailDuplicated";
+                }
+                if (userEmail === userDetails.email){
+                    errMsgId = "addCommit.ownEmail";
+                }
+            }
+            if (this.usersMail.every(userEmail => !userEmail)) {
+                errMsgId = "addCommit.emptyInput";
+            }
+            let ret;
+            if (!errMsgId){
+                ret = this.contractManagerService.getDetailsCommits(url);
+            } else {
+                ret = Promise.reject({msg: errMsgId});
+            }
+            return ret;
+        }).catch(e => {
+            return Promise.reject((e.msg ? {msg: e.msg, err: e.err} : {msg: "addCommit.commitDetails", err: e}));
+        })
+        .then(detailsCommits => {
+            let ret;
+            if (!detailsCommits || !detailsCommits.url) {
+                ret = this.contractManagerService.addCommit(url, title, this.usersMail)
+                .catch(err => Promise.reject({msg: "addCommit.addingCommit", err: err}));
+            } else {
+                ret = Promise.reject({msg: "addCommit.urlDuplicated"});
+            }
+            return ret;
+        }).then(txResponse => {
+            this.log.d("Contract manager response: ", txResponse);
+            if (txResponse) {
                 this.isTxOngoing = false;
+                this.viewCtrl.dismiss();
+            } else {
+                throw "Error: addcommit response is undefined";
             }
-            for (let i = 0; i < AppConfig.MAX_REVIEWER_COUNT; i++) {
-                if (this.usersMail[i] !== "") {
-                    let isValid = false;
-                    for (let y = 0; y < this.emailsArray.length; y++) {
-                        if (this.usersMail[i] === this.emailsArray[y]) {
-                            isValid = true;
-                        }
-                    }
-                    if (!isValid) {
-                        this.translateService.get("addCommit.unknownEmail").subscribe(
-                            msg => {
-                                this.msg = msg;
-                            });
-                        isPermitted = false;
-                        this.isTxOngoing = false;
-                    }
-                }
-                for (let j = 0; j < AppConfig.MAX_REVIEWER_COUNT; j++) {
-                    if (this.usersMail[i] === this.usersMail[j] && i !== j && this.usersMail[i] !== "") {
-                        this.translateService.get("addCommit.emailDuplicated").subscribe(
-                            msg => {
-                                this.msg = msg;
-                            });
-                        isPermitted = false;
-                        this.isTxOngoing = false;
-                    }
-                }
-                if (this.usersMail[i] === userDetails.email) {
-                    this.translateService.get("addCommit.ownEmail").subscribe(
-                        msg => {
-                            this.msg = msg;
-                        });
-                    isPermitted = false;
-                    this.isTxOngoing = false;
-                    break;
-                }
-            }
-            if (isPermitted) {
-                this.contractManagerService.getDetailsCommits(url)
-                .then((detailsCommits) => {
-                    if (detailsCommits.url) {
-                        this.isTxOngoing = false;
-                        this.translateService.get("addCommit.urlDuplicated").subscribe(
-                            msg => {
-                                this.msg = msg;
-                                this.log.w(msg);
-                            });
-                    } else {
-                        this.contractManagerService.addCommit(url, title, this.usersMail)
-                            .then(txResponse => {
-                                this.log.d("Contract manager response: ", txResponse);
-                                if (txResponse) {
-                                    this.viewCtrl.dismiss();
-                                } else {
-                                    throw "Error: addcommit response is undefined";
-                                }
-                            }).catch((e) => {
-                                this.isTxOngoing = false;
-                                this.translateService.get("addCommit.addingCommit").subscribe(
-                                    msg => {
-                                        this.msg = msg;
-                                        this.log.e(msg, e);
-                                    });
-                            });
-                    }
-                }).catch((e) => {
-                    this.isTxOngoing = false;
-                    this.translateService.get("addCommit.commitDetails").subscribe(
-                        msg => {
-                            this.msg = msg;
-                            this.log.e(msg, e);
-                        });
-                });
-            }
+        }).catch(e => {
+            this.showGuiMessage(e.msg, e.err);
+            this.isTxOngoing = false;
         });
     }
 
-    public getItems(ev: any, id: number) { //TODO: TYpe targetevent or event
-        for (let i = 0; i < 4; i++) {
-            this.isShowList[i] = false;
-        }
+    public refreshSearchbar(ev: any, id: number) { //TODO: ev type targetevent or event
+        this.log.d("Refreshing search bar. Ix: " + id);
         let array;
-        // set val to the value of the ev target
         let val = ev.target.value;
         // if the value is an empty string don't filter the items
         if (val && val.trim()) {
-            array = this.emailsArray.filter((item) => {
+            array = this.allEmails.filter((item) => {
                 return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
             });
             this.userDetailsProm.then((userDetails: UserDetails) => {
@@ -168,35 +127,49 @@ export class AddCommitPopover {
             });
         }
         this.arraySearch = array;
-        this.isShowList[id] = true;
+        for (let i = 0; i < this.usersMail.length; i++) {
+            this.isShowList[i] = (i === id);
+        }
     }
+    
     public setEmailFromList(num: number, item: string) {
         let isDuplicated = false;
         this.userDetailsProm.then((userDetails: UserDetails) => {
             if (item === userDetails.email) {
-                this.translateService.get("addCommit.ownEmail").subscribe(
-                    msg => {
-                        this.msg = msg;
-                    });
+                this.showGuiMessage("addCommit.ownEmail");
                 isDuplicated = true;
             }
-            
             isDuplicated = isDuplicated || (this.usersMail.indexOf(item) >= 0);
             if(isDuplicated){
-                this.translateService.get("addCommit.emailDuplicated").subscribe(msg => this.msg = msg);
+                this.showGuiMessage("addCommit.emailDuplicated");
             }else{
-                this.msg = "";
+                this.clearGuiMessage();
                 this.usersMail[num] = item;
                 this.isShowList[num] = false;
             }
         });
     }
-    public addInput() {
+    
+    public addReviewerInput() {
         if (this.isAddInputAllowed) {
-            this.numberInputs.push("");
-            this.isAddInputAllowed = (this.numberInputs.length < AppConfig.MAX_REVIEWER_COUNT);
+            this.mockInputElementList.push(null);
+            this.isAddInputAllowed = (this.mockInputElementList.length < this.MAX_REVIEWERS);
         } else {
             this.log.d("Max fields already created");
         }
+    }
+    
+    private showGuiMessage(txtId, e?: any){
+        this.translateService.get(txtId)
+        .subscribe(msg => {
+            this.msg = msg;
+            if(e){
+                this.log.e(msg, e);
+            }
+        });
+    }
+    
+    private clearGuiMessage(){
+        this.msg = "";
     }
 }

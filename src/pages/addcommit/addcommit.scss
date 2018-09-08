@@ -6,4 +6,8 @@ popover-addcommit {
 .popover-wrapper .popover-content {
     width: 600px;
     height: 800px;
+    
+    .scroll-content{
+        overflow: auto;
+    }
 }

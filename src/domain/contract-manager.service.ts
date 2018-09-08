@@ -91,36 +91,29 @@ export class ContractManagerService {
         });
     }
     
-    public addCommit(url: string, title: string, usersMail: string[]): Promise<any> {
+    public addCommit(url: string, title: string, usersMail: Array<string>): Promise<any> {
+        let fnArgs = arguments;
         let contractArtifact;
         return this.initProm.then(contract => {
-            this.log.d("Contract artifact: ", contract);
+            this.log.d("Adding commit. Contract artifact: ", contract);
             contractArtifact = contract;
             this.log.d("Contract Address: ", this.contractAddress);
             this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Variables: url ", url);
-            this.log.d("UsersMail: ", usersMail);
+            this.log.d("Arguments: ", fnArgs);
             let project = this.splitService.getProject(url);
             let bytecodeData = contractArtifact.methods.setNewCommit(
                 title,
                 url,
                 project,
-                usersMail[0],
-                usersMail[1],
-                usersMail[2],
-                usersMail[3]
+                usersMail[0] || "",
+                usersMail[1] || "",
+                usersMail[2] || "",
+                usersMail[3] || ""
             ).encodeABI();
-            this.log.d("Introduced url: ", url);
-            this.log.d("Introduced user1: ", usersMail[0]);
-            this.log.d("Introduced user2: ", usersMail[1]);
-            this.log.d("Introduced user3: ", usersMail[2]);
-            this.log.d("Introduced user4: ", usersMail[3]);
-
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData);
-
         }).catch(e => {
-            this.log.e("Error getting nonce in addcommit: ", e);
+            this.log.e("Error in addcommit: ", e);
             throw e;
         });
     }
@@ -344,7 +337,7 @@ export class ContractManagerService {
 
                 let raw = "0x" + tx.serialize().toString("hex");
                 this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv si 0x: ", priv);
+                this.log.d("Priv is 0x: ", priv);
                 this.log.d("privatekey: ", privateKey);
                 this.log.d("Raw: ", raw);
                 this.log.d("tx unsign: ", tx);
