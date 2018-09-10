@@ -1,9 +1,5 @@
 pragma solidity 0.4.21;
-<<<<<<< HEAD
-import './Root.sol';
-=======
 import "./Root.sol";
->>>>>>> origin/dev_arr
 
 contract Commits {
     Root private root;
@@ -37,15 +33,8 @@ contract Commits {
     }
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-<<<<<<< HEAD
-    function Commits(address _root) public {
-        owner = msg.sender;
-        root = Root(_root);
-        rootAddress = _root;
-=======
     function Commits() public {
         owner = msg.sender;
->>>>>>> origin/dev_arr
     }
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -59,61 +48,37 @@ contract Commits {
         require (msg.sender == rootAddress || msg.sender == tx.origin);
         _;
     }
-
-<<<<<<< HEAD
-=======
     function init(address _root) public {
-        require(rootAddress == uint80(0));
+        require(rootAddress == address(0));
         root = Root(_root);
         rootAddress = _root;
     }
-
->>>>>>> origin/dev_arr
     function transferOwnership(address newOwner) public onlyOwner {
         require(newOwner != address(0));
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-<<<<<<< HEAD
-    function setRootAddress(address a) onlyOwner public {
-=======
     function setRootAddress(address a) public onlyOwner {
->>>>>>> origin/dev_arr
         root = Root(a);
         rootAddress = a;
     }
 
-<<<<<<< HEAD
-    function setNewCommit (string _title, string _url) onlyDapp public {
-        address auth = tx.origin;
-        address [] memory a;
-=======
     function setNewCommit (string _title, string _url) public onlyDapp {
         address auth = tx.origin;
         address[] memory a;
->>>>>>> origin/dev_arr
         bytes32 _id = keccak256(_url);
         if(storedData[_id].author == address(0)){
             storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp, 0, 0, a,a);
             allCommitsArray.push(_id);
             if(msg.sender == tx.origin){
                 root.setNewCommit(_id);
-<<<<<<< HEAD
-            } else {
-                require(msg.sender == rootAddress);
-=======
->>>>>>> origin/dev_arr
             }
         } else {
             require(storedData[_id].author == auth);
             storedData[_id].title = _title;
         }
     }
-<<<<<<< HEAD
-    function notifyCommit(bytes32 url,address a) onlyRoot public {
-=======
     function notifyCommit(bytes32 url,address a) public onlyRoot {
->>>>>>> origin/dev_arr
         require(storedData[url].author == tx.origin);
         bool saved = false;
         for(uint i = 0; i < storedData[url].pendingComments.length; i++){
@@ -134,27 +99,6 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
-<<<<<<< HEAD
-    function getDetailsCommits(bytes32 _id) onlyDapp public view returns(string, string, address, uint, bool, uint){
-        return (storedData[_id].url,
-                storedData[_id].title,
-                storedData[_id].author,
-                storedData[_id].creationDate,
-                storedData[_id].isReadNeeded,
-                storedData[_id].lastModificationDate
-        );
-    }
-    function getCommitScore(bytes32 _id) onlyDapp public view returns(uint,uint){
-        return(storedData[_id].score,storedData[_id].points);
-    }
-    function getNumbers() onlyDapp public view returns(uint){
-        return allCommitsArray.length;
-    }
-    function getAllCommitsId(uint index) onlyDapp public view returns(bytes32){
-        return allCommitsArray[index];
-    }
-    function getNumbersNeedUrl(bytes32 _url) onlyDapp public view returns (uint, uint){
-=======
     function getDetailsCommits(string _url) public onlyDapp view returns(string, string, address, uint, bool, uint){
         bytes32 id = keccak256(_url);
         return (storedData[id].url,
@@ -175,31 +119,20 @@ contract Commits {
         return allCommitsArray[index];
     }
     function getNumbersNeedUrl(bytes32 _url) public onlyDapp view returns (uint, uint){
->>>>>>> origin/dev_arr
         return (storedData[_url].pendingComments.length,
                 storedData[_url].finishedComments.length
         );
     }
-<<<<<<< HEAD
-    function getCommentsOfCommit(bytes32 _url) onlyDapp public view returns(address[],address[]){
-=======
     function getCommentsOfCommit(bytes32 _url) public onlyDapp view returns(address[],address[]){
->>>>>>> origin/dev_arr
         require(tx.origin == owner || tx.origin == storedData[_url].author);
         return (
             storedData[_url].pendingComments,
             storedData[_url].finishedComments
         );
     }
-<<<<<<< HEAD
-    function getCommentDetail(bytes32 url,address a) onlyDapp public view returns(string,uint,uint,uint,uint,bool){
-        if(storedData[url].author != tx.origin){
-            a=tx.origin;
-=======
     function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint,uint,uint,uint,bool){
         if(storedData[url].author != tx.origin){
             a = tx.origin;
->>>>>>> origin/dev_arr
         }
         return(
             storedData[url].commitComments[a].text,
@@ -210,17 +143,6 @@ contract Commits {
             storedData[url].commitComments[a].isReadNeeded
         );
     }
-<<<<<<< HEAD
-    function setReview(bytes32 url,string _text, uint256 _points) onlyDapp public{
-        address author = tx.origin;
-
-        bool saved=false;
-        for (uint j = 0 ; j< storedData[url].pendingComments.length ; j++){
-            if (author == storedData[url].pendingComments[j]){
-                storedData[url].pendingComments[j]=storedData[url].pendingComments[storedData[url].pendingComments.length-1];
-                storedData[url].pendingComments.length--;
-                saved=true;
-=======
     function setReview(string _url,string _text, uint256 _points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
@@ -231,7 +153,6 @@ contract Commits {
                 storedData[url].pendingComments[j] = storedData[url].pendingComments[storedData[url].pendingComments.length-1];
                 storedData[url].pendingComments.length--;
                 saved = true;
->>>>>>> origin/dev_arr
                 break;
             }
         }
@@ -252,26 +173,12 @@ contract Commits {
         storedData[url].score = storedData[url].points/storedData[url].finishedComments.length;
         root.setReview(url,storedData[url].author,_points);
     }
-<<<<<<< HEAD
-    function setVote(bytes32 url, address user, uint8 vote) onlyRoot public{
-=======
     function setVote(bytes32 url, address user, uint8 vote) public onlyRoot {
->>>>>>> origin/dev_arr
         require(storedData[url].author == tx.origin);
         assert(vote == 1 || vote == 2);
         require(storedData[url].commitComments[user].author == user);
         storedData[url].commitComments[user].vote = vote;
     }
-<<<<<<< HEAD
-    function readCommit(bytes32 _url) onlyRoot public{
-        if(storedData[_url].author == tx.origin){
-            storedData[_url].isReadNeeded = false;
-        } else if (storedData[_url].commitComments[tx.origin].author == tx.origin){
-            storedData[_url].commitComments[tx.origin].isReadNeeded=false;
-        }
-    }
-    function isCommit(bytes32 _url) onlyRoot public view returns(bool,bool){
-=======
     function readCommit(bytes32 _url) public onlyRoot {
         if(storedData[_url].author == tx.origin){
             storedData[_url].isReadNeeded = false;
@@ -280,7 +187,6 @@ contract Commits {
         }
     }
     function isCommit(bytes32 _url) public onlyRoot view returns(bool,bool){
->>>>>>> origin/dev_arr
         bool yes = false;
         bool auth = false;
         if(storedData[_url].author != address(0)){
