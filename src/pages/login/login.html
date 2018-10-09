@@ -1,27 +1,52 @@
-<ion-header>
-    <ion-navbar>
-        <ion-title>{{ "app.title" | translate }} v{{ appVersion }}</ion-title>
-    </ion-navbar>
-</ion-header>
+<ion-content padding class="page-body">
 
-<ion-content padding>
-    <h2>{{ "app.header" | translate }}</h2>
-    <p>
-        {{ "app.presentation" | translate }}
-    </p>
-    <input type='file' (change)='openFile($event)'>
-    <br>
-    <ion-item>
-        <ion-label color="primary">{{ "app.password" | translate }}</ion-label>
-        <ion-input type="password" placeholder="passphrase" [(ngModel)]="pass" (keyup.enter)="login(pass)"></ion-input>
-    </ion-item>
-    <p class="error-message">{{ msg }}</p>
-    <button ion-button (click)="login(pass)">{{ "app.login" | translate }}</button>
-    <button ion-button (click)="register()">{{ "app.register" | translate }}</button>
-    <br>
-    <div *ngIf="isDebugMode">
-        <p>{{ "app.debug" | translate }}</p>
-        <p>{{ debuggingText }}</p>
-    </div>
+    <ion-grid>
+        <ion-col>
+            <div class="logo-icon">
+                <img src="../../assets/imgs/logo_icon.svg">
+            </div>
+
+            <ion-card class="card-body">
+
+                <ion-row>
+                    <div class="logo-text">
+                        <img src="../../assets/imgs/logo_title.svg">
+                    </div>
+                </ion-row>
+                <ion-row>
+                    <div class="form-input">
+                        <input type='file' (change)='openFile($event)'>
+                    </div>
+                </ion-row>
+                <ion-row>
+                    <div class="form-input">
+                        <ion-input type="password" placeholder="Password" [(ngModel)]="pass" (keyup.enter)="login(pass)"></ion-input>
+                    </div>
+                </ion-row>
+                <ion-row>
+                    <ion-col>
+                        <div>
+                            <button ion-button block color="dark" (click)="login(pass)">{{ "app.login" | translate }}</button>
+                        </div>
+                    </ion-col>
+                    <ion-col>
+                        <div>
+                            <button ion-button block (click)="register()">{{ "app.register" | translate }}</button>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-card>
+
+            <div class="tribalyte-logo">
+                <img src="../../assets/imgs/tribalytetech.png">
+            </div>
+
+            <div class="project-version">
+                <ion-label>{{ "app.title" | translate }} v{{ appVersion }}</ion-label>
+            </div>
+
+        </ion-col>
+    </ion-grid>
+
 
 </ion-content>

@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavController } from "ionic-angular";
+import { NavController, ToastController } from "ionic-angular";
 import { TranslateService } from "@ngx-translate/core";
 
 import { NewuserPage } from "../newuser/newuser";
@@ -27,6 +27,7 @@ export class LoginPage {
     private log: ILogger;
 
     constructor(
+        private toastCtrl: ToastController ,
         private navCtrl: NavController,
         private translateService: TranslateService,
         private contractManager: ContractManagerService,
@@ -73,6 +74,7 @@ export class LoginPage {
                 this.translateService.get("app.fileNotLoaded").subscribe(
                     msg => {
                         this.msg = msg;
+                        this.showToastCloseButton();
                     });
             } else {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
@@ -94,6 +96,7 @@ export class LoginPage {
                         this.translateService.get("app.noRpc").subscribe(
                             msg => {
                                 this.msg = msg;
+                                this.showToastCloseButton();
                             });
                         this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                     });
@@ -105,6 +108,7 @@ export class LoginPage {
                 msg => {
                     this.msg = msg;
                     this.log.e(msg, e);
+                    this.showToastCloseButton();
                 });
         }
 
@@ -112,6 +116,16 @@ export class LoginPage {
 
     public register() {
         this.navCtrl.push(NewuserPage);
+    }
+
+    private showToastCloseButton(){
+        const toast = this.toastCtrl.create({
+            message: this.msg,
+            showCloseButton: true,
+            position: "middle",
+            duration: 2500
+        });
+        toast.present();
     }
 
 }
