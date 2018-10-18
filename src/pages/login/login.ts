@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavController, ToastController } from "ionic-angular";
+import { NavController } from "ionic-angular";
 import { TranslateService } from "@ngx-translate/core";
 
 import { NewuserPage } from "../newuser/newuser";
@@ -27,7 +27,6 @@ export class LoginPage {
     private log: ILogger;
 
     constructor(
-        private toastCtrl: ToastController ,
         private navCtrl: NavController,
         private translateService: TranslateService,
         private contractManager: ContractManagerService,
@@ -43,6 +42,12 @@ export class LoginPage {
         );
     }
 
+    public ionViewWillEnter(){
+        //TODO: check if private key and password are in localStorage (only if LOG_DEBUG is true)
+        // if present, perform login (call new function to set private key, then call login(passw from localStorage)
+        // if not, noop
+    }
+
     public openFile = (event: Event) => {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;
@@ -55,6 +60,8 @@ export class LoginPage {
             let reader = new FileReader();
             reader.readAsText(input);
             reader.onload = () => {
+                //TODO: extract this to a separate function
+                //And call it with different source of data (file or localStorage)
                 this.debuggingText = String(reader.result);
                 this.text = JSON.parse(String(reader.result));
             };
@@ -74,7 +81,6 @@ export class LoginPage {
                 this.translateService.get("app.fileNotLoaded").subscribe(
                     msg => {
                         this.msg = msg;
-                        this.showToastCloseButton();
                     });
             } else {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
@@ -96,7 +102,6 @@ export class LoginPage {
                         this.translateService.get("app.noRpc").subscribe(
                             msg => {
                                 this.msg = msg;
-                                this.showToastCloseButton();
                             });
                         this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                     });
@@ -108,7 +113,6 @@ export class LoginPage {
                 msg => {
                     this.msg = msg;
                     this.log.e(msg, e);
-                    this.showToastCloseButton();
                 });
         }
 
@@ -117,15 +121,4 @@ export class LoginPage {
     public register() {
         this.navCtrl.push(NewuserPage);
     }
-
-    private showToastCloseButton(){
-        const toast = this.toastCtrl.create({
-            message: this.msg,
-            showCloseButton: true,
-            position: "middle",
-            duration: 2500
-        });
-        toast.present();
-    }
-
 }

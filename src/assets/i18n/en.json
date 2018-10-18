@@ -15,6 +15,7 @@
     "addCommit": {
         "title": "Add commit",
         "add": "Add your commit",
+        "description": "Make sure you uploaded your commit to bitbucket and paste here the URL of the commit",
         "project": "Project",
         "date": "Date",
         "users": "Users",
