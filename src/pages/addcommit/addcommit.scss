@@ -2,10 +2,21 @@ popover-addcommit {
     .error-message {
         color: red;
     }
+    .title {
+        font-size: 40px;
+        font-weight: bold;
+    }
 }
+
+ion-backdrop {
+    background-color: black;
+    opacity: 0.8;
+}
+
 .popover-wrapper .popover-content {
     width: 600px;
     height: 800px;
+    border-radius: 10px;
     .scroll-content {
         overflow: auto;
     }

@@ -29,6 +29,10 @@ import { SplitService } from "../domain/split.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
 
+//Modules
+import { IonicRatingModule } from "ionic-rating";
+
+
 // Components
 import { BrightByteApp } from "./app.component";
 
@@ -56,6 +60,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         BrowserModule,
         IonicModule.forRoot(BrightByteApp),
         HttpClientModule,
+        IonicRatingModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
