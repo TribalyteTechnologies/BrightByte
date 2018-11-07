@@ -5,6 +5,7 @@ import { ReviewPage } from "../review/review";
 import { HomePage } from "../home/home";
 import { RankingPage } from "../ranking/ranking";
 import { ILogger, LoggerService } from "../../core/logger.service";
+import { MenuItem } from "../../models/menu-items.model";
 
 @Component({
     selector: "page-tabs",
@@ -12,42 +13,24 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 })
 export class TabsPage {
 
-    public isVisible: boolean = true;
+    public isVisible = true;
+    public tabContent: any;
 
-    public tab1Root = HomePage;
-    public tab2Root = CommitPage;
-    public tab3Root = ReviewPage;
-    public tab4Root = RankingPage;
-
-    public indice = 0;
+    public home: MenuItem = new MenuItem("home", HomePage);
+    public commits: MenuItem = new MenuItem("git-network", CommitPage);
+    public reviews: MenuItem = new MenuItem("eye", ReviewPage);
+    public ranking: MenuItem = new MenuItem("stats", RankingPage);
+    public menuArray = new Array<MenuItem>();
     private log: ILogger;
 
     constructor(
         loggerSrv: LoggerService
     ) {
+        this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
+        this.tabContent = HomePage;
         this.log = loggerSrv.get("TabsPage");
-
     }
-
-     public returnPage(idx: number){
-        switch(idx){
-            case 0: {
-                return this.tab1Root;
-            }
-            case 1: {
-                return this.tab2Root;
-            }
-            case 2: {
-                return this.tab3Root;
-            }
-            case 3: {
-                return this.tab4Root;
-            }
-            default: {
-                return this.tab1Root;
-            }
-
-        }
-
+    public goTo(page: any){
+        this.tabContent = page;
     }
 }

@@ -40,14 +40,16 @@
         "url": "Url",
         "new": "New",
         "view": "View",
-        "agree": "I AGREE",
-        "disagree": "I DONT AGREE",
-        "report": "Report as innapropiate",
+        "agree": "I agree",
+        "disagree": "I dont agree",
+        "report": "Report",
         "allCommits": "All commits",
         "allProjects": "All projects",
-        "pending": "Pending",
+        "pending": "Incompleted",
         "reviewed": "Reviewed",
-        "getCommitsPending": "Error getting pending commits"
+        "getCommitsPending": "Error getting pending commits",
+        "isPendingFilter": "Pending"
+
     },
     "home": {
         "title": "Home",

@@ -3,10 +3,9 @@ page-tabs {
         display: flex;
         flex-direction: column;
         height: 100%;
-        background-color: #2d323e;
+        background-color: rgb(40, 47, 58);
         .menu {
             width: 100px;
-            background-color: #2d323e;
             text-align: center;
         }
         .avatar-container {
@@ -17,7 +16,7 @@ page-tabs {
             text-align: center;
         }
         .logo-container {
-            background-color: #1e232e;
+            background-color: rgba(0, 0, 0, 0.2);
         }
         .logo {
             width: 50px;
@@ -30,7 +29,7 @@ page-tabs {
             position: relative;
             .logout {
                 position: absolute;
-                bottom: 0;
+                bottom: 0px;
             }
         }
     }

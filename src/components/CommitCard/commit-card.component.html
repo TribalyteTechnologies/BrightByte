@@ -1,0 +1,37 @@
+<ion-grid no-padding>
+    <ion-row>
+        <ion-col col-auto align-self-center>
+            <div [ngClass]="commit.isPending ? 'status-pending' : 'status-not-pending'"></div>
+        </ion-col>
+        <ion-col align-self-center class="col-middle">
+            <ion-row class="date">
+                <div>{{commit.creationDateMs | dateFormat }}</div>
+            </ion-row>
+            <ion-row align-items-center class="title">
+                <div>{{ commit.title }}</div>
+                <div *ngIf="commit.isReadNeeded" class="notifications">
+                    <ion-icon name="notifications"></ion-icon>
+                </div>
+            </ion-row>
+            <ion-row class="project">
+                <div>Project name: {{ commit.project }}</div>
+            </ion-row>
+            <ion-row class="url">
+                <div>{{ (commit.url | slice:0:35) +'...'}}</div>
+            </ion-row>
+
+        </ion-col>
+        <ion-col col-auto>
+            <ion-row justify-content-end>
+                <rating [rate]="commit.score" readonly="true" small="true"></rating>
+            </ion-row>
+            <ion-row justify-content-end class="reviews-container">
+                <ion-avatar *ngFor="let comment of comments" class="reviewer-icon">
+                    <img src=" ../../assets/imgs/avatar.jpg ">
+                </ion-avatar>
+                <div class="reviews-information" *ngIf="details.numberReviews - details.currentNumberReviews > 0">+{{ details.numberReviews - details.currentNumberReviews }}</div>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+
+</ion-grid>

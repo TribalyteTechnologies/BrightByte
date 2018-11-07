@@ -19,7 +19,7 @@ page-login {
         background-position: -300px 50%;
         background-image: url("../../assets/imgs/logo_bkg.svg");
         background-repeat: no-repeat;
-        background-color: color($colors, bkg);
+        background-color: color($colors, loginBackground);
     }
     .card-body {
         padding: 20px;

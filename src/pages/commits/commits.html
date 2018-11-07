@@ -13,9 +13,9 @@
                 <ion-col align-self-center>
                     <div>
                         <button ion-button icon-end color="dark" clear (click)="openAddCommitDialog()">
-                                    {{ "commits.add" | translate }}
-                                    <ion-icon name="add-circle"></ion-icon>
-                                </button>
+                            {{ "commits.add" | translate }}
+                            <ion-icon name="add-circle"></ion-icon>
+                        </button>
                     </div>
                 </ion-col>
             </ion-row>
@@ -39,15 +39,14 @@
             <ion-row align-items-center>
                 <ion-col>
                     <ion-row justify-content-end>
-                        <button ion-button round color="danger" (click)="filterValue = 0; refresh()">
-                                {{ "commits.pending" | translate }}
+                        <button ion-button round color="danger" [ngClass]="{disabled:!filterIsIncompleted}" (click)="filterIncompleted()">
+                            {{ "commits.pending" | translate }}
                         </button>
                     </ion-row>
-
                 </ion-col>
                 <ion-col>
                     <ion-row justify-content-end>
-                        <button ion-button round color=secondary (click)="filterValue = 1; refresh()">
+                        <button ion-button round color="secondary" [ngClass]="{disabled:!filterIsReviewed}" (click)="filterCompleted()">
                             {{ "commits.reviewed" | translate }}
                         </button>
                     </ion-row>
@@ -55,162 +54,28 @@
                 </ion-col>
                 <ion-col>
                     <ion-row justify-content-end>
-                        <button ion-button round (click)=" filterValue = 2; refresh()">
-                            {{ "commits.allCommits" | translate }}
+                        <button ion-button round [ngClass]="{disabled:!filterIsPending}" (click)=" filterPending()">
+                            {{ "commits.isPendingFilter" | translate }}
                         </button>
                     </ion-row>
-
                 </ion-col>
             </ion-row>
-
-
-
         </ion-col>
     </ion-row>
+
     <ion-row>
         <ion-col>
-            <ion-list>
-                <ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="indice = i;" class="commit-button">
-                    <ion-grid>
-                        <ion-row align-items-center>
-                            <ion-col col-1 no-padding class="commit-card-circle">
-                                <div class="status-dot-pending" *ngIf="commit.isPending"></div>
-                                <div class="status-dot-notpending" *ngIf="!commit.isPending"></div>
-                            </ion-col>
-
-                            <ion-col no-padding class="commit-card-details">
-                                <ion-row class="commit-card-header">
-                                    <ion-col align-self-center no-padding class="commit-card-date">
-                                        {{ commit.lastModificationDateMs | dateFormat }}
-                                    </ion-col>
-                                    <ion-col align-self-center no-padding class="commit-card-stars">
-                                        <rating [rate]="commit.score" readonly="true" small="true"></rating>
-                                    </ion-col>
-                                </ion-row>
-                                <ion-row class="commit-card-title">
-                                    <ion-col align-self-center no-padding class="title">
-                                        {{ commit.title }}
-                                    </ion-col>
-                                </ion-row>
-                                <ion-row class="commit-card-project">
-                                    <ion-col align-self-center no-padding class="project">
-                                        {{ commit.project }}
-                                    </ion-col>
-                                </ion-row>
-                                <ion-row class="commit-card-url">
-                                    <ion-col align-self-center no-padding class="url" text-wrap>
-                                        {{ "commits.url" | translate }}
-                                        <ion-icon name="open"></ion-icon>
-                                    </ion-col>
-                                </ion-row>
-                            </ion-col>
-
-                            <ion-col col-4 no-padding>
-                                <ion-row class="commit-card-new">
-                                    <ion-col align-self-center no-padding>
-                                        <ion-row justify-content-end>
-                                            <button ion-button small color="secondary" *ngIf="commit.isReadNeeded">{{ "commits.new" | translate }}</button>
-                                        </ion-row>
-                                    </ion-col>
-                                </ion-row>
-                                <ion-row class="commit-card-reviewers">
-                                    <ion-col align-self-center no-padding>
-                                        <ion-row justify-content-end>
-                                            <ion-avatar class="avatar" *ngFor="let comentario of commitCommentsArray[i]">
-                                                <img src=" ../../assets/imgs/avatar.jpg ">
-                                            </ion-avatar>
-                                        </ion-row>
-
-                                    </ion-col>
-
-                                </ion-row>
-                                <ion-row class="commit-card-button">
-                                    <ion-col align-self-center no-padding>
-                                        <ion-row justify-content-end>
-                                            <button ion-button round icon-end outline>
-                                                {{ "commits.view" | translate }}
-                                                <ion-icon name="arrow-forward"></ion-icon>
-                                            </button>
-                                        </ion-row>
-                                    </ion-col>
-                                </ion-row>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-
+            <ion-list class="card" no-padding>
+                <ion-item class="card-list-item" *ngFor="let commit of arrayCommits ; let i = index" (click)="shouldOpen(i); indice = i;">
+                    <commit-card [commit]="commit.commit" [comments]="commit.reviews" [details]="commit.details"></commit-card>
                 </ion-item>
-
             </ion-list>
-            <p class="error-message">{{ msg }}</p>
+            <p class="error-message ">{{ msg }}</p>
         </ion-col>
-
-        <ion-col col-5 *ngIf=" shouldOpen(indice) ">
-            <ion-list *ngFor="let comment of commitCommentsArray[indice]; let j = index">
-                <ion-item>
-                    <ion-row align-items-center>
-                        <ion-col col-2>
-                            <ion-row justify-content-start>
-                                <img src="../../assets/imgs/avatar.jpg" class="username-avatar">
-                            </ion-row>
-                        </ion-col>
-                        <ion-col no-padding>
-                            <ion-row align-items-center>
-                                <ion-col no-padding class="username-title">
-                                    <ion-row justify-content-start>
-                                        <ion-col align-self-center>
-                                            {{ comment.name }}
-                                        </ion-col>
-                                    </ion-row>
-                                </ion-col>
-                                <ion-col no-padding>
-                                    <ion-row justify-content-start>
-                                        <rating [rate]="comment.score" readonly="true" small="true"></rating>
-                                    </ion-row>
-                                </ion-col>
-                            </ion-row>
-                            <ion-row class="username-date">
-                                {{ comment.lastModificationDateMs | dateFormat }}
-                            </ion-row>
-
-                        </ion-col>
-                    </ion-row>
-
-                </ion-item>
-                <ion-item text-wrap>
-                    <ion-col col-12>
-                        {{ comment.text }}
-
-                    </ion-col>
-                </ion-item>
-                <ion-item>
-                    <ion-row>
-                        <ion-col align-self-center col-auto class="username-report">
-                            <ion-row>
-                                <ion-icon name="warning"></ion-icon>
-                                {{ "commits.report" | translate }}
-                            </ion-row>
-                        </ion-col>
-                        <ion-col col-auto>
-                            <ion-row justify-content-end>
-                                <ion-col>
-                                    <button ion-button round small color="secondary" (click)="setThumbs(arrayCommits[indice].url,j, 1)" *ngIf="comment.vote==0 && !isButtonPressArray[j]">{{ "commits.agree" | translate }}</button>
-                                </ion-col>
-                                <ion-col>
-                                    <button ion-button round small color="danger" (click)="setThumbs(arrayCommits[indice].url,j, 2)" *ngIf="comment.vote==0 && !isButtonPressArray[j]">{{ "commits.disagree" | translate }}</button>
-                                </ion-col>
-                                <ion-col>
-                                    <button ion-button round small color="secondary" *ngIf="comment.vote==1" disabled> <ion-icon name="thumbs-up" ></ion-icon></button>
-                                    <button ion-button round small color="danger" *ngIf="comment.vote==2" disabled> <ion-icon name="thumbs-down" ></ion-icon></button>
-                                </ion-col>
-                            </ion-row>
-                        </ion-col>
-
-
-                    </ion-row>
-                </ion-item>
-
+        <ion-col col-5 *ngIf=" openedComments ">
+            <ion-list *ngFor="let comment of arrayCommits[indice].reviews; let j=index ">
+                <commit-comment [review]="comment " (thumbsUp)="setThumbs(arrayCommits[indice].commit.url,j, 1) " (thumbsDown)="setThumbs(arrayCommits[indice].commit.url,j, 2) "></commit-comment>
             </ion-list>
-
         </ion-col>
     </ion-row>
 </ion-content>
