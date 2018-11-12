@@ -23,18 +23,20 @@
 
     <ion-label color="primary">{{ "addCommit.users" | translate }}</ion-label>
 
-    <ion-item *ngFor="let unused of mockInputElementList; let i = index;">
-        <ion-searchbar (ionInput)="refreshSearchbar($event, i)" placeholder="email@example.com" [(ngModel)]="usersMail[i]">
+    <ion-item>
+        <ion-searchbar (ionInput)="refreshSearchbar($event)" placeholder="email@example.com" [(ngModel)]="usersMail[i]">
         </ion-searchbar>
-        <ion-list *ngIf="isShowList[i]">
-            <ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(i, item)">
+        <ion-list>
+            <ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(item)">
                 {{ item }}
             </ion-item>
         </ion-list>
     </ion-item>
-    <button ion-button (click)="addReviewerInput()" *ngIf="isAddInputAllowed">
-        <ion-icon name="add-circle"></ion-icon>
-    </button>
+    <ion-row>
+        <ion-col>
+            <ion-badge *ngFor="let item of userAdded; let j = index" (click)="removeUser(j)">{{ item }}</ion-badge>
+        </ion-col>
+    </ion-row>
     <button ion-button type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
 
 

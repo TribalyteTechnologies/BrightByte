@@ -16,7 +16,6 @@ import { UserDetails } from "../../models/user-details.model";
 })
 export class AddCommitPopover {
     
-    public isAddInputAllowed = true;
     public isTxOngoing = false;
     public msg: string;
     public usersMail = new Array<string>();
@@ -24,9 +23,11 @@ export class AddCommitPopover {
     public mockInputElementList = new Array<any>();
     public arraySearch: string[];
     public myForm: FormGroup;
-    
+    public searchInput = "";
+    public userAdded = new Array<string>();
+    public allEmails = new Array<string>();
+
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
-    private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
     private log: ILogger;
 
@@ -47,14 +48,16 @@ export class AddCommitPopover {
             title: ["", [Validators.required]]
         });
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
-        this.addReviewerInput();
         this.contractManagerService.getAllUserReputation()
         .then(allReputations => {
             this.log.d("All user reputations: ", allReputations);
             this.allEmails = allReputations.map(userRep => userRep.email);
+            this.setUpList(this.searchInput);
         }).catch((e) => {
             this.showGuiMessage("addCommit.errorEmails", e);
         });
+        
+       
     }
     
     public addCommit(url: string, title: string) {
@@ -62,18 +65,18 @@ export class AddCommitPopover {
         this.clearGuiMessage();
         let errMsgId = null;
         this.userDetailsProm.then(userDetails => {
-            for (let userEmail of this.usersMail) {
-                if (this.allEmails.indexOf(userEmail) < 0) {
+            for (let userEmail of this.userAdded) {
+                if (this.userAdded.indexOf(userEmail) < 0) {
                     errMsgId = "addCommit.unknownEmail";
                 }
-                if (this.usersMail.reduce((prevCount, mail) => (mail === userEmail ? prevCount + 1 : prevCount), 0) > 1){
+                if (this.userAdded.reduce((prevCount, mail) => (mail === userEmail ? prevCount + 1 : prevCount), 0) > 1){
                     errMsgId = "addCommit.emailDuplicated";
                 }
                 if (userEmail === userDetails.email){
                     errMsgId = "addCommit.ownEmail";
                 }
             }
-            if (this.usersMail.every(userEmail => !userEmail)) {
+            if (this.userAdded.every(userEmail => !userEmail)) {
                 errMsgId = "addCommit.emptyInput";
             }
             let ret;
@@ -89,7 +92,7 @@ export class AddCommitPopover {
         .then(detailsCommits => {
             let ret;
             if (!detailsCommits || !detailsCommits.url) {
-                ret = this.contractManagerService.addCommit(url, title, this.usersMail)
+                ret = this.contractManagerService.addCommit(url, title, this.userAdded)
                 .catch(err => Promise.reject({msg: "addCommit.addingCommit", err: err}));
             } else {
                 ret = Promise.reject({msg: "addCommit.urlDuplicated"});
@@ -109,55 +112,68 @@ export class AddCommitPopover {
         });
     }
 
-    public refreshSearchbar(ev: any, id: number) { //TODO: ev type targetevent or event
-        this.log.d("Refreshing search bar. Ix: " + id);
+    public setUpList(word: string){
+
         let array;
-        let val = ev.target.value;
-        // if the value is an empty string don't filter the items
-        if (val && val.trim()) {
-            array = this.allEmails.filter((item) => {
-                return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
-            });
-            this.userDetailsProm.then((userDetails: UserDetails) => {
-                array.find((value, index) => {
-                    if (value === userDetails.email) {
-                        array.splice(index, 1);
-                    }
-                });
-            });
-        }
-        this.arraySearch = array;
-        for (let i = 0; i < this.usersMail.length; i++) {
-            this.isShowList[i] = (i === id);
-        }
-    }
-    
-    public setEmailFromList(num: number, item: string) {
-        let isDuplicated = false;
-        this.userDetailsProm.then((userDetails: UserDetails) => {
-            if (item === userDetails.email) {
-                this.showGuiMessage("addCommit.ownEmail");
-                isDuplicated = true;
-            }
-            isDuplicated = isDuplicated || (this.usersMail.indexOf(item) >= 0);
-            if(isDuplicated){
-                this.showGuiMessage("addCommit.emailDuplicated");
-            }else{
-                this.clearGuiMessage();
-                this.usersMail[num] = item;
-                this.isShowList[num] = false;
+        array = this.allEmails.filter((item) => {
+            if(word){
+                return (item.toLowerCase().indexOf(word.trim().toLowerCase()) > -1);
+            } else {
+                return item;
             }
         });
+        this.userDetailsProm.then((userDetails: UserDetails) => {
+            array.find((value, index) => {
+                if (value === userDetails.email) {
+                    array.splice(index, 1);
+                }
+            });
+        });
+        for(let email of this.userAdded){
+            array.find((value, index) => {
+                if (value === email ){
+                    array.splice(index, 1);
+                }
+            });
+        }            
+        this.arraySearch = array;
+    }
+
+
+    public refreshSearchbar(ev: any) { 
+        let val = ev.target.value;
+        this.searchInput = val;
+        this.setUpList(val);
     }
     
-    public addReviewerInput() {
-        if (this.isAddInputAllowed) {
-            this.mockInputElementList.push(null);
-            this.isAddInputAllowed = (this.mockInputElementList.length < this.MAX_REVIEWERS);
-        } else {
-            this.log.d("Max fields already created");
+    public setEmailFromList(item: string) {
+        let isDuplicated = false;
+
+        if (this.userAdded.length < this.MAX_REVIEWERS){
+            this.userDetailsProm.then((userDetails: UserDetails) => {
+                if (item === userDetails.email) {
+                    this.showGuiMessage("addCommit.ownEmail");
+                    isDuplicated = true;
+                }
+                isDuplicated = isDuplicated || (this.usersMail.indexOf(item) >= 0);
+                if(isDuplicated){
+                    this.showGuiMessage("addCommit.emailDuplicated");
+                }else{
+                    this.userAdded.push(item);
+                    this.arraySearch.splice(this.arraySearch.indexOf(item), 1 );
+                }
+    
+            });
         }
+
+        
     }
+
+    public removeUser(idx: number){
+        this.userAdded.splice(idx, 1);
+        this.setUpList(this.searchInput);
+    }
+    
     
     private showGuiMessage(txtId, e?: any){
         this.translateService.get(txtId)

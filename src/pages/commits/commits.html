@@ -29,7 +29,7 @@
         <ion-col col-7>
             <ion-item class="content-color">
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
-                <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh()">
+                <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
                     <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
                 </ion-select>
