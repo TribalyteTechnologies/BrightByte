@@ -56,7 +56,7 @@ export class CommitReviewPage {
         } else {
             this.msg = "";
             this.log.d("index: ", this.indexArray);
-            this.contractManagerService.setReview(this.indexArray, textComment, this.rate)
+            this.contractManagerService.setReview(this.url, textComment, this.rate)
                 .then(txResponse => {
                     this.isBackButtonDisabled = false;
                     this.log.d("Contract manager response: ", txResponse);

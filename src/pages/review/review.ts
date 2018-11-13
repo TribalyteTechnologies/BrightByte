@@ -4,7 +4,6 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitReviewPage } from "../commitreview/commitreview";
 import { TranslateService } from "@ngx-translate/core";
-import { SplitService } from "../../domain/split.service";
 import { CommitToReview } from "../../models/commit-to-review.model";
 import { CommitComment } from "../../models/commit-comment.model";
 import { LoginService } from "../../core/login.service";
@@ -29,7 +28,6 @@ export class ReviewPage {
     constructor(
         public navCtrl: NavController,
         public translateService: TranslateService,
-        private splitService: SplitService,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
@@ -48,8 +46,15 @@ export class ReviewPage {
                 break;
             }
         }
+        this.contractManagerService.setFeedback(commit.url)
+            .then((txResponse) => {
+                this.log.d("Contract manager response: ", txResponse);
+            }).catch((e) => {
+                this.log.e("Error Changing the state of the feedback to false", e);
+        });
+
         this.log.d("True Index of the commit: ", indx);
-        let project = this.splitService.getProject(commit.url);
+        let project = commit.project;
         let commitDetails;
         this.contractManagerService.getDetailsCommits(commit.url)
         .then((detailsCommit: CommitDetails) => {
@@ -121,12 +126,10 @@ export class ReviewPage {
             for (let j = 0; j < this.arrayCommits.length; j++) {
                 this.isFeedback[j] = false;
                 let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
-                .then((notifyArray: boolean[]) => {
+                .then((notifyArray: boolean) => {
                     this.log.d("Array of Bells: ", notifyArray);
-                    for (let i = 0; i < notifyArray.length; i++) {
-                        if (notifyArray[i] === true) {
-                            this.isFeedback[j] = true;
-                        }
+                    if (notifyArray === true) {
+                        this.isFeedback[j] = true;
                     }
                 }).catch((e) => {
                     this.translateService.get("review.getCommits").subscribe(
@@ -138,8 +141,6 @@ export class ReviewPage {
                 });
                 promises.push(promise);
             }
-
-
             return Promise.all(promises);
         }).catch((e) => {
             this.translateService.get("review.getCommits").subscribe(
@@ -183,14 +184,12 @@ export class ReviewPage {
                             this.isFeedback[j] = false;
                             let filteredArray = new Array<UserCommit>();
                             let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
-                                .then((notifyArray: boolean[]) => {
+                                .then((notifyArray: boolean) => {
                                     this.log.d("Array of Bells: ", notifyArray);
-                                    for (let i = 0; i < notifyArray.length; i++) {
-                                        if (notifyArray[i] === true) {
+                                        if (notifyArray === true) {
                                             this.isFeedback[j] = true;
-                                            filteredArray[j] = this.arrayCommits[i];
+                                            filteredArray = this.arrayCommits;
                                         }
-                                    }
                                 }).catch((e) => {
                                     this.translateService.get("review.getCommits").subscribe(
                                         msg => {
@@ -261,14 +260,13 @@ export class ReviewPage {
                             this.isFeedback[j] = false;
                             let filteredArray = new Array<UserCommit>();
                             let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
-                                .then((notifyArray: boolean[]) => {
+                                .then((notifyArray: boolean) => {
                                     this.log.d("Array of Bells: ", notifyArray);
-                                    for (let i = 0; i < notifyArray.length; i++) {
-                                        if (notifyArray[i] === true) {
-                                            this.isFeedback[j] = true;
-                                            filteredArray[j] = this.arrayCommits[i];
-                                        }
+                                    if (notifyArray === true) {
+                                        this.isFeedback[j] = true;
+                                        filteredArray = this.arrayCommits;
                                     }
+
                                 }).catch((e) => {
                                     this.translateService.get("review.getCommits").subscribe(
                                         msg => {

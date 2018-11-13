@@ -16,6 +16,8 @@ contract Commits {
         uint creationDate;
         bool isReadNeeded;
         uint lastModificationDate;
+        uint numberReviews;
+        uint currentNumberReviews;
         uint score;
         uint points;
         address[] pendingComments;
@@ -65,12 +67,12 @@ contract Commits {
         rootAddress = a;
     }
 
-    function setNewCommit (string _title, string _url) public onlyDapp {
+    function setNewCommit (string _title, string _url, uint _users) public onlyDapp {
         address auth = tx.origin;
         address[] memory a;
         bytes32 _id = keccak256(_url);
         if(storedData[_id].author == address(0)){
-            storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp, 0, 0, a,a);
+            storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp,_users, 0, 0, 0, a,a);
             allCommitsArray.push(_id);
             if(msg.sender == tx.origin){
                 root.setNewCommit(_id);
@@ -101,14 +103,17 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
-    function getDetailsCommits(string _url) public onlyDapp view returns(string, string, address, uint, bool, uint){
-        bytes32 id = keccak256(_url);
-        return (storedData[id].url,
-                storedData[id].title,
-                storedData[id].author,
-                storedData[id].creationDate,
-                storedData[id].isReadNeeded,
-                storedData[id].lastModificationDate
+    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint, uint){
+        bytes32 id = _url;
+        Commit memory data = storedData[id];
+        return (data.url,
+                data.title,
+                data.author,
+                data.creationDate,
+                data.lastModificationDate,
+                data.isReadNeeded,
+                data.numberReviews,
+                data.currentNumberReviews
         );
     }
     function getCommitScore(bytes32 _id) public onlyDapp view returns(uint,uint){
@@ -126,13 +131,12 @@ contract Commits {
         );
     }
     function getCommentsOfCommit(bytes32 _url) public onlyDapp view returns(address[],address[]){
-        require(tx.origin == owner || tx.origin == storedData[_url].author);
         return (
             storedData[_url].pendingComments,
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint,uint,uint,uint,bool){
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint,uint,uint,uint,address){
         if(storedData[url].author != tx.origin){
             a = tx.origin;
         }
@@ -142,7 +146,7 @@ contract Commits {
             storedData[url].commitComments[a].vote,
             storedData[url].commitComments[a].creationDate,
             storedData[url].commitComments[a].lastModificationDate,
-            storedData[url].commitComments[a].isReadNeeded
+            storedData[url].commitComments[a].author
         );
     }
     function setReview(string _url,string _text, uint256 _points) onlyDapp public{
@@ -168,6 +172,7 @@ contract Commits {
         storedData[url].commitComments[author].lastModificationDate = block.timestamp;
 
         storedData[url].isReadNeeded = true;
+        storedData[url].currentNumberReviews ++;
         storedData[url].lastModificationDate = block.timestamp;
         //score per commit
         uint points = storedData[url].points;

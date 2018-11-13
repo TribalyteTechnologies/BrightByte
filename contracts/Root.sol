@@ -35,6 +35,7 @@ contract Root{
         remoteCommits = Commits(_commits);
         commitsAddress = _commits;
         remoteCommits.init(address(this));
+        remoteBright.init(address(this));
     }
     function getHelperAddress() public view returns(address,address){
         return(brightAddress,commitsAddress);
@@ -81,6 +82,11 @@ contract Root{
         remoteBright.setReview(url,a,points);
     }
     function setVote(string url, address user, uint8 vote) public onlyUser {
-        remoteCommits.setVote(keccak256(url),user,vote);
+        bytes32 url_bytes = keccak256(url);
+        remoteCommits.setVote(url_bytes,user,vote);
+        remoteBright.setFeedback(url_bytes, user, true);
+    }
+    function setFeedback(string url,address user) public onlyUser {
+        remoteBright.setFeedback(keccak256(url), user, false);
     }
 }

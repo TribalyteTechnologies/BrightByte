@@ -7,7 +7,6 @@ import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
 import { TransactionReceipt, Account } from "web3/types";
-import { SplitService } from "../domain/split.service";
 import { CommitDetails } from "../models/commit-details.model";
 import { UserDetails } from "../models/user-details.model";
 import { CommitComment } from "../models/commit-comment.model";
@@ -36,7 +35,6 @@ export class ContractManagerService {
     constructor(
         public http: HttpClient,
 
-        private splitService: SplitService,
         web3Service: Web3Service,
         loggerSrv: LoggerService
     ) {
@@ -133,9 +131,16 @@ export class ContractManagerService {
             this.log.d("Variables: url ", url);
             this.log.d("UsersMail: ", usersMail);
             // let project = this.splitService.getProject(url);
+            let numUsers: number = 0;
+            for(let i: number = 0; i<usersMail.length; i++){
+                if(usersMail[i] !== ""){
+                    numUsers ++;
+                }
+            }
             let bytecodeData = commit.methods.setNewCommit(
                 title,
-                url
+                url,
+                numUsers
             ).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced user1: ", usersMail[0]);
@@ -147,9 +152,14 @@ export class ContractManagerService {
             return this.sendTx(bytecodeData, this.contractAddressCommits);
         }).then(()=>{
             let emailsArray;
+            emailsArray = [];
             for(let i = 0; i<usersMail.length;i++){
-                emailsArray.push(this.web3.utils.keccak256(usersMail[i]));
-            }
+                //let emailHash = this.web3.utils.keccak256(usersMail[i]);
+                //emailsArray.push(emailHash || "0x00");
+                if (usersMail[i] !== ""){
+                    emailsArray.push(this.web3.utils.keccak256(usersMail[i]));
+                }
+            }    
             let bytecodeData = rootContract.methods.notifyCommit(
                 url,
                 emailsArray
@@ -175,12 +185,12 @@ export class ContractManagerService {
         }).then(([brigh, commit, root]) => {
             for(let i = 0; i < allUserCommits[2].length; i++){
                 let promisePending: Promise<UserCommit> = commit.methods.getDetailsCommits(allUserCommits[2][i]).call()
-                .then((commitVals: any) => UserCommit.fromSmartContract(commitVals));
+                .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true));
                 promisesPending.push(promisePending);
             }
             for(let i = 0; i < allUserCommits[3].length; i++){
                 let promiseFinished: Promise<UserCommit> = commit.methods.getDetailsCommits(allUserCommits[3][i]).call()
-                .then((commitVals: any)=> UserCommit.fromSmartContract(commitVals));
+                .then((commitVals: any)=> UserCommit.fromSmartContract(commitVals, false));
                 promisesFinished.push(promiseFinished);
             }
             return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
@@ -203,14 +213,14 @@ export class ContractManagerService {
                         for(let i=0;i<allUserCommits[0].length;i++){
                             let promisePending = commit.methods.getDetailsCommits(allUserCommits[0][i]).call()
                             .then((commitVals: any)=>{
-                                return UserCommit.fromSmartContract(commitVals);
+                                return UserCommit.fromSmartContract(commitVals, true);
                             });
                             promisesPending.push(promisePending);
                         }
                         for(let i=0;i<allUserCommits[1].length;i++){
                             let promiseFinished = commit.methods.getDetailsCommits(allUserCommits[1][i]).call()
                             .then((commitVals: any)=>{
-                                return UserCommit.fromSmartContract(commitVals);
+                                return UserCommit.fromSmartContract(commitVals, false);
                             });
                             promisesFinished.push(promiseFinished);
                         }
@@ -224,7 +234,7 @@ export class ContractManagerService {
     }
     public getDetailsCommits(url: string): Promise<CommitDetails> {
         return this.initProm.then(([bright, commit, root]) => {
-            return commit.methods.getDetailsCommits(url).call()
+            return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
             .then((commitVals: any)=>{
                 return CommitDetails.fromSmartContract(commitVals);
             });
@@ -257,21 +267,25 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root]) => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", commit);
-            return commit.methods.getCommentsOfCommit(url).call()
+            let url_byte = this.web3.utils.keccak256(url);
+            return commit.methods.getCommentsOfCommit(url_byte).call()
                 .then((allComments: Array<any>) =>{
                     let promisesPending = new Array<Promise<CommitComment>>();
                     let promisesFinished = new Array<Promise<CommitComment>>();
                         for(let i=0;i<allComments[0].length;i++){
-                            let promisePending = commit.methods.getCommentDetail(allComments[0][i]).call()
+                            let promisePending = commit.methods.getCommentDetail(url_byte, allComments[0][i]).call()
                             .then((commitVals: any)=>{
-                                return CommitComment.fromSmartContract(commitVals);
+                                return CommitComment.fromSmartContract(commitVals, "");
                             });
                             promisesPending.push(promisePending);
                         }
                         for(let i=0;i<allComments[1].length;i++){
-                            let promiseFinished = commit.methods.getCommentDetail(allComments[1][i]).call()
+                            let promiseFinished = commit.methods.getCommentDetail(url_byte, allComments[1][i]).call()
                             .then((commitVals: any)=>{
-                                return CommitComment.fromSmartContract(commitVals);
+                                return bright.methods.getUserName(commitVals[5]).call()
+                                .then((userName)=>{
+                                    return CommitComment.fromSmartContract(commitVals, userName);
+                                });
                             });
                             promisesFinished.push(promiseFinished);
                         }
@@ -301,13 +315,13 @@ export class ContractManagerService {
             contractArtifact = root;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            let bytecodeData = contractArtifact.methods.setVote(url, index, value).encodeABI();
-            this.log.d("Introduced index: ", index);
-            this.log.d("Introduced value: ", value);
-            this.log.d("DATA: ", bytecodeData);
-
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
-
+            return this.getCommentsOfCommit(url)
+            .then((arrayOfComments: CommitComment[][]) =>{
+                let bytecodeData = contractArtifact.methods.setVote(url, arrayOfComments[1][index].user, value).encodeABI();
+                this.log.d("Introduced index: ", index);
+                this.log.d("Introduced value: ", value);
+                this.log.d("DATA: ", bytecodeData);
+                return this.sendTx(bytecodeData, this.contractAddressRoot);})
         }).catch(e => {
             this.log.e("Error getting nonce value: ", e);
             throw e;
@@ -319,8 +333,7 @@ export class ContractManagerService {
             contractArtifact = root;
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", contractArtifact);
-            let idURL = this.web3.utils.keccak256(url);
-            let bytecodeData = contractArtifact.methods.readCommit(idURL).encodeABI();
+            let bytecodeData = contractArtifact.methods.readCommit(url).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressRoot);
@@ -352,33 +365,30 @@ export class ContractManagerService {
                 throw err;
             });
     }
-    public getFeedback(url){//: Promise<boolean[]> {
-        // let contractArtifact;
-        // return this.initProm.then(contract => {
-        //     contractArtifact = contract;
-        //     return contractArtifact.methods.getNumbersNeedUrl(url).call();
-        // }).then((numberUsers: number[]) => {
-        //     let promises = new Array<Promise<boolean>>();
-        //     for (let i = 0; i < numberUsers[1]; i++) {
-        //         let promise = contractArtifact.methods.isFeedback(i, url).call();
-        //         promises.push(promise);
-        //     }
-        //     return Promise.all(promises);
-        // }).catch(err => {
-        //     this.log.e("Error getting urls (Feedback) :", err);
-        //     throw err;
-        // });
+    public getFeedback(url):Promise<boolean> {
+         let contractArtifact;
+         let url_byte = this.web3.utils.keccak256(url);
+         return this.initProm.then(contract => {
+             contractArtifact = contract;
+             let promise = contractArtifact[0].methods.getFeedback(url_byte).call();
+             return promise;
+         }).catch(err => {
+             this.log.e("Error getting urls (Feedback) :", err);
+             throw err;
+         });
     }
     private sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
         return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
             .then(nonceValue => {
                 let nonce = "0x" + (nonceValue).toString(16);
                 this.log.d("Value NONCE", nonce);
+                var gasPrice = AppConfig.NETWORK_CONFIG.gasPrice;
+                var gasLimit = AppConfig.NETWORK_CONFIG.gasLimit;
                 let rawtx = {
                     nonce: nonce,
                     // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+                    gasPrice: this.web3.utils.toHex(gasPrice),
+                    gasLimit: this.web3.utils.toHex(gasLimit),
                     to: contractAddress,
                     data: bytecodeData
                 };
@@ -401,7 +411,22 @@ export class ContractManagerService {
                 this.log.e("Error in transaction (sendTx function): ", e);
                 throw e;
             });
-
     }
+    public setFeedback(url: string){
+        let contractArtifact;
+        return this.initProm.then(([bright, commit, root]) => {
+            contractArtifact = root;
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", contractArtifact);
+            let bytecodeData = contractArtifact.methods.setFeedback(url, this.currentUser.address).encodeABI();
+            this.log.d("Introduced url: ", url);
+            this.log.d("DATA: ", bytecodeData);
+            return this.sendTx(bytecodeData, this.contractAddressRoot);
+
+        }).catch(e => {
+            this.log.e("Error getting nonce value: ", e);
+            throw e;
+        });
+   }
 }
 

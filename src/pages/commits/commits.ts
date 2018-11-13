@@ -6,7 +6,6 @@ import { AddCommitPopover } from "../../pages/addcommit/addcommit";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { CommitDetailsPage } from "../../pages/commitdetails/commitdetails";
 import { TranslateService } from "@ngx-translate/core";
-import { SplitService } from "../../domain/split.service";
 import { UserCommit } from "../../models/user-commit.model";
 import { CommitDetails } from "../../models/commit-details.model";
 
@@ -27,7 +26,6 @@ export class CommitPage {
         public popoverCtrl: PopoverController,
         public navCtrl: NavController,
         public http: HttpClient,
-        private splitService: SplitService,
         public translateService: TranslateService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
@@ -45,7 +43,7 @@ export class CommitPage {
         });
     }
     public selectUrl(commit: UserCommit, index: number) {
-        let project = this.splitService.getProject(commit.url);
+        let project = commit.project;
         let isReadReviewNeeded = commit.isReadNeeded;
         this.contractManagerService.getDetailsCommits(commit.url)
             .then((detailsCommit: CommitDetails) => {
@@ -144,7 +142,7 @@ export class CommitPage {
                         this.log.d("ARRAY Commits: ", arrayOfCommits);
                         let index = 0;
                         let array = new Array<UserCommit>();
-                        for (let j = 0; j < arrayOfCommits.length; j++) {
+                        for (let j = 0; j < arrayOfCommits[value].length; j++) {
                             if (!arrayOfCommits[value][j].isPending && 
                                 (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
                                 array[index] = arrayOfCommits[value][j];

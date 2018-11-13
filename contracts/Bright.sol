@@ -1,7 +1,8 @@
 pragma solidity 0.4.21;
+import "./Root.sol";
 
 contract Bright {
-
+    Root private root;
     event UserProfileSetEvent (string name, address hash);
     mapping (address => UserProfile) private hashUserMap;
     mapping (bytes32 => address) private emailUserMap;
@@ -20,6 +21,8 @@ contract Bright {
         bytes32[] pendingReviews;
         uint256 reputation;
         uint256 numberOfPoints;
+        uint256 numberOfTimesReview;
+        bytes32[] toRead;
     }
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -38,6 +41,12 @@ contract Bright {
     modifier onlyDapp() {
         require (msg.sender == rootAddress || msg.sender == tx.origin);
         _;
+    }
+
+    function init(address _root) public {
+        require(rootAddress == uint80(0));
+        root = Root(_root);
+        rootAddress = _root;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -105,6 +114,7 @@ contract Bright {
         require(user != address(0));
         bool saved = false;
         bool tosaved = false;
+        hashUserMap[user].toRead.push(url);
         for (uint i = 0; i<hashUserMap[sender].pendingCommits.length;i++){
             if(hashUserMap[sender].pendingCommits[i] == url){
                 saved = true;
@@ -151,9 +161,10 @@ contract Bright {
     function getAllUserEmail(uint _index) public onlyDapp view returns(string){
         return hashUserMap[allUsersArray[_index]].email;
     }
-    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint){
+    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint){
         return (hashUserMap[allUsersArray[_index]].email,
                 hashUserMap[allUsersArray[_index]].reputation,
+                hashUserMap[allUsersArray[_index]].numberOfTimesReview,
                 hashUserMap[allUsersArray[_index]].numberOfPoints
         );
     }
@@ -163,9 +174,10 @@ contract Bright {
     function setReview(bytes32 url,address author, uint256 _points) public onlyRoot {
         address sender = tx.origin;
         require(hashUserMap[author].hash == author && hashUserMap[sender].hash == sender);
-
+        
         uint numberOfTimesReview = hashUserMap[author].finishedCommits.length +1;
         uint value = hashUserMap[author].numberOfPoints + _points;
+        hashUserMap[author].numberOfTimesReview = numberOfTimesReview;
         hashUserMap[author].numberOfPoints = value;
         hashUserMap[author].reputation = value/numberOfTimesReview;
 
@@ -186,5 +198,33 @@ contract Bright {
             }
         }
         hashUserMap[author].finishedCommits.push(url);
+    }
+    function getUserName(address _hash) public onlyDapp view returns (string) {
+        return (hashUserMap[_hash].name);
+    }
+    function getFeedback(bytes32 _url) public onlyDapp view returns (bool){
+        address sender = tx.origin;
+        bool read = false;
+        for (uint i = 0; i<hashUserMap[sender].toRead.length; i++){
+            if(hashUserMap[sender].toRead[i] == _url){
+                read = true;
+            }
+        }
+        return read;
+    }
+    function setFeedback(bytes32 _url, address user, bool value) public onlyRoot{
+        address sender = user;
+        if(value){
+            hashUserMap[sender].toRead.push(_url);
+        }
+        else{
+            for (uint i = 0 ; i<hashUserMap[sender].toRead.length;i++){
+                if (_url == hashUserMap[sender].toRead[i]){
+                    hashUserMap[sender].toRead[i] = hashUserMap[sender].toRead[hashUserMap[sender].toRead.length-1];
+                    hashUserMap[sender].toRead.length--;
+                    break;
+                }
+            }
+        }
     }
 }

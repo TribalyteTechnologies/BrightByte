@@ -1,5 +1,4 @@
 import { AppConfig } from "../app.config";
-import { SplitService } from "../domain/split.service";
 
 export class UserCommit { 
     public url: string; 
@@ -11,19 +10,28 @@ export class UserCommit {
     public score: number;
     public creationDateMs: number;
     public lastModificationDateMs: number;
-    public splitService: SplitService;
+    public numberReviews: number;
+    public currentNumberReviews: number;
 
-    public static fromSmartContract(commitVals: Array<any>): UserCommit{ 
+    public static getProjectFromUrl(url: string): string {
+        let urlSplitted = url.split("/");
+        let project: string = urlSplitted[4];
+        return project;
+    }
+
+    public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
         commit.url = commitVals[0]; 
         commit.title = commitVals[1];
         commit.author = commitVals[2];
-        commit.project = commit.splitService.getProject(commit.url);
-        //commit.isPending = commitVals[3]; 
-        commit.isReadNeeded = commitVals[4];
+        commit.project = UserCommit.getProjectFromUrl(commit.url);
+        commit.isPending = isPending;
+        commit.creationDateMs = commitVals[3] *1000;
+        commit.lastModificationDateMs = commitVals[4] *1000;
+        commit.isReadNeeded = commitVals[5];
+        commit.numberReviews = commitVals[6];
+        commit.currentNumberReviews = commitVals[7];
         //commit.score = commitVals[5] / AppConfig.SCORE_DIVISION_FACTOR;
-        commit.creationDateMs = commitVals[3] * 1000;
-        commit.lastModificationDateMs = commitVals[5] * 1000;
         return commit;
     } 
 }
