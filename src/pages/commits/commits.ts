@@ -52,6 +52,19 @@ export class CommitPage {
             this.refresh();
         });
     }
+    public selectUrl(commit: UserCommit, index: number) {
+        let project = commit.project;
+        let isReadReviewNeeded = commit.isReadNeeded;
+        this.contractManagerService.getDetailsCommits(commit.url)
+            .then((detailsCommit: CommitDetails) => {
+                if (isReadReviewNeeded) {
+                    //Change flag
+                    this.contractManagerService.reviewChangesCommitFlag(commit.url)
+                        .then((txResponse) => {
+                            this.log.d("Contract manager response: ", txResponse);
+                        }).catch((e) => {
+                            this.log.e("Error Changing the state of the flag to false", e);
+                        });
 
     public setThumbs(url: string, index: number, value: number) {
         this.isButtonPressArray[index] = true;
@@ -132,6 +145,11 @@ export class CommitPage {
         let detailsArray;
 
         this.contractManagerService.getCommits()
+            .then((arrayOfCommits: UserCommit[][]) => {
+                this.log.d(arrayOfCommits[0]);
+                let CommitsArray = [].concat(arrayOfCommits[1],arrayOfCommits[0]);
+                this.log.d("ARRAY Commits: ", CommitsArray);
+
             .then((arrayOfCommits: UserCommit[]) => {
                 commitsArray = arrayOfCommits;
                 return Promise.all(arrayOfCommits.map(commitVals => {
@@ -150,6 +168,8 @@ export class CommitPage {
             }).then((unfilteredCommits) => {
                 
                 let projects = new Array<string>();
+                for (let commitVals of CommitsArray) {
+                    let commitProject = commitVals.project;
                 for (let commitVals of unfilteredCommits) {
                     let commitProject = commitVals.commit.project;
                     if (projects.indexOf(commitProject) < 0) {
@@ -158,6 +178,12 @@ export class CommitPage {
                 }
                 this.projects = projects;
                 this.log.d("Diferent projects: ", this.projects);
+                let index = 0;
+                let array = new Array<UserCommit>();
+                for (let j = 0; j < CommitsArray.length; j++) {
+                    if (this.projectSelected === CommitsArray[j].project) {
+                        array[index] = CommitsArray[j];
+                        index++;
                 
                 let commitList = [];
                 for (let j = 0; j < unfilteredCommits.length; j++) {
@@ -179,6 +205,8 @@ export class CommitPage {
                         });
                     }
                 }
+                if (this.projectSelected === this.ALL) {
+                    this.arrayCommits = CommitsArray.reverse();
                 let filteredCommitList = [];
                 switch(this.filterValue){
                     case 0:
@@ -223,6 +251,55 @@ export class CommitPage {
                     });
             });
 
+    }
+    public setReviewFilter(value: number) {
+        switch (value) {
+            case 0:
+                this.contractManagerService.getCommits()
+                .then((arrayOfCommits: UserCommit[][]) => {
+                    this.log.d("ARRAY Commits: ", arrayOfCommits[value]);
+                    let index = 0;
+                    let array = new Array<UserCommit>();
+                    for (let j = 0; j < arrayOfCommits[value].length; j++) {
+                        if (arrayOfCommits[value][j].isPending && 
+                            (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
+                            array[index] = arrayOfCommits[value][j];
+                            index++;
+                        }
+                    }
+                    this.arrayCommits = array.reverse();
+                }).catch((e) => {
+                    this.translateService.get("commits.getCommitsPending").subscribe(
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
+                        });
+                });
+                break;
+            case 1:
+                this.contractManagerService.getCommits()
+                    .then((arrayOfCommits: UserCommit[][]) => {
+                        this.log.d("ARRAY Commits: ", arrayOfCommits);
+                        let index = 0;
+                        let array = new Array<UserCommit>();
+                        for (let j = 0; j < arrayOfCommits[value].length; j++) {
+                            if (!arrayOfCommits[value][j].isPending && 
+                                (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
+                                array[index] = arrayOfCommits[value][j];
+                                index++;
+                            }
+                        }
+                        this.arrayCommits = array.reverse();
+                    }).catch((e) => {
+                        this.translateService.get("commits.getCommitsPending").subscribe(
+                            msg => {
+                                this.msg = msg;
+                                this.log.e(msg, e);
+                            });
+                    });
+                break;
+            default: this.refresh(); break;
+        }
     }
 
 }

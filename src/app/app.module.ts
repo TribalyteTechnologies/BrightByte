@@ -25,7 +25,6 @@ import { Web3Service } from "../core/web3.service";
 import { AppVersionService } from "../core/app-version.service";
 import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../domain/contract-manager.service";
-import { SplitService } from "../domain/split.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
 
@@ -98,7 +97,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         HttpClientModule,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
-        SplitService,
         AppVersionService
     ]
 })

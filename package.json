@@ -56,7 +56,7 @@
         "ionic": "4.0.0-rc.6",
         "path": "0.12.7",
         "sass-lint": "1.12.1",
-        "truffle": "4.1.9",
+        "truffle": "4.1.6",
         "types-ethereumjs-util": "0.0.8",
         "typescript": "2.4.2",
         "husky": "0.14.3"

@@ -14,7 +14,7 @@ export class AppConfig {
         gasLimit: 2000000,
         gasPrice: 10,
         netId: 4447,
-        urlNode: "http://localhost:9545"
+        urlNode: "HTTP://127.0.0.1:9545"
     };
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ?
