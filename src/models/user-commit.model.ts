@@ -1,4 +1,3 @@
-import { AppConfig } from "../app.config";
 
 export class UserCommit { 
     public url: string; 
@@ -26,8 +25,8 @@ export class UserCommit {
         commit.author = commitVals[2];
         commit.project = UserCommit.getProjectFromUrl(commit.url);
         commit.isPending = isPending;
-        commit.creationDateMs = commitVals[3] *1000;
-        commit.lastModificationDateMs = commitVals[4] *1000;
+        commit.creationDateMs = commitVals[3] * 1000;
+        commit.lastModificationDateMs = commitVals[4] * 1000;
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6];
         commit.currentNumberReviews = commitVals[7];

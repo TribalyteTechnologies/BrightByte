@@ -79,7 +79,7 @@ export class CommitPage {
         this.contractManagerService.getCommits()
             .then((arrayOfCommits: UserCommit[][]) => {
                 this.log.d(arrayOfCommits[0]);
-                let CommitsArray = [].concat(arrayOfCommits[1],arrayOfCommits[0]);
+                let CommitsArray = [].concat(arrayOfCommits[1], arrayOfCommits[0]);
                 this.log.d("ARRAY Commits: ", CommitsArray);
 
                 let projects = new Array<string>();

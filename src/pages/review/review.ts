@@ -186,10 +186,10 @@ export class ReviewPage {
                             let promise = this.contractManagerService.getFeedback(this.arrayCommits[j].url)
                                 .then((notifyArray: boolean) => {
                                     this.log.d("Array of Bells: ", notifyArray);
-                                        if (notifyArray === true) {
-                                            this.isFeedback[j] = true;
-                                            filteredArray = this.arrayCommits;
-                                        }
+                                    if (notifyArray === true) {
+                                        this.isFeedback[j] = true;
+                                        filteredArray = this.arrayCommits;
+                                    }
                                 }).catch((e) => {
                                     this.translateService.get("review.getCommits").subscribe(
                                         msg => {
