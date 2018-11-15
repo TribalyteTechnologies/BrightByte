@@ -113,7 +113,8 @@ contract Commits {
                 data.lastModificationDate,
                 data.isReadNeeded,
                 data.numberReviews,
-                data.currentNumberReviews
+                data.currentNumberReviews,
+                data.score
         );
     }
     function getCommitScore(bytes32 _id) public onlyDapp view returns(uint,uint){

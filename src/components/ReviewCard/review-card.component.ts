@@ -3,12 +3,12 @@ import { UserCommit } from "../../models/user-commit.model";
 
 
 @Component({
-    selector: "commit-card",
-    templateUrl: " commit-card.component.html ",
-    styles: ["commit-card.component.scss"]
+    selector: "review-card",
+    templateUrl: " review-card.component.html ",
+    styles: ["review-card.component.scss"]
  })
 
-export class CommitCard {
+export class ReviewCard {
 
 
     @Input()

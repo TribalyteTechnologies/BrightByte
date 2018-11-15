@@ -36,6 +36,8 @@ import { IonicRatingModule } from "ionic-rating";
 import { BrightByteApp } from "./app.component";
 import { CommitCard } from "../components/CommitCard/commit-card.component";
 import { CommentComponent } from "../components/CommitComment/commit-comment.component";
+import { ReviewCard } from "../components/ReviewCard/review-card.component";
+import { ReviewCommentComponent } from "../components/ReviewComment/review-comment.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -57,7 +59,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommitDetailsPage,
         DateFormatPipe,
         CommitCard,
-        CommentComponent
+        CommentComponent,
+        ReviewCard,
+        ReviewCommentComponent
     ],
     imports: [
         BrowserModule,
@@ -87,7 +91,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommitReviewPage,
         CommitDetailsPage,
         CommitCard,
-        CommentComponent
+        CommentComponent,
+        ReviewCard,
+        ReviewCommentComponent
     ],
     providers: [
         AppConfig,

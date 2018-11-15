@@ -6,7 +6,7 @@ export class CommitComment {
     public vote: number;
     public creationDateMs: number;
     public lastModificationDateMs: number;
-    public static fromSmartContract(commentVals: Array<any>, userName:string): CommitComment{ 
+    public static fromSmartContract(commentVals: Array<any>, userName: string): CommitComment{ 
         let comment = new CommitComment(); 
         comment.text = commentVals[0]; 
         comment.score = commentVals[1]; 

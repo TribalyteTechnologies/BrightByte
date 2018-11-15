@@ -23,7 +23,6 @@ export class CommitPage {
     public projectSelected = this.ALL;
     public commentsArray = new Array<CommitComment>();
     public commitCommentsArray = new Array<Array<CommitComment>>();
-    public isButtonPressArray = new Array<boolean>();
     public openedComments = false;
     public indice = 0;
     public filterValue = 2;
@@ -31,7 +30,10 @@ export class CommitPage {
     public filterIsIncompleted = false;
     public filterIsReviewed = false;
     public msg: string;
+    public commitComments: CommitComment[] = [];
+
     private log: ILogger;
+
 
     constructor(
         public popoverCtrl: PopoverController,
@@ -44,6 +46,67 @@ export class CommitPage {
         this.log = loggerSrv.get("CommitsPage");
     }
 
+    public ionViewWillEnter() {
+        this.refresh();
+    }
+
+    public refresh() {
+
+        this.contractManagerService.getCommits()
+            .then((commitConcat: UserCommit[][]) => {
+
+                let commits = commitConcat[0].concat(commitConcat[1]);
+                console.log(commits);
+                let projectFilter: UserCommit[] = [];
+
+                let projects = commits.map( commit => commit.project );
+                this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
+                
+                if (!(this.projectSelected === this.ALL)){
+                    projectFilter = commits.filter(commit => {
+                        return (commit.project === this.projectSelected);
+                    });
+                } else {
+                    projectFilter = commits;
+                }
+
+                let completedFilter: UserCommit[] = [];
+                switch(this.filterValue){
+                    case 0:
+                        completedFilter = projectFilter.filter(commit => {
+                            return (commit.numberReviews !== commit.currentNumberReviews);
+                        });
+                        break;
+                    case 1:
+                        completedFilter = projectFilter.filter(commit => {
+                            return (commit.numberReviews === commit.currentNumberReviews);
+                        });
+                        break;
+                    default:
+                        completedFilter = projectFilter;
+                        break;
+                }
+
+                let pendingFilter: UserCommit[] = [];
+                if(this.filterIsPending){
+                    pendingFilter = completedFilter.filter(commit => {
+                        return commit.isReadNeeded;
+                    });
+                } else {
+                    pendingFilter = completedFilter;
+                }
+
+                this.arrayCommits = pendingFilter.sort((c1, c2) => {
+                    return (c2.creationDateMs - c1.creationDateMs);
+                });
+            }).catch((e) => {
+                this.translateService.get("commits.getCommits").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            });
+    }
 
     public openAddCommitDialog() {
         let popover = this.popoverCtrl.create(AddCommitPopover, { cssClass: "custom-popover" });
@@ -52,36 +115,19 @@ export class CommitPage {
             this.refresh();
         });
     }
-    public selectUrl(commit: UserCommit, index: number) {
-        let project = commit.project;
-        let isReadReviewNeeded = commit.isReadNeeded;
-        this.contractManagerService.getDetailsCommits(commit.url)
-            .then((detailsCommit: CommitDetails) => {
-                if (isReadReviewNeeded) {
-                    //Change flag
-                    this.contractManagerService.reviewChangesCommitFlag(commit.url)
-                        .then((txResponse) => {
-                            this.log.d("Contract manager response: ", txResponse);
-                        }).catch((e) => {
-                            this.log.e("Error Changing the state of the flag to false", e);
-                        });
 
     public setThumbs(url: string, index: number, value: number) {
-        this.isButtonPressArray[index] = true;
-        this.log.d("Index of the comment: ", index);
-        this.log.d("Value: ", value);
-        this.log.d("url: ", url);
+        console.log(url, index, value);
         this.contractManagerService.setThumbReviewForComment(url, index, value)
             .then(txResponse => {
-                this.log.d("Contract manager response: ", txResponse);
                 if (txResponse) {
-                    this.isButtonPressArray[index] = false;      
+                    this.log.d("Contract manager response: ", txResponse);
+                    this.openedComments = false;
                     this.refresh();
                 } else {
                     throw "Error: commitdetails response is undefine";
                 }
             }).catch(e => {
-                this.isButtonPressArray[index] = false;
                 this.log.e("Can't set the vote", e);
                 this.translateService.get("commitDetails.setThumbs").subscribe(
                     msg => {
@@ -100,6 +146,7 @@ export class CommitPage {
         this.openedComments = false;  
         this.refresh();
     }
+    
     public filterCompleted(){
         this.filterValue === 1 ? this.filterValue = 2 : this.filterValue = 1;
         this.filterIsReviewed = !this.filterIsReviewed;
@@ -109,197 +156,19 @@ export class CommitPage {
         this.openedComments = false;  
         this.refresh();
     }
+
     public filterPending(){
         this.filterIsPending = !this.filterIsPending;
         this.openedComments = false;
         this.refresh();
     }
 
-    public shouldOpen(idx: number) {
-        let commentList = this.arrayCommits[idx];
-        if (typeof commentList === "undefined"){
-            this.openedComments = false;
-        } else {
-            if(commentList.commit.isReadNeeded){
-                console.log(commentList.commit.url);
-                this.contractManagerService.reviewChangesCommitFlag(commentList.commit.url)
-                .then((txResponse) => {
-                    this.log.d("Contract manager response: ", txResponse);
-                }).catch((e) => {
-                    this.log.e("Error Changing the state of the flag to false", e);
-                });
-            }
-            this.refresh();
-            this.openedComments = (commentList && commentList.reviews.length > 0);
-        }
-    }
-
-    public ionViewWillEnter() {
-        this.refresh();
-    }
-
-    public refresh() {
-
-        let commitsArray;
-        let commentsArray;
-        let detailsArray;
-
-        this.contractManagerService.getCommits()
-            .then((arrayOfCommits: UserCommit[][]) => {
-                this.log.d(arrayOfCommits[0]);
-                let CommitsArray = [].concat(arrayOfCommits[1],arrayOfCommits[0]);
-                this.log.d("ARRAY Commits: ", CommitsArray);
-
-            .then((arrayOfCommits: UserCommit[]) => {
-                commitsArray = arrayOfCommits;
-                return Promise.all(arrayOfCommits.map(commitVals => {
-                    return this.contractManagerService.getCommentsOfCommit(commitVals.url);
-                }));
-            }).then((commitComments: CommitComment[][]) => {
-                commentsArray = commitComments;
-                return Promise.all(commitsArray.map(commitVals => {
-                    return this.contractManagerService.getDetailsCommits(commitVals.url);
-            }));
-            }).then((commitDetails: CommitDetails[]) => {
-                detailsArray = commitDetails.map((details, idx) => {
-                    return {"commit": commitsArray[idx], "reviews": commentsArray[idx], "details": details};
-                });
-                return detailsArray;
-            }).then((unfilteredCommits) => {
-                
-                let projects = new Array<string>();
-                for (let commitVals of CommitsArray) {
-                    let commitProject = commitVals.project;
-                for (let commitVals of unfilteredCommits) {
-                    let commitProject = commitVals.commit.project;
-                    if (projects.indexOf(commitProject) < 0) {
-                        projects.push(commitProject);
-                    }
-                }
-                this.projects = projects;
-                this.log.d("Diferent projects: ", this.projects);
-                let index = 0;
-                let array = new Array<UserCommit>();
-                for (let j = 0; j < CommitsArray.length; j++) {
-                    if (this.projectSelected === CommitsArray[j].project) {
-                        array[index] = CommitsArray[j];
-                        index++;
-                
-                let commitList = [];
-                for (let j = 0; j < unfilteredCommits.length; j++) {
-                    if (this.projectSelected === unfilteredCommits[j].commit.project) {
-                        commitList.push({
-                            "commit": unfilteredCommits[j].commit, 
-                            "reviews": unfilteredCommits[j].reviews, 
-                            "details": unfilteredCommits[j].details
-                        });
-                    }
-                }    
-                if (this.projectSelected === this.ALL) {
-                    commitList = [];
-                    for (let j = 0; j < unfilteredCommits.length; j++){
-                        commitList.push({
-                            "commit": unfilteredCommits[j].commit, 
-                            "reviews": unfilteredCommits[j].reviews, 
-                            "details": unfilteredCommits[j].details
-                        });
-                    }
-                }
-                if (this.projectSelected === this.ALL) {
-                    this.arrayCommits = CommitsArray.reverse();
-                let filteredCommitList = [];
-                switch(this.filterValue){
-                    case 0:
-                        for (let j = 0; j < commitList.length; j++) {
-                            if (commitList[j].details.numberReviews !== commitList[j].details.currentNumberReviews) {
-                                filteredCommitList.push(commitList[j]);
-                            }
-                        }
-                        break;
-                    case 1:
-                        for (let j = 0; j < commitList.length; j++) {
-                            if (commitList[j].details.numberReviews === commitList[j].details.currentNumberReviews) {
-                                filteredCommitList.push(commitList[j]);
-                            }
-                        }
-                        break;
-                    default:
-                        filteredCommitList = commitList;
-                        break;
-                }
-
-                let filteredPendingCommitList = [];
-                if(this.filterIsPending){
-                    for (let j = 0; j < filteredCommitList.length; j++){
-                        if (filteredCommitList[j].commit.isReadNeeded){
-                            filteredPendingCommitList.push(filteredCommitList[j]);
-                        }
-                    }
-                } else {
-                    filteredPendingCommitList = filteredCommitList;
-                }
-
-                this.arrayCommits = filteredPendingCommitList.sort((c1, c2) => { 
-                    return c2.commit.creationDateMs - c1.commit.creationDateMs;
-                });
-
-            }).catch((e) => {
-                this.translateService.get("commits.getCommits").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
+    public shouldOpen(commit: UserCommit) {
+        this.contractManagerService.getCommentsOfCommit(commit.url)
+            .then((comments: CommitComment[][]) => {
+                this.commitComments = comments[1];
+                this.openedComments = comments[1].length > 0 ? true : false;
             });
-
-    }
-    public setReviewFilter(value: number) {
-        switch (value) {
-            case 0:
-                this.contractManagerService.getCommits()
-                .then((arrayOfCommits: UserCommit[][]) => {
-                    this.log.d("ARRAY Commits: ", arrayOfCommits[value]);
-                    let index = 0;
-                    let array = new Array<UserCommit>();
-                    for (let j = 0; j < arrayOfCommits[value].length; j++) {
-                        if (arrayOfCommits[value][j].isPending && 
-                            (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
-                            array[index] = arrayOfCommits[value][j];
-                            index++;
-                        }
-                    }
-                    this.arrayCommits = array.reverse();
-                }).catch((e) => {
-                    this.translateService.get("commits.getCommitsPending").subscribe(
-                        msg => {
-                            this.msg = msg;
-                            this.log.e(msg, e);
-                        });
-                });
-                break;
-            case 1:
-                this.contractManagerService.getCommits()
-                    .then((arrayOfCommits: UserCommit[][]) => {
-                        this.log.d("ARRAY Commits: ", arrayOfCommits);
-                        let index = 0;
-                        let array = new Array<UserCommit>();
-                        for (let j = 0; j < arrayOfCommits[value].length; j++) {
-                            if (!arrayOfCommits[value][j].isPending && 
-                                (this.projectSelected === arrayOfCommits[value][j].project || this.projectSelected === this.ALL)) {
-                                array[index] = arrayOfCommits[value][j];
-                                index++;
-                            }
-                        }
-                        this.arrayCommits = array.reverse();
-                    }).catch((e) => {
-                        this.translateService.get("commits.getCommitsPending").subscribe(
-                            msg => {
-                                this.msg = msg;
-                                this.log.e(msg, e);
-                            });
-                    });
-                break;
-            default: this.refresh(); break;
-        }
     }
 
 }
