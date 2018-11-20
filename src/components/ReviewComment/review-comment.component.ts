@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { CommitComment } from "../../models/commit-comment.model";
 
 @Component({
@@ -12,17 +12,5 @@ export class ReviewCommentComponent {
     @Input()
     public review: CommitComment;
 
-    @Output() 
-    public thumbsUp = new EventEmitter();
-
-    @Output()
-    public thumbsDown = new EventEmitter();
-
-    public setThumbsUp(){
-        this.thumbsUp.next();
-    }
-    public setThumbsDown(){
-        this.thumbsDown.next();
-    }
 
 }

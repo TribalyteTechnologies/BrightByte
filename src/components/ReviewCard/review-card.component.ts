@@ -9,12 +9,6 @@ import { UserCommit } from "../../models/user-commit.model";
  })
 
 export class ReviewCard {
-
-
     @Input()
     public commit: UserCommit;
-
-    public userArray = [];
-
-    
 }

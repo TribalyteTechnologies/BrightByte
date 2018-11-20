@@ -52,7 +52,6 @@ export class ReviewPage {
 
     public ionViewWillEnter(): void {
         this.refresh();
-        this.contractManagerService.getCommitsToReview();
     }
 
     public refresh(){
@@ -122,8 +121,9 @@ export class ReviewPage {
                     return commitUR.user === userAdress;
                 });
                 let idx = allComments.indexOf(this.userCommitComment[0]);
-                if(idx > -1){
-                    this.commitComments = allComments.slice(idx, 1);
+                if(idx !== -1){
+                    allComments.splice(idx, 1);
+                    this.commitComments = allComments;
                     this.needReview = false;
                 } else {
                     this.commitComments = allComments;
@@ -159,7 +159,7 @@ export class ReviewPage {
         this.filterValue === 0 ? this.filterValue = 2 : this.filterValue = 0;
         this.filterIsIncompleted = !this.filterIsIncompleted;
         if(this.filterIsReviewed){
-            this.filterIsReviewed = !this.filterIsReviewed;
+            this.filterIsReviewed = false;
         }     
         this.openedComments = false;  
         this.refresh();
@@ -169,7 +169,7 @@ export class ReviewPage {
         this.filterValue === 1 ? this.filterValue = 2 : this.filterValue = 1;
         this.filterIsReviewed = !this.filterIsReviewed;
         if(this.filterIsIncompleted){
-            this.filterIsIncompleted = !this.filterIsIncompleted;
+            this.filterIsIncompleted = false;
         }
         this.openedComments = false;  
         this.refresh();

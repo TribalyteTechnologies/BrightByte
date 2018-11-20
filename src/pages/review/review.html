@@ -22,7 +22,7 @@
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
                 <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
-                    <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
+                    <ion-option *ngFor="let option of projects" [value]="option">{{ option }}</ion-option>
                 </ion-select>
             </ion-item>
         </ion-col>
@@ -64,27 +64,27 @@
             <p class="error-message ">{{ msg }}</p>
         </ion-col>
         <ion-col col-5 *ngIf=" openedComments ">
+            <div class="reviews-col-title">My Review</div>
             <ion-list *ngIf="needReview">
                 <ion-row>
                     <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
                     </ion-textarea>
                 </ion-row>
-
                 <ion-row>
                     <button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
-                            <ion-icon name="{{ star[number] }}"></ion-icon>
-                        </button>
+                        <ion-icon name="{{ star[number] }}"></ion-icon>
+                    </button>
                 </ion-row>
                 <ion-row>
                     <button ion-button (click)="setReview(displayCommitsToReview[indice].url, textComment, rate)">
-                            {{ "commitReview.review" | translate }}
-                        </button>
+                        {{ "commitReview.review" | translate }}
+                    </button>
                 </ion-row>
-
             </ion-list>
             <ion-list *ngIf="userCommitComment[0]">
-                <review-comment [review]="userCommitComment "></review-comment>
+                <review-comment [review]="userCommitComment[0] "></review-comment>
             </ion-list>
+            <div class="reviews-col-title" *ngIf="commitComments.length > 0">Other reviews</div>
             <ion-list *ngFor="let comment of commitComments; let j=index ">
                 <review-comment [review]="comment "></review-comment>
             </ion-list>

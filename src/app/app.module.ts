@@ -38,6 +38,7 @@ import { CommitCard } from "../components/CommitCard/commit-card.component";
 import { CommentComponent } from "../components/CommitComment/commit-comment.component";
 import { ReviewCard } from "../components/ReviewCard/review-card.component";
 import { ReviewCommentComponent } from "../components/ReviewComment/review-comment.component";
+import { RankingCard } from "../components/ranking-card/ranking-card.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -61,7 +62,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommitCard,
         CommentComponent,
         ReviewCard,
-        ReviewCommentComponent
+        ReviewCommentComponent,
+        RankingCard
     ],
     imports: [
         BrowserModule,
@@ -93,7 +95,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommitCard,
         CommentComponent,
         ReviewCard,
-        ReviewCommentComponent
+        ReviewCommentComponent,
+        RankingCard
     ],
     providers: [
         AppConfig,

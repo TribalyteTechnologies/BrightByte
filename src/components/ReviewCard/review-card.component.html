@@ -29,7 +29,9 @@
                 <ion-avatar class="reviewer-icon">
                     <img src=" ../../assets/imgs/avatar.jpg ">
                 </ion-avatar>
-                <div class="reviews-information" *ngIf="commit.numberReviews - commit.currentNumberReviews > 0">+{{ commit.numberReviews - commit.currentNumberReviews }}</div>
+                <div class="reviews-information" *ngIf="commit.numberReviews - commit.currentNumberReviews > 0">
+                    +{{ commit.numberReviews - commit.currentNumberReviews }}
+                </div>
             </ion-row>
         </ion-col>
     </ion-row>

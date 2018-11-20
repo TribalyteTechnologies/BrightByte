@@ -2,4 +2,61 @@ page-ranking {
     .error-message {
         color: red;
     }
+    .toolbar-background {
+        background-color: rgb(246, 247, 251);
+    }
+    .card-reputation {
+        background-color: rgb(246, 247, 251);
+    }
+    .navigation-bar {
+        height: 100px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .content-color {
+        background-color: rgb(246, 247, 251);
+    }
+    .user-avatar {
+        width: 100px;
+        height: auto;
+        border-radius: 50%;
+        margin-right: 25px;
+    }
+    .user-ranking {
+        font-size: 18px;
+        line-height: 30px;
+        font-weight: bold;
+        color: #ff4c52;
+    }
+    .user-level {
+        font-size: 15px;
+        line-height: 30px;
+        color: #526069;
+    }
+    .user-table-info {
+        text-align: left;
+        font-size: 15px;
+        line-height: 30px;
+        color: #000000;
+    }
+    .user-table-text {
+        text-align: left;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 30px;
+        color: #000000;
+    }
+    .user-table-percent {
+        text-align: left;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 30px;
+        color: #0acf97;
+    }
+    .row-class {
+        height: 100%;
+    }
+    .col-details {
+        border-left: 1px solid rgb(231, 234, 237);
+        background-color: rgb(231, 234, 237);
+    }
 }

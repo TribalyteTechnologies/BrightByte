@@ -1,3 +1,4 @@
+import { AppConfig } from "../app.config";
 export class UserCommit { 
     public url: string; 
     public title: string;
@@ -29,7 +30,7 @@ export class UserCommit {
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6];
         commit.currentNumberReviews = commitVals[7];
-        commit.score = commitVals[8];
+        commit.score = commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR ;
         return commit;
     } 
 }

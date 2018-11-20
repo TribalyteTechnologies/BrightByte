@@ -23,10 +23,10 @@ export class AddCommitPopover {
     public mockInputElementList = new Array<any>();
     public arraySearch: string[];
     public myForm: FormGroup;
-    public searchInput = "";
     public userAdded = new Array<string>();
-    public allEmails = new Array<string>();
-
+    
+    private allEmails = new Array<string>();
+    private searchInput = "";
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private userDetailsProm: Promise<UserDetails>;
     private log: ILogger;

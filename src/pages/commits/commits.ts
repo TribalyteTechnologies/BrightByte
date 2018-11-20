@@ -24,7 +24,7 @@ export class CommitPage {
     public commentsArray = new Array<CommitComment>();
     public commitCommentsArray = new Array<Array<CommitComment>>();
     public openedComments = false;
-    public indice = 0;
+    public globalIndex = 0;
     public filterValue = 2;
     public filterIsPending = false;
     public filterIsIncompleted = false;
@@ -117,7 +117,6 @@ export class CommitPage {
     }
 
     public setThumbs(url: string, index: number, value: number) {
-        console.log(url, index, value);
         this.contractManagerService.setThumbReviewForComment(url, index, value)
             .then(txResponse => {
                 if (txResponse) {
@@ -167,7 +166,7 @@ export class CommitPage {
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.commitComments = comments[1];
-                this.openedComments = comments[1].length > 0 ? true : false;
+                this.openedComments = comments[1].length > 0;
             });
     }
 

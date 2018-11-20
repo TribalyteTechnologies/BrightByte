@@ -103,7 +103,7 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
-    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint, uint){
+    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint, uint, uint){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,

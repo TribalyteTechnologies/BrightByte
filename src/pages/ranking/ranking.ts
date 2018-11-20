@@ -58,5 +58,7 @@ export class RankingPage {
                         this.log.e(msg, e);
                     });
             });
+        
+
     }
 }

@@ -66,7 +66,7 @@
     <ion-row>
         <ion-col>
             <ion-list class="card" no-padding>
-                <ion-item class="card-list-item" *ngFor="let commit of arrayCommits ; let i = index" (click)="shouldOpen(commit); indice = i;">
+                <ion-item class="card-list-item" *ngFor="let commit of arrayCommits ; let i = index" (click)="shouldOpen(commit); globalIndex = i;">
                     <commit-card [commit]="commit"></commit-card>
                 </ion-item>
             </ion-list>
@@ -74,7 +74,7 @@
         </ion-col>
         <ion-col col-5 *ngIf=" openedComments ">
             <ion-list *ngFor="let comment of commitComments; let j=index ">
-                <commit-comment [review]="comment" (thumbsUp)="setThumbs(arrayCommits[indice].url,j, 1) " (thumbsDown)="setThumbs(arrayCommits[indice].url,j, 2) "></commit-comment>
+                <commit-comment [review]="comment" (thumbsUp)="setThumbs(arrayCommits[globalIndex].url,j, 1) " (thumbsDown)="setThumbs(arrayCommits[globalIndex].url,j, 2) "></commit-comment>
             </ion-list>
         </ion-col>
     </ion-row>
