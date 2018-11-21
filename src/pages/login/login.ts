@@ -42,6 +42,12 @@ export class LoginPage {
         );
     }
 
+    public ionViewWillEnter(){
+        //TODO: check if private key and password are in localStorage (only if LOG_DEBUG is true)
+        // if present, perform login (call new function to set private key, then call login(passw from localStorage)
+        // if not, noop
+    }
+
     public openFile = (event: Event) => {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;
@@ -54,6 +60,8 @@ export class LoginPage {
             let reader = new FileReader();
             reader.readAsText(input);
             reader.onload = () => {
+                //TODO: extract this to a separate function
+                //And call it with different source of data (file or localStorage)
                 this.debuggingText = String(reader.result);
                 this.text = JSON.parse(String(reader.result));
             };
@@ -113,5 +121,4 @@ export class LoginPage {
     public register() {
         this.navCtrl.push(NewuserPage);
     }
-
 }

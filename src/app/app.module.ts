@@ -26,9 +26,19 @@ import { AppVersionService } from "../core/app-version.service";
 import { LoginService } from "../core/login.service";
 import { ContractManagerService } from "../domain/contract-manager.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
+import { DateFormatPipe } from "../core/date-format.pipe";
+
+//Modules
+import { IonicRatingModule } from "ionic-rating";
+
 
 // Components
 import { BrightByteApp } from "./app.component";
+import { CommitCard } from "../components/CommitCard/commit-card.component";
+import { CommentComponent } from "../components/CommitComment/commit-comment.component";
+import { ReviewCard } from "../components/ReviewCard/review-card.component";
+import { ReviewCommentComponent } from "../components/ReviewComment/review-comment.component";
+import { RankingCard } from "../components/ranking-card/ranking-card.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -47,12 +57,19 @@ export function HttpLoaderFactory(http: HttpClient) {
         AddCommitPopover,
         SetProfilePage,
         CommitReviewPage,
-        CommitDetailsPage
+        CommitDetailsPage,
+        DateFormatPipe,
+        CommitCard,
+        CommentComponent,
+        ReviewCard,
+        ReviewCommentComponent,
+        RankingCard
     ],
     imports: [
         BrowserModule,
         IonicModule.forRoot(BrightByteApp),
         HttpClientModule,
+        IonicRatingModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -74,7 +91,12 @@ export function HttpLoaderFactory(http: HttpClient) {
         AddCommitPopover,
         SetProfilePage,
         CommitReviewPage,
-        CommitDetailsPage
+        CommitDetailsPage,
+        CommitCard,
+        CommentComponent,
+        ReviewCard,
+        ReviewCommentComponent,
+        RankingCard
     ],
     providers: [
         AppConfig,

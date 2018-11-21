@@ -1,4 +1,4 @@
-
+import { AppConfig } from "../app.config";
 export class UserCommit { 
     public url: string; 
     public title: string;
@@ -13,9 +13,7 @@ export class UserCommit {
     public currentNumberReviews: number;
 
     public static getProjectFromUrl(url: string): string {
-        let urlSplitted = url.split("/");
-        let project: string = urlSplitted[4];
-        return project;
+        return url.split("/")[4];
     }
 
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
@@ -30,7 +28,7 @@ export class UserCommit {
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6];
         commit.currentNumberReviews = commitVals[7];
-        //commit.score = commitVals[5] / AppConfig.SCORE_DIVISION_FACTOR;
+        commit.score = commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR ;
         return commit;
     } 
 }

@@ -1,0 +1,36 @@
+page-tabs {
+    .menu-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: rgb(40, 47, 58);
+        .menu {
+            width: 100px;
+            text-align: center;
+        }
+        .avatar-container {
+            display: inline-block;
+        }
+        .avatar {
+            background-color: transparent;
+            text-align: center;
+        }
+        .logo-container {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            width: 50px;
+            text-align: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .logout-container {
+            flex: 1;
+            position: relative;
+            .logout {
+                position: absolute;
+                bottom: 0px;
+            }
+        }
+    }
+}

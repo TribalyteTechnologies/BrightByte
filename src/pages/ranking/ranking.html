@@ -1,22 +1,60 @@
-<ion-header>
-    <ion-navbar>
-        <ion-title>
-            {{ "ranking.title" | translate }}
-        </ion-title>
+<ion-header no-border class="header">
+    <ion-navbar class="navigation-bar">
+        <ion-grid>
+            <ion-row>
+                <ion-col col-2 align-self-center class="header">
+                    <div>
+                        <ion-title>
+                            {{ "ranking.title" | translate }}
+                        </ion-title>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
     </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-    <p>{{ "ranking.name" | translate }}: {{ userDetails.name }}</p>
-    <p>{{ "ranking.mail" | translate }}: {{ userDetails.email }}</p>
-    <p>{{ "ranking.nCommitsReviewByMe" | translate }}: {{ userDetails.numberCommitsReviewedByMe }}</p>
-    <p>{{ "ranking.nCommitsToReviewByMe" | translate }}: {{ userDetails.numberCommitsToReviewByMe }}</p>
-    <p>{{ "ranking.totalCommits" | translate }}: {{ userDetails.numbermyCommits }}</p>
-    <p>{{ "ranking.reputation" | translate }}: {{ (userDetails.reputation) }}</p>
-    <p class="error-message">{{ msg }}</p>
-    <ion-list inset>
-        <button ion-item *ngFor="let user of usersRep">
-            {{ user.email }} {{ "ranking.has" | translate }} {{ user.reputation }} {{ "commitDetails.stars" | translate }} ({{ user.numReviews }} {{ "ranking.reviewsReceived" | translate }})
-        </button>
-    </ion-list>
+<ion-content no-padding class="content-color">
+    <ion-row class="row-class">
+        <ion-col col-7>
+            <ion-list no-padding>
+                <ion-item class="card-reputation" *ngFor="let user of usersRep">
+                    <ranking-card [ranking]="user"></ranking-card>
+                </ion-item>
+            </ion-list>
+        </ion-col>
+        <ion-col col-5 class="col-details">
+            <ion-row class="row-class">
+                <ion-col col-auto>
+                    <img class=user-avatar src="../../assets/imgs/avatar.jpg">
+                </ion-col>
+                <ion-col>
+                    <ion-row>
+                        <rating [rate]="userDetails.reputation" readonly="true" small="true"></rating>
+                    </ion-row>
+                    <ion-row>
+                        <div class="user-ranking">Power Coder</div>
+                    </ion-row>
+                    <ion-row class="user-level">Nivel 72</ion-row>
+                    <ion-row>
+                        <ion-col no-padding>
+                            <ion-row class="user-table-info">Reviews</ion-row>
+                            <ion-row class="user-table-text">{{ userDetails.numberCommitsReviewedByMe }}</ion-row>
+                        </ion-col>
+                        <ion-col no-padding>
+                            <ion-row class="user-table-info">Commits</ion-row>
+                            <ion-row class="user-table-text">{{ userDetails.numbermyCommitsFinished }}</ion-row>
+                        </ion-col>
+                        <ion-col no-padding>
+                            <ion-row class="user-table-info">Agreed</ion-row>
+                            <ion-row class="user-table-percent">99%</ion-row>
+                        </ion-col>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+
+
 </ion-content>

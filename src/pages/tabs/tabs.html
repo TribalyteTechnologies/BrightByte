@@ -1,6 +1,23 @@
-<ion-tabs>
-    <ion-tab [root]="tab1Root" tabTitle="Home" tabIcon="home"></ion-tab>
-    <ion-tab [root]="tab2Root" tabTitle="Commits" tabIcon="git-network"></ion-tab>
-    <ion-tab [root]="tab3Root" tabTitle="Reviews" tabIcon="eye"></ion-tab>
-    <ion-tab [root]="tab4Root" tabTitle="Ranking" tabIcon="stats"></ion-tab>
-</ion-tabs>
+<ion-split-pane [when]="isVisible">
+    <div class="menu-container">
+        <ion-list no-lines class="menu">
+            <div class="logo-container">
+                <img class="logo" src="../../assets/imgs/logo_bkg.svg">
+            </div>
+            <ion-item class="avatar">
+                <ion-avatar class="avatar-container">
+                    <img src=" ../../assets/imgs/avatar.jpg ">
+                </ion-avatar>
+            </ion-item>
+            <button *ngFor="let page of menuArray" ion-button block clear large color="light" (click)="goTo(page.url)">
+                <ion-icon name="{{ page.icon }}"></ion-icon>
+            </button>
+        </ion-list>
+        <div class="logout-container ">
+            <button ion-button block clear large color="light" class="logout">
+            <ion-icon name="log-out"></ion-icon>
+            </button>
+        </div>
+    </div>
+    <ion-nav [root]="tabContent" main></ion-nav>
+</ion-split-pane>

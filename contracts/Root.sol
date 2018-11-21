@@ -67,7 +67,7 @@ contract Root{
         bool auth;
         (yes, auth) = remoteCommits.isCommit(_id);
         require(auth);
-        for (uint i = 0;i<_emails.length;i++){
+        for (uint i = 0; i <_emails.length; i++){
             a = remoteBright.getAddressByEmail(_emails[i]);
             if(a != address(0) && a != msg.sender){
                 remoteCommits.notifyCommit(_id,a);

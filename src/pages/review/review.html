@@ -1,41 +1,93 @@
-<ion-header>
-    <ion-navbar>
-        <ion-title>
-            {{ "review.title" | translate }}
-        </ion-title>
+<ion-header no-border class="header">
+    <ion-navbar class="navigation-bar">
+        <ion-grid>
+            <ion-row>
+                <ion-col col-2 align-self-center class="header">
+                    <div>
+                        <ion-title>
+                            Reviews
+                        </ion-title>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
     </ion-navbar>
 </ion-header>
 
-<ion-content>
-    <ion-list>
-        <ion-list-header>{{ "review.subTitle" | translate }}</ion-list-header>
-        <ion-item>
-            <ion-label>{{ "commits.project" | translate }}</ion-label>
-            <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh()">
-                <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
-                <ion-option value="all" selected="true">{{ "commits.allCommits" | translate }}</ion-option>
-            </ion-select>
-        </ion-item>
-        <ion-item>
-            <ion-icon name="ionic" item-start></ion-icon>
-            {{ "review.titleList" | translate }}
-        </ion-item>
-    </ion-list>
-    <button ion-button (click)="setReviewFilter(0)">
-        {{ "commits.pending" | translate }}
-    </button>
-    <button ion-button (click)="setReviewFilter(1)">
-        {{ "commits.reviewed" | translate }}
-    </button>
-    <button ion-button (click)="setReviewFilter()">
-        {{ "commits.allCommits" | translate }}
-    </button>
-    <ion-list inset *ngIf="arrayCommits">
-        <button ion-item *ngFor="let commit of arrayCommits; let i = index" (click)="selectUrl(commit, arrayCommits.length - i - 1)">
-            <ion-icon name="notifications" *ngIf="isFeedback[i]==true"></ion-icon>
-            {{ "review.titleCommit" | translate }}: {{ commit.title }}, {{ "review.author" | translate }}: {{ commit.name }}, Url: {{ commit.url }}
-            {{ commit.lastModificationDateMs | date : "HH:mm d/M/yyyy" }}
-        </button>
-    </ion-list>
-    <p class="error-message">{{ msg }}</p>
+<ion-content class="content-color" padding>
+    <ion-row>
+        <ion-col col-7>
+            <ion-item class="content-color">
+                <ion-label>{{ "commits.project" | translate }}</ion-label>
+                <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
+                    <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
+                    <ion-option *ngFor="let option of projects" [value]="option">{{ option }}</ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-col>
+        <ion-col col-auto>
+            <ion-row align-items-center>
+                <ion-col>
+                    <ion-row justify-content-end>
+                        <button ion-button round color="danger" [ngClass]="{disabled:!filterIsIncompleted}" (click)="filterIncompleted()">
+                                {{ "commits.pending" | translate }}
+                            </button>
+                    </ion-row>
+                </ion-col>
+                <ion-col>
+                    <ion-row justify-content-end>
+                        <button ion-button round color="secondary" [ngClass]="{disabled:!filterIsReviewed}" (click)="filterCompleted()">
+                                {{ "commits.reviewed" | translate }}
+                            </button>
+                    </ion-row>
+
+                </ion-col>
+                <ion-col>
+                    <ion-row justify-content-end>
+                        <button ion-button round [ngClass]="{disabled:!filterIsPending}" (click)=" filterPending()">
+                                {{ "commits.isPendingFilter" | translate }}
+                            </button>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col>
+            <ion-list class="card" no-padding>
+                <ion-item class="card-list-item" *ngFor="let commit of displayCommitsToReview ; let i = index" (click)="shouldOpen(commit); indice = i;">
+                    <review-card [commit]="commit"></review-card>
+                </ion-item>
+            </ion-list>
+            <p class="error-message ">{{ msg }}</p>
+        </ion-col>
+        <ion-col col-5 *ngIf=" openedComments ">
+            <div class="reviews-col-title">My Review</div>
+            <ion-list *ngIf="needReview">
+                <ion-row>
+                    <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
+                    </ion-textarea>
+                </ion-row>
+                <ion-row>
+                    <button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
+                        <ion-icon name="{{ star[number] }}"></ion-icon>
+                    </button>
+                </ion-row>
+                <ion-row>
+                    <button ion-button (click)="setReview(displayCommitsToReview[indice].url, textComment, rate)">
+                        {{ "commitReview.review" | translate }}
+                    </button>
+                </ion-row>
+            </ion-list>
+            <ion-list *ngIf="userCommitComment[0]">
+                <review-comment [review]="userCommitComment[0] "></review-comment>
+            </ion-list>
+            <div class="reviews-col-title" *ngIf="commitComments.length > 0">Other reviews</div>
+            <ion-list *ngFor="let comment of commitComments; let j=index ">
+                <review-comment [review]="comment "></review-comment>
+            </ion-list>
+        </ion-col>
+    </ion-row>
 </ion-content>

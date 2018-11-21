@@ -103,7 +103,7 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
-    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint, uint){
+    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint, uint, uint){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,
@@ -113,7 +113,8 @@ contract Commits {
                 data.lastModificationDate,
                 data.isReadNeeded,
                 data.numberReviews,
-                data.currentNumberReviews
+                data.currentNumberReviews,
+                data.score
         );
     }
     function getCommitScore(bytes32 _id) public onlyDapp view returns(uint,uint){
@@ -154,7 +155,7 @@ contract Commits {
         address author = tx.origin;
 
         bool saved = false;
-        for (uint j = 0;j<storedData[url].pendingComments.length;j++){
+        for (uint j = 0;j < storedData[url].pendingComments.length; j++){
             if (author == storedData[url].pendingComments[j]){
                 storedData[url].pendingComments[j] = storedData[url].pendingComments[storedData[url].pendingComments.length-1];
                 storedData[url].pendingComments.length--;

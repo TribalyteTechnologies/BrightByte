@@ -2,10 +2,23 @@ page-commits {
     .error-message {
         color: red;
     }
-    .custom-popover .popover-content {
-        width: 60%;
+    .toolbar-background {
+        background-color: rgb(246, 247, 251);
     }
-    .commit-button:hover {
-        color: blue;
+    .navigation-bar {
+        height: 100px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .content-color {
+        background-color: rgb(246, 247, 251);
+    }
+    .card {
+        border: 1px solid rgb(231, 234, 237);
+    }
+    .card-list-item:hover {
+        background-color: #F3F7F9;
+    }
+    .disabled {
+        background-color: #2c3e50;
     }
 }
