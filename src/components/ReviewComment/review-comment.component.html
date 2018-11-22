@@ -36,7 +36,7 @@
     </ion-item>
     <ion-item>
         <ion-row>
-            <div class="success" *ngIf="review.vote==0"> This wasnt rated yet</div>
+            <div class="pending" *ngIf="review.vote==0"> This wasnt rated yet</div>
         </ion-row>
         <ion-row>
             <div class="success" *ngIf="review.vote==1"> You've voted succesfully</div>

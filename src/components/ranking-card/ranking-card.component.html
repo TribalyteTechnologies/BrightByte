@@ -2,24 +2,24 @@
     <ion-row>
         <ion-col col-auto class="col-first">
             <ion-row>
-                <rating [rate]="ranking.reputation" readonly="true" small="true"></rating>
+                <rating [rate]="reputation" readonly="true" small="true"></rating>
             </ion-row>
             <ion-row align-items-center class="coder-class">
-                <div>Ninja Coder</div>
+                <div>{{ userRank }}</div>
             </ion-row>
             <ion-row class="level">
-                <div>Level 90</div>
+                <div>Level {{ level }}</div>
             </ion-row>
         </ion-col>
         <ion-col col-auto align-self-center>
             <img class="avatar-col" src="../../assets/imgs/avatar.jpg">
         </ion-col>
         <ion-col col-auto align-self-center class="username-title">
-            <div>{{ ranking.email }}</div>
+            <div>{{ email }}</div>
         </ion-col>
-        <ion-col align-self-center class="text-table">{{ ranking.numReviews }}</ion-col>
-        <ion-col align-self-center class="text-table">{{ ranking.numReviews }}</ion-col>
-        <ion-col align-self-center class="text-agreed">99%</ion-col>
+        <ion-col align-self-center class="text-table">{{ numReviews }}</ion-col>
+        <ion-col align-self-center class="text-table">{{ numCommits }}</ion-col>
+        <ion-col align-self-center class="text-agreed">{{ agreed }}%</ion-col>
     </ion-row>
 
 </ion-grid>

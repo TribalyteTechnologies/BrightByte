@@ -1,7 +1,7 @@
 <ion-grid no-padding>
     <ion-row>
         <ion-col col-auto align-self-center>
-            <div [ngClass]="commit.isPending ? 'status-pending' : 'status-not-pending'"></div>
+            <div [ngClass]="commit.numberReviews !== commit.currentNumberReviews ? 'status-pending' : 'status-not-pending'"></div>
         </ion-col>
         <ion-col align-self-center class="col-middle">
             <ion-row class="date">
@@ -9,7 +9,7 @@
             </ion-row>
             <ion-row align-items-center class="title">
                 <div>{{ commit.title }}</div>
-                <div *ngIf="commit.isReadNeeded" class="notifications">
+                <div *ngIf="commit.isPending" class="notifications">
                     <ion-icon name="notifications"></ion-icon>
                 </div>
             </ion-row>

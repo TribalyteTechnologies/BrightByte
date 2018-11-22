@@ -14,12 +14,14 @@ import { AppConfig } from "../../app.config";
     templateUrl: "ranking.html"
 })
 export class RankingPage {
+
     public userDetails = new UserDetails();
     public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
     private log: ILogger;
     private account: Account;
+
 
     constructor(
         public navCtrl: NavController,
@@ -58,7 +60,7 @@ export class RankingPage {
                         this.log.e(msg, e);
                     });
             });
-        
+                
 
     }
 }

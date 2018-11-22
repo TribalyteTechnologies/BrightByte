@@ -31,23 +31,23 @@
                 <ion-col>
                     <ion-row justify-content-end>
                         <button ion-button round color="danger" [ngClass]="{disabled:!filterIsIncompleted}" (click)="filterIncompleted()">
-                                {{ "commits.pending" | translate }}
-                            </button>
+                            {{ "commits.pending" | translate }}
+                        </button>
                     </ion-row>
                 </ion-col>
                 <ion-col>
                     <ion-row justify-content-end>
                         <button ion-button round color="secondary" [ngClass]="{disabled:!filterIsReviewed}" (click)="filterCompleted()">
-                                {{ "commits.reviewed" | translate }}
-                            </button>
+                            {{ "commits.reviewed" | translate }}
+                        </button>
                     </ion-row>
 
                 </ion-col>
                 <ion-col>
                     <ion-row justify-content-end>
                         <button ion-button round [ngClass]="{disabled:!filterIsPending}" (click)=" filterPending()">
-                                {{ "commits.isPendingFilter" | translate }}
-                            </button>
+                            {{ "commits.isPendingFilter" | translate }}
+                        </button>
                     </ion-row>
                 </ion-col>
             </ion-row>
@@ -66,20 +66,20 @@
         <ion-col col-5 *ngIf=" openedComments ">
             <div class="reviews-col-title">My Review</div>
             <ion-list *ngIf="needReview">
-                <ion-row>
-                    <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
-                    </ion-textarea>
-                </ion-row>
-                <ion-row>
-                    <button ion-button icon-only *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
-                        <ion-icon name="{{ star[number] }}"></ion-icon>
-                    </button>
-                </ion-row>
-                <ion-row>
-                    <button ion-button (click)="setReview(displayCommitsToReview[indice].url, textComment, rate)">
-                        {{ "commitReview.review" | translate }}
-                    </button>
-                </ion-row>
+            <ion-item>
+                <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
+                </ion-textarea>
+            </ion-item>
+            <ion-item>
+                <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
+                    <ion-icon clas="icon-size" name="{{ star[number] }}"></ion-icon>
+                </button>
+            </ion-item>
+            <ion-item>
+                <button ion-button (click)="setReview(displayCommitsToReview[indice].url, textComment, rate)">
+                    {{ "commitReview.review" | translate }}
+                </button>
+            </ion-item>               
             </ion-list>
             <ion-list *ngIf="userCommitComment[0]">
                 <review-comment [review]="userCommitComment[0] "></review-comment>
