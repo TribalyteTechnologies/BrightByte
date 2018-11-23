@@ -138,9 +138,6 @@ contract Commits {
         );
     }
     function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint,uint,uint,uint,address){
-        if(storedData[url].author != tx.origin){
-            a = tx.origin;
-        }
         return(
             storedData[url].commitComments[a].text,
             storedData[url].commitComments[a].score,
