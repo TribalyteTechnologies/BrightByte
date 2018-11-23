@@ -31,6 +31,8 @@ export class ReviewPage {
     public openedComments = false;
     public needReview = false;
 
+    public rateChulo: number;
+
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public indice: number;
@@ -58,6 +60,17 @@ export class ReviewPage {
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 let commits = commitConcat[0].concat(commitConcat[1]);
+
+                for (let commitToReview of commits){
+                    this.contractManagerService.getFeedback(commitToReview.url)
+                        .then((rsp) => {
+                            this.log.d("The response is", rsp);
+                            commitToReview.isPending = rsp;
+                        }).catch((err) => {
+                            this.log.e(err);
+                        });
+                }
+
                 let projectFilter: UserCommit[] = [];
 
                 let projects = commits.map( commit => commit.project );
@@ -107,6 +120,7 @@ export class ReviewPage {
                         this.log.e(msg, e);
                     });
             });
+            
     }
 
     public shouldOpen(commit: UserCommit) {
@@ -133,6 +147,13 @@ export class ReviewPage {
 
 
             });
+        this.contractManagerService.setFeedback(commit.url)
+            .then((rsp) => {
+                this.log.d(rsp);
+            }).catch((err) => { 
+                this.log.e(err);
+            });
+        this.refresh();
     }
 
     public setReputation(value: number) {
@@ -149,10 +170,10 @@ export class ReviewPage {
                 console.log(response);
                 this.refresh();
                 this.openedComments = false;
+                return;
             }).catch((error) => {
                 console.log(error);
             });
-            
     }
 
     public filterIncompleted(){

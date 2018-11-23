@@ -168,6 +168,15 @@ export class CommitPage {
                 this.commitComments = comments[1];
                 this.openedComments = comments[1].length > 0;
             });
+
+        this.contractManagerService.reviewChangesCommitFlag(commit.url)
+            .then((response) => {
+                this.log.d(response);
+            }).catch((err) => {
+                this.log.e(err);
+            });
+
+        this.refresh();
     }
 
 }
