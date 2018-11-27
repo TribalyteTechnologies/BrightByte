@@ -84,9 +84,9 @@ contract Root{
     function setVote(string url, address user, uint8 vote) public onlyUser {
         bytes32 url_bytes = keccak256(url);
         remoteCommits.setVote(url_bytes,user,vote);
-        remoteBright.setFeedback(url_bytes, user, true);
+        remoteBright.setFeedback(url_bytes, user, true, vote);
     }
     function setFeedback(string url,address user) public onlyUser {
-        remoteBright.setFeedback(keccak256(url), user, false);
+        remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 }

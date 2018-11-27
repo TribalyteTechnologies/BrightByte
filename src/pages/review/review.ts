@@ -104,7 +104,7 @@ export class ReviewPage {
                 let pendingFilter: UserCommit[] = [];
                 if(this.filterIsPending){
                     pendingFilter = completedFilter.filter(commit => {
-                        return commit.isReadNeeded;
+                        return commit.isPending;
                     });
                 } else {
                     pendingFilter = completedFilter;

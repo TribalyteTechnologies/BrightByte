@@ -27,7 +27,7 @@
 <ion-content class="content-color" padding>
     <ion-row>
         <ion-col col-7>
-            <ion-item class="content-color">
+            <ion-item class="project-content">
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
                 <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
@@ -35,32 +35,24 @@
                 </ion-select>
             </ion-item>
         </ion-col>
-        <ion-col col-auto>
-            <ion-row align-items-center>
-                <ion-col>
-                    <ion-row justify-content-end>
-                        <button ion-button round color="danger" [ngClass]="{disabled:!filterIsIncompleted}" (click)="filterIncompleted()">
-                            {{ "commits.pending" | translate }}
-                        </button>
-                    </ion-row>
-                </ion-col>
-                <ion-col>
-                    <ion-row justify-content-end>
-                        <button ion-button round color="secondary" [ngClass]="{disabled:!filterIsReviewed}" (click)="filterCompleted()">
-                            {{ "commits.reviewed" | translate }}
-                        </button>
-                    </ion-row>
-
-                </ion-col>
-                <ion-col>
-                    <ion-row justify-content-end>
-                        <button ion-button round [ngClass]="{disabled:!filterIsPending}" (click)=" filterPending()">
-                            {{ "commits.isPendingFilter" | translate }}
-                        </button>
-                    </ion-row>
-                </ion-col>
-            </ion-row>
+        <ion-col>
+            <button [ngClass]="filterIsIncompleted ? 'incompleted-filter' : 'disabled-incompleted'" (click)="filterIncompleted()">
+                {{ "commits.pending" | translate }}
+            </button>
         </ion-col>
+        <ion-col>
+            <button [ngClass]="filterIsReviewed ? 'completed-filter' : 'disabled-completed'" (click)="filterCompleted()">
+                {{ "commits.reviewed" | translate }}
+            </button>
+        </ion-col>
+        <ion-col>
+            <button [ngClass]="filterIsPending ? 'pending-filter' : 'disabled-pending'" (click)=" filterPending()">
+                {{ "commits.isPendingFilter" | translate }}
+            </button>
+        </ion-col>
+    </ion-row>
+    <ion-row *ngIf="arrayCommits.length === 0">
+       <div class="no-results">Hey! You have no results to show</div>
     </ion-row>
 
     <ion-row>
