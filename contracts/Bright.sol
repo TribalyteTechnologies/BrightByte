@@ -20,8 +20,11 @@ contract Bright {
         bytes32[] finishedReviews;
         bytes32[] pendingReviews;
         uint256 reputation;
+        uint256 agreedPercentage;
         uint256 numberOfPoints;
         uint256 numberOfTimesReview;
+        uint256 positeVotes;
+        uint256 negativeVotes;
         bytes32[] toRead;
     }
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -69,6 +72,9 @@ contract Bright {
             hashUserMap[user].email = _email;
             hashUserMap[user].hash = user;
             hashUserMap[user].numberOfTimesReview = 0;
+            hashUserMap[user].agreedPercentage = 100;
+            hashUserMap[user].positeVotes = 0;
+            hashUserMap[user].negativeVotes = 0;
             bytes32 emailId = keccak256(_email);
             emailUserMap[emailId] = user;
             allUsersArray.push(user);
@@ -84,14 +90,16 @@ contract Bright {
         emit UserProfileSetEvent(_name, user);
     }
 
-    function getUser (address _hash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint) {
-        return (hashUserMap[_hash].name,
-            hashUserMap[_hash].email,
-            hashUserMap[_hash].finishedReviews.length,
-            hashUserMap[_hash].pendingReviews.length,
-            hashUserMap[_hash].finishedCommits.length,
-            hashUserMap[_hash].pendingCommits.length,
-            hashUserMap[_hash].reputation
+    function getUser (address _hash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint, uint) {
+        UserProfile storage user = hashUserMap[_hash];
+        return (user.name,
+            user.email,
+            user.finishedReviews.length,
+            user.pendingReviews.length,
+            user.finishedCommits.length,
+            user.pendingCommits.length,
+            user.reputation,
+            user.agreedPercentage
         );
     }
 
@@ -170,12 +178,13 @@ contract Bright {
         return hashUserMap[allUsersArray[_index]].email;
     }
 
-    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string){
+    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint){
         return (hashUserMap[allUsersArray[_index]].email,
                 hashUserMap[allUsersArray[_index]].reputation,
                 hashUserMap[allUsersArray[_index]].numberOfTimesReview,
                 hashUserMap[allUsersArray[_index]].numberOfPoints,
-                hashUserMap[allUsersArray[_index]].name
+                hashUserMap[allUsersArray[_index]].name,
+                hashUserMap[allUsersArray[_index]].agreedPercentage
         );
     }
 
@@ -217,11 +226,18 @@ contract Bright {
         return read;
     }
 
-    function setFeedback(bytes32 _url, address user, bool value) public onlyRoot{
+    function setFeedback(bytes32 _url, address user, bool value, uint8 vote) public onlyRoot{
         address sender = user;
         UserProfile storage userMap = hashUserMap[sender];
         if(value){
-            hashUserMap[sender].toRead.push(_url);
+            userMap.toRead.push(_url);
+            if(vote == 1) {
+                userMap.positeVotes++;
+            }
+            else if (vote == 2){
+                userMap.negativeVotes++;
+            }
+            userMap.agreedPercentage = (userMap.positeVotes * 100) / (userMap.positeVotes + userMap.negativeVotes);
         }
         else{
             for (uint i = 0 ; i < userMap.toRead.length; i++){
