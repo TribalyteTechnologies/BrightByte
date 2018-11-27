@@ -5,7 +5,7 @@
         </ion-col>
         <ion-col align-self-center class="col-middle">
             <ion-row class="date">
-                <div>{{commit.creationDateMs | dateFormat }}</div>
+                <div>{{ commit.creationDateMs | dateFormat }}</div>
             </ion-row>
             <ion-row align-items-center class="title">
                 <div>{{ commit.title }}</div>
@@ -17,7 +17,7 @@
                 <div>Asked you to review a project on {{ commit.project }}</div>
             </ion-row>
             <ion-row class="url">
-                <div>{{ (commit.url | slice:0:35) +'...'}}</div>
+                <div>{{ (commit.url | slice:0:35) + "..." }}</div>
             </ion-row>
 
         </ion-col>

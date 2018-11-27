@@ -144,11 +144,7 @@
       "ym"
     ],
     "component-class-suffix": false,
-    "directive-class-suffix": false,
-    "templates-use-public": true,
-    "no-access-missing-member": true,
-    "invoke-injectable": true,
-    "template-to-ng-template": true
+    "directive-class-suffix": false
   },
   "rulesDirectory": [
     "node_modules/tslint-eslint-rules/dist/rules",

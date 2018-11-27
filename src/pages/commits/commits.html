@@ -66,7 +66,7 @@
         </ion-col>
         <ion-col col-5 *ngIf=" openedComments ">
             <ion-list *ngFor="let comment of commitComments; let j=index ">
-                <commit-comment [review]="comment" (thumbsUp)="setThumbs(arrayCommits[globalIndex].url,j, 1) " (thumbsDown)="setThumbs(arrayCommits[globalIndex].url,j, 2) "></commit-comment>
+                <commit-comment [review]="comment" (thumbsUp)="setThumbs(arrayCommits[globalIndex].url,j, 1)" (thumbsDown)="setThumbs(arrayCommits[globalIndex].url,j, 2)"></commit-comment>
             </ion-list>
         </ion-col>
     </ion-row>
