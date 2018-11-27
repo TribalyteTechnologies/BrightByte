@@ -8,6 +8,7 @@ export class UserDetails {
     public numbermyCommitsPending: number; 
     public numbermyCommitsFinished: number;
     public reputation: number;
+    public agreedPercentage: number;
     public static fromSmartContract(userVals: Array<any>): UserDetails{ 
         let user = new UserDetails(); 
         user.name = userVals[0]; 
@@ -16,7 +17,8 @@ export class UserDetails {
         user.numberCommitsToReviewByMe = userVals[3]; 
         user.numbermyCommitsFinished = userVals[4]; 
         user.numbermyCommitsPending = userVals[5];
-        user.reputation = userVals[6] / AppConfig.SCORE_DIVISION_FACTOR; 
+        user.reputation = userVals[6] / AppConfig.SCORE_DIVISION_FACTOR;
+        user.agreedPercentage = userVals[7];
         return user; 
     } 
 } 

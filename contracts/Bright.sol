@@ -20,8 +20,11 @@ contract Bright {
         bytes32[] finishedReviews;
         bytes32[] pendingReviews;
         uint256 reputation;
+        uint256 agreedPercentage;
         uint256 numberOfPoints;
         uint256 numberOfTimesReview;
+        uint256 positeVotes;
+        uint256 negativeVotes;
         bytes32[] toRead;
     }
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -34,10 +37,12 @@ contract Bright {
         require(msg.sender == owner);
         _;
     }
+
     modifier onlyRoot() {
         require(msg.sender == rootAddress);
         _;
     }
+
     modifier onlyDapp() {
         require (msg.sender == rootAddress || msg.sender == tx.origin);
         _;
@@ -54,18 +59,22 @@ contract Bright {
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
+
     function setRootAddress(address a) public onlyOwner {
         rootAddress = a;
     }
 
     function setProfile (string _name, string _email) public onlyDapp {
-
         address user = tx.origin;
         //require(_hash == msg.sender);
         if (bytes(hashUserMap[user].name).length == 0 && bytes(hashUserMap[user].email).length == 0){
             hashUserMap[user].name = _name;
             hashUserMap[user].email = _email;
             hashUserMap[user].hash = user;
+            hashUserMap[user].numberOfTimesReview = 0;
+            hashUserMap[user].agreedPercentage = 100;
+            hashUserMap[user].positeVotes = 0;
+            hashUserMap[user].negativeVotes = 0;
             bytes32 emailId = keccak256(_email);
             emailUserMap[emailId] = user;
             allUsersArray.push(user);
@@ -81,24 +90,28 @@ contract Bright {
         emit UserProfileSetEvent(_name, user);
     }
 
-    function getUser (address _hash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint) {
-        return (hashUserMap[_hash].name,
-            hashUserMap[_hash].email,
-            hashUserMap[_hash].finishedReviews.length,
-            hashUserMap[_hash].pendingReviews.length,
-            hashUserMap[_hash].finishedCommits.length,
-            hashUserMap[_hash].pendingCommits.length,
-            hashUserMap[_hash].reputation
+    function getUser (address _hash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint, uint) {
+        UserProfile storage user = hashUserMap[_hash];
+        return (user.name,
+            user.email,
+            user.finishedReviews.length,
+            user.pendingReviews.length,
+            user.finishedCommits.length,
+            user.pendingCommits.length,
+            user.reputation,
+            user.agreedPercentage
         );
     }
+
     function getAddressByEmail(bytes32 email) public onlyDapp view returns(address){
         address a = emailUserMap[email];
         return a;
     }
+
     function setCommit(bytes32 url) public onlyRoot {
         address sender = tx.origin;
         bool saved = false;
-        for (uint i = 0; i<hashUserMap[sender].pendingCommits.length;i++){
+        for (uint i = 0; i < hashUserMap[sender].pendingCommits.length; i++){
             if(hashUserMap[sender].pendingCommits[i] == url){
                 saved = true;
             }
@@ -107,6 +120,7 @@ contract Bright {
             hashUserMap[sender].pendingCommits.push(url);
         }
     }
+
     function notifyCommit (string a, bytes32 email) public onlyRoot {
         bytes32 url = keccak256(a);
         address sender = tx.origin;
@@ -115,7 +129,7 @@ contract Bright {
         bool saved = false;
         bool tosaved = false;
         hashUserMap[user].toRead.push(url);
-        for (uint i = 0; i<hashUserMap[sender].pendingCommits.length;i++){
+        for (uint i = 0; i < hashUserMap[sender].pendingCommits.length; i++){
             if(hashUserMap[sender].pendingCommits[i] == url){
                 saved = true;
                 break;
@@ -123,7 +137,7 @@ contract Bright {
         }
         if(!saved){
             uint j;
-            for (i = 0; i<hashUserMap[sender].finishedCommits.length;i++){
+            for (i = 0; i < hashUserMap[sender].finishedCommits.length; i++){
                 if(hashUserMap[sender].finishedCommits[i] == url){
                     j = i;
                     tosaved = true;
@@ -133,7 +147,7 @@ contract Bright {
             }
         }
         bool done = false;
-        for (i = 0; i<hashUserMap[user].pendingReviews.length;i++){
+        for (i = 0; i < hashUserMap[user].pendingReviews.length; i++){
             if(hashUserMap[user].pendingReviews[i] == url){
                 done = true;
                 break;
@@ -148,6 +162,7 @@ contract Bright {
             hashUserMap[user].pendingReviews.push(url);
         }
     }
+
     function getUserCommits(address _a) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]){
         if (msg.sender != owner) {
             _a = tx.origin;
@@ -158,30 +173,35 @@ contract Bright {
                 hashUserMap[_a].finishedCommits
         );
     }
+
     function getAllUserEmail(uint _index) public onlyDapp view returns(string){
         return hashUserMap[allUsersArray[_index]].email;
     }
-    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint){
+
+    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint){
         return (hashUserMap[allUsersArray[_index]].email,
                 hashUserMap[allUsersArray[_index]].reputation,
                 hashUserMap[allUsersArray[_index]].numberOfTimesReview,
-                hashUserMap[allUsersArray[_index]].numberOfPoints
+                hashUserMap[allUsersArray[_index]].numberOfPoints,
+                hashUserMap[allUsersArray[_index]].name,
+                hashUserMap[allUsersArray[_index]].agreedPercentage
         );
     }
+
     function getNumbers() public onlyDapp view returns(uint){
         return allUsersArray.length;
     }
+
     function setReview(bytes32 url,address author, uint256 _points) public onlyRoot {
         address sender = tx.origin;
         require(hashUserMap[author].hash == author && hashUserMap[sender].hash == sender);
         
-        uint numberOfTimesReview = hashUserMap[author].finishedCommits.length +1;
         uint value = hashUserMap[author].numberOfPoints + _points;
-        hashUserMap[author].numberOfTimesReview = numberOfTimesReview;
+        hashUserMap[author].numberOfTimesReview ++;
         hashUserMap[author].numberOfPoints = value;
-        hashUserMap[author].reputation = value/numberOfTimesReview;
+        hashUserMap[author].reputation = value/hashUserMap[author].numberOfTimesReview;
 
-        for (uint j = 0 ; j<hashUserMap[sender].pendingReviews.length;j++){
+        for (uint j = 0 ; j < hashUserMap[sender].pendingReviews.length; j++){
             if (url == hashUserMap[sender].pendingReviews[j]){
                 hashUserMap[sender].pendingReviews[j] = hashUserMap[sender].pendingReviews[hashUserMap[sender].pendingReviews.length-1];
                 hashUserMap[sender].pendingReviews.length--;
@@ -189,19 +209,12 @@ contract Bright {
             }
         }
         hashUserMap[sender].finishedReviews.push(url);
-
-        for (j = 0 ; j<hashUserMap[author].pendingCommits.length;j++){
-            if (url == hashUserMap[author].pendingCommits[j]){
-                hashUserMap[author].pendingCommits[j] = hashUserMap[author].pendingCommits[hashUserMap[author].pendingCommits.length-1];
-                hashUserMap[author].pendingCommits.length--;
-                break;
-            }
-        }
-        hashUserMap[author].finishedCommits.push(url);
     }
+
     function getUserName(address _hash) public onlyDapp view returns (string) {
         return (hashUserMap[_hash].name);
     }
+
     function getFeedback(bytes32 _url) public onlyDapp view returns (bool){
         address sender = tx.origin;
         bool read = false;
@@ -212,16 +225,25 @@ contract Bright {
         }
         return read;
     }
-    function setFeedback(bytes32 _url, address user, bool value) public onlyRoot{
+
+    function setFeedback(bytes32 _url, address user, bool value, uint8 vote) public onlyRoot{
         address sender = user;
+        UserProfile storage userMap = hashUserMap[sender];
         if(value){
-            hashUserMap[sender].toRead.push(_url);
+            userMap.toRead.push(_url);
+            if(vote == 1) {
+                userMap.positeVotes++;
+            }
+            else if (vote == 2){
+                userMap.negativeVotes++;
+            }
+            userMap.agreedPercentage = (userMap.positeVotes * 100) / (userMap.positeVotes + userMap.negativeVotes);
         }
         else{
-            for (uint i = 0 ; i<hashUserMap[sender].toRead.length;i++){
-                if (_url == hashUserMap[sender].toRead[i]){
-                    hashUserMap[sender].toRead[i] = hashUserMap[sender].toRead[hashUserMap[sender].toRead.length-1];
-                    hashUserMap[sender].toRead.length--;
+            for (uint i = 0 ; i < userMap.toRead.length; i++){
+                if (_url == userMap.toRead[i]){
+                    userMap.toRead[i] = userMap.toRead[userMap.toRead.length - 1];
+                    userMap.toRead.length--;
                     break;
                 }
             }

@@ -138,9 +138,6 @@ contract Commits {
         );
     }
     function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint,uint,uint,uint,address){
-        if(storedData[url].author != tx.origin){
-            a = tx.origin;
-        }
         return(
             storedData[url].commitComments[a].text,
             storedData[url].commitComments[a].score,
@@ -155,7 +152,7 @@ contract Commits {
         address author = tx.origin;
 
         bool saved = false;
-        for (uint j = 0;j<storedData[url].pendingComments.length;j++){
+        for (uint j = 0;j < storedData[url].pendingComments.length; j++){
             if (author == storedData[url].pendingComments[j]){
                 storedData[url].pendingComments[j] = storedData[url].pendingComments[storedData[url].pendingComments.length-1];
                 storedData[url].pendingComments.length--;

@@ -13,9 +13,7 @@ export class UserCommit {
     public currentNumberReviews: number;
 
     public static getProjectFromUrl(url: string): string {
-        let urlSplitted = url.split("/");
-        let project: string = urlSplitted[4];
-        return project;
+        return url.split("/")[4];
     }
 
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
