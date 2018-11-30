@@ -359,20 +359,6 @@ export class ContractManagerService {
             });
     }
 
-    /*public getAgreed(userAddress): Promise<number> {
-        return this.initProm.then(contract => {
-            let number = contract[0].methods.getAgreed(userAddress).call();
-            return number;
-           return contract[0].methods.getAgreed(userAddress).call()
-                .then((number) => {
-                    return number;
-            });
-        }).catch(err => {
-            this.log.e("Error getting agreed value", err);
-            throw err;
-         });
-   }*/
-
     public getFeedback(url): Promise<boolean> {
          let urlKeccak = this.web3.utils.keccak256(url);
          return this.initProm.then(contract => {

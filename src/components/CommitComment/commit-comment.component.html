@@ -40,13 +40,13 @@
     <ion-item>
         <ion-row>
             <ion-col>
-                <div class="button-success" (click)="setThumbsUp()" *ngIf="review.vote==0">{{ "commits.agree" | translate }}</div>
+                <div class="boton-success" (click)="setThumbsUp()" *ngIf="review.vote==0">{{ "commits.agree" | translate }}</div>
             </ion-col>
             <ion-col>
-                <div class="button-failed" (click)="setThumbsDown()" *ngIf="review.vote==0">{{ "commits.disagree" | translate }}</div>
+                <div class="boton-failed" (click)="setThumbsDown()" *ngIf="review.vote==0">{{ "commits.disagree" | translate }}</div>
             </ion-col>
             <ion-col>
-                <div class="button-report" *ngIf="review.vote==0">
+                <div class="boton-report" *ngIf="review.vote==0">
                     <ion-icon name="warning"></ion-icon>
                 </div>
             </ion-col>

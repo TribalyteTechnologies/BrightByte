@@ -66,7 +66,6 @@ contract Bright {
 
     function setProfile (string _name, string _email) public onlyDapp {
         address user = tx.origin;
-        //require(_hash == msg.sender);
         if (bytes(hashUserMap[user].name).length == 0 && bytes(hashUserMap[user].email).length == 0){
             hashUserMap[user].name = _name;
             hashUserMap[user].email = _email;
@@ -91,7 +90,7 @@ contract Bright {
     }
 
     function getUser (address _hash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint, uint) {
-        UserProfile storage user = hashUserMap[_hash];
+        UserProfile memory user = hashUserMap[_hash];
         return (user.name,
             user.email,
             user.finishedReviews.length,
@@ -167,10 +166,11 @@ contract Bright {
         if (msg.sender != owner) {
             _a = tx.origin;
         }
-        return (hashUserMap[_a].pendingReviews,
-                hashUserMap[_a].finishedReviews,
-                hashUserMap[_a].pendingCommits,
-                hashUserMap[_a].finishedCommits
+        UserProfile memory user = hashUserMap[_a];
+        return (user.pendingReviews,
+                user.finishedReviews,
+                user.pendingCommits,
+                user.finishedCommits
         );
     }
 
