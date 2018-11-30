@@ -52,11 +52,13 @@ export class CommitPage {
 
     public refresh() {
 
+        console.log("Refresing page....");
+
         this.contractManagerService.getCommits()
             .then((commitConcat: UserCommit[][]) => {
 
                 let commits = commitConcat[0].concat(commitConcat[1]);
-                console.log(commits);
+                console.log("We recieve " + commits.length + " commits");
                 let projectFilter: UserCommit[] = [];
 
                 let projects = commits.map( commit => commit.project );
@@ -163,14 +165,18 @@ export class CommitPage {
     }
 
     public shouldOpen(commit: UserCommit) {
+        console.log("Opening commit: " + commit.url);
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
+                console.log("We recieved " + comments.length + " comments");
                 this.commitComments = comments[1];
                 this.openedComments = comments[1].length > 0;
             });
 
+        console.log("Chaning flag of " + commit.url);
         this.contractManagerService.reviewChangesCommitFlag(commit.url)
             .then((response) => {
+                console.log("Recieved response: " + response);
                 this.log.d(response);
             }).catch((err) => {
                 this.log.e(err);

@@ -21,7 +21,7 @@
         <br>
     </form>
 
-    <ion-label color="primary">{{ "addCommit.users" | translate }}</ion-label>
+    <ion-item class="add-title">{{ "addCommit.users" | translate }}:</ion-item>
 
     <ion-item>
         <ion-searchbar (ionInput)="refreshSearchbar($event)" placeholder="email@example.com" [(ngModel)]="usersMail[i]">
@@ -34,10 +34,12 @@
     </ion-item>
     <ion-row>
         <ion-col>
-            <ion-badge *ngFor="let item of userAdded; let j = index" (click)="removeUser(j)">{{ item }}</ion-badge>
+            <div class="user-card" *ngFor="let item of userAdded; let j = index" (click)="removeUser(j)">{{ item }}</div>
         </ion-col>
     </ion-row>
-    <button ion-button type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
+    <ion-item>
+        <button class="button-submit" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
+    </ion-item>
 
 
 </ion-content>

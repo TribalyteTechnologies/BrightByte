@@ -19,6 +19,10 @@ export class RankingPage {
     public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
+    public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
+    public userRank = "No rank";
+    public userLevel = 0;
+    public userStars = 0;
     private log: ILogger;
     private account: Account;
 
@@ -41,6 +45,9 @@ export class RankingPage {
             .then((detailsUser: UserDetails) => {
                 this.log.d("User data obtained: ", detailsUser);
                 this.userDetails = detailsUser;
+                this.userStars = Math.round(detailsUser.reputation);
+                this.userRank = this.rankingTitle[Math.round(detailsUser.reputation)];
+                this.userLevel = Math.round(this.userDetails.reputation * 3);
             }).catch((e) => {
                 this.translateService.get("ranking.getUserInfo").subscribe(
                     msg => {
