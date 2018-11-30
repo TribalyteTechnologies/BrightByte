@@ -178,13 +178,16 @@ contract Bright {
         return hashUserMap[allUsersArray[_index]].email;
     }
 
-    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint){
-        return (hashUserMap[allUsersArray[_index]].email,
-                hashUserMap[allUsersArray[_index]].reputation,
-                hashUserMap[allUsersArray[_index]].numberOfTimesReview,
-                hashUserMap[allUsersArray[_index]].numberOfPoints,
-                hashUserMap[allUsersArray[_index]].name,
-                hashUserMap[allUsersArray[_index]].agreedPercentage
+    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint, uint, uint){
+        UserProfile storage user = hashUserMap[allUsersArray[_index]];
+        return (user.email,
+                user.reputation,
+                user.numberOfTimesReview,
+                user.numberOfPoints,
+                user.name,
+                user.agreedPercentage,
+                user.pendingCommits.length,
+                user.finishedReviews.length
         );
     }
 

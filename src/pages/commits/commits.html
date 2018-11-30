@@ -47,12 +47,9 @@
         </ion-col>
         <ion-col>
             <button [ngClass]="filterIsPending ? 'pending-filter' : 'disabled-pending'" (click)=" filterPending()">
-                {{ "commits.isPendingFilter" | translate }}
+                {{ "commits.updated" | translate }}
             </button>
         </ion-col>
-    </ion-row>
-    <ion-row *ngIf="arrayCommits.length === 0">
-       <div class="no-results">Hey! You have no results to show</div>
     </ion-row>
 
     <ion-row>

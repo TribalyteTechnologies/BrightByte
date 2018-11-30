@@ -1,25 +1,28 @@
-<ion-grid no-padding class="content-color">
-    <ion-row>
-        <ion-col col-auto class="col-first">
-            <ion-row>
-                <rating [rate]="reputation" readonly="true" small="true"></rating>
-            </ion-row>
-            <ion-row align-items-center class="coder-class">
-                <div>{{ userRank }}</div>
-            </ion-row>
-            <ion-row class="level">
-                <div>Level {{ level }}</div>
-            </ion-row>
-        </ion-col>
-        <ion-col col-auto align-self-center>
+<ion-grid no-padding>
+    <ion-row align-items-center>
+        <ion-col>
             <img class="avatar-col" src="../../assets/imgs/avatar.jpg">
         </ion-col>
-        <ion-col col-auto align-self-center class="username-title">
-            <div>{{ email }}</div>
+        <ion-col>
+            <ion-row><div class="text-name">{{ name }}</div> <div class="text-rank">{{ userRank }}</div><div class="level-card">{{ "ranking.level" | translate }} {{ level }}</div></ion-row>
+            <ion-row><div class="text-email"> {{ email }} </div></ion-row>
+            <ion-row>
+                <div class="ranking-stars">
+                    <rating [rate]="reputation" readonly="true" small="true"></rating>
+                </div>
+            </ion-row>
         </ion-col>
-        <ion-col align-self-center class="text-table">{{ numReviews }}</ion-col>
-        <ion-col align-self-center class="text-table">{{ numCommits }}</ion-col>
-        <ion-col align-self-center class="text-agreed">{{ agreed }}%</ion-col>
+        <ion-col>
+            <ion-row><div  class="text-info">{{ numReviews }}</div></ion-row>
+            <ion-row><div class="subtitle-info">{{ "ranking.reviews" | translate }}</div></ion-row>
+        </ion-col>
+        <ion-col class="col-border">
+            <ion-row ><div class="text-info">{{ numCommits }}</div></ion-row>
+            <ion-row> <div class="subtitle-info">{{ "ranking.commits" | translate }}</div></ion-row>
+        </ion-col>
+        <ion-col class="col-border">
+            <ion-row><div class="text-agreed">{{ agreed }}%</div></ion-row>
+            <ion-row><div class="subtitle-agreed">{{ "ranking.agreed" | translate }}</div></ion-row>
+        </ion-col>
     </ion-row>
-
 </ion-grid>

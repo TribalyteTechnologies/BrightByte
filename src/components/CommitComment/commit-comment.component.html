@@ -3,7 +3,10 @@
         <ion-row align-items-center>
             <ion-col col-2>
                 <ion-row justify-content-start>
-                    <img src="../../assets/imgs/avatar.jpg" class="avatar">
+                <div>
+                    <img class="avatar" src="../../assets/imgs/avatar.jpg">
+
+                </div>
                 </ion-row>
             </ion-col>
             <ion-col no-padding>
@@ -36,29 +39,23 @@
     </ion-item>
     <ion-item>
         <ion-row>
-            <ion-col col-auto>
-                <ion-row justify-content-end>
-                    <ion-col>
-                        <div class="button-success" (click)="setThumbsUp()" *ngIf="review.vote==0">{{ "commits.agree" | translate }}</div>
-                    </ion-col>
-                    <ion-col>
-                        <div class="button-failed" (click)="setThumbsDown()" *ngIf="review.vote==0">{{ "commits.disagree" | translate }}</div>
-
-                    </ion-col>
-                    <ion-col>
-                        <div class="button-report" *ngIf="review.vote==0">
-                            <ion-icon name="warning"></ion-icon>
-                        </div>
-
-                    </ion-col>
-                </ion-row>
+            <ion-col>
+                <div class="button-success" (click)="setThumbsUp()" *ngIf="review.vote==0">{{ "commits.agree" | translate }}</div>
+            </ion-col>
+            <ion-col>
+                <div class="button-failed" (click)="setThumbsDown()" *ngIf="review.vote==0">{{ "commits.disagree" | translate }}</div>
+            </ion-col>
+            <ion-col>
+                <div class="button-report" *ngIf="review.vote==0">
+                    <ion-icon name="warning"></ion-icon>
+                </div>
             </ion-col>
         </ion-row>
         <ion-row>
-            <div class="success" *ngIf="review.vote==1"> This was rated succesfully</div>
+            <div class="success" *ngIf="review.vote==1"> {{ "commits.ratedAgree" | translate }}</div>
         </ion-row>
         <ion-row>
-            <div class="failed" *ngIf="review.vote==2"> This was rated unsuccesfully</div>
+            <div class="failed" *ngIf="review.vote==2"> {{ "commits.ratedDisagree" | translate }}</div>
         </ion-row>
     </ion-item>
 
