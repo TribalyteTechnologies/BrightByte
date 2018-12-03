@@ -4,13 +4,9 @@ import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
     selector: "ranking-card",
-    templateUrl: " ranking-card.component.html ",
+    templateUrl: "ranking-card.component.html",
     styles: ["ranking-card.component.scss"]
  })
-
-
-
-
 export class RankingCard {
 
     public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];

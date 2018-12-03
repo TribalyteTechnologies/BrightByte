@@ -4,10 +4,9 @@ import { UserCommit } from "../../models/user-commit.model";
 
 @Component({
     selector: "review-card",
-    templateUrl: " review-card.component.html ",
+    templateUrl: "review-card.component.html",
     styles: ["review-card.component.scss"]
  })
-
 export class ReviewCard {
 
     public urlHash: string = "0000";
