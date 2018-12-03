@@ -42,13 +42,15 @@
         "view": "View",
         "agree": "I agree",
         "disagree": "I dont agree",
+        "ratedAgree": "You agree this comment",
+        "ratedDisagree": "You disagree this comment",
         "report": "Report",
         "allCommits": "All commits",
         "allProjects": "All projects",
-        "pending": "Incompleted",
+        "pending": "Pending",
         "reviewed": "Reviewed",
         "getCommitsPending": "Error getting pending commits",
-        "isPendingFilter": "Pending"
+        "updated": "Updated"
 
     },
     "home": {
@@ -76,16 +78,26 @@
         "reputation": "Reputation",
         "getReputation": "Error getting reputations",
         "has": "has",
-        "reviewsReceived": "reviews received"
+        "reviewsReceived": "reviews received",
+        "reviews": "Reviews",
+        "commits": "Commits",
+        "agreed": "Agreed",
+        "level": "lvl"
     },
     "review": {
         "getCommits": "Error getting commits to review",
         "getDetails": "Error getting details of commits to review",
         "title": "Reviews",
         "subTitle": "Reviews",
+        "myReview": "My Review",
+        "otherReview": "Other reviews",
+        "asked": "You were asked to review a project on",
         "titleList": "List of commits to review",
         "author": "Author",
-        "titleCommit": "Title"
+        "titleCommit": "Title",
+        "noVote": "This review has not been voted",
+        "negativeVote": "The author disagree with this review",
+        "positiveVote": "The author likes this review"
     },
     "setProfile": {
         "title": "Welcome",

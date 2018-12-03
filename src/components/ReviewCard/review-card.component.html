@@ -1,36 +1,37 @@
 <ion-grid no-padding>
     <ion-row>
         <ion-col col-auto align-self-center>
-            <div [ngClass]="commit.numberReviews !== commit.currentNumberReviews ? 'status-pending' : 'status-not-pending'"></div>
+            <div [ngClass]="stateFinished ? 'status-pending' : 'status-not-pending'"></div>
         </ion-col>
         <ion-col align-self-center class="col-middle">
             <ion-row class="date">
-                <div>{{commit.creationDateMs | dateFormat }}</div>
+                <div>{{ creationDateMs | dateFormat }}</div>
             </ion-row>
             <ion-row align-items-center class="title">
-                <div>{{ commit.title }}</div>
-                <div *ngIf="commit.isPending" class="notifications">
+                <div>{{ title }}</div>
+                <div *ngIf="isReadNeeded" class="notifications">
                     <ion-icon name="notifications"></ion-icon>
                 </div>
             </ion-row>
             <ion-row class="project">
-                <div>Asked you to review a project on {{ commit.project }}</div>
+                <div>{{ "review.asked" | translate }} {{ project }}</div>
             </ion-row>
             <ion-row class="url">
-                <div>{{ (commit.url | slice:0:35) +'...'}}</div>
+                <div (click)="openUrl(urlLink)">#{{ urlHash }}</div>
             </ion-row>
 
         </ion-col>
         <ion-col col-auto>
             <ion-row justify-content-end>
-                <rating [rate]="commit.score" readonly="true" small="true"></rating>
+                <rating [rate]="score" readonly="true" small="true"></rating>
             </ion-row>
             <ion-row justify-content-end class="reviews-container">
-                <ion-avatar class="reviewer-icon">
+                <ion-avatar *ngFor="let item of reviews" class="reviewer-icon">
                     <img src=" ../../assets/imgs/avatar.jpg ">
                 </ion-avatar>
-                <div class="reviews-information" *ngIf="commit.numberReviews - commit.currentNumberReviews > 0">
-                    +{{ commit.numberReviews - commit.currentNumberReviews }}
+                <div class="reviews-information" *ngIf="numberReviews - currentNumberReviews > 0">
+                    +{{ numberReviews - currentNumberReviews }}
+
                 </div>
             </ion-row>
         </ion-col>

@@ -1,125 +1,131 @@
-.content-color {
-    background-color: rgb(246, 247, 251);
-}
-
-.status-pending {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #fc5661;
-}
-
-.status-not-pending {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #0acf97;
-}
-
-.col-first {
-    .coder-class {
+ranking-card {
+    .status-pending {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #fc5661;
+    }
+    .status-not-pending {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #0acf97;
+    }
+    .col-first {
+        .coder-class {
+            margin-left: 15px;
+            font-size: 18px;
+            line-height: 30px;
+            font-weight: bold;
+            color: #ff4c52;
+        }
+        .level {
+            margin-left: 15px;
+            font-size: 15px;
+            line-height: 30px;
+            color: #526069;
+        }
+    }
+    .info-col {
+        text-align: center;
+        margin-left: 15px;
+    }
+    .information-text {
+        font-size: 8px;
+        text-align: center;
+    }
+    .username-title {
         margin-left: 15px;
         font-size: 18px;
         line-height: 30px;
         font-weight: bold;
+        color: #3e8ef7;
+    }
+    .email-title {
+        margin-left: 15px;
+        font-size: 14px;
+        line-height: 30px;
+        font-weight: bold;
         color: #ff4c52;
     }
-    .level {
-        margin-left: 15px;
+    .text-table {
         font-size: 15px;
         line-height: 30px;
+        text-align: center;
         color: #526069;
+        .subtitle {
+            font-size: 12px;
+        }
     }
-}
-
-.avatar-col {
-    margin-left: 15px;
-    height: 80px;
-    width: auto;
-    border-radius: 50%;
-}
-
-.username-title {
-    margin-left: 25px;
-    font-size: 18px;
-    line-height: 30px;
-    font-weight: bold;
-    color: #3e8ef7;
-}
-
-.text-table {
-    font-size: 15px;
-    line-height: 30px;
-    text-align: center;
-    color: #526069;
-}
-
-.text-agreed {
-    font-size: 15px;
-    font-weight: bold;
-    line-height: 30px;
-    text-align: center;
-    color: #0acf97;
-}
-
-.notifications {
-    color: white;
-    background-color: #ff4c52;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-    margin-left: 10px;
-    font-size: 15px;
-    text-align: center;
-    margin-top: auto;
-    margin-bottom: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.reviews-container {
-    margin-top: 15px;
-}
-
-.reviews-information {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #3e8ef7;
-    color: #3e8ef7;
-    background-color: transparent;
-    font-weight: 500;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.reviews-information:hover {
-    background-color: #3e8ef7;
-    color: white;
-}
-
-.reviewer-icon {
-    margin-right: 10px;
-    height: 40px;
-}
-
-.view-button {
-    margin-top: 15px;
-    height: 40px;
-    padding: 15px;
-    border-radius: 5px;
-    border: 1px solid #3e8ef7;
-    background-color: transparent;
-    color: #3e8ef7;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.view-button:hover {
-    background-color: #3e8ef7;
-    color: white;
+    .level-card {
+        margin-left: 10px;
+        font-size: 10px;
+        color: white;
+        background-color: #0acf97;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    .avatar-col {
+        margin-left: 5px;
+        height: 80px;
+        width: auto;
+        border-radius: 50%;
+    }
+    .ranking-stars {
+        margin-left: -12px;
+    }
+    .text-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    .text-email {
+        font-size: 15px;
+        color: #687177;
+        margin-top: 10px;
+    }
+    .text-rank {
+        margin-left: 10px;
+        font-size: 10px;
+        color: white;
+        background-color: #2c3e50;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    .text-agreed {
+        color: #0acf97;
+        font-size: 25px;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+    }
+    .subtitle-agreed {
+        color: #0acf97;
+        font-size: 12px;
+        text-align: center;
+        width: 100%;
+    }
+    .text-info {
+        color: #687177;
+        font-size: 25px;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+    }
+    .subtitle-info {
+        color: #687177;
+        font-size: 12px;
+        text-align: center;
+        width: 100%;
+    }
+    .text-level {
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .subtitle-level {
+        font-size: 10px;
+    }
+    .col-border {
+        border-left: 1px solid rgb(231, 234, 237);
+    }
 }

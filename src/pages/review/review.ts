@@ -31,8 +31,6 @@ export class ReviewPage {
     public openedComments = false;
     public needReview = false;
 
-    public rateChulo: number;
-
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public indice: number;
@@ -60,16 +58,22 @@ export class ReviewPage {
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 let commits = commitConcat[0].concat(commitConcat[1]);
+                return commits;
+            }).then((commits) => {
 
-                for (let commitToReview of commits){
-                    this.contractManagerService.getFeedback(commitToReview.url)
+                let commitsPromises = commits.map((com) => {
+                    return this.contractManagerService.getFeedback(com.url)
                         .then((rsp) => {
-                            this.log.d("The response is", rsp);
-                            commitToReview.isPending = rsp;
-                        }).catch((err) => {
-                            this.log.e(err);
+                            console.log("Response recieved: " + rsp);
+                            com.isReadNeeded = rsp;
+                            return com;
                         });
-                }
+                });
+                return Promise.all(commitsPromises);
+            
+            })
+            .then((commits) => {
+
 
                 let projectFilter: UserCommit[] = [];
 
@@ -104,7 +108,7 @@ export class ReviewPage {
                 let pendingFilter: UserCommit[] = [];
                 if(this.filterIsPending){
                     pendingFilter = completedFilter.filter(commit => {
-                        return commit.isPending;
+                        return commit.isReadNeeded;
                     });
                 } else {
                     pendingFilter = completedFilter;
@@ -113,6 +117,8 @@ export class ReviewPage {
                 this.displayCommitsToReview = pendingFilter.sort((c1, c2) => {
                     return (c2.creationDateMs - c1.creationDateMs);
                 });
+
+
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
                     msg => {
@@ -145,15 +151,20 @@ export class ReviewPage {
                 }
                 this.openedComments = true; 
 
-
-            });
-        this.contractManagerService.setFeedback(commit.url)
-            .then((rsp) => {
-                this.log.d(rsp);
-            }).catch((err) => { 
+            }).catch(err => {
                 this.log.e(err);
             });
-        this.refresh();
+
+        console.log(commit.isReadNeeded);
+        console.log("hola");
+        this.contractManagerService.setFeedback(commit.url)
+            .then((val) => {
+                this.log.d(val);
+                this.refresh();
+            }).catch((err) => {
+                this.log.e(err);
+            });
+
     }
 
     public setReputation(value: number) {
@@ -165,15 +176,18 @@ export class ReviewPage {
     }
 
     public setReview(url: string, text: string, points: number){
+        this.refresh();
         this.contractManagerService.setReview(url, text, points)
-            .then((response) => {
-                console.log(response);
-                this.refresh();
-                this.openedComments = false;
-                return;
-            }).catch((error) => {
-                console.log(error);
-            });
+        .then((response) => {
+            console.log(response);
+            this.setReputation(-1);
+            this.openedComments = false;
+            this.refresh();
+            return;
+        }).catch((error) => {
+            console.log(error);
+        });
+        
     }
 
     public filterIncompleted(){
