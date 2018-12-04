@@ -1,27 +1,27 @@
-<ion-list class="comment" no-padding>
+<ion-list class="card-style" no-padding>
     <ion-item no-padding>
         <ion-row align-items-center>
-            <ion-col col-2>
+            <ion-col col-auto>
                 <ion-row justify-content-start>
-                    <img src="../../assets/imgs/avatar.jpg" class="avatar">
+                    <img class="avatar" src="../../assets/imgs/avatar.jpg">
                 </ion-row>
             </ion-col>
             <ion-col no-padding>
                 <ion-row align-items-center>
-                    <ion-col no-padding>
+                    <ion-col col-auto no-padding>
                         <ion-row justify-content-start>
-                            <ion-col align-self-center no-padding class="title">
+                            <ion-col align-self-center no-padding class="text-title">
                                 {{ review.name }}
                             </ion-col>
                         </ion-row>
                     </ion-col>
                     <ion-col no-padding>
-                        <ion-row justify-content-start>
+                        <ion-row justify-content-end>
                             <rating [rate]="review.score" readonly="true" small="true"></rating>
                         </ion-row>
                     </ion-col>
                 </ion-row>
-                <ion-row class="date">
+                <ion-row class="text-date">
                     {{ review.lastModificationDateMs | dateFormat }}
                 </ion-row>
 
@@ -30,19 +30,19 @@
 
     </ion-item>
     <ion-item text-wrap>
-        <ion-col col-12 class="text">
+        <ion-col col-12 class="text-description">
             {{ review.text }}
         </ion-col>
     </ion-item>
     <ion-item>
         <ion-row>
-            <div class="pending" *ngIf="review.vote==0"> {{ "review.noVote" | translate }}</div>
+            <button class="button-classic-active" *ngIf="review.vote==0"> {{ "review.noVote" | translate }}</button>
         </ion-row>
         <ion-row>
-            <div class="success" *ngIf="review.vote==1"> {{ "review.positiveVote" | translate }}</div>
+            <button class="button-green-active" *ngIf="review.vote==1"> {{ "review.positiveVote" | translate }}</button>
         </ion-row>
         <ion-row>
-            <div class="failed" *ngIf="review.vote==2"> {{ "review.negativeVote" | translate }}</div>
+            <button class="button-red-active" *ngIf="review.vote==2"> {{ "review.negativeVote" | translate }}</button>
         </ion-row>
     </ion-item>
 

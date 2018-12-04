@@ -42,8 +42,8 @@
         "view": "View",
         "agree": "I agree",
         "disagree": "I dont agree",
-        "ratedAgree": "You agree this comment",
-        "ratedDisagree": "You disagree this comment",
+        "ratedAgree": "You agree with this review",
+        "ratedDisagree": "You disagree with this review",
         "report": "Report",
         "allCommits": "All commits",
         "allProjects": "All projects",
@@ -82,7 +82,13 @@
         "reviews": "Reviews",
         "commits": "Commits",
         "agreed": "Agreed",
-        "level": "lvl"
+        "level": "lvl",
+        "tenCommits": "10 Commits",
+        "fifthyCommits": "50 Commits",
+        "hundredCommits": "100 Commits",
+        "tenReviews": "10 Reviews",
+        "fifthyReviews": "50 Reviews",
+        "hundredReviews": "100 Reviews"
     },
     "review": {
         "getCommits": "Error getting commits to review",
@@ -96,8 +102,8 @@
         "author": "Author",
         "titleCommit": "Title",
         "noVote": "This review has not been voted",
-        "negativeVote": "The author disagree with this review",
-        "positiveVote": "The author likes this review"
+        "negativeVote": "The author disagrees with this review",
+        "positiveVote": "The author agrees with this review"
     },
     "setProfile": {
         "title": "Welcome",

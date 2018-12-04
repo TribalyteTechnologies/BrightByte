@@ -1,76 +1,15 @@
-.comment {
-    border: 1px solid rgb(231, 234, 237);
-    .date {
-        font-size: 13px;
-        color: #a3afb7;
-        line-height: 20px;
-        margin-left: 20px;
-    }
-    .title {
-        font-size: 18px;
-        line-height: 30px;
-        font-weight: bold;
-        color: #37474f;
-        margin-left: 20px;
-    }
-    .text {
-        font-size: 15px;
-        line-height: 30px;
-        color: #526069;
-    }
+review-comment {
     .avatar {
-        width: 100%;
-        height: 100%;
-        max-width: 70px;
-        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        margin-right: 10px;
         margin-left: 10px;
-    }
-    .success {
-        padding: 1rem 1.50rem;
-        width: 100%;
-        background-color: #0acf97;
-        border-radius: 5px;
-        color: white;
-        font-size: 15px;
-    }
-    .pending {
-        padding: 1rem 1.50rem;
-        width: 100%;
-        background-color: #2c3e50;
-        border-radius: 5px;
-        color: white;
-        font-size: 15px;
-    }
-    .failed {
-        padding: 1rem 1.50rem;
-        width: 100%;
-        background-color: #ff4c52;
-        border-radius: 5px;
-        color: white;
-        font-size: 15px;
-    }
-    .button-success {
-        padding: 1rem 1.50rem;
-        width: 100%;
-        background-color: #0acf97;
-        border-radius: 5px;
-        color: white;
-        font-size: 15px;
-    }
-    .button-failed {
-        padding: 1rem 1.50rem;
-        width: 100%;
-        background-color: #ff4c52;
-        border-radius: 5px;
-        color: white;
-        font-size: 15px;
-    }
-    .button-report {
-        padding: 1rem 1.50rem;
-        width: 100%;
-        background-color: #f39c12;
-        border-radius: 5px;
-        color: white;
-        font-size: 15px;
+        border-radius: 50%;
+        display: block;
+        box-sizing: border-box;
+        .img {
+            width: 100%;
+            height: 100%;
+        }
     }
 }
