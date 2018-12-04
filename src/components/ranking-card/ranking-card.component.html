@@ -1,11 +1,12 @@
 <ion-grid no-padding>
     <ion-row align-items-center>
         <ion-col>
-            <img class="avatar-col" src="../../assets/imgs/avatar.jpg">
+            <img class="avatar" src="../../assets/imgs/avatar.jpg">
         </ion-col>
         <ion-col>
-            <ion-row><div class="text-name">{{ name }}</div> <div class="text-rank">{{ userRank }}</div><div class="level-card">{{ "ranking.level" | translate }} {{ level }}</div></ion-row>
-            <ion-row><div class="text-email"> {{ email }} </div></ion-row>
+            <ion-row><div class="text-title">{{ name }}</div></ion-row>
+            <ion-row><button class="label-user dark">{{ userRank }}</button><button class="label-user green">{{ "ranking.level" | translate }} {{ level }}</button></ion-row>
+            <ion-row><div class="text-description"> {{ email }} </div></ion-row>
             <ion-row>
                 <div class="ranking-stars">
                     <rating [rate]="reputation" readonly="true" small="true"></rating>
@@ -14,15 +15,15 @@
         </ion-col>
         <ion-col>
             <ion-row><div  class="text-info">{{ numReviews }}</div></ion-row>
-            <ion-row><div class="subtitle-info">{{ "ranking.reviews" | translate }}</div></ion-row>
+            <ion-row><div class="text-subtitle">{{ "ranking.reviews" | translate }}</div></ion-row>
         </ion-col>
         <ion-col class="col-border">
             <ion-row ><div class="text-info">{{ numCommits }}</div></ion-row>
-            <ion-row> <div class="subtitle-info">{{ "ranking.commits" | translate }}</div></ion-row>
+            <ion-row> <div class="text-subtitle">{{ "ranking.commits" | translate }}</div></ion-row>
         </ion-col>
         <ion-col class="col-border">
-            <ion-row><div class="text-agreed">{{ agreed }}%</div></ion-row>
-            <ion-row><div class="subtitle-agreed">{{ "ranking.agreed" | translate }}</div></ion-row>
+            <ion-row><div class="text-info">{{ agreed }}%</div></ion-row>
+            <ion-row><div class="text-subtitle">{{ "ranking.agreed" | translate }}</div></ion-row>
         </ion-col>
     </ion-row>
 </ion-grid>

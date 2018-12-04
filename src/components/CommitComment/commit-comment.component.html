@@ -1,30 +1,27 @@
-<ion-list class="comment" no-padding>
+<ion-list class="card-style" no-padding>
     <ion-item no-padding>
         <ion-row align-items-center>
-            <ion-col col-2>
+            <ion-col col-auto>
                 <ion-row justify-content-start>
-                <div>
                     <img class="avatar" src="../../assets/imgs/avatar.jpg">
-
-                </div>
                 </ion-row>
             </ion-col>
             <ion-col no-padding>
                 <ion-row align-items-center>
-                    <ion-col no-padding>
+                    <ion-col col-auto no-padding>
                         <ion-row justify-content-start>
-                            <ion-col align-self-center no-padding class="title">
+                            <ion-col align-self-center no-padding class="text-title">
                                 {{ review.name }}
                             </ion-col>
                         </ion-row>
                     </ion-col>
                     <ion-col no-padding>
-                        <ion-row justify-content-start>
+                        <ion-row justify-content-end>
                             <rating [rate]="review.score" readonly="true" small="true"></rating>
                         </ion-row>
                     </ion-col>
                 </ion-row>
-                <ion-row class="date">
+                <ion-row class="text-date">
                     {{ review.lastModificationDateMs | dateFormat }}
                 </ion-row>
 
@@ -33,29 +30,29 @@
 
     </ion-item>
     <ion-item text-wrap>
-        <ion-col col-12 class="text">
+        <ion-col col-12 class="text-description">
             {{ review.text }}
         </ion-col>
     </ion-item>
     <ion-item>
         <ion-row>
             <ion-col>
-                <div class="boton-success" (click)="setThumbsUp()" *ngIf="review.vote==0">{{ "commits.agree" | translate }}</div>
+                <button class="button-green-active" (click)="setThumbsUp()" *ngIf="review.vote==0">{{ "commits.agree" | translate }}</button>
             </ion-col>
             <ion-col>
-                <div class="boton-failed" (click)="setThumbsDown()" *ngIf="review.vote==0">{{ "commits.disagree" | translate }}</div>
+                <button class="button-red-active" (click)="setThumbsDown()" *ngIf="review.vote==0">{{ "commits.disagree" | translate }}</button>
             </ion-col>
             <ion-col>
-                <div class="boton-report" *ngIf="review.vote==0">
+                <button class="button-yellow-active" *ngIf="review.vote==0">
                     <ion-icon name="warning"></ion-icon>
-                </div>
+                </button>
             </ion-col>
         </ion-row>
         <ion-row>
-            <div class="success" *ngIf="review.vote==1"> {{ "commits.ratedAgree" | translate }}</div>
+            <button class="button-green-active" *ngIf="review.vote==1"> {{ "commits.ratedAgree" | translate }}</button>
         </ion-row>
         <ion-row>
-            <div class="failed" *ngIf="review.vote==2"> {{ "commits.ratedDisagree" | translate }}</div>
+            <button class="button-red-active" *ngIf="review.vote==2"> {{ "commits.ratedDisagree" | translate }}</button>
         </ion-row>
     </ion-item>
 

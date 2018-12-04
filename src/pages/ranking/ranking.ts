@@ -23,6 +23,7 @@ export class RankingPage {
     public userRank = "No rank";
     public userLevel = 0;
     public userStars = 0;
+    public userTrophy = ["t01-off.png", "t02-off.png", "t03-off.png", "t04-off.png", "t05-off.png", "t06-off.png"];
     private log: ILogger;
     private account: Account;
 
@@ -48,6 +49,7 @@ export class RankingPage {
                 this.userStars = Math.round(detailsUser.reputation);
                 this.userRank = this.rankingTitle[Math.round(detailsUser.reputation)];
                 this.userLevel = Math.round(this.userDetails.reputation * 3);
+                this.setUpTrophys();
             }).catch((e) => {
                 this.translateService.get("ranking.getUserInfo").subscribe(
                     msg => {
@@ -68,6 +70,30 @@ export class RankingPage {
                     });
             });
                 
+
+    }
+
+    private setUpTrophys(){
+        let commits = this.userDetails.numbermyCommitsPending;
+        let reviews = this.userDetails.numberCommitsReviewedByMe;
+        if (commits >= 10){
+            this.userTrophy[0] = "t01-on.png";
+        }
+        if (commits >= 50){
+            this.userTrophy[1] = "t02-on.png";
+        }
+        if (commits >= 100){
+            this.userTrophy[2] = "t03-on.png";
+        }
+        if (reviews >= 10){
+            this.userTrophy[3] = "t04-on.png";
+        }
+        if (reviews >= 50){
+            this.userTrophy[4] = "t05-on.png";
+        }
+        if (reviews >= 100){
+            this.userTrophy[5] = "t06-on.png";
+        }
 
     }
 }

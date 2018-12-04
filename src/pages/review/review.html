@@ -1,59 +1,47 @@
-<ion-header no-border class="header">
-    <ion-navbar class="navigation-bar">
-        <ion-grid>
-            <ion-row>
-                <ion-col col-2 align-self-center class="header">
-                    <div>
-                        <ion-title>
-                            Reviews
-                        </ion-title>
-                    </div>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-
-    </ion-navbar>
+<ion-header no-border class="main-header">
+    <div class="title">{{ "review.title" | translate }}</div>
 </ion-header>
 
-<ion-content class="content-color" padding>
+<ion-content class="background-style" padding>
     <ion-row>
         <ion-col col-7>
-            <ion-item class="project-content">
+            <ion-item class="background-style">
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
                 <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
-                    <ion-option *ngFor="let option of projects" [value]="option">{{ option }}</ion-option>
+                    <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
                 </ion-select>
             </ion-item>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsIncompleted ? 'incompleted-filter' : 'disabled-incompleted'" (click)="filterIncompleted()">
+            <button [ngClass]="filterIsIncompleted ? 'button-red-active' : 'button-red-inactive'" (click)="filterIncompleted()">
                 {{ "commits.pending" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsReviewed ? 'completed-filter' : 'disabled-completed'" (click)="filterCompleted()">
+            <button [ngClass]="filterIsReviewed ? 'button-green-active' : 'button-green-inactive'" (click)="filterCompleted()">
                 {{ "commits.reviewed" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsPending ? 'pending-filter' : 'disabled-pending'" (click)=" filterPending()">
+            <button [ngClass]="filterIsPending ? 'button-yellow-active' : 'button-yellow-inactive'" (click)=" filterPending()">
                 {{ "commits.updated" | translate }}
             </button>
         </ion-col>
     </ion-row>
+
     <ion-row>
         <ion-col>
-            <ion-list class="card" no-padding>
+            <ion-list class="card-style" no-padding>
                 <ion-item class="card-list-item" *ngFor="let commit of displayCommitsToReview; let i = index" (click)="shouldOpen(commit); indice = i;">
                     <review-card [commit]="commit"></review-card>
                 </ion-item>
             </ion-list>
             <p class="error-message ">{{ msg }}</p>
         </ion-col>
-        <ion-col col-5 *ngIf=" openedComments ">
-            <div class="reviews-col-title">{{ "review.myReview" | translate }}</div>
-            <ion-list class="review-list" *ngIf="needReview">
+        <ion-col col-5 *ngIf="openedComments ">
+            <div class="text-title">{{ "review.myReview" | translate }}</div>
+            <ion-list class="card-style" *ngIf="needReview">
                 <ion-item>
                     <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
                     </ion-textarea>
@@ -64,7 +52,7 @@
                     </button>
                 </ion-item>
                 <ion-item>
-                    <button class="button-review" (click)="setReview(displayCommitsToReview[indice].url, textComment, rate); textComment =''">
+                    <button class="button-green-active" (click)="setReview(displayCommitsToReview[indice].url, textComment, rate); textComment =''">
                         {{ "commitReview.review" | translate }}
                     </button>
                 </ion-item>               
@@ -72,7 +60,7 @@
             <ion-list *ngIf="userCommitComment[0]">
                 <review-comment [review]="userCommitComment[0] "></review-comment>
             </ion-list>
-            <div class="reviews-col-title" *ngIf="commitComments.length > 0">{{ "review.otherReview" | translate }}</div>
+            <div class="text-title" *ngIf="commitComments.length > 0">{{ "review.otherReview" | translate }}</div>
             <ion-list *ngFor="let comment of commitComments; let j=index ">
                 <review-comment [review]="comment "></review-comment>
             </ion-list>

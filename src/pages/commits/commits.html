@@ -1,33 +1,23 @@
-<ion-header no-border class="header">
-    <ion-navbar class="navigation-bar">
-        <ion-grid>
-            <ion-row>
-                <ion-col col-2 align-self-center class="header">
-                    <div>
-                        <ion-title>
-                            {{ "commits.title" | translate }}
-                        </ion-title>
-                    </div>
-                </ion-col>
-
-                <ion-col align-self-center>
-                    <div>
-                        <button ion-button icon-end color="dark" clear (click)="openAddCommitDialog()">
-                            {{ "commits.add" | translate }}
-                            <ion-icon name="add-circle"></ion-icon>
-                        </button>
-                    </div>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-
-    </ion-navbar>
+<ion-header no-border class="main-header">
+    <ion-row align-items-center class="header-row">
+        <ion-col col-auto no-padding>
+            <div class="title">{{ "commits.title" | translate }}</div>
+        </ion-col>
+        <ion-col no-padding>
+            <div>
+                <button ion-button icon-end color="main" clear (click)="openAddCommitDialog()">
+                    {{ "commits.add" | translate }}
+                    <ion-icon name="add-circle"></ion-icon>
+                </button>
+            </div>
+        </ion-col>
+    </ion-row>
 </ion-header>
 
-<ion-content class="content-color" padding>
+<ion-content class="background-style" padding>
     <ion-row>
         <ion-col col-7>
-            <ion-item class="project-content">
+            <ion-item class="background-style">
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
                 <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
@@ -36,17 +26,17 @@
             </ion-item>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsIncompleted ? 'incompleted-filter' : 'disabled-incompleted'" (click)="filterIncompleted()">
+            <button [ngClass]="filterIsIncompleted ? 'button-red-active' : 'button-red-inactive'" (click)="filterIncompleted()">
                 {{ "commits.pending" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsReviewed ? 'completed-filter' : 'disabled-completed'" (click)="filterCompleted()">
+            <button [ngClass]="filterIsReviewed ? 'button-green-active' : 'button-green-inactive'" (click)="filterCompleted()">
                 {{ "commits.reviewed" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsPending ? 'pending-filter' : 'disabled-pending'" (click)=" filterPending()">
+            <button [ngClass]="filterIsPending ? 'button-yellow-active' : 'button-yellow-inactive'" (click)=" filterPending()">
                 {{ "commits.updated" | translate }}
             </button>
         </ion-col>
@@ -54,7 +44,7 @@
 
     <ion-row>
         <ion-col>
-            <ion-list class="card" no-padding>
+            <ion-list class="card-style" no-padding>
                 <ion-item class="card-list-item" *ngFor="let commit of arrayCommits ; let i = index" (click)="shouldOpen(commit); globalIndex = i;">
                     <commit-card [commit]="commit"></commit-card>
                 </ion-item>
