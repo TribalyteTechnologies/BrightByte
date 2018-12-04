@@ -203,4 +203,45 @@ contract Commits {
         }
         return (yes,auth);
     }
+
+    function superSet(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint sc, uint pnt) public onlyDapp {
+        bytes32 _id = keccak256(url);
+        allCommitsArray.push(_id);
+        Commit storage data = storedData[_id];
+        data.title = tit;
+        data.url = url;
+        data.author = ath;
+        data.creationDate = crDt;
+        data.isReadNeeded = need;
+        data.lastModificationDate = lt;
+        data.currentNumberReviews = rev;
+        data.currentNumberReviews = ctR;
+        data.score = sc;
+        data.points = pnt;
+    }
+
+    function superSetTwo(bytes32 _url, address[] pdCom, address[] fnCom) public onlyDapp {
+        Commit storage data = storedData[_url];
+        for(uint i = 0; i < pdCom.length; i++) {
+            data.pendingComments.push(pdCom[i]);
+        }
+        for(uint j = 0; j < fnCom.length; j++) {
+            data.finishedComments.push(fnCom[i]);
+        }
+    }
+
+    function superSetComment(bytes32 url,address user,string txt,address ath,uint sc, uint v, uint crDt, uint lsMd, bool need) public onlyDapp {
+        Commit storage data = storedData[url];
+        data.commitComments[user].text = txt;
+        data.commitComments[user].author = ath;
+        data.commitComments[user].score = sc;
+        data.commitComments[user].vote = v;
+        data.commitComments[user].creationDate = crDt;
+        data.commitComments[user].lastModificationDate = lsMd;
+        data.commitComments[user].isReadNeeded = need;
+    }
+
+    function superSetPendingComments(bytes32 _url, address _hash)  public onlyDapp {
+        storedData[_url].pendingComments.push(_hash);
+    }
 }
