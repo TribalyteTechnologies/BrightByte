@@ -4,6 +4,7 @@ import "./Root.sol";
 contract Commits {
     Root private root;
     address private rootAddress;
+    uint constant finalDayMigrate = 1548028800;
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
@@ -204,15 +205,15 @@ contract Commits {
         return (yes,auth);
     }
 
-    function superSet(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint sc, uint pnt) public onlyDapp {
+    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint sc, uint p) public onlyDapp {
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, pnt, a, a);
+        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, p, a, a);
         allCommitsArray.push(_id);
     }
 
-    function superSetTwo(bytes32 _url, address[] pdCom, address[] fnCom) public onlyDapp {
+    function setAllCommitDataTwo(bytes32 _url, address[] pdCom, address[] fnCom) public onlyDapp {
         Commit storage data = storedData[_url];
         for(uint i = 0; i < pdCom.length; i++) {
             data.pendingComments.push(pdCom[i]);
@@ -222,7 +223,7 @@ contract Commits {
         }
     }
 
-    function superSetComment(bytes32 url,address user,string txt,address ath,uint sc, uint v, uint crDt, uint lsMd) public onlyDapp {
+    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint v, uint crDt, uint lsMd) public onlyDapp {
         Commit storage data = storedData[url];
         data.commitComments[user].text = txt;
         data.commitComments[user].author = ath;
@@ -232,7 +233,7 @@ contract Commits {
         data.commitComments[user].lastModificationDate = lsMd;
     }
 
-    function superSetPendingComments(bytes32 _url, address _hash)  public onlyDapp {
+    function setPendingCommentsData(bytes32 _url, address _hash)  public onlyDapp {
         storedData[_url].pendingComments.push(_hash);
     }
 }

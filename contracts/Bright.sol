@@ -3,6 +3,7 @@ import "./Root.sol";
 
 contract Bright {
     Root private root;
+    uint constant finalDayMigrate = 1548028800;
     event UserProfileSetEvent (string name, address hash);
     mapping (address => UserProfile) private hashUserMap;
     mapping (bytes32 => address) private emailUserMap;
@@ -67,13 +68,14 @@ contract Bright {
     function setProfile (string _name, string _email) public onlyDapp {
         address user = tx.origin;
         if (bytes(hashUserMap[user].name).length == 0 && bytes(hashUserMap[user].email).length == 0){
-            hashUserMap[user].name = _name;
-            hashUserMap[user].email = _email;
-            hashUserMap[user].hash = user;
-            hashUserMap[user].numberOfTimesReview = 0;
-            hashUserMap[user].agreedPercentage = 100;
-            hashUserMap[user].positeVotes = 0;
-            hashUserMap[user].negativeVotes = 0;
+            UserProfile storage newUser = hashUserMap[user];
+            newUser.name = _name;
+            newUser.email = _email;
+            newUser.hash = user;
+            newUser.numberOfTimesReview = 0;
+            newUser.agreedPercentage = 100;
+            newUser.positeVotes = 0;
+            newUser.negativeVotes = 0;
             bytes32 emailId = keccak256(_email);
             emailUserMap[emailId] = user;
             allUsersArray.push(user);
@@ -179,7 +181,7 @@ contract Bright {
     }
 
     function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint, uint, uint){
-        UserProfile storage user = hashUserMap[allUsersArray[_index]];
+        UserProfile memory user = hashUserMap[allUsersArray[_index]];
         return (user.email,
                 user.reputation,
                 user.numberOfTimesReview,
@@ -261,43 +263,40 @@ contract Bright {
         return (hashUserMap[_hash].positeVotes, hashUserMap[_hash].negativeVotes);
     }
 
-    //Meter timestamp
-    function superSet(string name, string mail, address hash, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint rep) public onlyDapp {
-        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0);
-        UserProfile storage userMap = hashUserMap[hash]; //memory
-        userMap.name = name;
-        userMap.email = mail;
-        userMap.hash = hash;
-        userMap.agreedPercentage = perct;
-        userMap.numberOfPoints = pts;
-        userMap.numberOfTimesReview = tmRw;
-        userMap.positeVotes = pos;
-        userMap.negativeVotes = neg;
-        userMap.reputation = rep;
-
+    function setAllUserData(string name, string mail, address hash, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint rep) public onlyDapp {
+        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < finalDayMigrate);
+        UserProfile memory user = hashUserMap[hash];
+        user.name = name;
+        user.email = mail;
+        user.hash = hash;
+        user.agreedPercentage = perct;
+        user.numberOfPoints = pts;
+        user.numberOfTimesReview = tmRw;
+        user.positeVotes = pos;
+        user.negativeVotes = neg;
+        user.reputation = rep;
         bytes32 emailId = keccak256(mail);
         emailUserMap[emailId] = hash;
         allUsersArray.push(hash);
     }
 
-    function superSetTwo(address h, bytes32[] finCom, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp {
-        UserProfile storage userMap = hashUserMap[h]; //memory
+    function setAllUserDataTwo(address h, bytes32[] finCom, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
+        require (bytes(hashUserMap[h].name).length == 0 && bytes(hashUserMap[h].email).length == 0 && block.timestamp < finalDayMigrate);
+        UserProfile storage user = hashUserMap[h];
         for(uint i = 0; i < finCom.length; i++) {
-            userMap.finishedCommits.push(finCom[i]);
+            user.finishedCommits.push(finCom[i]);
         }
         for(uint j = 0; j < pendCom.length; j++) {
-            userMap.pendingCommits.push(pendCom[j]);
+            user.pendingCommits.push(pendCom[j]);
         }
         for(uint x = 0; x < finRev.length; x++) {
-            userMap.finishedReviews.push(finRev[x]);
+            user.finishedReviews.push(finRev[x]);
         }
         for(uint y = 0; y < pendRev.length; y++) {
-            userMap.pendingReviews.push(pendRev[y]);
+            user.pendingReviews.push(pendRev[y]);
         }
         for(uint m = 0; m < toRd.length; m++) {
-            userMap.toRead.push(toRd[m]);
+            user.toRead.push(toRd[m]);
         }
-
     }
-
 }
