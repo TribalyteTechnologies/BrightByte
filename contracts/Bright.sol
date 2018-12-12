@@ -261,7 +261,9 @@ contract Bright {
         return (hashUserMap[_hash].positeVotes, hashUserMap[_hash].negativeVotes);
     }
 
+    //Meter timestamp
     function superSet(string name, string mail, address hash, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint rep) public onlyDapp {
+        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0);
         UserProfile storage userMap = hashUserMap[hash]; //memory
         userMap.name = name;
         userMap.email = mail;
@@ -280,12 +282,6 @@ contract Bright {
 
     function superSetTwo(address h, bytes32[] finCom, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp {
         UserProfile storage userMap = hashUserMap[h]; //memory
-        userMap.finishedCommits = finCom;
-        userMap.pendingCommits = pendCom;
-        userMap.finishedReviews = finRev;
-        userMap.pendingReviews = pendRev;
-        userMap.toRead = toRd;
-
         for(uint i = 0; i < finCom.length; i++) {
             userMap.finishedCommits.push(finCom[i]);
         }
