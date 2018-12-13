@@ -21,7 +21,7 @@
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
                 <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
-                    <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
+                    <ion-option *ngFor="let option of projects" [value]=" option">{{ option }}</ion-option>
                 </ion-select>
             </ion-item>
         </ion-col>
@@ -41,20 +41,21 @@
             </button>
         </ion-col>
     </ion-row>
-
     <ion-row>
         <ion-col>
             <ion-list class="card-style" no-padding>
-                <ion-item class="card-list-item" *ngFor="let commit of arrayCommits ; let i = index" (click)="shouldOpen(commit); globalIndex = i;">
+                <ion-item class="card-list-item" *ngFor="let commit of arrayCommits" (click)="shouldOpen(commit)">
                     <commit-card [commit]="commit"></commit-card>
                 </ion-item>
             </ion-list>
             <p class="error-message ">{{ msg }}</p>
         </ion-col>
-        <ion-col col-5 *ngIf=" openedComments ">
+        <ion-col col-5 *ngIf="openedComments ">
             <ion-list *ngFor="let comment of commitComments; let j=index ">
-                <commit-comment [review]="comment" (thumbsUp)="setThumbs(arrayCommits[globalIndex].url,j, 1) " (thumbsDown)="setThumbs(arrayCommits[globalIndex].url,j, 2) "></commit-comment>
+                <commit-comment [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
             </ion-list>
-        </ion-col>
+    </ion-col>
     </ion-row>
+
+
 </ion-content>

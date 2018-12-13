@@ -1,7 +1,8 @@
 <ion-grid no-padding>
     <ion-row align-items-center>
-        <ion-col>
-            <img class="avatar" src="../../assets/imgs/avatar.jpg">
+        <ion-col class="avatar-container">
+            <div class="number">#{{ userPosition }}</div>
+            <img class="avatar ranking-card" src="http://identicon.org?t={{ name }}&c=0acf97">
         </ion-col>
         <ion-col>
             <ion-row><div class="text-title">{{ name }}</div></ion-row>

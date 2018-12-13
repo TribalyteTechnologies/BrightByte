@@ -10,7 +10,8 @@
         "wrongFile": "The format of the selected file is incorrect",
         "noRpc": "No RPC connetion",
         "login": "Login",
-        "debug": "Debug"
+        "debug": "Debug",
+        "remember": "Remember user?"
     },
     "addCommit": {
         "title": "Add commit",
@@ -84,10 +85,10 @@
         "agreed": "Agreed",
         "level": "lvl",
         "tenCommits": "10 Commits",
-        "fifthyCommits": "50 Commits",
+        "fiftyCommits": "50 Commits",
         "hundredCommits": "100 Commits",
         "tenReviews": "10 Reviews",
-        "fifthyReviews": "50 Reviews",
+        "fiftyReviews": "50 Reviews",
         "hundredReviews": "100 Reviews"
     },
     "review": {

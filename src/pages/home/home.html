@@ -1,14 +1,41 @@
-<ion-header>
-    <ion-navbar>
-        <ion-title>{{ "home.title" | translate }}</ion-title>
-    </ion-navbar>
+<ion-header no-border class="main-header">
+    <div class="title">{{ "home.title" | translate }}</div>
 </ion-header>
 
 <ion-content padding>
-    <h2>{{ "home.subTitle" | translate }}</h2>
-    <p>
-        {{ "home.info" | translate }}
-    </p>
-    <hr>
-    <div class="h1"></div>
+<ion-grid>
+    <ion-row>
+        <ion-col col-auto><div class="color-uno"></div></ion-col>
+        <ion-col col-auto><div class="color-dos"></div></ion-col>
+        <ion-col col-auto><div class="color-tres"></div></ion-col>
+        <ion-col col-auto><div class="color-cuatro"></div></ion-col>
+        <ion-col col-auto><div class="color-cinco"></div></ion-col>
+        <ion-col col-auto><div class="color-seis"></div></ion-col>
+        <ion-col col-auto><div class="color-siete"></div></ion-col>
+        <ion-col col-auto><div class="color-ocho"></div></ion-col>
+        <ion-col col-auto><div class="color-nueve"></div></ion-col>
+        <ion-col col-auto><div class="color-diez"></div></ion-col>
+        <ion-col col-auto><div class="color-background"></div></ion-col>
+    </ion-row>
+</ion-grid>
+<hr>
+<ion-grid>
+    <ion-row><div class="title-uno">Section Title</div></ion-row>
+    <ion-row><div class="title-dos">Card title</div></ion-row>
+    <ion-row><div class="title-tres">Card description</div></ion-row>
+    <ion-row><div class="title-cuatro">Card url</div></ion-row>
+    <ion-row><div class="title-cinco">Card date</div></ion-row>
+    <ion-row><div class="green-dot"></div></ion-row>
+    <ion-row><div class="red-dot"></div></ion-row>
+</ion-grid>
+<ion-grid>
+    <ion-row class="card-style">Card style class</ion-row>
+    <ion-row>
+        <button ion-button block color="grass" (click)="showSpinner()">Show</button>
+    </ion-row>
+    <ion-row>
+        <button ion-button block color="grass" (click)="hideSpinner()">Dismiss</button>
+    </ion-row>
+</ion-grid>
+    
 </ion-content>

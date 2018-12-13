@@ -1,6 +1,10 @@
 # BrightByte
 This is the BrightByte developer reputation project.
 
+Trophy icons designed by Freepik from Flaticon
+
+Identicon generator is powered by the Identicon PHP library
+
 The following commands are available:
 
 - Install the dependencies by running npm install.
@@ -19,3 +23,4 @@ The following commands are available:
 For more information please contact [Tribalyte Technologies](http://tribalyte.com).
 
 Licensed under the conditions of `LICENSE.md`.
+

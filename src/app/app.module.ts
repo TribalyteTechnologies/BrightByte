@@ -19,14 +19,18 @@ import { CommitReviewPage } from "../pages/commitreview/commitreview";
 import { CommitDetailsPage } from "../pages/commitdetails/commitdetails";
 
 // Providers
+/// core
 import { AppConfig } from "../app.config";
 import { LoggerService } from "../core/logger.service";
 import { Web3Service } from "../core/web3.service";
 import { AppVersionService } from "../core/app-version.service";
 import { LoginService } from "../core/login.service";
+import { DateFormatPipe } from "../core/date-format.pipe";
+import { SpinnerService } from "../core/spinner.service";
+/// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
-import { DateFormatPipe } from "../core/date-format.pipe";
+import { UserLoggerService } from "../domain/user-logger.service";
 
 //Modules
 import { IonicRatingModule } from "ionic-rating";
@@ -104,6 +108,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         Web3Service,
         LoginService,
         HttpClientModule,
+        SpinnerService,
+        UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         AppVersionService

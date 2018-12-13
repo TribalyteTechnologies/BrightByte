@@ -9,7 +9,7 @@
                 <ion-label>{{ "commits.project" | translate }}</ion-label>
                 <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
                     <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
-                    <ion-option *ngFor="let option of projects" value="{{ option }}">{{ option }}</ion-option>
+                    <ion-option *ngFor="let option of projects" [value]="option">{{ option }}</ion-option>
                 </ion-select>
             </ion-item>
         </ion-col>
@@ -33,7 +33,7 @@
     <ion-row>
         <ion-col>
             <ion-list class="card-style" no-padding>
-                <ion-item class="card-list-item" *ngFor="let commit of displayCommitsToReview; let i = index" (click)="shouldOpen(commit); indice = i;">
+                <ion-item class="card-list-item" *ngFor="let commit of displayCommitsToReview; let i = index" (click)="shouldOpen(commit)">
                     <review-card [commit]="commit"></review-card>
                 </ion-item>
             </ion-list>
@@ -52,7 +52,7 @@
                     </button>
                 </ion-item>
                 <ion-item>
-                    <button class="button-green-active" (click)="setReview(displayCommitsToReview[indice].url, textComment, rate); textComment =''">
+                    <button class="button-green-active" (click)="setReview(currentCommit.url, textComment, rate); textComment =''">
                         {{ "commitReview.review" | translate }}
                     </button>
                 </ion-item>               

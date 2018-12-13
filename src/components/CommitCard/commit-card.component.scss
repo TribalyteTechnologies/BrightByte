@@ -12,5 +12,7 @@ commit-card {
     .reviewer-icon {
         margin-right: 10px;
         height: 40px;
+        border-radius: 50%;
+        background-color: color($colors, backgroundLight);
     }
 }

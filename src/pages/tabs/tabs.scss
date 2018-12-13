@@ -5,22 +5,27 @@ page-tabs {
         height: 100%;
         background-color: rgb(40, 47, 58);
         .menu {
-            width: 100px;
+            width: 70px;
             text-align: center;
         }
         .avatar-container {
             display: inline-block;
+            border-radius: 50%;
         }
-        .avatar {
+        .avatar-icon {
             background-color: transparent;
             text-align: center;
         }
         .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100px;
             background-color: #1d222b;
         }
         .logo {
-            width: 50px;
+            width: 35px;
             text-align: center;
             padding-top: 20px;
             padding-bottom: 20px;
@@ -32,6 +37,28 @@ page-tabs {
                 position: absolute;
                 bottom: 0px;
             }
+        }
+        .menu-buttons-col {
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-button-style {
+            font-size: 20px;
+            height: 60px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            background-color: transparent;
+        }
+        .menu-button-style:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .menu-button-style-selected {
+            font-size: 20px;
+            height: 60px;
+            margin-bottom: 20px;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 5px solid color($colors, grass);
         }
     }
 }

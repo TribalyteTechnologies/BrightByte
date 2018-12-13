@@ -5,17 +5,24 @@ ranking-card {
     .col-border {
         border-left: 1px solid rgb(231, 234, 237);
     }
-    .avatar {
-        width: 50px;
-        height: 50px;
-        margin-right: 10px;
-        margin-left: 10px;
+    .avatar.ranking-card {
+        widows: 80px;
+        height: 80px;
+    }
+    .avatar-container {
+        position: relative;
+    }
+    .number {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+        color: #fff;
+        background-color: color($colors, dark);
         border-radius: 50%;
-        display: block;
-        box-sizing: border-box;
-        .img {
-            width: 100%;
-            height: 100%;
-        }
+        position: absolute;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

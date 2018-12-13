@@ -7,8 +7,10 @@ export class UserReputation {
     public numReviews: number;
     public numberOfPoints: number;
     public agreedPercentage: number;
-    public  numberOfCommits: number;
+    public numberOfCommits: number;
     public finishedReviews: number;
+    public userPosition: number;
+    public userHash: string;
     public static fromSmartContract(userVals: Array<any>): UserReputation{ 
         let user = new UserReputation(); 
         user.email = userVals[0]; 
@@ -19,6 +21,8 @@ export class UserReputation {
         user.agreedPercentage = userVals[5];
         user.numberOfCommits = userVals[6];
         user.finishedReviews = userVals[7];
+        user.userHash = userVals[8];
+        user.userPosition = 0;
         return user; 
     } 
 } 

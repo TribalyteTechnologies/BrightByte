@@ -26,11 +26,11 @@
                 <rating [rate]="score" readonly="true" small="true"></rating>
             </ion-row>
             <ion-row justify-content-end class="reviews-container">
-                <ion-avatar *ngFor="let item of reviews" class="reviewer-icon">
-                    <img src=" ../../assets/imgs/avatar.jpg ">
+                <ion-avatar *ngFor="let user of reviewers[1]" class="reviewer-icon">
+                    <img src="http://identicon.org?t={{ user.name }}&c=0acf97">
                 </ion-avatar>
-                <div class="reviewers-left" *ngIf="numberReviews - currentNumberReviews > 0">
-                    +{{ numberReviews - currentNumberReviews }}
+                <div class="reviewers-left" *ngIf="numberReviews > 0">
+                    +{{ numberReviews }}
 
                 </div>
             </ion-row>

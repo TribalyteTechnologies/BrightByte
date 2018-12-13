@@ -1,4 +1,5 @@
 import { AppConfig } from "../app.config";
+import { UserDetails } from "./user-details.model";
 export class UserCommit { 
     public url: string; 
     public title: string;
@@ -11,6 +12,7 @@ export class UserCommit {
     public lastModificationDateMs: number;
     public numberReviews: number;
     public currentNumberReviews: number;
+    public reviewers: UserDetails[][];
 
     public static getProjectFromUrl(url: string): string {
         return url.split("/")[4];
@@ -29,6 +31,7 @@ export class UserCommit {
         commit.numberReviews = commitVals[6];
         commit.currentNumberReviews = commitVals[7];
         commit.score = commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR ;
+        commit.reviewers = [];
         return commit;
     } 
 }
