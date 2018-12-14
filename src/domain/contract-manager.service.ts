@@ -23,6 +23,8 @@ interface ItrbSmartContact { //Web3.Eth.Contract
 
 @Injectable()
 export class ContractManagerService {
+    private contractAddress: string;
+    private initPromOld: Promise<ItrbSmartContact>;
     private contractAddressRoot: string;
     private contractAddressBright: string;
     private contractAddressCommits: string;
@@ -385,6 +387,408 @@ export class ContractManagerService {
         });
    }
 
+
+       /////////////////////////////////MIGRATION///////////////////////////////////////////
+
+    public initMigrationOld(user: Account): Promise<ItrbSmartContact> {
+    this.currentUser = user;
+    this.log.d("Initializing service with user ", this.currentUser);
+    this.initPromOld = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
+        .then((jsonContractData: ItrbSmartContractJson) => {
+            let truffleContract = TruffleContract(jsonContractData);
+            this.contractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
+            let contract = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddress, {
+                from: this.currentUser.address,
+                gas: AppConfig.NETWORK_CONFIG.gasLimit,
+                gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
+                data: truffleContract.deployedBytecode
+            });
+            this.log.d("TruffleContract function: ", contract);
+            return contract;
+        });
+    return this.initPromOld;
+    }
+
+    public getUserMigration(){
+        let name: string;
+        let email: string;
+        let numberCommitsReviewedByMe: number = 0;
+        let reputation: number = 0;
+        let numberOfTimesReview: number = 0;
+        let numberOfPoints: number = 0; 
+        let negativeVotes: number = 0;
+        let positiveVotes: number = 0;
+        let agreedPercentage: number = 0;
+        let userCommits: string[] = [];
+        let userCommitsLength: number;
+        let commitsToReview: string[] = [];
+        let commitsToReviewNumbComments: number[] = [];
+        let commitsToReviewLength: number;
+        let toRead = [];
+        let pendingReviews = [];
+        let finishedReviews = [];
+
+        let numberOfFeed: number[] = [];
+
+        let commitsArray: CommitDataMigraton[] = [];
+
+        let contractBright;
+        let brightNew;
+        let commitNew;
+        let rootNew;
+        
+
+
+        return this.initMigrationOld(this.currentUser)
+        .then((contract) => {
+            contractBright = contract;
+            return contract.methods.getUser(this.currentUser.address).call();
+        }).then((userData) => {
+                name = userData[0];
+                email = userData[1];
+                numberCommitsReviewedByMe = userData[2];
+                commitsToReviewLength = userData[3];
+                userCommitsLength = userData[4];
+                reputation = userData[5];
+                
+                let promisesReput = new Array<Promise<any>>();
+                for(let i = 0; i < userData.length; i++){
+                    let promise = contractBright.methods.getAllUserReputation(i).call();
+                    promisesReput.push(promise);
+                }
+                return Promise.all(promisesReput);
+
+        }).then((userReput) => {
+                for(let i = 0; i < userReput.length; i++){
+                    if(userReput[i][0] === email){
+                        numberOfPoints = userReput[i][3];
+                    }
+                }
+
+                let promisesCommits = new Array<Promise<any>>();
+                for(let i = 0; i < userCommitsLength; i++){
+                    let promise = contractBright.methods.getUserCommits(i).call();
+                    promisesCommits.push(promise);
+                }
+                return Promise.all(promisesCommits);
+        }).then((commits) => {
+            for(let i = 0; i < commits.length; i++){ 
+                userCommits.push(this.web3.utils.keccak256(commits[i][0]));
+            }
+
+            for(let i = 0; i < commits.length; i++){
+                let commitMigration = new CommitDataMigraton();
+                commitMigration.title = commits[i][1];
+                commitMigration.url = commits[i][0];
+                commitMigration.author = this.currentUser.address;
+                commitMigration.creationDate = commits[i][6];
+                commitMigration.lastModificationDate = commits[i][7];
+                commitMigration.score = commits[i][5];
+                commitMigration.isReadNeeded = commits[i][4];
+                commitMigration.finishedComments = [];
+                commitMigration.pendingComments = [];
+                commitMigration.commentDataMigration = [];
+                commitMigration.points = 0;
+                commitsArray.push(commitMigration);
+            }
+
+            let promisesCommitsDet = new Array<Promise<any>>();
+            for(let i = 0; i < userCommitsLength; i++){
+                let promise = contractBright.methods.getDetailsCommits(commits[i][0]).call();
+                promisesCommitsDet.push(promise);
+            }
+            return Promise.all(promisesCommitsDet);
+        }).then((commitDetail) => {
+
+            for(let i = 0; i < commitDetail.length; i++){
+                commitsArray[i].numberReviews = commitDetail[i][4];
+                commitsArray[i].currentNumberReviews = commitDetail[i][6];
+                commitsArray[i].points = commitsArray[i].score * commitsArray[i].currentNumberReviews;
+            }
+
+            let promises = new Array<Promise<any>>();
+            for(let i = 0; i < commitDetail.length; i++){
+                for(let j = 0; j < commitDetail[i][6]; j++){
+                    let promise = contractBright.methods.getCommentsOfCommit(commitDetail[i][0], j).call();
+                    promises.push(promise);
+                }
+            }
+            return Promise.all(promises);
+        }).then((comments) => {
+            let counter = 0;
+            for (let i = 0; i < commitsArray.length; i++){
+                for (let j = 0; j < commitsArray[i].currentNumberReviews; j++){
+                    let commentDataMigration = new CommentDataMigration();
+                    commentDataMigration.text = comments[counter][0];
+                    commentDataMigration.user = comments[counter][1];
+                    commentDataMigration.scoreComment = comments[counter][3];
+                    commentDataMigration.vote = comments[counter][4];
+                    if(Number(commentDataMigration.vote) === 1){
+                        commentDataMigration.vote = 2;
+                    }else if(Number(commentDataMigration.vote) === 2){
+                        commentDataMigration.vote = 1;
+                    }
+                    commentDataMigration.lastModificationDateComment = comments[counter][5];
+                    commitsArray[i].commentDataMigration.push(commentDataMigration); 
+                    commitsArray[i].finishedComments.push(commentDataMigration.user);
+                    counter++;
+                }
+            }
+            
+            let promisesComments = new Array<Promise<any>>();
+            for(let i = 0; i < commitsToReviewLength; i++){
+                let promise = contractBright.methods.getCommitsToReviewByMe(i).call();
+                promisesComments.push(promise);
+            }
+            return Promise.all(promisesComments);
+        }).then((commitsToReviewByMe) => {
+            for(let i = 0; i < commitsToReviewByMe.length; i++){
+                commitsToReview.push(commitsToReviewByMe[i][0]);
+            }
+            let promisesCommit = new Array<Promise<any>>();
+            for(let i = 0; i < commitsToReviewByMe.length; i++){
+                let promise = contractBright.methods.getNumbersNeedUrl(commitsToReviewByMe[i][0]).call();
+                promisesCommit.push(promise);
+            }
+            return Promise.all(promisesCommit);
+        }).then((numberOfFeedback) => {
+            for(let i = 0; i < numberOfFeedback.length; i++){
+                numberOfFeed.push(numberOfFeedback[i][1]);
+            }
+
+            let promisesCommit = new Array<Promise<any>>();
+            for(let i = 0; i < commitsToReview.length; i++){
+                for(let j = 0; j < numberOfFeedback[i][1]; j++){
+                    let promise = contractBright.methods.isFeedback(j, commitsToReview[i]).call();
+                    promisesCommit.push(promise);
+                }
+            }
+            return Promise.all(promisesCommit);
+        }).then((isFeedback) => {
+            let counter = 0;
+            let found: boolean = false;
+            for (let i = 0; i < commitsToReview.length; i++){
+                found = false;
+                for (let j = 0; j < numberOfFeed[i]; j++){
+                    if(isFeedback[counter] === true){
+                        found = true;
+                    }
+                    counter++;
+                }
+                if(found){
+                    toRead.push(this.web3.utils.keccak256(commitsToReview[i]));
+                }
+            }
+            let promisesCommitsDet = new Array<Promise<any>>();
+            for(let i = 0; i < commitsToReview.length; i++){
+                let promise = contractBright.methods.getDetailsCommits(commitsToReview[i]).call();
+                promisesCommitsDet.push(promise);
+            }
+            return Promise.all(promisesCommitsDet);
+        }).then((commitDetail) => {
+            for(let i = 0; i < commitDetail.length; i++){
+                commitsToReviewNumbComments.push(commitDetail[i][6]);    
+            }
+
+            let promises = new Array<Promise<any>>();
+            for(let i = 0; i < commitDetail.length; i++){
+                for(let j = 0; j < commitDetail[i][6]; j++){
+                    let promise = contractBright.methods.getCommentsOfCommit(commitDetail[i][0], j).call();
+                    promises.push(promise);
+                }
+            }
+            return Promise.all(promises);
+        }).then((comments) => {
+            let counter = 0;
+            let found: boolean;
+            let j: number = 0;
+            let commitsNumber: number;
+            for (let i = 0; i < commitsToReview.length; i++){
+                found = false;
+                j = 0;
+                commitsNumber = commitsToReviewNumbComments[i];
+                while (j < commitsNumber){
+                    if(this.currentUser.address === comments[counter][1]){
+                        found = true;
+                        if(Number(comments[counter][4]) === 2){
+                            positiveVotes++;      
+                        }else if(Number(comments[counter][4]) === 1){
+                            negativeVotes++;
+                        }
+                    }
+                    counter++;  
+                    j++;    
+                }
+                if(found){
+                    finishedReviews.push(this.web3.utils.keccak256(commitsToReview[i]));
+                }else{
+                    pendingReviews.push(this.web3.utils.keccak256(commitsToReview[i]));
+                }
+            }
+            if(positiveVotes + negativeVotes > 0) {
+                agreedPercentage = (positiveVotes * 100) / (positiveVotes + negativeVotes);
+            } else {
+                agreedPercentage = 100;
+            }
+            this.log.w(commitsArray);
+            this.log.w(pendingReviews);
+            this.log.w(finishedReviews);
+            this.log.w("Introducimos los valores");
+            return this.initProm;
+        }).then(([bright, commit, root]) => {
+            brightNew = bright;
+            commitNew = commit;
+            rootNew = root;
+
+            let byteCodeData = brightNew
+            .methods
+            .setAllUserData(
+                name, 
+                email, 
+                this.currentUser.address, 
+                agreedPercentage, numberOfPoints, numberOfTimesReview, positiveVotes, negativeVotes, reputation).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressBright);
+            
+        }).then((trxResponse) => {
+            let byteCodeData = brightNew
+            .methods
+            .setAllUserDataTwo(this.currentUser.address, [], userCommits, finishedReviews, pendingReviews, toRead).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressBright);
+            
+        }).then((trxResponse) => {
+            return commitsArray.reduce(
+                (prevVal, commit) => {
+                    return prevVal.then(() => {
+                        let byteCodeData = commitNew.methods.setAllCommitData(
+                            commit.title, 
+                            commit.url, 
+                            commit.author, 
+                            commit.creationDate,
+                            commit.isReadNeeded, 
+                            commit.lastModificationDate,
+                            commit.numberReviews,
+                            commit.currentNumberReviews, commit.score, commit.points
+                        ).encodeABI();
+                        return this.sendTx(byteCodeData, this.contractAddressCommits);
+                    });
+                },
+                Promise.resolve()
+            );
+        }).then((trxResponse) => {
+            return commitsArray.reduce(
+                (prevVal, commit) => {
+                    return prevVal.then(() => {
+                        let byteCodeData = commitNew.methods.setAllCommitDataTwo(
+                            this.web3.utils.keccak256(commit.url), 
+                            commit.pendingComments, 
+                            commit.finishedComments
+                        ).encodeABI();
+                        return this.sendTx(byteCodeData, this.contractAddressCommits);
+                    });
+                },
+                Promise.resolve()
+            );
+        }).then((trxResponse) => {
+            
+            return commitsArray.reduce(
+                (prevValCommit, commit) => {
+                    return prevValCommit.then(() => {
+                        return commit.commentDataMigration.reduce(
+                            (prevVal, comment) => {
+                                return prevVal.then(() => {
+                                    let byteCodeData = commitNew.methods.setAllCommentData(
+                                        this.web3.utils.keccak256(commit.url),
+                                        comment.user,
+                                        comment.text, 
+                                        comment.user,
+                                        comment.scoreComment, 
+                                        comment.vote,
+                                        comment.lastModificationDateComment,
+                                        comment.lastModificationDateComment
+                                    ).encodeABI();
+                                    return this.sendTx(byteCodeData, this.contractAddressCommits); 
+                                });
+                            },
+                            Promise.resolve()
+                        );
+                    });
+                },
+                Promise.resolve()
+            );
+
+        }).then((trxResponse) => {
+            this.log.w("FIN");
+        }).catch((err) => err);
+    }
+    
+    public userSecondMigration(){
+        let brightNew;
+        let commitNew;
+        let rootNew;
+        let allAddress = [];
+
+        return this.initProm
+        .then(([bright, commit, root]) => {
+            brightNew = bright;
+            commitNew = commit;
+            rootNew = root;  
+            
+            return brightNew.methods.getNumbers().call();
+
+        }).then((numUsers) => {
+
+            let promisesUsers = new Array<Promise<any>>();
+            for(let i = 0; i < numUsers; i++){
+                let promise = brightNew.methods.getAllUserEmail(i).call();
+                promisesUsers.push(promise);
+            }
+            return Promise.all(promisesUsers);
+
+        }).then((emailUsers) => {
+     
+            let promisesAddress = new Array<Promise<any>>();
+            for(let i = 0; i < emailUsers.length; i++){
+                let promise = brightNew.methods.getAddressByEmail(this.web3.utils.keccak256(emailUsers[i])).call();
+                promisesAddress.push(promise);
+            }
+            return Promise.all(promisesAddress);
+
+        }).then((address) => {
+            
+            let promisesUserDetails = new Array<Promise<any>>();
+            for(let i = 0; i < address.length; i++){
+                allAddress.push(address[i]);
+                let promise = brightNew.methods.getUserCommits(address[i]).call();
+                promisesUserDetails.push(promise);
+            }
+            return Promise.all(promisesUserDetails);
+           
+        }).then((userCommits) => {
+
+            return userCommits.reduce(
+                (prevValueCom, userCom, i) => {
+                    return prevValueCom.then(() => {
+                        return userCom[0].reduce(
+                            (prevValue, userComValue) => {
+                                return prevValue.then(() => {
+                                    let byteCodeData = commitNew.methods.setPendingCommentsData(
+                                        userComValue, allAddress[i]
+                                    ).encodeABI();
+                                    return this.sendTx(byteCodeData, this.contractAddressCommits);
+                                });    
+                            },
+                            Promise.resolve()
+                        );
+                    }); 
+                },
+                Promise.resolve()
+            );
+
+
+            
+        }).catch((err) => err);
+    }
+
     private sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
         return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
             .then(nonceValue => {
@@ -419,4 +823,33 @@ export class ContractManagerService {
             });
     }
 }
+
+
+
+class CommitDataMigraton{
+    public title: string;
+    public url: string;
+    public author;
+    public creationDate: number;
+    public isReadNeeded: boolean;
+    public numberReviews: number;
+    public currentNumberReviews: number;
+    public lastModificationDate: number;
+    public score: number;
+    public points: number;
+    public commitReviewPageFeedback: Array<any>;
+    public pendingComments: Array<any>;
+    public finishedComments: Array<any>;
+    public commentDataMigration: Array<CommentDataMigration>;
+}
+
+class CommentDataMigration{
+    public text: string;
+    public user;
+    public scoreComment: number;
+    public vote: number; 
+    public creationDateComment: number;
+    public lastModificationDateComment: number;
+}
+
 

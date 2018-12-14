@@ -58,7 +58,10 @@ export class ReviewPage {
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 let commits = commitConcat[0].concat(commitConcat[1]);
-                return commits;
+                let commitsFiltered = commits.filter(commit => {
+                    return commit.url !== "";
+                });
+                return commitsFiltered;
             }).then((commits) => {
 
                 let commitsPromises = commits.map((com) => {

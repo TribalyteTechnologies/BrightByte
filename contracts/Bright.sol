@@ -265,7 +265,7 @@ contract Bright {
 
     function setAllUserData(string name, string mail, address hash, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint rep) public onlyDapp {
         require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < finalDayMigrate);
-        UserProfile memory user = hashUserMap[hash];
+        UserProfile storage user = hashUserMap[hash];
         user.name = name;
         user.email = mail;
         user.hash = hash;
@@ -281,7 +281,7 @@ contract Bright {
     }
 
     function setAllUserDataTwo(address h, bytes32[] finCom, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
-        require (bytes(hashUserMap[h].name).length == 0 && bytes(hashUserMap[h].email).length == 0 && block.timestamp < finalDayMigrate);
+        require (block.timestamp < finalDayMigrate);
         UserProfile storage user = hashUserMap[h];
         for(uint i = 0; i < finCom.length; i++) {
             user.finishedCommits.push(finCom[i]);

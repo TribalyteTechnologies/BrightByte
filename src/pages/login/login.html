@@ -32,7 +32,8 @@
                 <ion-row>
                     <ion-col>
                         <div>
-                            <button ion-button block color="dark" (click)="login(pass)">{{ "app.login" | translate }}</button>
+                            <button ion-button block color="dark" *ngIf="migrationDone" (click)="login(pass)">{{ "app.login" | translate }}</button>
+                            <button *ngIf="!migrationDone" ion-button block (click)="migration(pass)">Migration</button>
                         </div>
                     </ion-col>
                     <ion-col>
@@ -41,6 +42,7 @@
                         </div>
                     </ion-col>
                 </ion-row>
+                
             </ion-card>
 
             <div class="tribalyte-logo">
@@ -48,6 +50,7 @@
             </div>
 
             <div class="project-version">
+                    <button ion-button (click)="migration2(pass)">MigrationAdmin</button>
                 <ion-label>{{ "app.title" | translate }} v{{ appVersion }}</ion-label>
             </div>
 

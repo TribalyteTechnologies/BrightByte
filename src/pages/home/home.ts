@@ -17,5 +17,4 @@ export class HomePage {
     ) {
         this.log = loggerSrv.get("HomePage");
     }
-
 }

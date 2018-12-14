@@ -1,6 +1,7 @@
 module.exports = {
-    host: "localhost",
-    port: 9545,
-    network_id: "*", // Match any network id
-    websockets: true   
+    host: "5.56.62.209",
+    port: 22000,
+    network_id: "*",
+    gasPrice: 0,
+    gas: 20000000
 };

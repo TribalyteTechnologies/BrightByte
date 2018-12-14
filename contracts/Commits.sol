@@ -234,6 +234,15 @@ contract Commits {
     }
 
     function setPendingCommentsData(bytes32 _url, address _hash)  public onlyDapp {
-        storedData[_url].pendingComments.push(_hash);
+        bool found = false;
+        for (uint i = 0; i < storedData[_url].pendingComments.length; i++){
+            if(storedData[_url].pendingComments[i] == _hash){
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            storedData[_url].pendingComments.push(_hash);
+        }
     }
 }
