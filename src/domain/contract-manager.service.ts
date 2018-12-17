@@ -650,10 +650,36 @@ export class ContractManagerService {
             return this.sendTx(byteCodeData, this.contractAddressBright);
             
         }).then((trxResponse) => {
-            let byteCodeData = brightNew
-            .methods
-            .setAllUserDataTwo(this.currentUser.address, [], userCommits, finishedReviews, pendingReviews, toRead).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressBright);
+            let arrayMax = userCommits;
+            if(arrayMax.length < finishedReviews.length){
+                arrayMax = finishedReviews;
+            }
+            if(arrayMax.length < pendingReviews.length){
+                arrayMax = pendingReviews;
+            }
+            if(arrayMax.length < toRead.length){
+                arrayMax = toRead;
+            }
+            
+            let i: number = 0;
+
+            return arrayMax.reduce(
+                (prevVal, actual) => {
+                    return prevVal.then(() => {
+                        let suma: number = i + 30;
+                        let comS = userCommits.slice(i, suma);
+                        let finS = finishedReviews.slice(i, suma);
+                        let pendS = pendingReviews.slice(i, suma);
+                        let toReadS = toRead.slice(i, suma);
+                        i = suma + 1;
+                        let byteCodeData = brightNew
+                        .methods
+                        .setAllUserDataTwo(this.currentUser.address, [], comS, finS, pendS, toReadS).encodeABI();
+                        return this.sendTx(byteCodeData, this.contractAddressBright);
+                    });
+                }, 
+                Promise.resolve()
+            ); 
             
         }).then((trxResponse) => {
             return commitsArray.reduce(
