@@ -27,7 +27,7 @@
             </ion-row>
             <ion-row justify-content-end class="reviews-container">
                 <ion-avatar *ngFor="let user of reviewers[1]" class="reviewer-icon">
-                    <img src="http://identicon.org?t={{ user.name }}&c=0acf97">
+                    <img src="http://identicon.org?t={{ user.name }}">
                 </ion-avatar>
                 <div class="reviewers-left" *ngIf="numberReviews > 0">
                     +{{ numberReviews }}
