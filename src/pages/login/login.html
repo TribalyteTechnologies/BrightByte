@@ -30,6 +30,12 @@
                     </div>
                 </ion-row>
                 <ion-row>
+                    <div>
+                        <input type="checkbox" [(ngModel)]="checkboxSelection"> {{ "app.remember" | translate }}
+                    </div>
+                
+                </ion-row>
+                <ion-row>
                     <ion-col>
                         <div>
                             <button ion-button block color="dark" *ngIf="migrationDone" (click)="login(pass)">{{ "app.login" | translate }}</button>

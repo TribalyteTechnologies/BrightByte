@@ -7,7 +7,7 @@
         <ion-col col-7>
             <ion-list class="card-style" *ngFor="let user of usersRep">
                 <ion-item >
-                    <ranking-card [ranking]="user"></ranking-card>
+                    <ranking-card (click)="setUser(user.userHash)" [ranking]="user"></ranking-card>
                 </ion-item>
             </ion-list>
         </ion-col>
@@ -16,15 +16,15 @@
                 <ion-item>
                     <ion-row>
                         <ion-col col-auto>
-                            <img class="avatar" src="../../assets/imgs/avatar.jpg">
+                            <img class="avatar ranking" src="http://identicon.org?t={{ userRankDetails.name }}">
                         </ion-col>
                         <ion-col>
-                            <ion-row><div class="text-title">{{ userDetails.name }}</div> </ion-row>
-                            <ion-row><button class="label-user dark">{{ userRank }}</button> <button class="label-user green">{{ "ranking.level" | translate }} {{ userLevel }}</button></ion-row>
-                            <ion-row><div class="text-description"> {{ userDetails.email }}</div></ion-row>
+                            <ion-row><div class="text-title">{{ userRankDetails.name }}</div> </ion-row>
+                            <ion-row><button class="label-user dark">{{ userRankDetails.rank }}</button> <button class="label-user green">{{ "ranking.level" | translate }} {{ userRankDetails.level }}</button></ion-row>
+                            <ion-row><div class="text-description"> {{ userRankDetails.email }}</div></ion-row>
                             <ion-row>
                                 <div class="ranking-stars">
-                                <rating [rate]="userStars" readonly="true" small="true"></rating>
+                                <rating [rate]="userRankDetails.score" readonly="true" small="true"></rating>
                                 </div>
                             </ion-row>
                         </ion-col>
@@ -34,15 +34,15 @@
                 <ion-item>
                     <ion-row align-items-center>
                         <ion-col>
-                            <ion-row><div  class="text-info">{{ userDetails.numberCommitsReviewedByMe }}</div></ion-row>
+                            <ion-row><div  class="text-info">{{ userRankDetails.reviews }}</div></ion-row>
                             <ion-row><div class="text-subtitle">{{ "ranking.reviews" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
-                            <ion-row ><div class="text-info">{{ userDetails.numbermyCommitsPending }}</div></ion-row>
+                            <ion-row ><div class="text-info">{{ userRankDetails.commits }}</div></ion-row>
                             <ion-row> <div class="text-subtitle">{{ "ranking.commits" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
-                            <ion-row><div class="text-info">{{ userDetails.agreedPercentage }}%</div></ion-row>
+                            <ion-row><div class="text-info">{{ userRankDetails.agreed }}%</div></ion-row>
                             <ion-row><div class="text-subtitle">{{ "ranking.agreed" | translate }}</div></ion-row>
                         </ion-col>
                     </ion-row>
@@ -58,7 +58,7 @@
                         </ion-col>
                         <ion-col class="col-border">
                             <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[1]}}"></div></ion-row>
-                            <ion-row> <div class="text-subtitle">{{ "ranking.fifthyCommits" | translate }}</div></ion-row>
+                            <ion-row> <div class="text-subtitle">{{ "ranking.fiftyCommits" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
                             <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[2]}}"></div></ion-row>
@@ -72,7 +72,7 @@
                         </ion-col>
                         <ion-col class="col-border">
                             <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[4]}}"></div></ion-row>
-                            <ion-row> <div class="text-subtitle">{{ "ranking.fifthyReviews" | translate }}</div></ion-row>
+                            <ion-row> <div class="text-subtitle">{{ "ranking.fiftyReviews" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
                             <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[5]}}"></div></ion-row>

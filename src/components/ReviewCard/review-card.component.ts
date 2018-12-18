@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { UserCommit } from "../../models/user-commit.model";
+import { UserDetails } from "../../models/user-details.model";
 
 
 @Component({
@@ -20,14 +21,16 @@ export class ReviewCard {
     public creationDateMs = 0;
     public stateFinished = false;
     public reviews = [];
+    public reviewers: UserDetails[][] = [];
 
 
     @Input()
     public set commit(val: UserCommit){
         let split = val.url.split("/");
         this.urlHash = split[6];
-        this.currentNumberReviews = val.currentNumberReviews;
-        this.numberReviews = val.numberReviews;
+        this.currentNumberReviews = val.reviewers[1].length;
+        this.numberReviews = val.reviewers[0].length;
+        this.reviewers = val.reviewers;
         this.title = val.title;
         this.project = val.project;
         this.score = val.score;

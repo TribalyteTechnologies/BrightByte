@@ -12,6 +12,7 @@ export class RankingCard {
     public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
     public userRank = "Undefined";
     public name = "No name";
+    public userPosition = 0;
     public reputation = 0;
     public level = 0;
     public email  = "";
@@ -31,6 +32,7 @@ export class RankingCard {
         this.numReviews = val.finishedReviews;
         this.numCommits = val.numberOfCommits,
         this.agreed = val.agreedPercentage;
+        this.userPosition = val.userPosition;
 
     }
 

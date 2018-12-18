@@ -6,6 +6,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { CommitComment } from "../../models/commit-comment.model";
 import { LoginService } from "../../core/login.service";
 import { UserCommit } from "../../models/user-commit.model";
+import { SpinnerService } from "../../core/spinner.service";
 
 @Component({
     selector: "page-review",
@@ -33,21 +34,23 @@ export class ReviewPage {
 
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
-    public indice: number;
 
     public userCommitComment: CommitComment[];
     public commitComments: CommitComment[];
+    public currentCommit: UserCommit;
     
     private log: ILogger;
 
     constructor(
         public navCtrl: NavController,
         public translateService: TranslateService,
+        public spinnerService: SpinnerService,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
+        
     }
 
     public ionViewWillEnter(): void {
@@ -55,14 +58,25 @@ export class ReviewPage {
     }
 
     public refresh(){
+
+        this.spinnerService.showLoader();
+        let commits: UserCommit[];
+
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
-                let commits = commitConcat[0].concat(commitConcat[1]);
-                let commitsFiltered = commits.filter(commit => {
+                commits = commitConcat[0].concat(commitConcat[1]);
+                commits = commits.filter(commit => {
                     return commit.url !== "";
                 });
-                return commitsFiltered;
-            }).then((commits) => {
+                let reviewers = commits.map((commit) => {
+                    return this.contractManagerService.getReviewersName(commit.url);
+                });
+                return Promise.all(reviewers);
+            }).then((reviewers) => {
+
+                commits.forEach((com, idx) => {
+                    com.reviewers = reviewers[idx];
+                });
 
                 let commitsPromises = commits.map((com) => {
                     return this.contractManagerService.getFeedback(com.url)
@@ -75,8 +89,9 @@ export class ReviewPage {
                 return Promise.all(commitsPromises);
             
             })
-            .then((commits) => {
-
+            .then((rsp) => {
+                
+                commits = rsp;
 
                 let projectFilter: UserCommit[] = [];
 
@@ -120,6 +135,7 @@ export class ReviewPage {
                 this.displayCommitsToReview = pendingFilter.sort((c1, c2) => {
                     return (c2.creationDateMs - c1.creationDateMs);
                 });
+                this.spinnerService.hideLoader();
 
 
             }).catch((e) => {
@@ -128,11 +144,16 @@ export class ReviewPage {
                         this.msg = msg;
                         this.log.e(msg, e);
                     });
+                this.spinnerService.hideLoader();
             });
             
     }
 
     public shouldOpen(commit: UserCommit) {
+        
+        
+        this.spinnerService.showLoader();
+
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.openedComments = true;
@@ -152,19 +173,14 @@ export class ReviewPage {
                     this.commitComments = allComments;
                     this.needReview = true;
                 }
+                this.currentCommit = commit;
                 this.openedComments = true; 
-
-            }).catch(err => {
-                this.log.e(err);
-            });
-
-        console.log(commit.isReadNeeded);
-        console.log("hola");
-        this.contractManagerService.setFeedback(commit.url)
-            .then((val) => {
-                this.log.d(val);
+                return this.contractManagerService.setFeedback(commit.url);
+            }).then((val) => {
+                this.log.d("Feedback response: " + val);
                 this.refresh();
-            }).catch((err) => {
+            }).catch(err => {
+                this.spinnerService.hideLoader();
                 this.log.e(err);
             });
 
@@ -179,7 +195,7 @@ export class ReviewPage {
     }
 
     public setReview(url: string, text: string, points: number){
-        this.refresh();
+        this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
         .then((response) => {
             console.log(response);
@@ -188,6 +204,7 @@ export class ReviewPage {
             this.refresh();
             return;
         }).catch((error) => {
+            this.spinnerService.hideLoader();
             console.log(error);
         });
         

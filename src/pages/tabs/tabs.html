@@ -4,18 +4,19 @@
             <div class="logo-container">
                 <img class="logo" src="../../assets/imgs/logo_bkg.svg">
             </div>
-            <ion-item class="avatar">
-                <ion-avatar class="avatar-container">
-                    <img src=" ../../assets/imgs/avatar.jpg ">
-                </ion-avatar>
+            <ion-item class="avatar-icon">
+                <img  class="avatar-container" src="http://identicon.org?t={{ name }}">
             </ion-item>
-            <button *ngFor="let page of menuArray" ion-button block clear large color="light" (click)="goTo(page.url)">
-                <ion-icon name="{{ page.icon }}"></ion-icon>
-            </button>
+            <div class="menu-buttons-col">
+                <button *ngFor="let page of menuArray" [ngClass]="page.style" (click)="goTo(page.url)">
+                    <ion-icon name="{{ page.icon }}"></ion-icon>
+                </button>
+            </div>
+            
         </ion-list>
         <div class="logout-container ">
-            <button ion-button block clear large color="light" class="logout">
-            <ion-icon name="log-out"></ion-icon>
+            <button ion-button block clear large color="light" class="logout" (click)="logout()">
+                <ion-icon name="log-out"></ion-icon>
             </button>
         </div>
     </div>

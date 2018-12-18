@@ -1,3 +1,121 @@
 page-home {
-
+    .main-header {
+        display: table;
+        height: 100px;
+        background-color: #f6f7fb;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        .title {
+            display: table-cell;
+            vertical-align: middle;
+            padding-left: 20px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+    }
+    .color-uno {
+        background-color: color($colors, main);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-dos {
+        background-color: color($colors, mainDark);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-tres {
+        background-color: color($colors, cherry);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-cuatro {
+        background-color: color($colors, cherryLight);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-cinco {
+        background-color: color($colors, grass);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-seis {
+        background-color: color($colors, grassLight);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-siete {
+        background-color: color($colors, report);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-ocho {
+        background-color: color($colors, reportLight);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .color-background {
+        background-color: color($colors, backgroundLight);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .color-nueve {
+        background-color: color($colors, greyText);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .color-diez {
+        background-color: color($colors, greyTextLight);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .title-uno {
+        font-size: 20px;
+        font-weight: 500;
+    }
+    .title-dos {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .title-tres {
+        font-size: 16px;
+        color: color($colors, greyText);
+    }
+    .title-cuatro {
+        font-size: 14px;
+        line-height: 20px;
+        color: color($colors, grass);
+    }
+    .title-cuatro:hover {
+        color: color($colors, grassLight);
+        text-decoration: underline;
+    }
+    .title-cinco {
+        font-size: 14px;
+        color: color($colors, greyTextLight);
+    }
+    .green-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: color($colors, grass);
+    }
+    .red-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: color($colors, cherry);
+    }
 }

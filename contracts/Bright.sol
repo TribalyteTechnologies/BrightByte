@@ -180,7 +180,7 @@ contract Bright {
         return hashUserMap[allUsersArray[_index]].email;
     }
 
-    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint, uint, uint){
+    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint, uint, uint, address){
         UserProfile memory user = hashUserMap[allUsersArray[_index]];
         return (user.email,
                 user.reputation,
@@ -189,7 +189,8 @@ contract Bright {
                 user.name,
                 user.agreedPercentage,
                 user.pendingCommits.length,
-                user.finishedReviews.length
+                user.finishedReviews.length,
+                user.hash
         );
     }
 
