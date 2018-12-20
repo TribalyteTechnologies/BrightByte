@@ -22,7 +22,7 @@ export class ReviewCard {
     public stateFinished = false;
     public reviews = [];
     public reviewers: UserDetails[][] = [];
-
+    public pendingReviewers: string[] = [];
 
     @Input()
     public set commit(val: UserCommit){
@@ -30,6 +30,9 @@ export class ReviewCard {
         this.urlHash = split[6];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
+        this.pendingReviewers = val.reviewers[0].map((userval) => {
+            return userval.name;
+        });
         this.reviewers = val.reviewers;
         this.title = val.title;
         this.project = val.project;

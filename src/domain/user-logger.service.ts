@@ -20,7 +20,8 @@ export class UserLoggerService {
     }
 
     public logout(){
-        localStorage.clear();
+        localStorage.removeItem("user");
+        localStorage.removeItem("password");
     }
  
 }

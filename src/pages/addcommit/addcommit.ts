@@ -53,9 +53,20 @@ export class AddCommitPopover {
             this.log.d("All user reputations: ", allReputations);
             this.allEmails = allReputations.map(userRep => userRep.email);
             this.setUpList(this.searchInput);
+            let mailString = localStorage.getItem("usersEmails");
+            if (mailString){
+                let mailArray = mailString.split(";");
+                mailArray.forEach(mail => {
+                    this.setEmailFromList(mail);
+                });
+            }
         }).catch((e) => {
             this.showGuiMessage("addCommit.errorEmails", e);
         });
+
+        
+        
+
         
        
     }
@@ -76,6 +87,8 @@ export class AddCommitPopover {
                     errMsgId = "addCommit.ownEmail";
                 }
             }
+            let mailArray = this.userAdded.join(";");
+            localStorage.setItem("usersEmails", mailArray);
             if (this.userAdded.every(userEmail => !userEmail)) {
                 errMsgId = "addCommit.emptyInput";
             }

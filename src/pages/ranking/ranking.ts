@@ -88,6 +88,10 @@ export class RankingPage {
         });
     }
 
+    public goBackToUser(){
+        this.setUser(this.account.address);
+    }
+
     public setUpTrophys(){
         let commits = this.userRankDetails.commits;
         let reviews = this.userRankDetails.reviews;

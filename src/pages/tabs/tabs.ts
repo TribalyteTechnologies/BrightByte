@@ -35,7 +35,15 @@ export class TabsPage {
                 private loginService: LoginService, 
                 private contractManagerService: ContractManagerService) {
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
-        this.tabContent = RankingPage;
+        
+        let lastPage = Number(localStorage.getItem("lastPage"));
+        if (lastPage){
+            this.tabContent = this.menuArray[lastPage].url;
+            this.goTo(this.menuArray[lastPage].url);
+        } else {
+            this.tabContent = this.ranking;
+        }
+        
         this.log = loggerSrv.get("TabsPage");
         this.setUserInfo();
     }
@@ -47,12 +55,14 @@ export class TabsPage {
         let idx = this.menuArray.map(x => x.url).indexOf(page);
         this.menuArray[idx].style = "menu-button-style-selected";
         this.tabContent = page;
+        localStorage.setItem("lastPage", String(idx));
     }
 
     public logout(){
         this.userLoggerService.logout();
         this.navCtrl.setRoot(LoginPage);
     }
+
 
     private setUserInfo(){
         let user = this.loginService.getAccount();

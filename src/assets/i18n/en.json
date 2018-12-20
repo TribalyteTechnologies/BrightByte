@@ -89,7 +89,10 @@
         "hundredCommits": "100 Commits",
         "tenReviews": "10 Reviews",
         "fiftyReviews": "50 Reviews",
-        "hundredReviews": "100 Reviews"
+        "hundredReviews": "100 Reviews",
+        "stars": "stars",
+        "you": "you",
+        "retrieve": "Go back to your user"
     },
     "review": {
         "getCommits": "Error getting commits to review",

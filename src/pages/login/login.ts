@@ -60,7 +60,10 @@ export class LoginPage {
             let retrievedUser = this.userLoggerService.retrieveAccount();
             this.text = JSON.parse(retrievedUser.user);
             let password = retrievedUser.password;
-            this.login(password);
+            if (password){
+                this.login(password);
+            }
+            
         }
     }
 
