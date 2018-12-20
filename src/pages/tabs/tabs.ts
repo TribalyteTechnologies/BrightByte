@@ -37,7 +37,7 @@ export class TabsPage {
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
         
         let lastPage = Number(localStorage.getItem("lastPage"));
-        if (lastPage){
+        if (lastPage !== undefined){
             this.tabContent = this.menuArray[lastPage].url;
             this.goTo(this.menuArray[lastPage].url);
         } else {

@@ -26,9 +26,9 @@ export class RankingCard {
     
     @Input()
     public set ranking(val: UserReputation) {
-        let rankIdx = Math.round(val.reputation);
+        let rankIdx = val.reputation;
         this.reputation = rankIdx;
-        this.userRank = this.rankingTitle[rankIdx];
+        this.userRank = this.rankingTitle[Math.round(rankIdx)];
         this.name = val.name;
         this.level = Math.round(val.reputation * 3);
         this.email = val.email;

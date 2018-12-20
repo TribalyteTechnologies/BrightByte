@@ -81,7 +81,7 @@ export class RankingPage {
             this.userRankDetails.reviews = detailsUser.numberCommitsReviewedByMe;
             this.userRankDetails.commits = detailsUser.numbermyCommitsPending;
             this.userRankDetails.agreed = detailsUser.agreedPercentage;
-            this.userRankDetails.score = Math.round(detailsUser.reputation);
+            this.userRankDetails.score = detailsUser.reputation;
             this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
             this.userRankDetails.level = Math.round(detailsUser.reputation);
             this.setUpTrophys();
