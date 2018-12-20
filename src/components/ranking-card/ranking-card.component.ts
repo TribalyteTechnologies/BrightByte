@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { UserReputation } from "../../models/user-reputation.model";
+import { LoginService } from "../../core/login.service";
 
 
 @Component({
@@ -20,6 +21,8 @@ export class RankingCard {
     public numCommits = 0;
     public agreed = 99;
     public stateFinished = false;
+    public userHash = "Undefined";
+    public accountHash = "Undefined";
     
     @Input()
     public set ranking(val: UserReputation) {
@@ -33,11 +36,17 @@ export class RankingCard {
         this.numCommits = val.numberOfCommits,
         this.agreed = val.agreedPercentage;
         this.userPosition = val.userPosition;
+        this.userHash = val.userHash;
+        
+        console.log(this.loginService.getAccount);
 
     }
 
-    constructor(){
-        console.log("Ranking Card generated");
+    constructor(private loginService: LoginService){
+        console.log("Ranking card created");
+        let account = this.loginService.getAccount();
+        this.accountHash = account.address;
+        console.log(this.accountHash);
     }
 
 }

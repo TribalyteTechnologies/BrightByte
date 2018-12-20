@@ -12,7 +12,7 @@ ranking-card {
     .avatar-container {
         position: relative;
     }
-    .number {
+    .number-label {
         width: 30px;
         height: 30px;
         font-size: 13px;
@@ -21,6 +21,20 @@ ranking-card {
         border-radius: 50%;
         position: absolute;
         z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .you-label {
+        width: 30px;
+        height: 30px;
+        left: 20px;
+        font-size: 13px;
+        color: #fff;
+        background-color: color($colors, grass);
+        border-radius: 50%;
+        position: absolute;
+        z-index: 9;
         display: flex;
         align-items: center;
         justify-content: center;

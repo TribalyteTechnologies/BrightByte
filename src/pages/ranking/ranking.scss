@@ -2,6 +2,9 @@ page-ranking {
     .error-message {
         color: red;
     }
+    .header-row {
+        height: 100%;
+    }
     .avatar.ranking {
         width: 80px;
         height: 80px;
@@ -12,7 +15,6 @@ page-ranking {
     .col-border {
         border-left: 1px solid rgb(231, 234, 237);
     }
-    //////
     .trophy {
         padding: 10px;
         margin: auto;

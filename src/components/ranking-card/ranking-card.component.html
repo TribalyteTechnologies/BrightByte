@@ -1,12 +1,13 @@
 <ion-grid no-padding>
     <ion-row align-items-center>
         <ion-col class="avatar-container">
-            <div class="number">#{{ userPosition }}</div>
+            <div class="number-label">#{{ userPosition }}</div>
+            <div *ngIf="userHash === accountHash" class="you-label"><ion-icon name="body"></ion-icon></div>
             <img class="avatar ranking-card" src="http://identicon.org?t={{ name }}">
         </ion-col>
         <ion-col>
             <ion-row><div class="text-title">{{ name }}</div></ion-row>
-            <ion-row><button class="label-user dark">{{ userRank }}</button><button class="label-user green">{{ "ranking.level" | translate }} {{ level }}</button></ion-row>
+            <ion-row><button class="label-user dark">{{ userRank }}</button><button class="label-user green">{{ "ranking.level" | translate }} {{ level }}</button><button class="label-user green">{{ reputation }} {{ "ranking.stars" | translate }}</button></ion-row>
             <ion-row><div class="text-description"> {{ email }} </div></ion-row>
             <ion-row>
                 <div class="ranking-stars">
