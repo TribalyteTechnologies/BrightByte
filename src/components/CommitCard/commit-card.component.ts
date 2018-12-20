@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Injectable } from "@angular/core";
 import { UserCommit } from "../../models/user-commit.model";
 import { UserDetails } from "../../models/user-details.model";
 
@@ -9,7 +9,10 @@ import { UserDetails } from "../../models/user-details.model";
     styles: ["commit-card.component.scss"]
  })
  
+@Injectable()
 export class CommitCard {
+
+
     public urlHash: string = "0000";
     public urlLink = "http";
     public numberReviews = 0;
@@ -23,23 +26,31 @@ export class CommitCard {
     public reviews = [];
     public reviewers: UserDetails[][] = [];
 
+    private val: UserCommit;
+
     @Input()
-    public set commit(val: UserCommit){
-        let split = val.url.split("/");
+    set commit(input: UserCommit){
+        this.val = input;
+        let split = this.val.url.split("/");
         this.urlHash = split[6];
-        this.currentNumberReviews = val.reviewers[1].length;
-        this.numberReviews = val.reviewers[0].length;
-        this.reviewers = val.reviewers;
-        this.title = val.title;
-        this.project = val.project;
-        this.score = val.score;
-        this.isPending = val.isReadNeeded;
-        this.creationDateMs = val.creationDateMs;
-        this.urlLink = val.url;
-        this.reviews = this.generateArray(val.currentNumberReviews);
+        this.currentNumberReviews = this.val.reviewers[1].length;
+        this.numberReviews = this.val.reviewers[0].length;
+        this.reviewers = this.val.reviewers;
+        this.title = this.val.title;
+        this.project = this.val.project;
+        this.score = this.val.score;
+        this.isPending = this.val.isReadNeeded;
+        this.creationDateMs = this.val.creationDateMs;
+        this.urlLink = this.val.url;
+        this.reviews = this.generateArray(this.val.currentNumberReviews);
         console.log(this.reviews, "IMPRESOO");
-        this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
+        this.stateFinished = this.val.currentNumberReviews !== this.val.numberReviews ? true : false;
     }
+    get commit(){
+        return this.val;
+    }
+
+    
 
     public openUrl(url: string){
         window.open(url, "_blank");

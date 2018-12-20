@@ -12,6 +12,7 @@ import { UserDetails } from "../models/user-details.model";
 import { CommitComment } from "../models/commit-comment.model";
 import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
+import { AlertController } from "ionic-angular";
 
 interface ItrbSmartContractJson {
     abi: Array<any>;
@@ -32,10 +33,11 @@ export class ContractManagerService {
     private web3: Web3;
     private initProm: Promise<Array<ItrbSmartContact>>;
     private currentUser: Account;
+    private outOfGas: number;
 
     constructor(
         public http: HttpClient,
-
+        public alertCtrl: AlertController,
         web3Service: Web3Service,
         loggerSrv: LoggerService
     ) {
@@ -435,6 +437,7 @@ export class ContractManagerService {
     }
 
     public getUserMigration(){
+        this.outOfGas = 0;
         let name: string;
         let email: string;
         let numberCommitsReviewedByMe: number = 0;
@@ -452,18 +455,12 @@ export class ContractManagerService {
         let toRead = [];
         let pendingReviews = [];
         let finishedReviews = [];
-
         let numberOfFeed: number[] = [];
-
         let commitsArray: CommitDataMigraton[] = [];
-
         let contractBright;
         let brightNew;
         let commitNew;
         let rootNew;
-        
-
-
         return this.initMigrationOld(this.currentUser)
         .then((contract) => {
             contractBright = contract;
@@ -474,22 +471,19 @@ export class ContractManagerService {
                 numberCommitsReviewedByMe = userData[2];
                 commitsToReviewLength = userData[3];
                 userCommitsLength = userData[4];
-                reputation = userData[5];
-                
+                reputation = userData[5];     
                 let promisesReput = new Array<Promise<any>>();
                 for(let i = 0; i < userData.length; i++){
                     let promise = contractBright.methods.getAllUserReputation(i).call();
                     promisesReput.push(promise);
                 }
                 return Promise.all(promisesReput);
-
         }).then((userReput) => {
                 for(let i = 0; i < userReput.length; i++){
                     if(userReput[i][0] === email){
                         numberOfPoints = userReput[i][3];
                     }
                 }
-
                 let promisesCommits = new Array<Promise<any>>();
                 for(let i = 0; i < userCommitsLength; i++){
                     let promise = contractBright.methods.getUserCommits(i).call();
@@ -500,7 +494,6 @@ export class ContractManagerService {
             for(let i = 0; i < commits.length; i++){ 
                 userCommits.push(this.web3.utils.keccak256(commits[i][0]));
             }
-
             for(let i = 0; i < commits.length; i++){
                 let commitMigration = new CommitDataMigraton();
                 commitMigration.title = commits[i][1];
@@ -516,7 +509,6 @@ export class ContractManagerService {
                 commitMigration.points = 0;
                 commitsArray.push(commitMigration);
             }
-
             let promisesCommitsDet = new Array<Promise<any>>();
             for(let i = 0; i < userCommitsLength; i++){
                 let promise = contractBright.methods.getDetailsCommits(commits[i][0]).call();
@@ -524,13 +516,11 @@ export class ContractManagerService {
             }
             return Promise.all(promisesCommitsDet);
         }).then((commitDetail) => {
-
             for(let i = 0; i < commitDetail.length; i++){
                 commitsArray[i].numberReviews = commitDetail[i][4];
                 commitsArray[i].currentNumberReviews = commitDetail[i][6];
                 commitsArray[i].points = commitsArray[i].score * commitsArray[i].currentNumberReviews;
             }
-
             let promises = new Array<Promise<any>>();
             for(let i = 0; i < commitDetail.length; i++){
                 for(let j = 0; j < commitDetail[i][6]; j++){
@@ -558,8 +548,7 @@ export class ContractManagerService {
                     commitsArray[i].finishedComments.push(commentDataMigration.user);
                     counter++;
                 }
-            }
-            
+            }      
             let promisesComments = new Array<Promise<any>>();
             for(let i = 0; i < commitsToReviewLength; i++){
                 let promise = contractBright.methods.getCommitsToReviewByMe(i).call();
@@ -664,7 +653,7 @@ export class ContractManagerService {
             brightNew = bright;
             commitNew = commit;
             rootNew = root;
-
+            this.log.w("Introducimos Usuario");
             let byteCodeData = brightNew
             .methods
             .setAllUserData(
@@ -672,10 +661,10 @@ export class ContractManagerService {
                 email, 
                 this.currentUser.address, 
                 agreedPercentage, numberOfPoints, numberOfTimesReview, positiveVotes, negativeVotes, reputation).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressBright);
-            
+            return this.sendTx(byteCodeData, this.contractAddressBright);          
         }).then((trxResponse) => {
             let arrayMax = userCommits;
+            let arrayToCount = [];
             if(arrayMax.length < finishedReviews.length){
                 arrayMax = finishedReviews;
             }
@@ -684,19 +673,22 @@ export class ContractManagerService {
             }
             if(arrayMax.length < toRead.length){
                 arrayMax = toRead;
+            }       
+            let bucle = (arrayMax.length / 15) + 1;
+            for(let j = 0; j < bucle; j++){
+                arrayToCount.push(j);
             }
-            
             let i: number = 0;
-
-            return arrayMax.reduce(
+            this.log.w("Introducimos los arrays del usuario con slice");
+            return arrayToCount.reduce(
                 (prevVal, actual) => {
                     return prevVal.then(() => {
-                        let suma: number = i + 30;
+                        let suma: number = i + 15;
                         let comS = userCommits.slice(i, suma);
                         let finS = finishedReviews.slice(i, suma);
                         let pendS = pendingReviews.slice(i, suma);
                         let toReadS = toRead.slice(i, suma);
-                        i = suma + 1;
+                        i = suma;
                         let byteCodeData = brightNew
                         .methods
                         .setAllUserDataTwo(this.currentUser.address, [], comS, finS, pendS, toReadS).encodeABI();
@@ -705,8 +697,8 @@ export class ContractManagerService {
                 }, 
                 Promise.resolve()
             ); 
-            
-        }).then((trxResponse) => {
+        }).then((trxResponse) => {   
+            this.log.w("Introducimos los commits");
             return commitsArray.reduce(
                 (prevVal, commit) => {
                     return prevVal.then(() => {
@@ -726,6 +718,7 @@ export class ContractManagerService {
                 Promise.resolve()
             );
         }).then((trxResponse) => {
+            this.log.w("Introducimos los commits (Pendcom...)");
             return commitsArray.reduce(
                 (prevVal, commit) => {
                     return prevVal.then(() => {
@@ -740,7 +733,7 @@ export class ContractManagerService {
                 Promise.resolve()
             );
         }).then((trxResponse) => {
-            
+            this.log.w("Introducimos los comentarios");
             return commitsArray.reduce(
                 (prevValCommit, commit) => {
                     return prevValCommit.then(() => {
@@ -766,10 +759,18 @@ export class ContractManagerService {
                 },
                 Promise.resolve()
             );
-
         }).then((trxResponse) => {
             this.log.w("FIN");
-        }).catch((err) => err);
+            let alert = this.alertCtrl.create({
+                title: "Migration",
+                subTitle: "You have: " + this.outOfGas + " OutOfGas Errors" ,
+                buttons: ["Accept"]
+            });
+            alert.present();
+            this.outOfGas = 0;
+        }).catch((err) => {
+            throw err;
+        });
     }
     
     public userSecondMigration(){
@@ -777,17 +778,13 @@ export class ContractManagerService {
         let commitNew;
         let rootNew;
         let allAddress = [];
-
         return this.initProm
         .then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
-            rootNew = root;  
-            
+            rootNew = root;           
             return brightNew.methods.getNumbers().call();
-
         }).then((numUsers) => {
-
             let promisesUsers = new Array<Promise<any>>();
             for(let i = 0; i < numUsers; i++){
                 let promise = brightNew.methods.getAllUserEmail(i).call();
@@ -796,26 +793,21 @@ export class ContractManagerService {
             return Promise.all(promisesUsers);
 
         }).then((emailUsers) => {
-     
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < emailUsers.length; i++){
                 let promise = brightNew.methods.getAddressByEmail(this.web3.utils.keccak256(emailUsers[i])).call();
                 promisesAddress.push(promise);
             }
             return Promise.all(promisesAddress);
-
         }).then((address) => {
-            
             let promisesUserDetails = new Array<Promise<any>>();
             for(let i = 0; i < address.length; i++){
                 allAddress.push(address[i]);
                 let promise = brightNew.methods.getUserCommits(address[i]).call();
                 promisesUserDetails.push(promise);
             }
-            return Promise.all(promisesUserDetails);
-           
+            return Promise.all(promisesUserDetails);     
         }).then((userCommits) => {
-
             return userCommits.reduce(
                 (prevValueCom, userCom, i) => {
                     return prevValueCom.then(() => {
@@ -833,10 +825,7 @@ export class ContractManagerService {
                     }); 
                 },
                 Promise.resolve()
-            );
-
-
-            
+            );    
         }).catch((err) => err);
     }
 
@@ -867,6 +856,10 @@ export class ContractManagerService {
                 return this.web3.eth.sendSignedTransaction(raw);
             }).then(transactionHash => {
                 this.log.d("Hash transaction", transactionHash);
+                if(transactionHash.gasUsed >= AppConfig.NETWORK_CONFIG.gasLimit){
+                    this.log.e("Gas");
+                    this.outOfGas ++;
+                }
                 return transactionHash;
             }).catch(e => {
                 this.log.e("Error in transaction (sendTx function): ", e);

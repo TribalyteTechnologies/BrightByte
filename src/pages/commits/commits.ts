@@ -202,7 +202,7 @@ export class CommitPage {
                 return this.contractManagerService.reviewChangesCommitFlag(commit.url);
             }).then((response) => {
                 this.log.d("Recieved response: " + response);
-                this.refresh();
+                this.spinnerService.hideLoader();
             }).catch((err) => {
                 this.log.e(err);
                 this.spinnerService.hideLoader();

@@ -8,7 +8,7 @@
                 <div>{{ creationDateMs | dateFormat }}</div>
             </ion-row>
             <ion-row align-items-center class="text-title">
-                <div>{{ title }}</div>
+                <div>{{ title | slice:0:40 }}</div>
                 <div *ngIf="isPending" class="notifications">
                     <ion-icon name="notifications"></ion-icon>
                 </div>

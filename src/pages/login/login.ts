@@ -60,7 +60,10 @@ export class LoginPage {
             let retrievedUser = this.userLoggerService.retrieveAccount();
             this.text = JSON.parse(retrievedUser.user);
             let password = retrievedUser.password;
-            this.login(password);
+            if (password){
+                this.login(password);
+            }
+            
         }
     }
 
@@ -152,6 +155,12 @@ export class LoginPage {
             buttons: ["Accept"]
         });
 
+        let alertError = this.alertCtrl.create({
+            title: "Error",
+            subTitle: "The migration has failed",
+            buttons: ["Accept"]
+        });
+
         let loader = this.loadingCtrl.create();
         loader.present();
         try {
@@ -185,6 +194,7 @@ export class LoginPage {
                             });
                         this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                         loader.dismiss();
+                        alertError.present();
                     });
 
             }

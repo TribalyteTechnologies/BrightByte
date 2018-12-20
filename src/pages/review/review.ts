@@ -178,7 +178,7 @@ export class ReviewPage {
                 return this.contractManagerService.setFeedback(commit.url);
             }).then((val) => {
                 this.log.d("Feedback response: " + val);
-                this.refresh();
+                this.spinnerService.hideLoader();
             }).catch(err => {
                 this.spinnerService.hideLoader();
                 this.log.e(err);
