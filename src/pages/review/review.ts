@@ -34,10 +34,13 @@ export class ReviewPage {
 
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
+    public name = "";
 
     public userCommitComment: CommitComment[];
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
+    public filterArrayCommits: UserCommit[] = [];
+
     
     private log: ILogger;
 
@@ -61,6 +64,7 @@ export class ReviewPage {
 
         this.spinnerService.showLoader();
         let commits: UserCommit[];
+        let userAdress = this.loginService.getAccount();
 
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
@@ -73,71 +77,28 @@ export class ReviewPage {
                 });
                 return Promise.all(reviewers);
             }).then((reviewers) => {
-
                 commits.forEach((com, idx) => {
                     com.reviewers = reviewers[idx];
                 });
-
                 let commitsPromises = commits.map((com) => {
                     return this.contractManagerService.getFeedback(com.url)
                         .then((rsp) => {
-                            console.log("Response recieved: " + rsp);
                             com.isReadNeeded = rsp;
                             return com;
                         });
                 });
                 return Promise.all(commitsPromises);
-            
             })
             .then((rsp) => {
-                
                 commits = rsp;
-
-                let projectFilter: UserCommit[] = [];
-
+                this.displayCommitsToReview = commits;
                 let projects = commits.map( commit => commit.project );
                 this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
-                
-                if (!(this.projectSelected === this.ALL)){
-                    projectFilter = commits.filter(commit => {
-                        return (commit.project === this.projectSelected);
-                    });
-                } else {
-                    projectFilter = commits;
-                }
-
-                let completedFilter: UserCommit[] = [];
-                switch(this.filterValue){
-                    case 0:
-                        completedFilter = projectFilter.filter(commit => {
-                            return (commit.numberReviews !== commit.currentNumberReviews);
-                        });
-                        break;
-                    case 1:
-                        completedFilter = projectFilter.filter(commit => {
-                            return (commit.numberReviews === commit.currentNumberReviews);
-                        });
-                        break;
-                    default:
-                        completedFilter = projectFilter;
-                        break;
-                }
-
-                let pendingFilter: UserCommit[] = [];
-                if(this.filterIsPending){
-                    pendingFilter = completedFilter.filter(commit => {
-                        return commit.isReadNeeded;
-                    });
-                } else {
-                    pendingFilter = completedFilter;
-                }
-
-                this.displayCommitsToReview = pendingFilter.sort((c1, c2) => {
-                    return (c2.creationDateMs - c1.creationDateMs);
-                });
+                this.applyFilters(this.displayCommitsToReview);
                 this.spinnerService.hideLoader();
-
-
+                return this.contractManagerService.getUserDetails(userAdress.address);
+            }).then(rsp => {
+                this.name = rsp.name;
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
                     msg => {
@@ -178,7 +139,9 @@ export class ReviewPage {
                 return this.contractManagerService.setFeedback(commit.url);
             }).then((val) => {
                 this.log.d("Feedback response: " + val);
-                this.refresh();
+                let idx = this.filterArrayCommits.indexOf(commit);
+                this.filterArrayCommits[idx].isReadNeeded = false;
+                this.spinnerService.hideLoader();
             }).catch(err => {
                 this.spinnerService.hideLoader();
                 this.log.e(err);
@@ -199,9 +162,19 @@ export class ReviewPage {
         this.contractManagerService.setReview(url, text, points)
         .then((response) => {
             console.log(response);
+            let userAdress = this.loginService.getAccount();
             this.setReputation(-1);
-            this.openedComments = false;
-            this.refresh();
+            this.needReview = false;
+            this.userCommitComment[0] = new CommitComment();
+            this.userCommitComment[0].name = this.name;
+            this.userCommitComment[0].creationDateMs = Date.now();
+            this.userCommitComment[0].text = text;
+            this.userCommitComment[0].score = (points / 100);
+            this.userCommitComment[0].vote = 0;
+            this.userCommitComment[0].lastModificationDateMs = Date.now();
+            this.userCommitComment[0].user = userAdress.address;
+
+            this.spinnerService.hideLoader();   
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();
@@ -210,29 +183,65 @@ export class ReviewPage {
         
     }
 
-    public filterIncompleted(){
-        this.filterValue === 0 ? this.filterValue = 2 : this.filterValue = 0;
-        this.filterIsIncompleted = !this.filterIsIncompleted;
-        if(this.filterIsReviewed){
-            this.filterIsReviewed = false;
-        }     
-        this.openedComments = false;  
-        this.refresh();
-    }
-    
-    public filterCompleted(){
-        this.filterValue === 1 ? this.filterValue = 2 : this.filterValue = 1;
-        this.filterIsReviewed = !this.filterIsReviewed;
-        if(this.filterIsIncompleted){
-            this.filterIsIncompleted = false;
-        }
-        this.openedComments = false;  
-        this.refresh();
+
+        
+    public applyFilters(usercommits: UserCommit[]) {
+        let projectFilter = this.setProjectFilter(usercommits);
+        let statusFilter = this.setStatusFilter(projectFilter);
+        let pendingFilter = this.setPendingFilter(statusFilter);
+        this.filterArrayCommits = pendingFilter.sort((c1, c2) => {
+            return (c2.creationDateMs - c1.creationDateMs);
+        });
     }
 
-    public filterPending(){
-        this.filterIsPending = !this.filterIsPending;
-        this.openedComments = false;
-        this.refresh();
+    public setFilter(name: string){
+        switch (name) {
+            case "incompleted":
+                this.filterValue === 0 ? this.filterValue = 2 : this.filterValue = 0;
+                break;
+            case "completed":
+                this.filterValue === 1 ? this.filterValue = 2 : this.filterValue = 1;
+                break;
+            case "pending":
+                this.filterIsPending = !this.filterIsPending;
+                break;
+            default:
+                this.filterValue = 2;
+                break;
+        }
+        this.openedComments = false;  
+        this.applyFilters(this.displayCommitsToReview);
+    }
+    private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{
+        if (!(this.projectSelected === this.ALL)){
+            return usercommits.filter(commit => {
+                return (commit.project === this.projectSelected);
+            });
+        } else {
+            return usercommits;
+        }
+    }
+    private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
+        switch(this.filterValue){
+            case 0:
+                return usercommits.filter(commit => {
+                    return (commit.numberReviews !== commit.currentNumberReviews);
+                });
+            case 1:
+                return usercommits.filter(commit => {
+                    return (commit.numberReviews === commit.currentNumberReviews);
+                });
+            default:
+                return usercommits;
+        }
+    }
+    private setPendingFilter(usercommits: UserCommit[]): UserCommit[]{
+        if(this.filterIsPending){
+            return usercommits.filter(commit => {
+                return commit.isReadNeeded;
+            });
+        } else {
+            return usercommits;
+        }
     }
 }

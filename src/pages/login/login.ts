@@ -27,19 +27,19 @@ export class LoginPage {
     public isDebugMode = false;
     public appVersion = "DEV";
     public migrationDone = false;
-    public checkboxSelection = false;
+    public isKeepCredentialsOn = false;
     private log: ILogger;
 
     constructor(
+        public loadingCtrl: LoadingController,
+        public alertCtrl: AlertController,
         private navCtrl: NavController,
         private translateService: TranslateService,
         private contractManager: ContractManagerService,
         private web3Service: Web3Service,
         private loginService: LoginService,
-        public loadingCtrl: LoadingController,
-        public alertCtrl: AlertController,
-        public userLoggerService: UserLoggerService,
-        public spinnerService: SpinnerService,
+        private userLoggerService: UserLoggerService,
+        private spinnerService: SpinnerService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
@@ -58,38 +58,36 @@ export class LoginPage {
     public ionViewWillEnter(){
         if (localStorage.length > 0){
             let retrievedUser = this.userLoggerService.retrieveAccount();
-            this.text = JSON.parse(retrievedUser.user);
+            this.text = retrievedUser.user;
             let password = retrievedUser.password;
             if (password){
+                this.log.d("User retrieved from localStorage: " + this.text);
                 this.login(password);
             }
-            
         }
     }
 
     public openFile = (event: Event) => {
-            this.log.d("Event: ", event);
-            let target = <HTMLInputElement>event.target;
-            let uploadedArray = <FileList>target.files;
-            this.log.d("Target: ", target);
-            let input = uploadedArray[0];
-            if (input.type === "application/json") {
-                this.msg = "";
-                this.log.d("Input: ", input);
-                let reader = new FileReader();
-                reader.readAsText(input);
-                reader.onload = () => {
-                    //TODO: extract this to a separate function
-                    //And call it with different source of data (file or localStorage)
-                    this.debuggingText = String(reader.result);
-                    this.text = JSON.parse(String(reader.result));
-                };
-            } else {   
-                this.translateService.get("app.wrongFile").subscribe(
-                    msg => {
-                        this.msg = msg;
-                    });
-            } 
+        this.log.d("Event: ", event);
+        let target = <HTMLInputElement>event.target;
+        let uploadedArray = <FileList>target.files;
+        this.log.d("Target: ", target);
+        let input = uploadedArray[0];
+        if (input.type === "application/json") {
+            this.msg = "";
+            this.log.d("Input: ", input);
+            let reader = new FileReader();
+            reader.readAsText(input);
+            reader.onload = () => {
+                this.debuggingText = String(reader.result);
+                this.text = JSON.parse(String(reader.result));
+            };
+        } else {   
+            this.translateService.get("app.wrongFile").subscribe(
+                msg => {
+                    this.msg = msg;
+                });
+        } 
     }
 
     
@@ -106,7 +104,7 @@ export class LoginPage {
                     });
             } else {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
-                if (this.checkboxSelection){
+                if (this.isKeepCredentialsOn){
                     this.userLoggerService.setAccount(this.text, pass);
                 }
                          

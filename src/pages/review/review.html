@@ -14,17 +14,17 @@
             </ion-item>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsIncompleted ? 'button-red-active' : 'button-red-inactive'" (click)="filterIncompleted()">
+            <button [ngClass]="filterValue === 0 ? 'button-red-active' : 'button-red-inactive'" (click)="setFilter('incompleted')">
                 {{ "commits.pending" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsReviewed ? 'button-green-active' : 'button-green-inactive'" (click)="filterCompleted()">
+            <button [ngClass]="filterValue === 1 ? 'button-green-active' : 'button-green-inactive'" (click)="setFilter('completed')">
                 {{ "commits.reviewed" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterIsPending ? 'button-yellow-active' : 'button-yellow-inactive'" (click)=" filterPending()">
+            <button [ngClass]="filterIsPending ? 'button-yellow-active' : 'button-yellow-inactive'" (click)="setFilter('pending')">
                 {{ "commits.updated" | translate }}
             </button>
         </ion-col>
@@ -33,7 +33,7 @@
     <ion-row>
         <ion-col>
             <ion-list class="card-style" no-padding>
-                <ion-item class="card-list-item" *ngFor="let commit of displayCommitsToReview; let i = index" (click)="shouldOpen(commit)">
+                <ion-item class="card-list-item" *ngFor="let commit of filterArrayCommits" (click)="shouldOpen(commit)">
                     <review-card [commit]="commit"></review-card>
                 </ion-item>
             </ion-list>

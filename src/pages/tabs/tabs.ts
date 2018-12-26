@@ -12,6 +12,9 @@ import { LoginPage } from "../login/login";
 import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
 
+
+const LASTPAGE: string = "lastPage";
+
 @Component({
     selector: "page-tabs",
     templateUrl: "tabs.html"
@@ -19,12 +22,12 @@ import { UserLoggerService } from "../../domain/user-logger.service";
 export class TabsPage {
 
     public isVisible = true;
-    public tabContent: any;
+    public currentPage: any;
 
-    public home: MenuItem = new MenuItem("home", HomePage, "menu-button-style");
-    public commits: MenuItem = new MenuItem("git-network", CommitPage, "menu-button-style");
-    public reviews: MenuItem = new MenuItem("eye", ReviewPage, "menu-button-style");
-    public ranking: MenuItem = new MenuItem("stats", RankingPage, "menu-button-style-selected"); 
+    public home: MenuItem = new MenuItem("home", HomePage);
+    public commits: MenuItem = new MenuItem("git-network", CommitPage);
+    public reviews: MenuItem = new MenuItem("eye", ReviewPage);
+    public ranking: MenuItem = new MenuItem("stats", RankingPage); 
     public menuArray = new Array<MenuItem>();
     public name: string = "";
     private log: ILogger;
@@ -34,35 +37,28 @@ export class TabsPage {
                 private navCtrl: NavController, 
                 private loginService: LoginService, 
                 private contractManagerService: ContractManagerService) {
+        this.log = loggerSrv.get("TabsPage");
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
-        
-        let lastPage = Number(localStorage.getItem("lastPage"));
+        let lastPage = Number(localStorage.getItem(LASTPAGE));
         if (lastPage){
-            this.tabContent = this.menuArray[lastPage].url;
+            this.currentPage = this.menuArray[lastPage].url;
             this.goTo(this.menuArray[lastPage].url);
         } else {
-            this.tabContent = this.ranking;
+            this.currentPage = this.ranking;
         }
-        
-        this.log = loggerSrv.get("TabsPage");
         this.setUserInfo();
     }
     
     public goTo(page: any){
-        this.menuArray.forEach((menuPage) => {
-            menuPage.style = "menu-button-style";
-        });
         let idx = this.menuArray.map(x => x.url).indexOf(page);
-        this.menuArray[idx].style = "menu-button-style-selected";
-        this.tabContent = page;
-        localStorage.setItem("lastPage", String(idx));
+        this.currentPage = page;
+        localStorage.setItem(LASTPAGE, String(idx));
     }
 
     public logout(){
         this.userLoggerService.logout();
         this.navCtrl.setRoot(LoginPage);
     }
-
 
     private setUserInfo(){
         let user = this.loginService.getAccount();

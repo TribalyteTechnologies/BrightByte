@@ -9,8 +9,21 @@ import { CommitComment } from "../../models/commit-comment.model";
 
 export class ReviewCommentComponent {
 
+    private _review: CommitComment;
+
     @Input()
-    public review: CommitComment;
+    set review(val: CommitComment){
+        this._review = val;
+    }
+
+    get review(){
+        return this._review;
+    }
+
+    public ngDoCheck(): void {
+        this.review = this._review;
+        
+    }
 
 
 }

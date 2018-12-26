@@ -10,115 +10,7 @@ import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
 import { SpinnerService } from "../../core/spinner.service";
 
-@Component({
-    selector: "page-ranking",
-    templateUrl: "ranking.html"
-})
-export class RankingPage {
-    
-    public userDetails = new UserDetails();
-    public msg: string;
-    public usersRep = new Array<UserReputation>();
-    public numberUserList = AppConfig.N_USER_RANKING_LIST;
-    public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
-    public userRankDetails: IUserRankDetails;
-    public userRank = "No rank";
-    public userLevel = 0;
-    public userStars = 0;
-    public userTrophy = ["t01-off.png", "t02-off.png", "t03-off.png", "t04-off.png", "t05-off.png", "t06-off.png"];
-    private log: ILogger;
-    private account: Account;
-
-
-    constructor(
-        public navCtrl: NavController,
-        public loggerSrv: LoggerService,
-        public translateService: TranslateService,
-        public spinnerService: SpinnerService,
-        private contractManagerService: ContractManagerService,
-        private loginService: LoginService
-    ) {
-        this.log = loggerSrv.get("RankingPage");
-        this.account = this.loginService.getAccount();
-        this.log.d("Imported account: ", this.account);
-        this.userRankDetails = new IUserRankDetails();
-        this.refresh();
-        
-    }
-    public refresh() {
-        this.spinnerService.showLoader();
-        this.log.d("Imported account: ", this.account);
-        this.contractManagerService.getAllUserReputation()
-            .then((usersRep: UserReputation[]) => {
-                this.log.d("Users reputation obtained: ", usersRep);
-                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
-                this.usersRep.forEach(user => {
-                    user.userPosition = this.usersRep.indexOf(user) + 1;
-                    console.log(user.userHash);
-                });
-                this.log.d("Array of usersRep organized: ", this.usersRep);
-                this.spinnerService.hideLoader();
-                return;
-            }).then(() => {
-                console.log("SETTING USER..");
-                this.setUser(this.account.address);
-            }).catch((e) => {
-                this.translateService.get("ranking.getReputation").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                        this.spinnerService.hideLoader();
-                    });
-            });
-    }
-
-    public setUser(hash: string){
-        this.contractManagerService.getUserDetails(hash)
-        .then((detailsUser: UserDetails) => {
-            this.log.d("User data obtained: ", detailsUser);
-            this.userRankDetails.name = detailsUser.name;
-            this.userRankDetails.email = detailsUser.email;
-            this.userRankDetails.reviews = detailsUser.numberCommitsReviewedByMe;
-            this.userRankDetails.commits = detailsUser.numbermyCommitsPending;
-            this.userRankDetails.agreed = detailsUser.agreedPercentage;
-            this.userRankDetails.score = Math.round(detailsUser.reputation);
-            this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
-            this.userRankDetails.level = Math.round(detailsUser.reputation);
-            this.setUpTrophys();
-        });
-    }
-
-    public goBackToUser(){
-        this.setUser(this.account.address);
-    }
-
-    public setUpTrophys(){
-        let commits = this.userRankDetails.commits;
-        let reviews = this.userRankDetails.reviews;
-        this.userTrophy = ["t01-off.png", "t02-off.png", "t03-off.png", "t04-off.png", "t05-off.png", "t06-off.png"];
-        if (commits >= 10){
-            this.userTrophy[0] = "t01-on.png";
-        }
-        if (commits >= 50){
-            this.userTrophy[1] = "t02-on.png";
-        }
-        if (commits >= 100){
-            this.userTrophy[2] = "t03-on.png";
-        }
-        if (reviews >= 10){
-            this.userTrophy[3] = "t04-on.png";
-        }
-        if (reviews >= 50){
-            this.userTrophy[4] = "t05-on.png";
-        }
-        if (reviews >= 100){
-            this.userTrophy[5] = "t06-on.png";
-        }
-
-    }
-}
-
-export class IUserRankDetails {
+class UserRankDetails {
     public name: string;
     public rank: string;
     public level: number;
@@ -137,5 +29,114 @@ export class IUserRankDetails {
         this.commits = 0;
         this.agreed = 0;
     }
-
 }  
+
+@Component({
+    selector: "page-ranking",
+    templateUrl: "ranking.html"
+})
+export class RankingPage {
+    
+    public userDetails = new UserDetails();
+    public msg: string;
+    public usersRep = new Array<UserReputation>();
+    public numberUserList = AppConfig.N_USER_RANKING_LIST;
+    public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
+    public userRankDetails: UserRankDetails;
+    public userRank = "No rank";
+    public userLevel = 0;
+    public userStars = 0;
+    public userTrophyList: string[] = [];
+    private log: ILogger;
+    private account: Account;
+
+
+    constructor(
+        public navCtrl: NavController,
+        private translateService: TranslateService,
+        private spinnerService: SpinnerService,
+        public loggerSrv: LoggerService,
+        private contractManagerService: ContractManagerService,
+        private loginService: LoginService
+    ) {
+        this.log = loggerSrv.get("RankingPage");
+        this.account = this.loginService.getAccount();
+        this.log.d("Imported account: ", this.account);
+        this.userRankDetails = new UserRankDetails();
+        
+    }
+    public ionViewWillEnter(){
+        this.refresh();
+    }
+
+
+    public refresh() {
+        this.spinnerService.showLoader();
+        this.contractManagerService.getAllUserReputation()
+            .then((usersRep: UserReputation[]) => {
+                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
+                this.usersRep.forEach(user => {
+                    user.userPosition = this.usersRep.indexOf(user) + 1;
+                });
+                this.spinnerService.hideLoader();
+                return;
+            }).then(() => {
+                this.setUser(this.account.address);
+            }).catch((e) => {
+                this.translateService.get("ranking.getReputation").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                        this.spinnerService.hideLoader();
+                    });
+            });
+    }
+
+    public setUser(hash: string){
+        this.contractManagerService.getUserDetails(hash)
+        .then((detailsUser: UserDetails) => {
+            this.userRankDetails.name = detailsUser.name;
+            this.userRankDetails.email = detailsUser.email;
+            this.userRankDetails.reviews = detailsUser.numberCommitsReviewedByMe;
+            this.userRankDetails.commits = detailsUser.numbermyCommitsPending;
+            this.userRankDetails.agreed = detailsUser.agreedPercentage;
+            this.userRankDetails.score = Math.round(detailsUser.reputation);
+            this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
+            this.userRankDetails.level = Math.round(detailsUser.reputation);
+            this.setUpTrophys();
+        });
+    }
+
+    public goBackToUser(){
+        this.setUser(this.account.address);
+    }
+
+    private setUpTrophys(){
+        let commits = this.userRankDetails.commits;
+        let reviews = this.userRankDetails.reviews;
+        this.userTrophyList = ["t01-off.png", "t02-off.png", "t03-off.png", "t04-off.png", "t05-off.png", "t06-off.png"];
+        if (commits >= 10){
+            this.userTrophyList[0] = "t01-on.png";
+        }
+        if (commits >= 50){
+            this.userTrophyList[1] = "t02-on.png";
+        }
+        if (commits >= 100){
+            this.userTrophyList[2] = "t03-on.png";
+        }
+        if (reviews >= 10){
+            this.userTrophyList[3] = "t04-on.png";
+        }
+        if (reviews >= 50){
+            this.userTrophyList[4] = "t05-on.png";
+        }
+        if (reviews >= 100){
+            this.userTrophyList[5] = "t06-on.png";
+        }
+
+    }
+}
+
+
+
+

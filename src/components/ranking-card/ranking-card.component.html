@@ -7,7 +7,11 @@
         </ion-col>
         <ion-col>
             <ion-row><div class="text-title">{{ name }}</div></ion-row>
-            <ion-row><button class="label-user dark">{{ userRank }}</button><button class="label-user green">{{ "ranking.level" | translate }} {{ level }}</button><button class="label-user green">{{ reputation }} {{ "ranking.stars" | translate }}</button></ion-row>
+            <ion-row>
+                <button class="label-user dark">{{ userRank }}</button>
+                <button class="label-user green">{{ "ranking.level" | translate }} {{ level }}</button>
+                <button class="label-user green">{{ reputation }} {{ "ranking.stars" | translate }}</button>
+            </ion-row>
             <ion-row><div class="text-description"> {{ email }} </div></ion-row>
             <ion-row>
                 <div class="ranking-stars">

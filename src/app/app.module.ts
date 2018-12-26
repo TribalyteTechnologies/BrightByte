@@ -6,13 +6,13 @@ import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 
 // Pages
-import { RankingPage } from "../pages/ranking/ranking";
 import { CommitPage } from "../pages/commits/commits";
 import { HomePage } from "../pages/home/home";
 import { ReviewPage } from "../pages/review/review";
 import { TabsPage } from "../pages/tabs/tabs";
 import { LoginPage } from "../pages/login/login";
 import { NewuserPage } from "../pages/newuser/newuser";
+import { RankingPage } from "../pages/ranking/ranking";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { SetProfilePage } from "../pages/setprofile/setprofile";
 import { CommitReviewPage } from "../pages/commitreview/commitreview";
@@ -38,10 +38,10 @@ import { IonicRatingModule } from "ionic-rating";
 
 // Components
 import { BrightByteApp } from "./app.component";
-import { CommitCard } from "../components/CommitCard/commit-card.component";
-import { CommentComponent } from "../components/CommitComment/commit-comment.component";
-import { ReviewCard } from "../components/ReviewCard/review-card.component";
-import { ReviewCommentComponent } from "../components/ReviewComment/review-comment.component";
+import { CommitCard } from "../components/commit-card/commit-card.component";
+import { CommentComponent } from "../components/commit-comment/commit-comment.component";
+import { ReviewCard } from "../components/review-card/review-card.component";
+import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -51,13 +51,13 @@ export function HttpLoaderFactory(http: HttpClient) {
 @NgModule({
     declarations: [
         BrightByteApp,
-        RankingPage,
         CommitPage,
         HomePage,
         ReviewPage,
         TabsPage,
         LoginPage,
         NewuserPage,
+        RankingPage,
         AddCommitPopover,
         SetProfilePage,
         CommitReviewPage,
@@ -85,13 +85,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     bootstrap: [IonicApp],
     entryComponents: [
         BrightByteApp,
-        RankingPage,
         CommitPage,
         HomePage,
         ReviewPage,
         TabsPage,
         LoginPage,
         NewuserPage,
+        RankingPage,
         AddCommitPopover,
         SetProfilePage,
         CommitReviewPage,

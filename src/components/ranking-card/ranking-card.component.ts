@@ -21,8 +21,8 @@ export class RankingCard {
     public numCommits = 0;
     public agreed = 99;
     public stateFinished = false;
-    public userHash = "Undefined";
-    public accountHash = "Undefined";
+    public userHash = "";
+    public accountHash = "";
     
     @Input()
     public set ranking(val: UserReputation) {
@@ -37,16 +37,11 @@ export class RankingCard {
         this.agreed = val.agreedPercentage;
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
-        
-        console.log(this.loginService.getAccount);
-
     }
 
     constructor(private loginService: LoginService){
-        console.log("Ranking card created");
         let account = this.loginService.getAccount();
         this.accountHash = account.address;
-        console.log(this.accountHash);
     }
 
 }
