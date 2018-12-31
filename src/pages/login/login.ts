@@ -13,6 +13,8 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { UserDetails } from "../../models/user-details.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
+import { Account } from 'web3/types';
+import { AppConfig } from "../../app.config";
 
 @Component({
     selector: "page-login",
@@ -110,27 +112,10 @@ export class LoginPage {
                          
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
-                this.contractManager.init(account)
-                    .then(() => {
-                        this.log.d("Account setted");
-                        return this.contractManager.getUserDetails(account.address);
-                    }).then((detailsUser: UserDetails) => {
-                        this.spinnerService.hideLoader();
-                        if (!detailsUser.email) {
-                            this.log.d("Email: ", detailsUser.email);
-                            this.navCtrl.push(SetProfilePage);
-                        } else {
-                            this.log.d("Email: ", detailsUser.email);
-                            this.navCtrl.push(TabsPage);
-                        }          
-                    }).catch((e) => {
-                        this.translateService.get("app.noRpc").subscribe(
-                            msg => {
-                                this.msg = msg;
-                                this.spinnerService.hideLoader();
-                            });
-                        this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
-                    });
+                let cont: number = 0;
+                if(this.checkNodes(account, cont)) {
+                    this.log.d("Correct Connection");
+                }
             }
         } catch (e) {
             this.translateService.get("app.wrongPassword").subscribe(
@@ -139,6 +124,44 @@ export class LoginPage {
                     this.log.e(msg, e);
                     this.spinnerService.hideLoader();
                 });
+        }
+    }
+
+    private checkNodes (account: Account, cont: number) {
+        if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
+            let ok: boolean = false;
+            return this.contractManager.init(account, cont)
+                .then(() => {
+                    this.log.d("Account setted")
+                    this.log.d("Checking the node number: " + cont);
+                    return this.contractManager.getUserDetails(account.address);
+                }).then((detailsUser: UserDetails) => {
+                    this.spinnerService.hideLoader();
+                    if (!detailsUser.email) {
+                        this.log.d("Email: ", detailsUser.email);
+                        this.navCtrl.push(SetProfilePage);
+                    } else {
+                        this.log.d("Email: ", detailsUser.email);
+                        this.navCtrl.push(TabsPage);
+                    }
+                    this.log.d("Total success connecting the node " + cont);
+                    return true; 
+                }).catch((e) => {
+                    this.log.e("Failure to access the node " + cont);
+                    cont++;
+                    this.checkNodes(account, cont);
+                    return false;
+                });
+        }
+        else {
+            let fail = this.alertCtrl.create({
+                title: "Connection Failure",
+                subTitle: "There is no node available for connection.",
+                buttons: ["Accept"]
+            });
+            fail.present();
+            this.spinnerService.hideLoader();
+            return false;
         }
     }
 
@@ -174,7 +197,7 @@ export class LoginPage {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
-                this.contractManager.init(account)
+                this.contractManager.init(account, 8)
                     .then(() => {
                         return this.contractManager.getUserMigration();
                     }).then((result) => {
@@ -224,7 +247,7 @@ export class LoginPage {
                     let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                     this.log.d("Imported account from the login file: ", account);
                     this.loginService.setAccount(account);
-                    this.contractManager.init(account)
+                    this.contractManager.init(account, 8)
                         .then(() => {
                             return this.contractManager.userSecondMigration();
                         }).then((result) => {

@@ -34,6 +34,8 @@ export class ContractManagerService {
     private initProm: Promise<Array<ItrbSmartContact>>;
     private currentUser: Account;
     private outOfGas: number;
+    private indNode: number;
+    private web3Service: Web3Service;
 
     constructor(
         public http: HttpClient,
@@ -43,20 +45,25 @@ export class ContractManagerService {
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
+        this.web3Service = web3Service;
+        this.indNode = 0;
     }
 
-    public init(user: Account): Promise<ItrbSmartContact> {
+    public init(user: Account, cont: number): Promise<any> {
+        let configNet = AppConfig.NETWORK_CONFIG_ARRAY[cont];
+        this.log.d("NODE DATA: " + "NODE URL " + configNet.urlNode);
+        this.web3 = this.web3Service.nextNode(cont);
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ItrbSmartContact>>();
         let promBright = this.http.get("../assets/build/Bright.json").toPromise()
             .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContractBright = TruffleContract(jsonContractData);
-                this.contractAddressBright = truffleContractBright.networks[AppConfig.NETWORK_CONFIG.netId].address;
+                this.contractAddressBright = truffleContractBright.networks[configNet.netId].address;
                 let contractBright = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBright, {
                     from: this.currentUser.address,
-                    gas: AppConfig.NETWORK_CONFIG.gasLimit,
-                    gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
+                    gas: configNet.gasLimit,
+                    gasPrice: configNet.gasPrice,
                     data: truffleContractBright.deployedBytecode
                 });
                 this.log.d("TruffleContractBright function: ", contractBright);
@@ -67,11 +74,11 @@ export class ContractManagerService {
         let promCommits = this.http.get("../assets/build/Commits.json").toPromise()
             .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContractCommits = TruffleContract(jsonContractData);
-                this.contractAddressCommits = truffleContractCommits.networks[AppConfig.NETWORK_CONFIG.netId].address;
+                this.contractAddressCommits = truffleContractCommits.networks[configNet.netId].address;
                 let contractCommits = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressCommits, {
                     from: this.currentUser.address,
-                    gas: AppConfig.NETWORK_CONFIG.gasLimit,
-                    gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
+                    gas: configNet.gasLimit,
+                    gasPrice: configNet.gasPrice,
                     data: truffleContractCommits.deployedBytecode
                 });
                 this.log.d("TruffleContractBright function: ", contractCommits);
@@ -82,11 +89,11 @@ export class ContractManagerService {
         let promRoot = this.http.get("../assets/build/Root.json").toPromise()
             .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContractRoot = TruffleContract(jsonContractData);
-                this.contractAddressRoot = truffleContractRoot.networks[AppConfig.NETWORK_CONFIG.netId].address;
+                this.contractAddressRoot = truffleContractRoot.networks[configNet.netId].address;
                 let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRoot, {
                     from: this.currentUser.address,
-                    gas: AppConfig.NETWORK_CONFIG.gasLimit,
-                    gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
+                    gas: configNet.gasLimit,
+                    gasPrice: configNet.gasPrice,
                     data: truffleContractRoot.deployedBytecode
                 });
                 this.log.d("TruffleContractBright function: ", contractRoot);
@@ -422,11 +429,11 @@ export class ContractManagerService {
     this.oldInitProm = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
         .then((jsonContractData: ItrbSmartContractJson) => {
             let truffleContract = TruffleContract(jsonContractData);
-            this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
+            this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG_ARRAY[8].netId].address;
             let contract = new this.web3.eth.Contract(jsonContractData.abi, this.oldContractAddress, {
                 from: this.currentUser.address,
-                gas: AppConfig.NETWORK_CONFIG.gasLimit,
-                gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
+                gas: AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit,
+                gasPrice: AppConfig.NETWORK_CONFIG_ARRAY[8].gasPrice,
                 data: truffleContract.deployedBytecode
             });
             this.log.d("TruffleContract function: ", contract);
@@ -845,8 +852,8 @@ export class ContractManagerService {
                 let rawtx = {
                     nonce: nonce,
                     // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG.gasLimit),
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[8].gasPrice),
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit),
                     to: contractAddress,
                     data: bytecodeData
                 };
@@ -864,7 +871,7 @@ export class ContractManagerService {
                 return this.web3.eth.sendSignedTransaction(raw);
             }).then(transactionHash => {
                 this.log.d("Hash transaction", transactionHash);
-                if(transactionHash.gasUsed >= AppConfig.NETWORK_CONFIG.gasLimit){
+                if(transactionHash.gasUsed >= AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit){
                     this.log.e("Gas");
                     this.outOfGas ++;
                 }
