@@ -165,9 +165,6 @@ contract Bright {
     }
 
     function getUserCommits(address _a) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]){
-        if (msg.sender != owner) {
-            _a = tx.origin;
-        }
         UserProfile memory user = hashUserMap[_a];
         return (user.pendingReviews,
                 user.finishedReviews,

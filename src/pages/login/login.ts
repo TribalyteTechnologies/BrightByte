@@ -198,7 +198,6 @@ export class LoginPage {
                     });
 
             }
-
         } catch (e) {
             this.translateService.get("app.wrongPassword").subscribe(
                 msg => {
@@ -241,9 +240,7 @@ export class LoginPage {
                                 });
                             this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
                         });
-    
                 }
-    
             } catch (e) {
                 window.alert(e);
                 this.translateService.get("app.wrongPassword").subscribe(
@@ -254,6 +251,5 @@ export class LoginPage {
                     });
             }
         }
-        loader.dismiss();
     }
 }

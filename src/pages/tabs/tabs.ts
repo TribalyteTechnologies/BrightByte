@@ -36,12 +36,14 @@ export class TabsPage {
                 private contractManagerService: ContractManagerService) {
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
         
-        let lastPage = Number(localStorage.getItem("lastPage"));
-        if (lastPage !== undefined){
+        let item = localStorage.getItem("lastPage");
+        let lastPage = Number(item);
+        if (item === null){
+            this.tabContent = this.menuArray[3].url;
+            this.goTo(this.menuArray[3].url);
+        } else {
             this.tabContent = this.menuArray[lastPage].url;
             this.goTo(this.menuArray[lastPage].url);
-        } else {
-            this.tabContent = this.ranking;
         }
         
         this.log = loggerSrv.get("TabsPage");

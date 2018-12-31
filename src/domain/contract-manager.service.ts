@@ -24,8 +24,8 @@ interface ItrbSmartContact { //Web3.Eth.Contract
 
 @Injectable()
 export class ContractManagerService {
-    private contractAddress: string;
-    private initPromOld: Promise<ItrbSmartContact>;
+    private oldContractAddress: string;
+    private oldInitProm: Promise<ItrbSmartContact>;
     private contractAddressRoot: string;
     private contractAddressBright: string;
     private contractAddressCommits: string;
@@ -415,16 +415,15 @@ export class ContractManagerService {
     }
 
 
-       /////////////////////////////////MIGRATION///////////////////////////////////////////
-
+    /////////////////////////////////MIGRATION///////////////////////////////////////////
     public initMigrationOld(user: Account): Promise<ItrbSmartContact> {
     this.currentUser = user;
     this.log.d("Initializing service with user ", this.currentUser);
-    this.initPromOld = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
+    this.oldInitProm = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
         .then((jsonContractData: ItrbSmartContractJson) => {
             let truffleContract = TruffleContract(jsonContractData);
-            this.contractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
-            let contract = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddress, {
+            this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG.netId].address;
+            let contract = new this.web3.eth.Contract(jsonContractData.abi, this.oldContractAddress, {
                 from: this.currentUser.address,
                 gas: AppConfig.NETWORK_CONFIG.gasLimit,
                 gasPrice: AppConfig.NETWORK_CONFIG.gasPrice,
@@ -433,7 +432,7 @@ export class ContractManagerService {
             this.log.d("TruffleContract function: ", contract);
             return contract;
         });
-    return this.initPromOld;
+    return this.oldInitProm;
     }
 
     public getUserMigration(){
@@ -466,22 +465,25 @@ export class ContractManagerService {
             contractBright = contract;
             return contract.methods.getUser(this.currentUser.address).call();
         }).then((userData) => {
-                name = userData[0];
-                email = userData[1];
-                numberCommitsReviewedByMe = userData[2];
-                commitsToReviewLength = userData[3];
-                userCommitsLength = userData[4];
-                reputation = userData[5];     
-                let promisesReput = new Array<Promise<any>>();
-                for(let i = 0; i < userData.length; i++){
-                    let promise = contractBright.methods.getAllUserReputation(i).call();
-                    promisesReput.push(promise);
-                }
-                return Promise.all(promisesReput);
+            name = userData[0];
+            email = userData[1];
+            numberCommitsReviewedByMe = userData[2];
+            commitsToReviewLength = userData[3];
+            userCommitsLength = userData[4];
+            reputation = userData[5];   
+            return contractBright.methods.getNumbers().call();
+        }).then((userNumber) => {
+            let promisesReput = new Array<Promise<any>>();
+            for(let i = 0; i < userNumber[1]; i++){
+                let promise = contractBright.methods.getAllUserReputation(i).call();
+                promisesReput.push(promise);
+            }
+            return Promise.all(promisesReput);
         }).then((userReput) => {
                 for(let i = 0; i < userReput.length; i++){
                     if(userReput[i][0] === email){
                         numberOfPoints = userReput[i][3];
+                        numberOfTimesReview = userReput[i][2];
                     }
                 }
                 let promisesCommits = new Array<Promise<any>>();
@@ -663,6 +665,10 @@ export class ContractManagerService {
                 agreedPercentage, numberOfPoints, numberOfTimesReview, positiveVotes, negativeVotes, reputation).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressBright);          
         }).then((trxResponse) => {
+
+            if(this.outOfGas >= 1){
+                throw new Error("Este usuario ya existe");
+            }
             let arrayMax = userCommits;
             let arrayToCount = [];
             if(arrayMax.length < finishedReviews.length){
@@ -674,7 +680,7 @@ export class ContractManagerService {
             if(arrayMax.length < toRead.length){
                 arrayMax = toRead;
             }       
-            let bucle = (arrayMax.length / 15) + 1;
+            let bucle = (arrayMax.length / 5) + 1;
             for(let j = 0; j < bucle; j++){
                 arrayToCount.push(j);
             }
@@ -683,7 +689,7 @@ export class ContractManagerService {
             return arrayToCount.reduce(
                 (prevVal, actual) => {
                     return prevVal.then(() => {
-                        let suma: number = i + 15;
+                        let suma: number = i + 5;
                         let comS = userCommits.slice(i, suma);
                         let finS = finishedReviews.slice(i, suma);
                         let pendS = pendingReviews.slice(i, suma);
@@ -800,6 +806,7 @@ export class ContractManagerService {
             }
             return Promise.all(promisesAddress);
         }).then((address) => {
+            this.log.w("All users address: " + address);
             let promisesUserDetails = new Array<Promise<any>>();
             for(let i = 0; i < address.length; i++){
                 allAddress.push(address[i]);
@@ -808,6 +815,7 @@ export class ContractManagerService {
             }
             return Promise.all(promisesUserDetails);     
         }).then((userCommits) => {
+            this.log.w("Commits: " + userCommits);
             return userCommits.reduce(
                 (prevValueCom, userCom, i) => {
                     return prevValueCom.then(() => {

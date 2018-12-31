@@ -43,7 +43,6 @@ export class CommitCard {
         this.creationDateMs = this.val.creationDateMs;
         this.urlLink = this.val.url;
         this.reviews = this.generateArray(this.val.currentNumberReviews);
-        console.log(this.reviews, "IMPRESOO");
         this.stateFinished = this.val.currentNumberReviews !== this.val.numberReviews ? true : false;
     }
     get commit(){
