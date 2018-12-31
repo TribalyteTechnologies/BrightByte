@@ -42,23 +42,21 @@ page-tabs {
             display: flex;
             flex-direction: column;
         }
-        .menu-button-style {
+        .tab-button {
             font-size: 20px;
+            width: 100%;
             height: 60px;
             margin-bottom: 20px;
             color: rgba(255, 255, 255, 0.5);
             background-color: transparent;
         }
-        .menu-button-style:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .menu-button-style-selected {
-            font-size: 20px;
-            height: 60px;
-            margin-bottom: 20px;
+        .tab-button.selected {
             color: #fff;
             background-color: rgba(255, 255, 255, 0.1);
             border-left: 5px solid color($colors, grass);
+        }
+        .tab-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
     }
 }

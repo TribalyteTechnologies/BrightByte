@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { ILogger, LoggerService } from "./logger.service";
-import { LoadingController } from "ionic-angular";
+import { LoadingController, Loading } from "ionic-angular";
 
 @Injectable()
 export class SpinnerService {
 
-    public loader: any = null;
+    public loader: Loading = null;
     private log: ILogger;
 
     constructor(public loggerSrv: LoggerService, private loadingCtrl: LoadingController){
@@ -14,26 +14,19 @@ export class SpinnerService {
     }
 
     public showLoader(){
-        this.showLoadingHandler();
-    }
-
-    public hideLoader(){
-        this.hideLoadingHandler();
-    }
-
-    private showLoadingHandler(){
-        if (this.loader === null){
+        if (!this.loader){
             this.loader = this.loadingCtrl.create();
             this.loader.present();
         }
     }
 
-    private hideLoadingHandler(){
-        if (this.loader != null){
+    public hideLoader(){
+        if (this.loader){
             this.loader.dismiss();
             this.loader = null;
         }
     }
+
 
     
 }

@@ -32,7 +32,11 @@
                         </ion-col>
                         <ion-col>
                             <ion-row><div class="text-title">{{ userRankDetails.name }}</div> </ion-row>
-                            <ion-row><button class="label-user dark">{{ userRankDetails.rank }}</button> <button class="label-user green">{{ "ranking.level" | translate }} {{ userRankDetails.level }}</button><button class="label-user green">{{ userRankDetails.score }} {{ "ranking.stars" | translate }}</button></ion-row>
+                            <ion-row>
+                                <button class="label-user dark">{{ userRankDetails.rank }}</button>
+                                <button class="label-user green">{{ "ranking.level" | translate }} {{ userRankDetails.level }}</button>
+                                <button class="label-user green">{{ userRankDetails.score }} {{ "ranking.stars" | translate }}</button>
+                            </ion-row>
                             <ion-row><div class="text-description"> {{ userRankDetails.email }}</div></ion-row>
                             <ion-row>
                                 <div class="ranking-stars">
@@ -65,29 +69,29 @@
                 <ion-item>
                     <ion-row align-items-center>
                         <ion-col>
-                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[0]}}"></div></ion-row>
+                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[0]}}"></div></ion-row>
                             <ion-row><div class="text-subtitle">{{ "ranking.tenCommits" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
-                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[1]}}"></div></ion-row>
+                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[1]}}"></div></ion-row>
                             <ion-row> <div class="text-subtitle">{{ "ranking.fiftyCommits" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
-                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[2]}}"></div></ion-row>
+                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[2]}}"></div></ion-row>
                             <ion-row><div class="text-subtitle">{{ "ranking.hundredCommits" | translate }}</div></ion-row>
                         </ion-col>
                     </ion-row>
                     <ion-row align-items-center class="lower-col-border">
                         <ion-col>
-                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[3]}}"></div></ion-row>
+                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[3]}}"></div></ion-row>
                             <ion-row><div class="text-subtitle">{{ "ranking.tenReviews" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
-                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[4]}}"></div></ion-row>
+                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[4]}}"></div></ion-row>
                             <ion-row> <div class="text-subtitle">{{ "ranking.fiftyReviews" | translate }}</div></ion-row>
                         </ion-col>
                         <ion-col class="col-border">
-                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophy[5]}}"></div></ion-row>
+                            <ion-row><div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[5]}}"></div></ion-row>
                             <ion-row><div class="text-subtitle">{{ "ranking.hundredReviews" | translate }}</div></ion-row>
                         </ion-col>
                     </ion-row>

@@ -10,6 +10,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
 
+const BRIGHTUSERSEMAILS: string = "usersEmails";
+
 @Component({
     selector: "popover-addcommit",
     templateUrl: "addcommit.html"
@@ -53,7 +55,7 @@ export class AddCommitPopover {
             this.log.d("All user reputations: ", allReputations);
             this.allEmails = allReputations.map(userRep => userRep.email);
             this.setUpList(this.searchInput);
-            let mailString = localStorage.getItem("usersEmails");
+            let mailString = localStorage.getItem(BRIGHTUSERSEMAILS);
             if (mailString){
                 let mailArray = mailString.split(";");
                 mailArray.forEach(mail => {
@@ -62,13 +64,7 @@ export class AddCommitPopover {
             }
         }).catch((e) => {
             this.showGuiMessage("addCommit.errorEmails", e);
-        });
-
-        
-        
-
-        
-       
+        });     
     }
     
     public addCommit(url: string, title: string) {
@@ -88,7 +84,7 @@ export class AddCommitPopover {
                 }
             }
             let mailArray = this.userAdded.join(";");
-            localStorage.setItem("usersEmails", mailArray);
+            localStorage.setItem(BRIGHTUSERSEMAILS, mailArray);
             if (this.userAdded.every(userEmail => !userEmail)) {
                 errMsgId = "addCommit.emptyInput";
             }

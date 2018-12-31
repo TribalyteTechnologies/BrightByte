@@ -24,15 +24,17 @@ export class ReviewCard {
     public reviewers: UserDetails[][] = [];
     public pendingReviewers: string[] = [];
 
+    private _commit: UserCommit;
+
+
     @Input()
-    public set commit(val: UserCommit){
+    set commit(val: UserCommit){
+        this._commit = val;
         let split = val.url.split("/");
         this.urlHash = split[6];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
-        this.pendingReviewers = val.reviewers[0].map((userval) => {
-            return userval.name;
-        });
+        this.pendingReviewers = val.reviewers[0].map(userval => userval.name);
         this.reviewers = val.reviewers;
         this.title = val.title;
         this.project = val.project;
@@ -40,18 +42,16 @@ export class ReviewCard {
         this.isReadNeeded = val.isReadNeeded;
         this.creationDateMs = val.creationDateMs;
         this.urlLink = val.url;
-        this.reviews = this.generateArray(val.currentNumberReviews);
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
+    }
+    get commit(){
+        return this._commit;
+    }
+    public ngDoCheck() {
+        this.commit = this._commit;
     }
     public openUrl(url: string){
         window.open(url, "_blank");
     }
 
-    private generateArray(currentNumberReviews: number): Array<number>{
-        let array = [];
-        for (let i = 0; i < currentNumberReviews; i++){
-            array.push(i);
-        }
-        return array;
-    }
 }

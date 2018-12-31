@@ -5,10 +5,10 @@
                 <img class="logo" src="../../assets/imgs/logo_bkg.svg">
             </div>
             <ion-item class="avatar-icon">
-                <img  class="avatar-container" src="http://identicon.org?t={{ name }}">
+                <img  class="avatar-container" [src]="'http://identicon.org?t='+ name">
             </ion-item>
             <div class="menu-buttons-col">
-                <button *ngFor="let page of menuArray" [ngClass]="page.style" (click)="goTo(page.url)">
+                <button *ngFor="let page of menuArray" (click)="goTo(page.url)" [ngClass]="page.url === currentPage ? 'tab-button selected' : 'tab-button'" >
                     <ion-icon name="{{ page.icon }}"></ion-icon>
                 </button>
             </div>
@@ -20,5 +20,5 @@
             </button>
         </div>
     </div>
-    <ion-nav [root]="tabContent" main></ion-nav>
+    <ion-nav [root]="currentPage" main></ion-nav>
 </ion-split-pane>

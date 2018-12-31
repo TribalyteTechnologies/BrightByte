@@ -11,7 +11,7 @@
         "noRpc": "No RPC connetion",
         "login": "Login",
         "debug": "Debug",
-        "remember": "Remember user?"
+        "remember": "Keep session?"
     },
     "addCommit": {
         "title": "Add commit",
