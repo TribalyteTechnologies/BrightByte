@@ -36,25 +36,23 @@ export class ContractManagerService {
     private initProm: Promise<Array<ItrbSmartContact>>;
     private currentUser: Account;
     private outOfGas: number;
-    private indNode: number;
-    private web3Service: Web3Service;
+    
 
     constructor(
-        public http: HttpClient,
-        public alertCtrl: AlertController,
-        web3Service: Web3Service,
+        private http: HttpClient,
+        private alertCtrl: AlertController,
+        private web3Service: Web3Service,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
         this.web3Service = web3Service;
-        this.indNode = 0;
     }
 
     public init(user: Account, cont: number): Promise<any> {
         let configNet = AppConfig.NETWORK_CONFIG_ARRAY[cont];
-        this.log.d("NODE DATA: " + "NODE URL " + configNet.urlNode);
-        this.web3 = this.web3Service.nextNode(cont);
+        this.log.d("Initializing with URL: " + configNet.urlNode);
+        this.web3 = this.web3Service.changeNode(cont);
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ItrbSmartContact>>();

@@ -13,7 +13,7 @@ export class Web3Service {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("Web3Service");
-        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG_ARRAY[0].urlNode));
+        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG.urlNode));
         Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
 
     }
@@ -22,9 +22,11 @@ export class Web3Service {
         return this.web3;
     }
 
-    public nextNode(ind: number): Web3 {
-        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG_ARRAY[ind].urlNode));
-        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+    public changeNode(ind: number): Web3 {
+        if(AppConfig.MULTI_NODE) {
+            this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG_ARRAY[ind].urlNode));
+            Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+        }
         return this.web3;
     }
 

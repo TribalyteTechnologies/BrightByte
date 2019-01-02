@@ -113,9 +113,8 @@ export class LoginPage {
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
                 let cont: number = 0;
-                if(this.checkNodes(account, cont)) {
-                    this.log.d("Correct Connection");
-                }
+
+                this.checkNodes(account, cont);
             }
         } catch (e) {
             this.translateService.get("app.wrongPassword").subscribe(
@@ -236,7 +235,7 @@ export class LoginPage {
         }
     }
 
-    private checkNodes (account: Account, cont: number) {
+    private checkNodes (account: Account, cont: number): Promise<boolean> {
         if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
             return this.contractManager.init(account, cont)
                 .then(() => {
@@ -253,7 +252,7 @@ export class LoginPage {
                         this.navCtrl.push(TabsPage);
                     }
                     this.log.d("Total success connecting the node " + cont);
-                    return true; 
+                    return true;
                 }).catch((e) => {
                     this.log.e("Failure to access the node " + cont);
                     cont++;
@@ -261,14 +260,16 @@ export class LoginPage {
                     return false;
                 });
         } else {
+            this.spinnerService.hideLoader();
             let fail = this.alertCtrl.create({
                 title: "Connection Failure",
                 subTitle: "There is no node available for connection.",
                 buttons: ["Accept"]
             });
             fail.present();
-            this.spinnerService.hideLoader();
-            return false;
+            return new Promise (( ) => {
+                return false;
+            });
         }
     }
 }
