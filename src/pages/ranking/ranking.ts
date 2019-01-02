@@ -63,7 +63,6 @@ export class RankingPage {
         this.account = this.loginService.getAccount();
         this.log.d("Imported account: ", this.account);
         this.userRankDetails = new UserRankDetails();
-        
     }
     public ionViewWillEnter(){
         this.refresh();
@@ -102,7 +101,7 @@ export class RankingPage {
             this.userRankDetails.agreed = detailsUser.agreedPercentage;
             this.userRankDetails.score = detailsUser.reputation;
             this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
-            this.userRankDetails.level = Math.round(detailsUser.reputation);
+            this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
             this.setUpTrophys();
         });
     }

@@ -14,6 +14,8 @@ import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
 import { AlertController } from "ionic-angular";
 
+const numberOfCommits = 5; 
+
 interface ItrbSmartContractJson {
     abi: Array<any>;
 }
@@ -424,22 +426,22 @@ export class ContractManagerService {
 
     /////////////////////////////////MIGRATION///////////////////////////////////////////
     public initMigrationOld(user: Account): Promise<ItrbSmartContact> {
-    this.currentUser = user;
-    this.log.d("Initializing service with user ", this.currentUser);
-    this.oldInitProm = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
-        .then((jsonContractData: ItrbSmartContractJson) => {
-            let truffleContract = TruffleContract(jsonContractData);
-            this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG_ARRAY[8].netId].address;
-            let contract = new this.web3.eth.Contract(jsonContractData.abi, this.oldContractAddress, {
-                from: this.currentUser.address,
-                gas: AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit,
-                gasPrice: AppConfig.NETWORK_CONFIG_ARRAY[8].gasPrice,
-                data: truffleContract.deployedBytecode
+        this.currentUser = user;
+        this.log.d("Initializing service with user ", this.currentUser);
+        this.oldInitProm = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
+            .then((jsonContractData: ItrbSmartContractJson) => {
+                let truffleContract = TruffleContract(jsonContractData);
+                this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG_ARRAY[8].netId].address;
+                let contract = new this.web3.eth.Contract(jsonContractData.abi, this.oldContractAddress, {
+                    from: this.currentUser.address,
+                    gas: AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit,
+                    gasPrice: AppConfig.NETWORK_CONFIG_ARRAY[8].gasPrice,
+                    data: truffleContract.deployedBytecode
+                });
+                this.log.d("TruffleContract function: ", contract);
+                return contract;
             });
-            this.log.d("TruffleContract function: ", contract);
-            return contract;
-        });
-    return this.oldInitProm;
+        return this.oldInitProm;
     }
 
     public getUserMigration(){
@@ -653,16 +655,16 @@ export class ContractManagerService {
             } else {
                 agreedPercentage = 100;
             }
-            this.log.w(commitsArray);
-            this.log.w(pendingReviews);
-            this.log.w(finishedReviews);
-            this.log.w("Introducimos los valores");
+            this.log.d("User Commits: " + commitsArray);
+            this.log.d("Pending Reviews: " + pendingReviews);
+            this.log.d("Finished Reviews: " + finishedReviews);
+            this.log.d("Setting Values");
             return this.initProm;
         }).then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
             rootNew = root;
-            this.log.w("Introducimos Usuario");
+            this.log.d("Setting User");
             let byteCodeData = brightNew
             .methods
             .setAllUserData(
@@ -687,16 +689,16 @@ export class ContractManagerService {
             if(arrayMax.length < toRead.length){
                 arrayMax = toRead;
             }       
-            let bucle = (arrayMax.length / 5) + 1;
-            for(let j = 0; j < bucle; j++){
+            let timesToRepeat = (arrayMax.length / numberOfCommits) + 1;
+            for(let j = 0; j < timesToRepeat; j++){
                 arrayToCount.push(j);
             }
             let i: number = 0;
-            this.log.w("Introducimos los arrays del usuario con slice");
+            this.log.d("Setting user's commits with slice");
             return arrayToCount.reduce(
                 (prevVal, actual) => {
                     return prevVal.then(() => {
-                        let suma: number = i + 5;
+                        let suma: number = i + numberOfCommits;
                         let comS = userCommits.slice(i, suma);
                         let finS = finishedReviews.slice(i, suma);
                         let pendS = pendingReviews.slice(i, suma);
@@ -711,7 +713,7 @@ export class ContractManagerService {
                 Promise.resolve()
             ); 
         }).then((trxResponse) => {   
-            this.log.w("Introducimos los commits");
+            this.log.d("Setting commits");
             return commitsArray.reduce(
                 (prevVal, commit) => {
                     return prevVal.then(() => {
@@ -731,7 +733,6 @@ export class ContractManagerService {
                 Promise.resolve()
             );
         }).then((trxResponse) => {
-            this.log.w("Introducimos los commits (Pendcom...)");
             return commitsArray.reduce(
                 (prevVal, commit) => {
                     return prevVal.then(() => {
@@ -746,7 +747,7 @@ export class ContractManagerService {
                 Promise.resolve()
             );
         }).then((trxResponse) => {
-            this.log.w("Introducimos los comentarios");
+            this.log.d("Setting Comments");
             return commitsArray.reduce(
                 (prevValCommit, commit) => {
                     return prevValCommit.then(() => {
@@ -773,7 +774,7 @@ export class ContractManagerService {
                 Promise.resolve()
             );
         }).then((trxResponse) => {
-            this.log.w("FIN");
+            this.log.d("Migration Finished");
             let alert = this.alertCtrl.create({
                 title: "Migration",
                 subTitle: "You have: " + this.outOfGas + " OutOfGas Errors" ,
@@ -813,7 +814,7 @@ export class ContractManagerService {
             }
             return Promise.all(promisesAddress);
         }).then((address) => {
-            this.log.w("All users address: " + address);
+            this.log.d("All users address: " + address);
             let promisesUserDetails = new Array<Promise<any>>();
             for(let i = 0; i < address.length; i++){
                 allAddress.push(address[i]);
@@ -822,7 +823,7 @@ export class ContractManagerService {
             }
             return Promise.all(promisesUserDetails);     
         }).then((userCommits) => {
-            this.log.w("Commits: " + userCommits);
+            this.log.d("Commits: " + userCommits);
             return userCommits.reduce(
                 (prevValueCom, userCom, i) => {
                     return prevValueCom.then(() => {
