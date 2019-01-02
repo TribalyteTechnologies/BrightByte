@@ -13,7 +13,7 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { UserDetails } from "../../models/user-details.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
-import { Account } from 'web3/types';
+import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
 
 @Component({
@@ -127,44 +127,6 @@ export class LoginPage {
         }
     }
 
-    private checkNodes (account: Account, cont: number) {
-        if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
-            let ok: boolean = false;
-            return this.contractManager.init(account, cont)
-                .then(() => {
-                    this.log.d("Account setted")
-                    this.log.d("Checking the node number: " + cont);
-                    return this.contractManager.getUserDetails(account.address);
-                }).then((detailsUser: UserDetails) => {
-                    this.spinnerService.hideLoader();
-                    if (!detailsUser.email) {
-                        this.log.d("Email: ", detailsUser.email);
-                        this.navCtrl.push(SetProfilePage);
-                    } else {
-                        this.log.d("Email: ", detailsUser.email);
-                        this.navCtrl.push(TabsPage);
-                    }
-                    this.log.d("Total success connecting the node " + cont);
-                    return true; 
-                }).catch((e) => {
-                    this.log.e("Failure to access the node " + cont);
-                    cont++;
-                    this.checkNodes(account, cont);
-                    return false;
-                });
-        }
-        else {
-            let fail = this.alertCtrl.create({
-                title: "Connection Failure",
-                subTitle: "There is no node available for connection.",
-                buttons: ["Accept"]
-            });
-            fail.present();
-            this.spinnerService.hideLoader();
-            return false;
-        }
-    }
-
     public register() {
         this.navCtrl.push(NewuserPage);
     }
@@ -271,6 +233,42 @@ export class LoginPage {
                         loader.dismiss();
                     });
             }
+        }
+    }
+
+    private checkNodes (account: Account, cont: number) {
+        if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
+            return this.contractManager.init(account, cont)
+                .then(() => {
+                    this.log.d("Account setted");
+                    this.log.d("Checking the node number: " + cont);
+                    return this.contractManager.getUserDetails(account.address);
+                }).then((detailsUser: UserDetails) => {
+                    this.spinnerService.hideLoader();
+                    if (!detailsUser.email) {
+                        this.log.d("Email: ", detailsUser.email);
+                        this.navCtrl.push(SetProfilePage);
+                    } else {
+                        this.log.d("Email: ", detailsUser.email);
+                        this.navCtrl.push(TabsPage);
+                    }
+                    this.log.d("Total success connecting the node " + cont);
+                    return true; 
+                }).catch((e) => {
+                    this.log.e("Failure to access the node " + cont);
+                    cont++;
+                    this.checkNodes(account, cont);
+                    return false;
+                });
+        } else {
+            let fail = this.alertCtrl.create({
+                title: "Connection Failure",
+                subTitle: "There is no node available for connection.",
+                buttons: ["Accept"]
+            });
+            fail.present();
+            this.spinnerService.hideLoader();
+            return false;
         }
     }
 }

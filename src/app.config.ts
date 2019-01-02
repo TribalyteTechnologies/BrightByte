@@ -1,5 +1,4 @@
 import { default as NETWORK_CONFIG_CUSTOM } from "./app.config.custom";
-import config from './app.config.custom';
 
 export class AppConfig {
 
@@ -18,13 +17,12 @@ export class AppConfig {
         urlNode: "HTTP://127.0.0.1:9545"
     };
 
-   public static readonly NETWORK_CONFIG_ARRAY = NETWORK_CONFIG_CUSTOM.configList;
-
-    public NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ?
-    NETWORK_CONFIG_CUSTOM.configList[0] : AppConfig.NETWORK_CONFIG_LOCALHOST;
-
+    public static readonly NETWORK_CONFIG_ARRAY = NETWORK_CONFIG_CUSTOM.configList;
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly N_USER_RANKING_LIST = 5;
 
+    public NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ?
+    NETWORK_CONFIG_CUSTOM.configList[0] : AppConfig.NETWORK_CONFIG_LOCALHOST;
 }
+
