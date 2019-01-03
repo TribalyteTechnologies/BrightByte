@@ -4,7 +4,6 @@ export class AppConfig {
 
     public static readonly LOG_DEBUG = true;
     public static readonly IS_CUSTOM_NET = true;
-    public static readonly MULTI_NODE = true;
 
     public static readonly DEFAULT_LANGUAGE = "en";
     public static readonly DEFAULT_DATE_FORMAT = "en-EU";
@@ -19,7 +18,7 @@ export class AppConfig {
     };
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ?
-    NETWORK_CONFIG_CUSTOM.config : AppConfig.NETWORK_CONFIG_LOCALHOST;
+    NETWORK_CONFIG_CUSTOM.configList[0] : AppConfig.NETWORK_CONFIG_LOCALHOST;
     public static readonly NETWORK_CONFIG_ARRAY = NETWORK_CONFIG_CUSTOM.configList;
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly SCORE_DIVISION_FACTOR = 100;

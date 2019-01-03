@@ -11,7 +11,8 @@
         "noRpc": "No RPC connetion",
         "login": "Login",
         "debug": "Debug",
-        "remember": "Keep session?"
+        "remember": "Keep session?",
+        "ConnectionFailure": "There is no node available for connection."
     },
     "addCommit": {
         "title": "Add commit",

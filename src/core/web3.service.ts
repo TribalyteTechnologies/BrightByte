@@ -23,10 +23,8 @@ export class Web3Service {
     }
 
     public changeNode(ind: number): Web3 {
-        if(AppConfig.MULTI_NODE) {
-            this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG_ARRAY[ind].urlNode));
-            Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
-        }
+        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG_ARRAY[ind].urlNode));
+        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
         return this.web3;
     }
 

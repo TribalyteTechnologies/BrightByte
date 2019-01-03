@@ -112,9 +112,23 @@ export class LoginPage {
                          
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
-                let cont: number = 0;
 
-                this.checkNodes(account, cont);
+                let arrayNodes: Array<number> = [];
+                for(let i: number = 0; i < AppConfig.NETWORK_CONFIG_ARRAY.length; i++) {
+                    arrayNodes.push(i);
+                }
+                arrayNodes.sort(function(a, b){return 0.5 - Math.random(); });
+                this.log.w(arrayNodes);
+
+                this.checkNodesAndOpenHomePage(account, 0, arrayNodes).then((result) => {
+                    this.spinnerService.hideLoader();
+                    if(!result) {
+                        this.translateService.get("app.ConnectionFailure").subscribe(
+                            msg => {
+                                this.msg = msg;
+                            });
+                    }
+                });
             }
         } catch (e) {
             this.translateService.get("app.wrongPassword").subscribe(
@@ -158,7 +172,7 @@ export class LoginPage {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
-                this.contractManager.init(account, 8)
+                this.contractManager.init(account, 0)
                     .then(() => {
                         return this.contractManager.getUserMigration();
                     }).then((result) => {
@@ -208,7 +222,7 @@ export class LoginPage {
                     let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                     this.log.d("Imported account from the login file: ", account);
                     this.loginService.setAccount(account);
-                    this.contractManager.init(account, 8)
+                    this.contractManager.init(account, 0)
                         .then(() => {
                             return this.contractManager.userSecondMigration();
                         }).then((result) => {
@@ -235,41 +249,32 @@ export class LoginPage {
         }
     }
 
-    private checkNodes (account: Account, cont: number): Promise<boolean> {
-        if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
-            return this.contractManager.init(account, cont)
-                .then(() => {
-                    this.log.d("Account setted");
-                    this.log.d("Checking the node number: " + cont);
-                    return this.contractManager.getUserDetails(account.address);
-                }).then((detailsUser: UserDetails) => {
-                    this.spinnerService.hideLoader();
-                    if (!detailsUser.email) {
-                        this.log.d("Email: ", detailsUser.email);
-                        this.navCtrl.push(SetProfilePage);
-                    } else {
-                        this.log.d("Email: ", detailsUser.email);
-                        this.navCtrl.push(TabsPage);
-                    }
-                    this.log.d("Total success connecting the node " + cont);
-                    return true;
-                }).catch((e) => {
-                    this.log.e("Failure to access the node " + cont);
-                    cont++;
-                    this.checkNodes(account, cont);
-                    return false;
-                });
-        } else {
-            this.spinnerService.hideLoader();
-            let fail = this.alertCtrl.create({
-                title: "Connection Failure",
-                subTitle: "There is no node available for connection.",
-                buttons: ["Accept"]
-            });
-            fail.present();
-            return new Promise (( ) => {
-                return false;
-            });
-        }
+    private checkNodesAndOpenHomePage (account: Account, cont: number, arrayNodes: Array<number>): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
+                this.contractManager.init(account, arrayNodes[cont])
+                    .then(() => {
+                        this.log.d("Account setted");
+                        this.log.d("Checking the node number: " + arrayNodes[cont]);
+                        return this.contractManager.getUserDetails(account.address);
+                    }).then((detailsUser: UserDetails) => {
+                        if (!detailsUser.email) {
+                            this.log.d("Email: ", detailsUser.email);
+                            this.navCtrl.push(SetProfilePage);
+                        } else {
+                            this.log.d("Email: ", detailsUser.email);
+                            this.navCtrl.push(TabsPage);
+                        }
+                        this.log.d("Total success connecting the node " + arrayNodes[cont]);
+                        resolve(true);
+                    }).catch((e) => {
+                        this.log.w("Failure to access the node " + arrayNodes[cont]);
+                        cont++;
+                        resolve(this.checkNodesAndOpenHomePage(account, cont, arrayNodes));
+                    });
+            } else {
+                resolve(false);
+            }
+        });
     }
 }
