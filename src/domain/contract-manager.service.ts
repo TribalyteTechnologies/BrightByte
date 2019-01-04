@@ -42,7 +42,7 @@ export class ContractManagerService {
         private http: HttpClient,
         private alertCtrl: AlertController,
         private web3Service: Web3Service,
-        loggerSrv: LoggerService
+        private loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
@@ -50,9 +50,13 @@ export class ContractManagerService {
     }
 
     public init(user: Account, cont: number): Promise<any> {
-        let configNet = AppConfig.NETWORK_CONFIG_ARRAY[cont];
+        if(AppConfig.IS_CUSTOM_NET) {
+            AppConfig.changeNetworkConfig(cont);
+            this.web3Service = new Web3Service(this.loggerSrv);
+            this.web3 = this.web3Service.getWeb3();
+        }
+        let configNet = AppConfig.NETWORK_CONFIG;
         this.log.d("Initializing with URL: " + configNet.urlNode);
-        this.web3 = this.web3Service.changeNode(cont);
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ItrbSmartContact>>();

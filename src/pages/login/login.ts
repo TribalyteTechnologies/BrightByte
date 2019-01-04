@@ -113,21 +113,27 @@ export class LoginPage {
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
 
-                let arrayNodes: Array<number> = [];
-                for(let i: number = 0; i < AppConfig.NETWORK_CONFIG_ARRAY.length; i++) {
-                    arrayNodes.push(i);
+                let nodeRandomIndices = new Array<number>();
+                for(let i = 0; i < AppConfig.NETWORK_CONFIG_ARRAY.length; i++) {
+                    nodeRandomIndices.push(i);
                 }
-                arrayNodes.sort(function(a, b){return 0.5 - Math.random(); });
-                this.log.w(arrayNodes);
-
-                this.checkNodesAndOpenHomePage(account, 0, arrayNodes).then((result) => {
+                nodeRandomIndices.sort((a, b) => 0.5 - Math.random());
+                this.checkNodesAndOpenHomePage(account, 0, nodeRandomIndices).then((result) => {
                     this.spinnerService.hideLoader();
                     if(!result) {
-                        this.translateService.get("app.ConnectionFailure").subscribe(
+                        this.translateService.get("app.connectionFailure").subscribe(
                             msg => {
                                 this.msg = msg;
                             });
                     }
+                }).catch((e) => {
+                    this.spinnerService.hideLoader();
+                    
+                    this.translateService.get("app.connectionFailure").subscribe(
+                        msg => {
+                            this.msg = msg;
+                            this.log.e(msg, e);
+                        });
                 });
             }
         } catch (e) {
@@ -250,31 +256,28 @@ export class LoginPage {
     }
 
     private checkNodesAndOpenHomePage (account: Account, cont: number, arrayNodes: Array<number>): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            if(cont < AppConfig.NETWORK_CONFIG_ARRAY.length) {
-                this.contractManager.init(account, arrayNodes[cont])
-                    .then(() => {
-                        this.log.d("Account setted");
-                        this.log.d("Checking the node number: " + arrayNodes[cont]);
-                        return this.contractManager.getUserDetails(account.address);
-                    }).then((detailsUser: UserDetails) => {
-                        if (!detailsUser.email) {
-                            this.log.d("Email: ", detailsUser.email);
-                            this.navCtrl.push(SetProfilePage);
-                        } else {
-                            this.log.d("Email: ", detailsUser.email);
-                            this.navCtrl.push(TabsPage);
-                        }
-                        this.log.d("Total success connecting the node " + arrayNodes[cont]);
-                        resolve(true);
-                    }).catch((e) => {
-                        this.log.w("Failure to access the node " + arrayNodes[cont]);
-                        cont++;
-                        resolve(this.checkNodesAndOpenHomePage(account, cont, arrayNodes));
-                    });
-            } else {
-                resolve(false);
-            }
-        });
+        let prom = Promise.resolve(false);
+        if(cont >= 0 && cont < arrayNodes.length) {
+            let currentNodeIndex = arrayNodes[cont];
+            prom = this.contractManager.init(account, currentNodeIndex)
+            .then(() => {
+                this.log.d("Account set. Checking the node number: " + currentNodeIndex);
+                return this.contractManager.getUserDetails(account.address);
+            }).then((detailsUser: UserDetails) => {
+                this.log.d("Email: ", detailsUser.email);
+                if (!detailsUser.email) {
+                    this.navCtrl.push(SetProfilePage);
+                } else {
+                    this.navCtrl.push(TabsPage);
+                }
+                this.log.d("Total success connecting the node " + currentNodeIndex);
+                return true;
+            }).catch((e) => {
+                this.log.w("Failure to access the node " + currentNodeIndex);
+                cont++;
+                return(this.checkNodesAndOpenHomePage(account, cont, arrayNodes));
+            });
+        }
+        return prom;
     }
 }

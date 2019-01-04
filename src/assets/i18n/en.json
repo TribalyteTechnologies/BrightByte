@@ -12,7 +12,7 @@
         "login": "Login",
         "debug": "Debug",
         "remember": "Keep session?",
-        "ConnectionFailure": "There is no node available for connection."
+        "connectionFailure": "There is no node available for connection."
     },
     "addCommit": {
         "title": "Add commit",
