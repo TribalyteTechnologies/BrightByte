@@ -17,10 +17,12 @@ import { SpinnerService } from "../../core/spinner.service";
 export class CommitPage {
 
     public readonly ALL = "all";
-    public arrayCommits: UserCommit[] = [];
-    public filterArrayCommits: UserCommit[] = [];
+    public readonly INCOMPLETED = 0;
+    public readonly COMPLETED = 1;
+    public arrayCommits = new Array<UserCommit>();
+    public filterArrayCommits = new Array<UserCommit>();
     public currentCommit: UserCommit;
-    public commitComments: CommitComment[] = [];
+    public commitComments = new Array<CommitComment>();
     public projects = new Array<string>();
     public projectSelected = this.ALL;
     public openedComments = false;
@@ -47,18 +49,19 @@ export class CommitPage {
     }
 
     public refresh() {
-
+        this.log.d("Refreshing page");
         this.spinnerService.showLoader();
         let commits: UserCommit[];
         this.contractManagerService.getCommits()
             .then((commitConcat: UserCommit[][]) => {
+                this.log.d("User Commits recieved");
                 commits = commitConcat[0].concat(commitConcat[1]);
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
                 return Promise.all(reviewers);
             }).then((reviewers) => {
-
+                this.log.d("Reviewers from commits recieved");
                 commits.forEach((com, idx) => {
                     com.reviewers = reviewers[idx];
                 });
@@ -68,6 +71,14 @@ export class CommitPage {
                 this.arrayCommits = commits;
                 this.applyFilters(this.arrayCommits);
                 this.spinnerService.hideLoader();
+                return;
+            }).then(() => {
+                let url = new URLSearchParams(document.location.search);
+                if(url.has("commitId")){
+                    let decodedURL = decodeURIComponent(url.get("commitId"));
+                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedURL);
+                    this.shouldOpen(filteredCommit[0]);
+                }
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
                     msg => {
@@ -103,8 +114,9 @@ export class CommitPage {
                     msg => {
                         this.msg = msg;
                         this.log.e(msg, e);
-                    });
-                
+                    }
+                );
+                this.spinnerService.hideLoader();
             });
     }
 
@@ -121,10 +133,10 @@ export class CommitPage {
     public setFilter(name: string){
         switch (name) {
             case "incompleted":
-                this.filterValue === 0 ? this.filterValue = 2 : this.filterValue = 0;
+                this.filterValue === this.INCOMPLETED ? this.filterValue = 2 : this.filterValue = 0;
                 break;
             case "completed":
-                this.filterValue === 1 ? this.filterValue = 2 : this.filterValue = 1;
+                this.filterValue === this.COMPLETED ? this.filterValue = 2 : this.filterValue = 1;
                 break;
             case "pending":
                 this.filterIsPending = !this.filterIsPending;
@@ -151,6 +163,7 @@ export class CommitPage {
                 this.log.d("Changing flag of " + commit.url);
                 return this.contractManagerService.reviewChangesCommitFlag(commit.url);
             }).then((response) => {
+                this.log.d("Recieved response: " + response);
                 let idx = this.filterArrayCommits.indexOf(commit);
                 commit.isReadNeeded = false;
                 this.filterArrayCommits[idx] = commit;
@@ -164,7 +177,7 @@ export class CommitPage {
     }
 
     private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{
-        if (!(this.projectSelected === this.ALL)){
+        if (this.projectSelected !== this.ALL){
             return usercommits.filter(commit => {
                 return (commit.project === this.projectSelected);
             });

@@ -11,6 +11,7 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { LoginPage } from "../login/login";
 import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
+import { StorageService } from "../../core/storage.service";
 
 
 const LASTPAGE: string = "lastPage";
@@ -29,6 +30,7 @@ export class TabsPage {
     public commits: MenuItem = new MenuItem("git-network", CommitPage);
     public reviews: MenuItem = new MenuItem("eye", ReviewPage);
     public ranking: MenuItem = new MenuItem("stats", RankingPage); 
+    public hometwo: MenuItem = new MenuItem("home", "home");
     public menuArray = new Array<MenuItem>();
     public name: string = "";
     private log: ILogger;
@@ -37,18 +39,24 @@ export class TabsPage {
                 private userLoggerService: UserLoggerService,
                 private navCtrl: NavController, 
                 private loginService: LoginService, 
-                private contractManagerService: ContractManagerService) {
+                private contractManagerService: ContractManagerService,
+                private storageSrv: StorageService) {
         this.log = loggerSrv.get("TabsPage");
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
-        
-        let item = localStorage.getItem("lastPage");
-        let lastPage = Number(item);
+
+        let url = new URLSearchParams(document.location.search);
+        let item = this.storageSrv.get(LASTPAGE);
+        let lastPageNumber = Number(item);
         if (item === null){
-            this.tabContent = this.menuArray[3].url;
-            this.goTo(this.menuArray[3].url);
+            this.tabContent = this.ranking.url;
+            this.goTo(this.ranking.url);
+        } else if (url.has("reviewId")) {
+            this.goTo(ReviewPage);
+        } else if (url.has("commitId")) {
+            this.goTo(CommitPage);
         } else {
-            this.tabContent = this.menuArray[lastPage].url;
-            this.goTo(this.menuArray[lastPage].url);
+            this.tabContent = this.menuArray[lastPageNumber].url;
+            this.goTo(this.menuArray[lastPageNumber].url);
         }
         this.setUserInfo();
     }
@@ -56,7 +64,7 @@ export class TabsPage {
     public goTo(page: any){
         let idx = this.menuArray.map(x => x.url).indexOf(page);
         this.currentPage = page;
-        localStorage.setItem(LASTPAGE, String(idx));
+        this.storageSrv.set(LASTPAGE, String(idx));
     }
 
     public logout(){

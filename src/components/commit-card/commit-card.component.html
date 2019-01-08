@@ -6,6 +6,9 @@
         <ion-col align-self-center class="col-middle">
             <ion-row class="text-date">
                 <div>{{ creationDateMs | dateFormat }}</div>
+                <div (click)="openUrl(urlLink, true)">
+                    <ion-icon name="browsers"></ion-icon>
+                </div>
             </ion-row>
             <ion-row align-items-center class="text-title">
                 <div>{{ title | slice:0:40 }}</div>

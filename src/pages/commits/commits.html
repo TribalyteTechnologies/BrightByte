@@ -26,12 +26,12 @@
             </ion-item>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterValue === 0 ? 'button-red-active' : 'button-red-inactive'" (click)="setFilter('incompleted')">
+            <button [ngClass]="filterValue === incompleted ? 'button-red-active' : 'button-red-inactive'" (click)="setFilter('incompleted')">
                 {{ "commits.pending" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterValue === 1 ? 'button-green-active' : 'button-green-inactive'" (click)="setFilter('completed')">
+            <button [ngClass]="filterValue === completed ? 'button-green-active' : 'button-green-inactive'" (click)="setFilter('completed')">
                 {{ "commits.reviewed" | translate }}
             </button>
         </ion-col>

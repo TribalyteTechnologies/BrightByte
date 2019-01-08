@@ -20,20 +20,22 @@ export class CommitCard {
     public isPending = false;
     public creationDateMs = 0;
     public stateFinished = false;
-    public reviewers: UserDetails[][] = [];
-    public pendingReviewers: string[] = [];
+    public reviewers = new Array<Array<UserDetails>>();
+    public pendingReviewers = new Array<string>();
 
 
     private _commit: UserCommit;
 
     @Input()
-    set commit(val: UserCommit){
+    public set commit(val: UserCommit){
         this._commit = val;
         let split = val.url.split("/");
         this.urlHash = split[6];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
-        this.pendingReviewers = val.reviewers[0].map(userval => userval.name);
+        this.pendingReviewers = val.reviewers[0].map((userval) => {
+            return (userval.name === "") ? "NotMigrated" : userval.name;
+        });
         this.reviewers = val.reviewers;
         this.title = val.title;
         this.project = val.project;
@@ -43,15 +45,21 @@ export class CommitCard {
         this.urlLink = val.url;
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
     }
-    get commit(){
+    public get commit(){
         return this._commit;
     }
     public ngDoCheck() {
         this.commit = this._commit;
     }
   
-    public openUrl(url: string){
-        window.open(url, "_blank");
+    public openUrl(url: string, itsParam: boolean){
+        if(itsParam){
+            let encodedUrl = encodeURIComponent(url);
+            console.log(encodedUrl);
+            window.open("?commitId=" + encodedUrl, "_blank");
+        } else {
+            window.open(url, "_blank");
+        }
     }
 
 }

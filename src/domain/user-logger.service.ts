@@ -1,29 +1,33 @@
 import { Injectable } from "@angular/core";
+import { ILogger, LoggerService } from "../core/logger.service";
+import { StorageService } from "../core/storage.service";
 
-const USERNAME: string = "user";
-const PASSWORD: string = "password";
 
 @Injectable()
 export class UserLoggerService {
 
-    constructor(){ 
-        console.log("User Logger created");
+    private readonly STORAGE_KEY_USERNAME = "user";
+    private readonly STORAGE_KEY_PASSWORD = "password";
+    private log: ILogger;
+
+    constructor(public loggerSrv: LoggerService, private storageSrv: StorageService){ 
+        this.log = loggerSrv.get("UserLoggerService");
     }
 
     public setAccount(user: string, password: string){
-        localStorage.setItem(USERNAME, JSON.stringify(user));
-        localStorage.setItem(PASSWORD, password);
+        this.storageSrv.set(this.STORAGE_KEY_USERNAME, JSON.stringify(user));
+        this.storageSrv.set(this.STORAGE_KEY_PASSWORD, password);
     }
 
     public retrieveAccount(): any {
-        let user = JSON.parse(localStorage.getItem(USERNAME));
-        let pass = localStorage.getItem(PASSWORD);
+        let user = JSON.parse(this.storageSrv.get(this.STORAGE_KEY_USERNAME));
+        let pass = this.storageSrv.get(this.STORAGE_KEY_PASSWORD);
         return {user: user, password: pass};
     }
 
     public logout(){
-        localStorage.removeItem(USERNAME);
-        localStorage.removeItem(PASSWORD);
+        this.storageSrv.remove(this.STORAGE_KEY_USERNAME);
+        this.storageSrv.remove(this.STORAGE_KEY_PASSWORD);
     }
  
 }

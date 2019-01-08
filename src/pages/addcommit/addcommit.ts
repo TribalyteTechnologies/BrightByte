@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
+import { StorageService } from "../../core/storage.service";
 
 const BRIGHTUSERSEMAILS: string = "usersEmails";
 
@@ -39,14 +40,16 @@ export class AddCommitPopover {
         public http: HttpClient,
         public fb: FormBuilder,
         public translateService: TranslateService,
-        loggerSrv: LoggerService,
+        public loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
+        private storageSrv: StorageService,
         public loginService: LoginService
     ) {
         this.log = loggerSrv.get("AddCommitPage");
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
-            Validators.pattern(/^(https)(:)\/\/(bitbucket)\.(org)\/[a-z0-9]+\/[a-z0-9]+\/(commits)\/[a-z0-9]+$/)]],
+            Validators.pattern(
+                /^(https)(:)\/\/(bitbucket|github)\.(org|com)\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\/(commits|commit)\/[a-zA-Z0-9]+$/)]],
             title: ["", [Validators.required]]
         });
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
@@ -55,7 +58,7 @@ export class AddCommitPopover {
             this.log.d("All user reputations: ", allReputations);
             this.allEmails = allReputations.map(userRep => userRep.email);
             this.setUpList(this.searchInput);
-            let mailString = localStorage.getItem(BRIGHTUSERSEMAILS);
+            let mailString = this.storageSrv.get(BRIGHTUSERSEMAILS);
             if (mailString){
                 let mailArray = mailString.split(";");
                 mailArray.forEach(mail => {
@@ -84,7 +87,7 @@ export class AddCommitPopover {
                 }
             }
             let mailArray = this.userAdded.join(";");
-            localStorage.setItem(BRIGHTUSERSEMAILS, mailArray);
+            this.storageSrv.set(BRIGHTUSERSEMAILS, mailArray);
             if (this.userAdded.every(userEmail => !userEmail)) {
                 errMsgId = "addCommit.emptyInput";
             }

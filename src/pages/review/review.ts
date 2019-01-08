@@ -16,7 +16,8 @@ import { SpinnerService } from "../../core/spinner.service";
 export class ReviewPage {
     
     public readonly ALL = "all";
-
+    public readonly INCOMPLETED = 0;
+    public readonly COMPLETED = 1;
     public displayCommitsToReview: UserCommit[];
     public arrayCommits: UserCommit[];
     public allCommitsArray: UserCommit[];
@@ -39,7 +40,7 @@ export class ReviewPage {
     public userCommitComment: CommitComment[];
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
-    public filterArrayCommits: UserCommit[] = [];
+    public filterArrayCommits = new Array<UserCommit>();
 
     
     private log: ILogger;
@@ -53,19 +54,17 @@ export class ReviewPage {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
-        
     }
 
     public ionViewWillEnter(): void {
+        this.log.d("Refreshing page");
         this.refresh();
     }
 
     public refresh(){
-
         this.spinnerService.showLoader();
         let commits: UserCommit[];
         let userAdress = this.loginService.getAccount();
-
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 commits = commitConcat[0].concat(commitConcat[1]);
@@ -82,23 +81,30 @@ export class ReviewPage {
                 });
                 let commitsPromises = commits.map((com) => {
                     return this.contractManagerService.getFeedback(com.url)
-                        .then((rsp) => {
-                            com.isReadNeeded = rsp;
-                            return com;
-                        });
+                    .then((rsp) => {
+                        com.isReadNeeded = rsp;
+                        return com;
+                    });
                 });
                 return Promise.all(commitsPromises);
             })
             .then((rsp) => {
                 commits = rsp;
+                this.log.d("Response recieved: " + rsp);
                 this.displayCommitsToReview = commits;
                 let projects = commits.map( commit => commit.project );
                 this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
                 this.applyFilters(this.displayCommitsToReview);
                 this.spinnerService.hideLoader();
                 return this.contractManagerService.getUserDetails(userAdress.address);
-            }).then(rsp => {
-                this.name = rsp.name;
+            }).then((ud) => {
+                this.name = ud.name;
+                let url = new URLSearchParams(document.location.search);
+                if(url.has("reviewId")){
+                    let decodedURL = decodeURIComponent(url.get("reviewId"));
+                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedURL);
+                    this.shouldOpen(filteredCommit[0]);
+                }
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
                     msg => {
@@ -106,15 +112,11 @@ export class ReviewPage {
                         this.log.e(msg, e);
                     });
                 this.spinnerService.hideLoader();
-            });
-            
+            });       
     }
 
-    public shouldOpen(commit: UserCommit) {
-        
-        
+    public shouldOpen(commit: UserCommit) {  
         this.spinnerService.showLoader();
-
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.openedComments = true;
@@ -161,7 +163,7 @@ export class ReviewPage {
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
         .then((response) => {
-            console.log(response);
+            this.log.d("Recieved response " + response);
             let userAdress = this.loginService.getAccount();
             this.setReputation(-1);
             this.needReview = false;
@@ -178,12 +180,10 @@ export class ReviewPage {
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();
-            console.log(error);
+            this.log.e("Catched error " + error);
         });
         
     }
-
-
         
     public applyFilters(usercommits: UserCommit[]) {
         let projectFilter = this.setProjectFilter(usercommits);
@@ -197,10 +197,10 @@ export class ReviewPage {
     public setFilter(name: string){
         switch (name) {
             case "incompleted":
-                this.filterValue === 0 ? this.filterValue = 2 : this.filterValue = 0;
+                this.filterValue === this.INCOMPLETED ? this.filterValue = 2 : this.filterValue = 0;
                 break;
             case "completed":
-                this.filterValue === 1 ? this.filterValue = 2 : this.filterValue = 1;
+                this.filterValue === this.COMPLETED ? this.filterValue = 2 : this.filterValue = 1;
                 break;
             case "pending":
                 this.filterIsPending = !this.filterIsPending;

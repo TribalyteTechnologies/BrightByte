@@ -433,11 +433,11 @@ export class ContractManagerService {
         this.oldInitProm = this.http.get("assets/build/BrightMigrationOld.json").toPromise()
             .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContract = TruffleContract(jsonContractData);
-                this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG_ARRAY[8].netId].address;
+                this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG_ARRAY[0].netId].address;
                 let contract = new this.web3.eth.Contract(jsonContractData.abi, this.oldContractAddress, {
                     from: this.currentUser.address,
-                    gas: AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit,
-                    gasPrice: AppConfig.NETWORK_CONFIG_ARRAY[8].gasPrice,
+                    gas: AppConfig.NETWORK_CONFIG_ARRAY[0].gasLimit,
+                    gasPrice: AppConfig.NETWORK_CONFIG_ARRAY[0].gasPrice,
                     data: truffleContract.deployedBytecode
                 });
                 this.log.d("TruffleContract function: ", contract);
@@ -855,8 +855,8 @@ export class ContractManagerService {
                 let rawtx = {
                     nonce: nonce,
                     // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[8].gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit),
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[0].gasPrice),
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[0].gasLimit),
                     to: contractAddress,
                     data: bytecodeData
                 };
@@ -874,7 +874,7 @@ export class ContractManagerService {
                 return this.web3.eth.sendSignedTransaction(raw);
             }).then(transactionHash => {
                 this.log.d("Hash transaction", transactionHash);
-                if(transactionHash.gasUsed >= AppConfig.NETWORK_CONFIG_ARRAY[8].gasLimit){
+                if(transactionHash.gasUsed >= AppConfig.NETWORK_CONFIG_ARRAY[0].gasLimit){
                     this.log.e("Gas");
                     this.outOfGas ++;
                 }

@@ -32,9 +32,10 @@ export class LoginPage {
     public isKeepCredentialsOn = false;
     private log: ILogger;
 
+
     constructor(
-        public loadingCtrl: LoadingController,
-        public alertCtrl: AlertController,
+        private loadingCtrl: LoadingController,
+        private alertCtrl: AlertController,
         private navCtrl: NavController,
         private translateService: TranslateService,
         private contractManager: ContractManagerService,

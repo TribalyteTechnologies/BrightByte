@@ -11,24 +11,14 @@ import { AppConfig } from "../../app.config";
 import { SpinnerService } from "../../core/spinner.service";
 
 class UserRankDetails {
-    public name: string;
-    public rank: string;
-    public level: number;
-    public email: string;
-    public score: number;
-    public reviews: number;
-    public commits: number;
-    public agreed: number;
-    constructor(){
-        this.name = "";
-        this.rank = "";
-        this.level = 0;
-        this.email = "";
-        this.score = 0;
-        this.reviews = 0;
-        this.commits = 0;
-        this.agreed = 0;
-    }
+    public name = "";
+    public rank = "";
+    public level = 0;
+    public email = "";
+    public score = 0;
+    public reviews = 0;
+    public commits = 0;
+    public agreed = 0;
 }  
 
 @Component({
@@ -42,11 +32,11 @@ export class RankingPage {
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
     public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
-    public userRankDetails: UserRankDetails;
+    public userRankDetails = new UserRankDetails();
     public userRank = "No rank";
     public userLevel = 0;
     public userStars = 0;
-    public userTrophyList: string[] = [];
+    public userTrophyList = new Array<string>();
     private log: ILogger;
     private account: Account;
 
@@ -62,7 +52,6 @@ export class RankingPage {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
         this.log.d("Imported account: ", this.account);
-        this.userRankDetails = new UserRankDetails();
     }
     public ionViewWillEnter(){
         this.refresh();

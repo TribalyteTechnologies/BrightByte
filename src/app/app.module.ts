@@ -6,8 +6,8 @@ import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 
 // Pages
-import { CommitPage } from "../pages/commits/commits";
 import { HomePage } from "../pages/home/home";
+import { CommitPage } from "../pages/commits/commits";
 import { ReviewPage } from "../pages/review/review";
 import { TabsPage } from "../pages/tabs/tabs";
 import { LoginPage } from "../pages/login/login";
@@ -43,6 +43,7 @@ import { CommentComponent } from "../components/commit-comment/commit-comment.co
 import { ReviewCard } from "../components/review-card/review-card.component";
 import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
+import { StorageService } from "../core/storage.service";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -109,6 +110,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginService,
         HttpClientModule,
         SpinnerService,
+        StorageService,
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,

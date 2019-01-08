@@ -29,7 +29,7 @@ export class RankingCard {
         let rankIdx = val.reputation;
         this.reputation = rankIdx;
         this.userRank = this.rankingTitle[Math.round(rankIdx)];
-        this.name = val.name;
+        this.name = (val.name === "") ? "NotMigrated" : val.name;
         this.level = Math.round(val.reputation * 3);
         this.email = val.email;
         this.numReviews = val.finishedReviews;
@@ -39,8 +39,8 @@ export class RankingCard {
         this.userHash = val.userHash;
     }
 
-    constructor(private loginService: LoginService){
-        let account = this.loginService.getAccount();
+    constructor(loginService: LoginService){
+        let account = loginService.getAccount();
         this.accountHash = account.address;
     }
 

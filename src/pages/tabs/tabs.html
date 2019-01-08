@@ -9,7 +9,7 @@
             </ion-item>
             <div class="menu-buttons-col">
                 <button *ngFor="let page of menuArray" (click)="goTo(page.url)" [ngClass]="page.url === currentPage ? 'tab-button selected' : 'tab-button'" >
-                    <ion-icon name="{{ page.icon }}"></ion-icon>
+                    <ion-icon [name]="page.icon"></ion-icon>
                 </button>
             </div>
             

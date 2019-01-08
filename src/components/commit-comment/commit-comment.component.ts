@@ -9,20 +9,25 @@ import { CommitComment } from "../../models/commit-comment.model";
 
 export class CommentComponent {
 
-    @Input()
-    public review: CommitComment;
-
     @Output() 
     public thumbsUp = new EventEmitter();
 
     @Output()
     public thumbsDown = new EventEmitter();
 
-    public setThumbsUp(){
-        this.thumbsUp.next();
-    }
-    public setThumbsDown(){
-        this.thumbsDown.next();
+    private _review: CommitComment;
+
+    @Input()
+    set review(val: CommitComment){
+        val.name = (val.name === "") ? "NotMigrated" : val.name;
+        this._review = val;
     }
 
+    get review(){
+        return this._review;
+    }
+
+    public ngDoCheck(): void {
+        this.review = this._review; 
+    }
 }

@@ -13,6 +13,7 @@ export class ReviewCommentComponent {
 
     @Input()
     set review(val: CommitComment){
+        val.name = (val.name === "") ? "NotMigrated" : val.name;
         this._review = val;
     }
 
