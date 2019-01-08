@@ -9,6 +9,8 @@ import { CommitComment } from "../../models/commit-comment.model";
 
 export class CommentComponent {
 
+    public readonly NOTMIGRATED = "NotMigrated";
+
     @Output() 
     public thumbsUp = new EventEmitter();
 
@@ -18,12 +20,12 @@ export class CommentComponent {
     private _review: CommitComment;
 
     @Input()
-    set review(val: CommitComment){
-        val.name = (val.name === "") ? "NotMigrated" : val.name;
+    public set review(val: CommitComment){
+        val.name = (val.name === "") ? this.NOTMIGRATED : val.name;
         this._review = val;
     }
 
-    get review(){
+    public get review(){
         return this._review;
     }
 

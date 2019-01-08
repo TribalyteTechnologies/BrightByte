@@ -12,12 +12,12 @@ export class ReviewCommentComponent {
     private _review: CommitComment;
 
     @Input()
-    set review(val: CommitComment){
+    public set review(val: CommitComment){
         val.name = (val.name === "") ? "NotMigrated" : val.name;
         this._review = val;
     }
 
-    get review(){
+    public get review(){
         return this._review;
     }
 

@@ -10,6 +10,7 @@ import { UserDetails } from "../../models/user-details.model";
  })
 export class ReviewCard {
 
+    public readonly NOTMIGRATED = "NotMigrated";
     public urlHash: string = "0000";
     public urlLink = "http";
     public numberReviews = 0;
@@ -34,9 +35,7 @@ export class ReviewCard {
         this.urlHash = split[6];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
-        this.pendingReviewers = val.reviewers[0].map((userval) => {
-            return (userval.name === "") ? "NotMigrated" : userval.name;
-        });
+        this.pendingReviewers = val.reviewers[0].map(userval =>  (userval.name === "") ? this.NOTMIGRATED : userval.name);
         this.reviewers = val.reviewers;
         this.title = val.title;
         this.project = val.project;
@@ -52,14 +51,13 @@ export class ReviewCard {
     public ngDoCheck() {
         this.commit = this._commit;
     }
-    public openUrl(url: string, itsParam: boolean){
-        if(itsParam){
-            let encodedUrl = encodeURIComponent(url);
-            console.log(encodedUrl);
-            window.open("?reviewId=" + encodedUrl, "_blank");
-        } else {
-            window.open(url, "_blank");
+    public openUrl(url: string, isReviewParam: boolean){
+        let urlToOpen = url;
+        if(isReviewParam){
+            urlToOpen = "?reviewId=" + encodeURIComponent(url);
         }
+        window.open(urlToOpen, "_blank");
+        
     }
 
 }
