@@ -26,12 +26,12 @@
                 </ion-row>
                 <ion-row>
                     <div class="form-input">
-                        <ion-input type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)"></ion-input>
+                        <ion-input type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass"></ion-input>
                     </div>
                 </ion-row>
                 <ion-row>
                     <div>
-                        <input type="checkbox" [(ngModel)]="isKeepCredentialsOn"> {{ "app.remember" | translate }}
+                        <input *ngIf="migrationDone" type="checkbox" [(ngModel)]="isKeepCredentialsOn"> {{ "app.remember" | translate }}
                     </div>
                 
                 </ion-row>

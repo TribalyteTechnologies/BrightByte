@@ -434,7 +434,8 @@ export class ContractManagerService {
             .then((jsonContractData: ItrbSmartContractJson) => {
                 let truffleContract = TruffleContract(jsonContractData);
                 this.oldContractAddress = truffleContract.networks[AppConfig.NETWORK_CONFIG_ARRAY[0].netId].address;
-                let contract = new this.web3.eth.Contract(jsonContractData.abi, this.oldContractAddress, {
+                let contract = new this.web3.eth.Contract(
+                    jsonContractData.abi, this.oldContractAddress, {
                     from: this.currentUser.address,
                     gas: AppConfig.NETWORK_CONFIG_ARRAY[0].gasLimit,
                     gasPrice: AppConfig.NETWORK_CONFIG_ARRAY[0].gasPrice,

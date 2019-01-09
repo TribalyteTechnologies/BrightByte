@@ -33,6 +33,14 @@ export class CommentComponent {
     public ngDoCheck(): void {
         this.review = this._review; 
     }
+
+    public setThumbsUp(){
+        this.thumbsUp.next();
+    }
+
+    public setThumbsDown(){
+        this.thumbsDown.next();
+    }
     
     constructor(public translateService: TranslateService){
         translateService.get("app.anonymous").subscribe(
