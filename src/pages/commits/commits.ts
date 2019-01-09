@@ -8,6 +8,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { UserCommit } from "../../models/user-commit.model";
 import { CommitComment } from "../../models/commit-comment.model";
 import { SpinnerService } from "../../core/spinner.service";
+import { AppConfig } from "../../app.config";
 
 @Component({
     selector: "page-commits",
@@ -29,6 +30,7 @@ export class CommitPage {
     public filterValue = 2;
     public filterIsPending = false;
     public msg: string;
+    public commitStyles = [];
     private log: ILogger;
 
 
@@ -54,8 +56,11 @@ export class CommitPage {
         let commits: UserCommit[];
         this.contractManagerService.getCommits()
             .then((commitConcat: UserCommit[][]) => {
-                this.log.d("User Commits recieved");
+                this.log.d("User Commits received");
                 commits = commitConcat[0].concat(commitConcat[1]);
+                commits.forEach((c, i) => {
+                    this.commitStyles[i] = "";
+                });
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
@@ -71,12 +76,11 @@ export class CommitPage {
                 this.arrayCommits = commits;
                 this.applyFilters(this.arrayCommits);
                 this.spinnerService.hideLoader();
-                return;
             }).then(() => {
                 let url = new URLSearchParams(document.location.search);
-                if(url.has("commitId")){
-                    let decodedURL = decodeURIComponent(url.get("commitId"));
-                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedURL);
+                if(url.has(AppConfig.UrlKey.COMMITID)){
+                    let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.COMMITID));
+                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
             }).catch((e) => {
@@ -153,17 +157,20 @@ export class CommitPage {
 
         this.spinnerService.showLoader();
         this.log.d("Opening commit: " + commit.url);
-
+        this.commitStyles.forEach((c, i) => {
+            this.commitStyles[i] = "card-list-item";
+        });
+        this.commitStyles[this.filterArrayCommits.indexOf(commit)] = "item-selected";
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
-                this.log.d("We recieved " + comments.length + " comments");
+                this.log.d("We received " + comments.length + " comments");
                 this.commitComments = comments[1];
                 this.currentCommit = commit;
                 this.openedComments = comments[1].length > 0;
                 this.log.d("Changing flag of " + commit.url);
                 return this.contractManagerService.reviewChangesCommitFlag(commit.url);
             }).then((response) => {
-                this.log.d("Recieved response: " + response);
+                this.log.d("Received response: " + response);
                 let idx = this.filterArrayCommits.indexOf(commit);
                 commit.isReadNeeded = false;
                 this.filterArrayCommits[idx] = commit;

@@ -11,8 +11,6 @@ import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
 import { StorageService } from "../../core/storage.service";
 
-const BRIGHTUSERSEMAILS: string = "usersEmails";
-
 @Component({
     selector: "popover-addcommit",
     templateUrl: "addcommit.html"
@@ -43,7 +41,7 @@ export class AddCommitPopover {
         public loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
         private storageSrv: StorageService,
-        public loginService: LoginService
+        private loginService: LoginService
     ) {
         this.log = loggerSrv.get("AddCommitPage");
         this.myForm = this.fb.group({
@@ -58,10 +56,11 @@ export class AddCommitPopover {
             this.log.d("All user reputations: ", allReputations);
             this.allEmails = allReputations.map(userRep => userRep.email);
             this.setUpList(this.searchInput);
-            let mailString = this.storageSrv.get(BRIGHTUSERSEMAILS);
+            let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
             if (mailString){
                 let mailArray = mailString.split(";");
                 mailArray.forEach(mail => {
+                    this.log.d("Setting email from local Storage: " + mail);
                     this.setEmailFromList(mail);
                 });
             }
@@ -87,7 +86,7 @@ export class AddCommitPopover {
                 }
             }
             let mailArray = this.userAdded.join(";");
-            this.storageSrv.set(BRIGHTUSERSEMAILS, mailArray);
+            this.storageSrv.set(AppConfig.StorageKey.USERMAILS, mailArray);
             if (this.userAdded.every(userEmail => !userEmail)) {
                 errMsgId = "addCommit.emptyInput";
             }

@@ -1,3 +1,4 @@
+import { AppConfig } from "./../app.config";
 import { Injectable } from "@angular/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { StorageService } from "../core/storage.service";
@@ -6,11 +7,12 @@ import { StorageService } from "../core/storage.service";
 @Injectable()
 export class UserLoggerService {
 
-    private readonly STORAGE_KEY_USERNAME = "user";
-    private readonly STORAGE_KEY_PASSWORD = "password";
+    private readonly STORAGE_KEY_USERNAME = AppConfig.StorageKey.USERNAME;
+    private readonly STORAGE_KEY_PASSWORD = AppConfig.StorageKey.PASSWORD;
+    private readonly STORAGE_KEY_MIGRATION = AppConfig.StorageKey.MIGRATION;
     private log: ILogger;
 
-    constructor(public loggerSrv: LoggerService, private storageSrv: StorageService){ 
+    constructor(loggerSrv: LoggerService, private storageSrv: StorageService){ 
         this.log = loggerSrv.get("UserLoggerService");
     }
 
@@ -28,6 +30,14 @@ export class UserLoggerService {
     public logout(){
         this.storageSrv.remove(this.STORAGE_KEY_USERNAME);
         this.storageSrv.remove(this.STORAGE_KEY_PASSWORD);
+    }
+
+    public getMigration(): boolean{
+        let migration = this.storageSrv.get(this.STORAGE_KEY_MIGRATION);
+        return Boolean(migration);
+    }
+    public setMigration()  {
+        this.storageSrv.set(this.STORAGE_KEY_MIGRATION, true);
     }
  
 }

@@ -7,6 +7,7 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { LoginService } from "../../core/login.service";
 import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
+import { AppConfig } from "../../app.config";
 
 @Component({
     selector: "page-review",
@@ -25,6 +26,7 @@ export class ReviewPage {
     public projects = new Array<string>();
     public projectSelected = this.ALL;
     public isFeedback = {} as {[key: string]: boolean};
+    public commitStyles = [];
 
     public filterValue = 2;
     public filterIsPending = false;
@@ -36,7 +38,6 @@ export class ReviewPage {
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public name = "";
-
     public userCommitComment: CommitComment[];
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
@@ -57,17 +58,20 @@ export class ReviewPage {
     }
 
     public ionViewWillEnter(): void {
-        this.log.d("Refreshing page");
         this.refresh();
     }
 
     public refresh(){
+        this.log.d("Refreshing page");
         this.spinnerService.showLoader();
         let commits: UserCommit[];
         let userAdress = this.loginService.getAccount();
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 commits = commitConcat[0].concat(commitConcat[1]);
+                commits.forEach((c, i) => {
+                    this.commitStyles[i] = "";
+                });
                 commits = commits.filter(commit => {
                     return commit.url !== "";
                 });
@@ -90,7 +94,7 @@ export class ReviewPage {
             })
             .then((rsp) => {
                 commits = rsp;
-                this.log.d("Response recieved: " + rsp);
+                this.log.d("Response received: " + rsp);
                 this.displayCommitsToReview = commits;
                 let projects = commits.map( commit => commit.project );
                 this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
@@ -100,9 +104,9 @@ export class ReviewPage {
             }).then((ud) => {
                 this.name = ud.name;
                 let url = new URLSearchParams(document.location.search);
-                if(url.has("reviewId")){
-                    let decodedURL = decodeURIComponent(url.get("reviewId"));
-                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedURL);
+                if(url.has(AppConfig.UrlKey.REVIEWID)){
+                    let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
+                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
             }).catch((e) => {
@@ -117,6 +121,11 @@ export class ReviewPage {
 
     public shouldOpen(commit: UserCommit) {  
         this.spinnerService.showLoader();
+        this.commitStyles.forEach((c, i) => {
+            this.commitStyles[i] = "card-list-item";
+        });
+        this.commitStyles[this.filterArrayCommits.indexOf(commit)] = "item-selected";
+
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.openedComments = true;
@@ -137,7 +146,7 @@ export class ReviewPage {
                     this.needReview = true;
                 }
                 this.currentCommit = commit;
-                this.openedComments = true; 
+                this.openedComments = true;
                 return this.contractManagerService.setFeedback(commit.url);
             }).then((val) => {
                 this.log.d("Feedback response: " + val);
@@ -163,7 +172,7 @@ export class ReviewPage {
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
         .then((response) => {
-            this.log.d("Recieved response " + response);
+            this.log.d("Received response " + response);
             let userAdress = this.loginService.getAccount();
             this.setReputation(-1);
             this.needReview = false;

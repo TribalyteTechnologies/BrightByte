@@ -12,9 +12,7 @@ import { LoginPage } from "../login/login";
 import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { StorageService } from "../../core/storage.service";
-
-
-const LASTPAGE: string = "lastPage";
+import { AppConfig } from "../../app.config";
 
 @Component({
     selector: "page-tabs",
@@ -45,7 +43,7 @@ export class TabsPage {
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
 
         let url = new URLSearchParams(document.location.search);
-        let item = this.storageSrv.get(LASTPAGE);
+        let item = this.storageSrv.get(AppConfig.StorageKey.LASTPAGE );
         let lastPageNumber = Number(item);
         if (item === null){
             this.tabContent = this.ranking.url;
@@ -64,7 +62,7 @@ export class TabsPage {
     public goTo(page: any){
         let idx = this.menuArray.map(x => x.url).indexOf(page);
         this.currentPage = page;
-        this.storageSrv.set(LASTPAGE, String(idx));
+        this.storageSrv.set(AppConfig.StorageKey.LASTPAGE , String(idx));
     }
 
     public logout(){

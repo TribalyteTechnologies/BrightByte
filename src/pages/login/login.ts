@@ -51,23 +51,19 @@ export class LoginPage {
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
         );
-        if (localStorage.length > 0) {
-            this.migrationDone = Boolean(localStorage.getItem("BrightMigrationDone1"));
-        } else {
-            this.migrationDone = false;
-        }
+
+        this.migrationDone = this.userLoggerService.getMigration();
     }
 
     public ionViewWillEnter(){
-        if (localStorage.length > 0){
-            let retrievedUser = this.userLoggerService.retrieveAccount();
-            this.text = retrievedUser.user;
-            let password = retrievedUser.password;
-            if (password){
-                this.log.d("User retrieved from localStorage: " + this.text);
-                this.login(password);
-            }
+        let retrievedUser = this.userLoggerService.retrieveAccount();
+        this.text = retrievedUser.user;
+        let password = retrievedUser.password;
+        if (password){
+            this.log.d("User retrieved from localStorage: " + this.text);
+            this.login(password);
         }
+    
     }
 
     public openFile = (event: Event) => {
@@ -184,7 +180,7 @@ export class LoginPage {
                         return this.contractManager.getUserMigration();
                     }).then((result) => {
                         this.migrationDone = true;
-                        localStorage.setItem("BrightMigrationDone1", "true");
+                        this.userLoggerService.setMigration();
                         loader.dismiss();
                         alert.present();
                     })

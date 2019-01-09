@@ -11,6 +11,7 @@ page-tabs {
         .avatar-container {
             display: inline-block;
             border-radius: 50%;
+            background-color: color($colors, backgroundLight);
         }
         .avatar-icon {
             background-color: transparent;

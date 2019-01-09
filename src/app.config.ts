@@ -24,11 +24,26 @@ export class AppConfig {
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly N_USER_RANKING_LIST = 5;
 
+    public static readonly StorageKey = {
+        USERNAME: "brightUser",
+        PASSWORD: "brightPassword",
+        USERMAILS: "brightEmails",
+        LASTPAGE: "brightPage",
+        MIGRATION: "brightMigration"
+    };
+
+    public static readonly UrlKey = {
+        REVIEWID: "reviewId",
+        COMMITID: "commitId"
+    };
+
     public static changeNetworkConfig (ind: number) {
         if(AppConfig.IS_CUSTOM_NET) {
             AppConfig.NETWORK_CONFIG = NETWORK_CONFIG_CUSTOM.configList[ind];
         }
     }
+
+    
 }
 
 

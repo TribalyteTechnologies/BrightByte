@@ -26,12 +26,12 @@
             </ion-item>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterValue === incompleted ? 'button-red-active' : 'button-red-inactive'" (click)="setFilter('incompleted')">
+            <button [ngClass]="filterValue === INCOMPLETED ? 'button-red-active' : 'button-red-inactive'" (click)="setFilter('incompleted')">
                 {{ "commits.pending" | translate }}
             </button>
         </ion-col>
         <ion-col>
-            <button [ngClass]="filterValue === completed ? 'button-green-active' : 'button-green-inactive'" (click)="setFilter('completed')">
+            <button [ngClass]="filterValue === COMPLETED ? 'button-green-active' : 'button-green-inactive'" (click)="setFilter('completed')">
                 {{ "commits.reviewed" | translate }}
             </button>
         </ion-col>
@@ -44,13 +44,16 @@
     <ion-row>
         <ion-col>
             <ion-list class="card-style" no-padding>
-                <ion-item class="card-list-item" *ngFor="let commit of filterArrayCommits" (click)="shouldOpen(commit)">
+                <ion-item [ngClass]="commitStyles[i]" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
                     <commit-card [commit]="commit"></commit-card>
                 </ion-item>
             </ion-list>
             <p class="error-message ">{{ msg }}</p>
         </ion-col>
         <ion-col col-5 *ngIf="openedComments ">
+            <ion-list class="card-style">
+                <ion-item class="text-title big">{{ currentCommit.title }}</ion-item>
+            </ion-list>
             <ion-list *ngFor="let comment of commitComments; let j=index ">
                 <commit-comment [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
             </ion-list>
