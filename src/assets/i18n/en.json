@@ -12,7 +12,8 @@
         "login": "Login",
         "debug": "Debug",
         "remember": "Keep session?",
-        "connectionFailure": "There is no node available for connection."
+        "connectionFailure": "There is no node available for connection.",
+        "anonymous": "Anonymous"
     },
     "addCommit": {
         "title": "Add commit",

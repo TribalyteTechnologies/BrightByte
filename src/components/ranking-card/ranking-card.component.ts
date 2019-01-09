@@ -1,6 +1,7 @@
 import { Component, Input } from "@angular/core";
 import { UserReputation } from "../../models/user-reputation.model";
 import { LoginService } from "../../core/login.service";
+import { TranslateService } from "@ngx-translate/core";
 
 
 @Component({
@@ -10,6 +11,7 @@ import { LoginService } from "../../core/login.service";
  })
 export class RankingCard {
 
+    public ANONYMOUS = "";
     public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
     public userRank = "Undefined";
     public name = "No name";
@@ -29,7 +31,7 @@ export class RankingCard {
         let rankIdx = val.reputation;
         this.reputation = rankIdx;
         this.userRank = this.rankingTitle[Math.round(rankIdx)];
-        this.name = (val.name === "") ? "NotMigrated" : val.name;
+        this.name = ((val.name === "") ? this.ANONYMOUS : val.name);
         this.level = Math.round(val.reputation * 3);
         this.email = val.email;
         this.numReviews = val.finishedReviews;
@@ -39,9 +41,14 @@ export class RankingCard {
         this.userHash = val.userHash;
     }
 
-    constructor(loginService: LoginService){
+    constructor(loginService: LoginService, public translateService: TranslateService){
         let account = loginService.getAccount();
         this.accountHash = account.address;
+        translateService.get("app.anonymous").subscribe(
+            msg => {
+                this.ANONYMOUS = msg;
+            });
     }
+
 
 }

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { CommitComment } from "../../models/commit-comment.model";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: "commit-comment",
@@ -9,7 +10,7 @@ import { CommitComment } from "../../models/commit-comment.model";
 
 export class CommentComponent {
 
-    public readonly NOTMIGRATED = "NotMigrated";
+    public ANONYMOUS = "";
 
     @Output() 
     public thumbsUp = new EventEmitter();
@@ -21,7 +22,7 @@ export class CommentComponent {
 
     @Input()
     public set review(val: CommitComment){
-        val.name = (val.name === "") ? this.NOTMIGRATED : val.name;
+        val.name = (val.name === "") ? this.ANONYMOUS : val.name;
         this._review = val;
     }
 
@@ -31,5 +32,12 @@ export class CommentComponent {
 
     public ngDoCheck(): void {
         this.review = this._review; 
+    }
+    
+    constructor(public translateService: TranslateService){
+        translateService.get("app.anonymous").subscribe(
+            msg => {
+                this.ANONYMOUS = msg;
+            });
     }
 }

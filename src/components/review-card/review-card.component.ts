@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { UserCommit } from "../../models/user-commit.model";
-import { UserDetails } from "../../models/user-details.model";
+import { TranslateService } from "@ngx-translate/core";
 
 
 @Component({
@@ -10,7 +10,7 @@ import { UserDetails } from "../../models/user-details.model";
  })
 export class ReviewCard {
 
-    public readonly NOTMIGRATED = "NotMigrated";
+    public ANONYMOUS = "";
     public urlHash: string = "0000";
     public urlLink = "http";
     public numberReviews = 0;
@@ -22,7 +22,7 @@ export class ReviewCard {
     public creationDateMs = 0;
     public stateFinished = false;
     public reviews = [];
-    public reviewers = new Array<Array<UserDetails>>();
+    public reviewers = new Array<String>();
     public pendingReviewers = new Array<string>();
 
     private _commit: UserCommit;
@@ -35,8 +35,8 @@ export class ReviewCard {
         this.urlHash = split[6];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
-        this.pendingReviewers = val.reviewers[0].map(userval =>  (userval.name === "") ? this.NOTMIGRATED : userval.name);
-        this.reviewers = val.reviewers;
+        this.pendingReviewers = val.reviewers[0].map(userval =>  (userval.name === "") ? this.ANONYMOUS : userval.name);
+        this.reviewers = val.reviewers[1].map(userval =>  (userval.name === "") ? this.ANONYMOUS : userval.name);
         this.title = val.title;
         this.project = val.project;
         this.score = val.score;
@@ -57,7 +57,13 @@ export class ReviewCard {
             urlToOpen = "?reviewId=" + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
-        
+    }
+
+    constructor(public translateService: TranslateService){
+        translateService.get("app.anonymous").subscribe(
+            msg => {
+                this.ANONYMOUS = msg;
+            });
     }
 
 }
