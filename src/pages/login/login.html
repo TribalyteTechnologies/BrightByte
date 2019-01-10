@@ -26,20 +26,19 @@
                 </ion-row>
                 <ion-row>
                     <div class="form-input">
-                        <ion-input type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass"></ion-input>
+                        <ion-input type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)"></ion-input>
                     </div>
                 </ion-row>
                 <ion-row>
                     <div>
-                        <input *ngIf="migrationDone" type="checkbox" [(ngModel)]="isKeepCredentialsOn"> {{ "app.remember" | translate }}
+                        <input type="checkbox" [(ngModel)]="isKeepCredentialsOn"> {{ "app.remember" | translate }}
                     </div>
                 
                 </ion-row>
                 <ion-row>
                     <ion-col>
                         <div>
-                            <button ion-button block color="dark" *ngIf="migrationDone" (click)="login(pass)">{{ "app.login" | translate }}</button>
-                            <button *ngIf="!migrationDone" ion-button block (click)="migration(pass)">Migration</button>
+                            <button ion-button block color="dark" (click)="login(pass)">{{ "app.login" | translate }}</button>
                         </div>
                     </ion-col>
                     <ion-col>
@@ -56,7 +55,6 @@
             </div>
 
             <div class="project-version">
-                    <button ion-button (click)="migration2(pass)">MigrationAdmin</button>
                 <ion-label>{{ "app.title" | translate }} v{{ appVersion }}</ion-label>
             </div>
 
