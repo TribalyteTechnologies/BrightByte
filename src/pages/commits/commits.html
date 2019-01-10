@@ -1,17 +1,11 @@
 <ion-header no-border class="main-header">
-    <ion-row align-items-center class="header-row">
-        <ion-col col-auto no-padding>
-            <div class="title">{{ "commits.title" | translate }}</div>
-        </ion-col>
-        <ion-col no-padding>
-            <div>
-                <button ion-button icon-end color="main" clear (click)="openAddCommitDialog()">
-                    {{ "commits.add" | translate }}
-                    <ion-icon name="add-circle"></ion-icon>
-                </button>
-            </div>
-        </ion-col>
-    </ion-row>
+    <div class="title">{{ "commits.title" | translate }}</div>
+    <div class="button" (click)="openAddCommitDialog()">
+        <div class="button-container">
+            <img class="icon" src="../../assets/imgs/add-icon.svg">
+            <div class="text">{{ "commits.add" | translate }}</div>
+        </div>
+    </div>
 </ion-header>
 
 <ion-content class="background-style" padding>
