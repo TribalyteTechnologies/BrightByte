@@ -43,12 +43,10 @@ export class ContractManagerService {
     }
 
     public init(user: Account, cont: number): Promise<any> {
-        if(AppConfig.IS_CUSTOM_NET) {
-            AppConfig.changeNetworkConfig(cont);
-            this.web3Service = new Web3Service(this.loggerSrv);
-            this.web3 = this.web3Service.getWeb3();
-        }
-        let configNet = AppConfig.NETWORK_CONFIG;
+        AppConfig.CURRENT_NODE_INDEX = cont;
+        let configNet = AppConfig.NETWORK_CONFIG[cont];
+        this.web3Service = new Web3Service(this.loggerSrv);
+        this.web3 = this.web3Service.getWeb3();
         this.log.d("Initializing with URL: " + configNet.urlNode);
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
@@ -426,8 +424,8 @@ export class ContractManagerService {
                 let rawtx = {
                     nonce: nonce,
                     // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[0].gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG_ARRAY[0].gasLimit),
+                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasPrice),
+                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasLimit),
                     to: contractAddress,
                     data: bytecodeData
                 };

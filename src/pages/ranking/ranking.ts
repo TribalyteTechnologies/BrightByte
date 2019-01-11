@@ -8,7 +8,6 @@ import { Account } from "web3/types";
 import { UserDetails } from "../../models/user-details.model";
 import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
-import { SpinnerService } from "../../core/spinner.service";
 
 class UserRankDetails {
     public name = "";
@@ -44,7 +43,6 @@ export class RankingPage {
     constructor(
         public navCtrl: NavController,
         private translateService: TranslateService,
-        private spinnerService: SpinnerService,
         public loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
         private loginService: LoginService
@@ -59,14 +57,12 @@ export class RankingPage {
 
 
     public refresh() {
-        this.spinnerService.showLoader();
         this.contractManagerService.getAllUserReputation()
             .then((usersRep: UserReputation[]) => {
                 this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
                 this.usersRep.forEach(user => {
                     user.userPosition = this.usersRep.indexOf(user) + 1;
                 });
-                this.spinnerService.hideLoader();
                 return;
             }).then(() => {
                 this.setUser(this.account.address);
@@ -75,7 +71,6 @@ export class RankingPage {
                     msg => {
                         this.msg = msg;
                         this.log.e(msg, e);
-                        this.spinnerService.hideLoader();
                     });
             });
     }

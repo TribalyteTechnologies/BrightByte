@@ -106,13 +106,7 @@ export class LoginPage {
                          
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
-
-                let nodeRandomIndices = new Array<number>();
-                for(let i = 0; i < AppConfig.NETWORK_CONFIG_ARRAY.length; i++) {
-                    nodeRandomIndices.push(i);
-                }
-                nodeRandomIndices.sort((a, b) => 0.5 - Math.random());
-                this.checkNodesAndOpenHomePage(account, 0, nodeRandomIndices).then((result) => {
+                this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
                     if(!result) {
                         this.translateService.get("app.connectionFailure").subscribe(
@@ -144,10 +138,9 @@ export class LoginPage {
         this.navCtrl.push(NewuserPage);
     }
 
-    private checkNodesAndOpenHomePage (account: Account, cont: number, arrayNodes: Array<number>): Promise<boolean> {
+    private checkNodesAndOpenHomePage (account: Account, currentNodeIndex: number): Promise<boolean> {
         let prom = Promise.resolve(false);
-        if(cont >= 0 && cont < arrayNodes.length) {
-            let currentNodeIndex = arrayNodes[cont];
+        if(currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
@@ -163,8 +156,7 @@ export class LoginPage {
                 return true;
             }).catch((e) => {
                 this.log.w("Failure to access the node " + currentNodeIndex);
-                cont++;
-                return(this.checkNodesAndOpenHomePage(account, cont, arrayNodes));
+                return(this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
             });
         }
         return prom;

@@ -10,16 +10,16 @@ export class AppConfig {
     public static readonly USER_LANG_STORAGE_KEY = "brightbyteUserLang";
     public static readonly AVAILABLE_LANGUAGE_KEYS = ["en", "es"];
 
-    public static readonly NETWORK_CONFIG_LOCALHOST = {
+    public static readonly NETWORK_CONFIG_LOCALHOST = [{
         gasLimit: 2000000,
         gasPrice: 10,
         netId: 4447,
         urlNode: "HTTP://127.0.0.1:9545"
-    };
+    }];
 
-    public static NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ?
-    NETWORK_CONFIG_CUSTOM.configList[0] : AppConfig.NETWORK_CONFIG_LOCALHOST;
-    public static readonly NETWORK_CONFIG_ARRAY = NETWORK_CONFIG_CUSTOM.configList;
+    public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
+    AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
+    public static CURRENT_NODE_INDEX = 0;
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly N_USER_RANKING_LIST = 5;
@@ -36,14 +36,17 @@ export class AppConfig {
         REVIEWID: "reviewId",
         COMMITID: "commitId"
     };
-
-    public static changeNetworkConfig (ind: number) {
-        if(AppConfig.IS_CUSTOM_NET) {
-            AppConfig.NETWORK_CONFIG = NETWORK_CONFIG_CUSTOM.configList[ind];
-        }
-    }
-
     
+    private static shuffle(array: Array<any>): Array<any> {
+        let currentIndex = array.length;
+        while (0 !== currentIndex) {
+            let randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            let temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+        return array;
+    }
 }
-
 

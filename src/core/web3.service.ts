@@ -13,7 +13,7 @@ export class Web3Service {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("Web3Service");
-        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG.urlNode));
+        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].urlNode));
         Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
 
     }
