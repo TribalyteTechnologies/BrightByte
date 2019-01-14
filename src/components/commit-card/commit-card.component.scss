@@ -15,4 +15,55 @@ commit-card {
         border-radius: 50%;
         background-color: color($colors, backgroundLight);
     }
+    .card-container {
+        display: flex;
+        align-items: center;
+        padding-right: 15px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        .status {
+            .box {
+                width: 3px;
+                height: 60px;
+            }
+            .box.red {
+                background-color: color($colors, cherry);
+            }
+            .box.blue {
+                background-color: color($colors, grass);
+            }
+        }
+        .info-container {
+            flex-grow: 1;
+            padding-left: 30px;
+            .info-tabs {
+                display: flex;
+                .tab {
+                    display: flex;
+                    align-items: center;
+                    padding-right: 10px;
+                    .icon {
+                        height: 12px;
+                        width: auto;
+                        padding-right: 3px;
+                    }
+                }
+            }
+        }
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            .users-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                .reviewers-done {
+                    margin-right: 15px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background-color: color($colors, backgroundLight);
+                }
+            }
+        }
+    }
 }

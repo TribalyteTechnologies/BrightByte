@@ -30,7 +30,6 @@ export class CommitPage {
     public filterValue = 2;
     public filterIsPending = false;
     public msg: string;
-    public commitStyles = [];
     private log: ILogger;
 
 
@@ -58,9 +57,6 @@ export class CommitPage {
             .then((commitConcat: UserCommit[][]) => {
                 this.log.d("User Commits received");
                 commits = commitConcat[0].concat(commitConcat[1]);
-                commits.forEach((c, i) => {
-                    this.commitStyles[i] = "";
-                });
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
@@ -153,14 +149,17 @@ export class CommitPage {
         this.applyFilters(this.arrayCommits);
     }
 
+    public setProject(name: string){
+        this.projectSelected = name;
+        this.applyFilters(this.arrayCommits);
+    }
+
     public shouldOpen(commit: UserCommit) {
 
         this.spinnerService.showLoader();
         this.log.d("Opening commit: " + commit.url);
-        this.commitStyles.forEach((c, i) => {
-            this.commitStyles[i] = "card-list-item";
-        });
-        this.commitStyles[this.filterArrayCommits.indexOf(commit)] = "item-selected";
+        this.spinnerService.showLoader();
+        this.log.d("Opening commit: " + commit.url);
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.log.d("We received " + comments.length + " comments");
@@ -168,19 +167,27 @@ export class CommitPage {
                 this.currentCommit = commit;
                 this.openedComments = comments[1].length > 0;
                 this.log.d("Changing flag of " + commit.url);
+                this.spinnerService.hideLoader();
                 return this.contractManagerService.reviewChangesCommitFlag(commit.url);
             }).then((response) => {
                 this.log.d("Received response: " + response);
                 let idx = this.filterArrayCommits.indexOf(commit);
                 commit.isReadNeeded = false;
                 this.filterArrayCommits[idx] = commit;
-                this.spinnerService.hideLoader();
             }).catch((err) => {
                 this.log.e(err);
                 this.spinnerService.hideLoader();
             });
 
         
+    }
+
+    public setStyle(idx: number): string{
+        if(idx === this.filterArrayCommits.indexOf(this.currentCommit)){
+            return "item-selected";
+        } else {
+            return "card-list-item";
+        }
     }
 
     private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{

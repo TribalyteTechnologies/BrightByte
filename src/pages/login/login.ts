@@ -48,7 +48,7 @@ export class LoginPage {
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
         );
-
+        
         this.migrationDone = this.userLoggerService.getMigration();
     }
 

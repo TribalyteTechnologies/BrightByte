@@ -38,12 +38,12 @@ export class AddCommitPopover {
         public http: HttpClient,
         public fb: FormBuilder,
         public translateService: TranslateService,
-        public loggerSrv: LoggerService,
+        private loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
         private storageSrv: StorageService,
         private loginService: LoginService
     ) {
-        this.log = loggerSrv.get("AddCommitPage");
+        this.log = this.loggerSrv.get("AddCommitPage");
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
             Validators.pattern(

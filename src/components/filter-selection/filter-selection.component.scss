@@ -1,0 +1,45 @@
+filter-selection {
+    .filter-container {
+        display: flex;
+        width: 100%;
+        height: 70px;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .filter-button {
+        color: rgba(0, 0, 0, 0.5);
+        font-weight: 500;
+        padding-left: 50px;
+        padding-right: 50px;
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+        line-height: 70px;
+    }
+    .filter-button:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    .filter-button.active {
+        font-weight: 800;
+    }
+    .filter-button.red {
+        color: color($colors, cherry);
+    }
+    .filter-button.blue {
+        color: color($colors, grass);
+    }
+    .filter-button.yellow {
+        color: color($colors, report);
+    }
+    .dropdown {
+        flex-grow: 1;
+        line-height: 70px;
+        font-size: 15px;
+        background-color: transparent;
+        border: none;
+        padding-left: 15px;
+        appearance: none;
+        background-image: url("../../assets/imgs/down-arrow-icon.svg");
+        background-size: 10px;
+        background-repeat: no-repeat;
+        background-position: 96% 50%;
+    }
+}

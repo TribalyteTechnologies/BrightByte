@@ -3,47 +3,21 @@
 </ion-header>
 
 <ion-content class="background-style" padding>
-    <ion-row>
-        <ion-col col-7>
-            <ion-item class="background-style">
-                <ion-label>{{ "commits.project" | translate }}</ion-label>
-                <ion-select [(ngModel)]="projectSelected" (ionChange)="refresh(); openedComments = false;">
-                    <ion-option value="all" selected="true">{{ "commits.allProjects" | translate }}</ion-option>
-                    <ion-option *ngFor="let option of projects" [value]="option">{{ option }}</ion-option>
-                </ion-select>
-            </ion-item>
-        </ion-col>
-        <ion-col>
-            <button [ngClass]="filterValue === INCOMPLETED ? 'button-red-active' : 'button-red-inactive'" (click)="setFilter('incompleted')">
-                {{ "commits.pending" | translate }}
-            </button>
-        </ion-col>
-        <ion-col>
-            <button [ngClass]="filterValue === COMPLETED ? 'button-green-active' : 'button-green-inactive'" (click)="setFilter('completed')">
-                {{ "commits.reviewed" | translate }}
-            </button>
-        </ion-col>
-        <ion-col>
-            <button [ngClass]="filterIsPending ? 'button-yellow-active' : 'button-yellow-inactive'" (click)="setFilter('pending')">
-                {{ "commits.updated" | translate }}
-            </button>
-        </ion-col>
-    </ion-row>
+    <filter-selection [projects]="projects" (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
 
-    <ion-row>
-        <ion-col>
-            <ion-list class="card-style" no-padding>
-                <ion-item [ngClass]="commitStyles[i]" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
-                    <review-card [commit]="commit"></review-card>
-                </ion-item>
-            </ion-list>
-            <p class="error-message ">{{ msg }}</p>
-        </ion-col>
-        <ion-col col-5 *ngIf="openedComments ">
-            <ion-list class="card-style">
-                <ion-item class="text-title big">{{ currentCommit.title }}</ion-item>
-            </ion-list>
-            <ion-list class="card-style" *ngIf="needReview">
+
+    <div class="contents">
+        <div class="list-commits">
+            <div [ngClass]="setStyle(i)" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
+                <review-card [commit]="commit"></review-card>
+            </div>
+        </div>
+        <div class="list-comments" *ngIf="currentCommit">
+            <div class="commit-information">
+                <div class="text-title"> {{ currentCommit.title }} </div>
+                <div class="text-description">{{ currentCommit.project }}</div>
+            </div>
+            <div class="card-style" *ngIf="needReview">
                 <ion-item>
                     <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
                     </ion-textarea>
@@ -58,13 +32,9 @@
                         {{ "commitReview.review" | translate }}
                     </button>
                 </ion-item>               
-            </ion-list>
-            <ion-list *ngIf="userCommitComment[0]">
-                <review-comment [review]="userCommitComment[0] "></review-comment>
-            </ion-list>
-            <ion-list *ngFor="let comment of commitComments; let j=index ">
-                <review-comment [review]="comment "></review-comment>
-            </ion-list>
-        </ion-col>
-    </ion-row>
+            </div>
+            <review-comment [review]="userCommitComment[0]" *ngIf="userCommitComment[0]"></review-comment>
+            <review-comment [review]="comment" *ngFor="let comment of commitComments; let j=index "></review-comment>
+        </div>
+    </div>
 </ion-content>

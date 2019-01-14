@@ -1,49 +1,24 @@
-<ion-list class="card-style" no-padding>
-    <ion-item no-padding>
-        <ion-row align-items-center>
-            <ion-col col-auto>
-                <ion-row justify-content-start>
-                    <img class="avatar review" src="http://identicon.org?t={{ review.name }}">
-                </ion-row>
-            </ion-col>
-            <ion-col no-padding>
-                <ion-row align-items-center>
-                    <ion-col col-auto no-padding>
-                        <ion-row justify-content-start>
-                            <ion-col align-self-center no-padding class="text-title">
-                                {{ review.name }}
-                            </ion-col>
-                        </ion-row>
-                    </ion-col>
-                    <ion-col no-padding>
-                        <ion-row justify-content-end>
-                            <rating [rate]="review.score" readonly="true" small="true"></rating>
-                        </ion-row>
-                    </ion-col>
-                </ion-row>
-                <ion-row class="text-date">
-                    {{ review.lastModificationDateMs | dateFormat }}
-                </ion-row>
-
-            </ion-col>
-        </ion-row>
-
-    </ion-item>
-    <ion-item text-wrap>
-        <ion-col col-12 class="text-description">
-            {{ review.text }}
-        </ion-col>
-    </ion-item>
-    <ion-item>
-        <ion-row>
-            <button class="button-classic-active" *ngIf="review.vote==0"> {{ "review.noVote" | translate }}</button>
-        </ion-row>
-        <ion-row>
-            <button class="button-green-active" *ngIf="review.vote==1"> {{ "review.positiveVote" | translate }}</button>
-        </ion-row>
-        <ion-row>
-            <button class="button-red-active" *ngIf="review.vote==2"> {{ "review.negativeVote" | translate }}</button>
-        </ion-row>
-    </ion-item>
-
-</ion-list>
+<div class="card-comment">
+    <div class="header">
+        <img class="user-avatar" src="http://identicon.org?t={{ review.name }}">
+        <div class="user-information">
+            <div class="text-information">
+                <div class="text-title right-padding">{{ review.name }}</div>
+                <div class="text-date">{{ review.lastModificationDateMs | dateFormat }}</div>
+            </div>
+            <rating [rate]="review.score" readonly="true" small="true"></rating>
+        </div>
+    </div>
+    <div class="text-description text-margins">
+        {{ review.text }}
+    </div>
+    <ion-row>
+        <button class="button-classic-active" *ngIf="review.vote==0"> {{ "review.noVote" | translate }}</button>
+    </ion-row>
+    <ion-row>
+        <button class="button-green-active" *ngIf="review.vote==1"> {{ "review.positiveVote" | translate }}</button>
+    </ion-row>
+    <ion-row>
+        <button class="button-red-active" *ngIf="review.vote==2"> {{ "review.negativeVote" | translate }}</button>
+    </ion-row>
+</div>

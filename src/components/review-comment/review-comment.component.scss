@@ -1,6 +1,43 @@
 review-comment {
-    .avatar.review {
-        width: 60px;
-        height: 60px;
+    .card-comment {
+        width: 350px;
+        margin-bottom: 5px;
+        padding: 15px;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        .header {
+            display: flex;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            .user-avatar {
+                width: 60px;
+                height: 60px;
+                background-color: color($colors, backgroundLight);
+                border-radius: 50%;
+            }
+            .user-information {
+                padding-left: 10px;
+                display: flex;
+                flex-direction: column;
+            }
+            .text-information {
+                display: flex;
+            }
+            .text-title.right-padding {
+                padding-right: 10px;
+            }
+        }
+        .review-interaction {
+            display: flex;
+            justify-content: space-between;
+        }
+        .text-description.text-margins {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
     }
 }

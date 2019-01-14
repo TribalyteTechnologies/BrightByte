@@ -27,6 +27,8 @@ import { AppVersionService } from "../core/app-version.service";
 import { LoginService } from "../core/login.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
 import { SpinnerService } from "../core/spinner.service";
+import { StorageService } from "../core/storage.service";
+
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
@@ -43,8 +45,7 @@ import { CommentComponent } from "../components/commit-comment/commit-comment.co
 import { ReviewCard } from "../components/review-card/review-card.component";
 import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
-import { StorageService } from "../core/storage.service";
-
+import { FilterComponent } from "../components/filter-selection/filter-selection.component";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -68,6 +69,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommentComponent,
         ReviewCard,
         ReviewCommentComponent,
+        FilterComponent,
         RankingCard
     ],
     imports: [
@@ -101,6 +103,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommentComponent,
         ReviewCard,
         ReviewCommentComponent,
+        FilterComponent,
         RankingCard
     ],
     providers: [

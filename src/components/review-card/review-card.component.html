@@ -1,42 +1,32 @@
-<ion-grid no-padding>
-    <ion-row>
-        <ion-col col-auto align-self-center>
-            <div [ngClass]="stateFinished ? 'red-dot' : 'green-dot'"></div>
-        </ion-col>
-        <ion-col align-self-center class="col-middle">
-            <ion-row class="text-date">
-                <div>{{ creationDateMs | dateFormat }}</div>
-                <div (click)="openUrl(urlLink, true)">
-                    <ion-icon class="window-icon" name="open"></ion-icon>
-                </div>
-            </ion-row>
-            <ion-row align-items-center class="text-title">
-                <div>{{ title | slice:0:40 }}</div>
-                <div *ngIf="isReadNeeded" class="notifications">
-                    <ion-icon name="notifications"></ion-icon>
-                </div>
-            </ion-row>
-            <ion-row class="text-description">
-                <div>{{ "review.asked" | translate }} {{ project }}</div>
-            </ion-row>
-            <ion-row class="text-url">
-                <div (click)="openUrl(urlLink, false)">#{{ urlHash }}</div>
-            </ion-row>
-
-        </ion-col>
-        <ion-col col-auto>
-            <ion-row justify-content-end>
-                <rating [rate]="score" readonly="true" small="true"></rating>
-            </ion-row>
-            <ion-row justify-content-end class="reviews-container">
-                <ion-avatar *ngFor="let user of reviewers" [title]="user" class="reviewer-icon">
-                    <img [src]="'http://identicon.org?t='+ user">
-                </ion-avatar>
-                <div class="reviewers-left" *ngIf="numberReviews > 0" [title]="pendingReviewers">
-                    +{{ numberReviews }}
-                </div>
-            </ion-row>
-        </ion-col>
-    </ion-row>
-
-</ion-grid>
+<div class="card-container">
+    <div class="status">
+        <div [ngClass]="stateFinished ? 'box red' : 'box blue'"></div>
+    </div>
+    <div class="info-container">
+        <div class="info-tabs">
+            <div class="tab">
+                <img class="icon" src="../../assets/imgs/clock-icon.svg">
+                <div class="text-date">{{ creationDateMs | dateFormat }}</div> 
+            </div>
+            <div class="tab">
+                <img class="icon" src="../../assets/imgs/project-icon.svg">
+                <div class="text-date"> {{ project }}</div> 
+            </div>
+            <div class="tab" (click)="openUrl(urlLink, true)">
+                <img class="icon" src="../../assets/imgs/tab-icon.svg">
+                <div class="text-date"> Open in new tab</div> 
+            </div>
+        </div>
+        <div class="text-title">{{ title | slice:0:40 }}</div>
+        <div class="text-url" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
+    </div>
+    <div class="stats-container">
+        <div class="stars">
+            <rating [rate]="score" readonly="true" small="true"></rating>
+        </div>
+        <div class="users-container">
+            <img *ngFor="let user of reviewers" [title]="user" class="reviewers-done" [src]="'http://identicon.org?t='+ user">
+            <div *ngIf="!(numberReviews === 0)" class="reviewers-left">+{{ numberReviews }}</div>
+        </div>
+    </div>
+</div>

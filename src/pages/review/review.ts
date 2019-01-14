@@ -26,7 +26,6 @@ export class ReviewPage {
     public projects = new Array<string>();
     public projectSelected = this.ALL;
     public isFeedback = {} as {[key: string]: boolean};
-    public commitStyles = [];
 
     public filterValue = 2;
     public filterIsPending = false;
@@ -69,9 +68,6 @@ export class ReviewPage {
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 commits = commitConcat[0].concat(commitConcat[1]);
-                commits.forEach((c, i) => {
-                    this.commitStyles[i] = "";
-                });
                 commits = commits.filter(commit => {
                     return commit.url !== "";
                 });
@@ -121,10 +117,6 @@ export class ReviewPage {
 
     public shouldOpen(commit: UserCommit) {  
         this.spinnerService.showLoader();
-        this.commitStyles.forEach((c, i) => {
-            this.commitStyles[i] = "card-list-item";
-        });
-        this.commitStyles[this.filterArrayCommits.indexOf(commit)] = "item-selected";
 
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
@@ -147,12 +139,13 @@ export class ReviewPage {
                 }
                 this.currentCommit = commit;
                 this.openedComments = true;
+                this.spinnerService.hideLoader();
+
                 return this.contractManagerService.setFeedback(commit.url);
             }).then((val) => {
                 this.log.d("Feedback response: " + val);
                 let idx = this.filterArrayCommits.indexOf(commit);
                 this.filterArrayCommits[idx].isReadNeeded = false;
-                this.spinnerService.hideLoader();
             }).catch(err => {
                 this.spinnerService.hideLoader();
                 this.log.e(err);
@@ -195,6 +188,7 @@ export class ReviewPage {
     }
         
     public applyFilters(usercommits: UserCommit[]) {
+        console.log(usercommits);
         let projectFilter = this.setProjectFilter(usercommits);
         let statusFilter = this.setStatusFilter(projectFilter);
         let pendingFilter = this.setPendingFilter(statusFilter);
@@ -221,6 +215,20 @@ export class ReviewPage {
         this.openedComments = false;  
         this.applyFilters(this.displayCommitsToReview);
     }
+    public setProject(name: string){
+        console.log(name);
+        this.projectSelected = name;
+        this.applyFilters(this.displayCommitsToReview);
+    }
+
+    public setStyle(idx: number): string{
+        if(idx === this.filterArrayCommits.indexOf(this.currentCommit)){
+            return "item-selected";
+        } else {
+            return "card-list-item";
+        }
+    }
+
     private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{
         if (!(this.projectSelected === this.ALL)){
             return usercommits.filter(commit => {
