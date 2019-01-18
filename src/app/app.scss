@@ -19,39 +19,41 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 100px;
-    background-color: #fff; //color($colors, backgroundLight);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 20px;
+    padding-right: 30px;
+    padding-left: 20px;
     .title {
+        line-height: 40px;
         font-size: 22px;
         font-weight: 500;
-        padding-left: 15px;
     }
     .button {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
-        width: 180px;
-        border-left: 1px solid rgba(0, 0, 0, 0.1);
+        height: 40px;
+        padding-left: 30px;
+        padding-right: 30px;
+        color: #fff;
+        background-color: rgb(40, 47, 58);
+        border-radius: 20px;
         .button-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row-reverse;
             align-items: center;
-            opacity: 0.5;
             .icon {
-                height: 25px;
+                height: 18px;
                 width: auto;
             }
             .text {
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 500;
-                padding-top: 10px;
+                padding-right: 5px;
             }
         }
     }
     .button:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: rgb(52, 60, 73);
         .button {
             opacity: 1;
         }
@@ -161,6 +163,7 @@
 }
 
 .card-style {
+    border-radius: 5px;
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 

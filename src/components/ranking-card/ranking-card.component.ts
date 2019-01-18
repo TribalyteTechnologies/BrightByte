@@ -5,7 +5,7 @@ import { TranslateService } from "@ngx-translate/core";
 
 
 @Component({
-    selector: "ranking-card",
+    selector: "[ranking-card]",
     templateUrl: "ranking-card.component.html",
     styles: ["ranking-card.component.scss"]
  })

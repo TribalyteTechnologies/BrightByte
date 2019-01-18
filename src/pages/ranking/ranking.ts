@@ -35,6 +35,7 @@ export class RankingPage {
     public userRank = "No rank";
     public userLevel = 0;
     public userStars = 0;
+    public userHash = "";
     public userTrophyList = new Array<string>();
     private log: ILogger;
     private account: Account;
@@ -65,6 +66,7 @@ export class RankingPage {
                 });
                 return;
             }).then(() => {
+                this.userHash = this.account.address;
                 this.setUser(this.account.address);
             }).catch((e) => {
                 this.translateService.get("ranking.getReputation").subscribe(

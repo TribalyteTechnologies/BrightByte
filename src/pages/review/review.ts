@@ -37,6 +37,8 @@ export class ReviewPage {
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public name = "";
+    public currentCommitName = "";
+    public currentCommitEmail = "";
     public userCommitComment: CommitComment[];
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
@@ -140,7 +142,10 @@ export class ReviewPage {
                 this.currentCommit = commit;
                 this.openedComments = true;
                 this.spinnerService.hideLoader();
-
+                return this.getReviewerName(commit);
+            }).then((name) => {
+                this.currentCommitName =  name[0];
+                this.currentCommitEmail = name[1];
                 return this.contractManagerService.setFeedback(commit.url);
             }).then((val) => {
                 this.log.d("Feedback response: " + val);
@@ -227,6 +232,17 @@ export class ReviewPage {
         } else {
             return "card-list-item";
         }
+    }
+
+    private getReviewerName(commit: UserCommit): Promise<Array<string>>{
+        let hash = commit.author;
+        return this.contractManagerService.getUserDetails(hash)
+        .then((user) => {
+            return [user.name, user.email];
+        }).catch((e) => {
+            this.log.e(e);
+            return ["Anonymous", "nomail@web.com"];
+        });
     }
 
     private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{

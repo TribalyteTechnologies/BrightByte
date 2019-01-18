@@ -27,6 +27,8 @@ export class CommitPage {
     public projects = new Array<string>();
     public projectSelected = this.ALL;
     public openedComments = false;
+    public currentCommitName = "";
+    public currentCommitEmail = "";
     public filterValue = 2;
     public filterIsPending = false;
     public msg: string;
@@ -79,6 +81,7 @@ export class CommitPage {
                     let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
+                
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
                     msg => {
@@ -168,6 +171,10 @@ export class CommitPage {
                 this.openedComments = comments[1].length > 0;
                 this.log.d("Changing flag of " + commit.url);
                 this.spinnerService.hideLoader();
+                return this.getReviewerName(commit);
+            }).then((name) => {
+                this.currentCommitName =  name[0];
+                this.currentCommitEmail = name[1];
                 return this.contractManagerService.reviewChangesCommitFlag(commit.url);
             }).then((response) => {
                 this.log.d("Received response: " + response);
@@ -188,6 +195,17 @@ export class CommitPage {
         } else {
             return "card-list-item";
         }
+    }
+
+    private getReviewerName(commit: UserCommit): Promise<Array<string>>{
+        let hash = commit.author;
+        return this.contractManagerService.getUserDetails(hash)
+        .then((user) => {
+            return [user.name, user.email];
+        }).catch((e) => {
+            this.log.e(e);
+            return ["Anonymous", "nomail@web.com"];
+        });
     }
 
     private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{

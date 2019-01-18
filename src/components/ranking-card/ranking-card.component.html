@@ -1,35 +1,36 @@
-<ion-grid no-padding>
-    <ion-row align-items-center>
-        <ion-col class="avatar-container">
-            <div class="number-label">#{{ userPosition }}</div>
-            <div *ngIf="userHash === accountHash" class="you-label"><ion-icon name="body"></ion-icon></div>
-            <img class="avatar ranking-card" src="http://identicon.org?t={{ name }}">
-        </ion-col>
-        <ion-col>
-            <ion-row><div class="text-title">{{ name }}</div></ion-row>
-            <ion-row>
-                <button class="label-user dark">{{ userRank }}</button>
-                <button class="label-user green">{{ "ranking.level" | translate }} {{ level }}</button>
-                <button class="label-user green">{{ reputation }} {{ "ranking.stars" | translate }}</button>
-            </ion-row>
-            <ion-row><div class="text-description"> {{ email }} </div></ion-row>
-            <ion-row>
-                <div class="ranking-stars">
-                    <rating [rate]="reputation" readonly="true" small="true"></rating>
-                </div>
-            </ion-row>
-        </ion-col>
-        <ion-col>
-            <ion-row><div  class="text-info">{{ numReviews }}</div></ion-row>
-            <ion-row><div class="text-subtitle">{{ "ranking.reviews" | translate }}</div></ion-row>
-        </ion-col>
-        <ion-col class="col-border">
-            <ion-row ><div class="text-info">{{ numCommits }}</div></ion-row>
-            <ion-row> <div class="text-subtitle">{{ "ranking.commits" | translate }}</div></ion-row>
-        </ion-col>
-        <ion-col class="col-border">
-            <ion-row><div class="text-info">{{ agreed }}%</div></ion-row>
-            <ion-row><div class="text-subtitle">{{ "ranking.agreed" | translate }}</div></ion-row>
-        </ion-col>
-    </ion-row>
-</ion-grid>
+<td class="text-title align-middle rank-number">{{ userPosition }}</td>
+<td class="avatar-container">
+    <div class="avatar-icon">
+        <img src="http://identicon.org?t={{ name }}">
+    </div>
+</td>
+<td class="name-container">
+    <div class="details-container">
+        <div class="text-title"> {{ name }} </div>
+        <div class="text-description no-wrap"> {{ email }} </div>
+    </div>
+</td>
+<td>
+    <div class="rating-container">
+        <div class="rate-title"> {{ reputation }} </div>
+        <img class="rate-img" src="../../assets/imgs/star-icon.svg">
+    </div>
+</td>
+<td>
+    <div class="info-container">
+        <div class="text-info">{{ numReviews }}</div>
+        <div class="text-subtitle">{{ "ranking.reviews" | translate }}</div>
+    </div>
+</td>
+<td>
+    <div class="info-container separations">
+        <div class="text-info">{{ numCommits }}</div>
+        <div class="text-subtitle">{{ "ranking.commits" | translate }}</div>
+    </div>
+</td>
+<td>
+    <div class="info-container">
+        <div class="text-info">{{ agreed }}%</div>
+        <div class="text-subtitle">{{ "ranking.agreed" | translate }}</div>
+    </div>
+</td>

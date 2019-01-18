@@ -1,4 +1,3 @@
-
 <div class="card-container">
     <div class="status">
         <div [ngClass]="stateFinished ? 'box red' : 'box blue'"></div>
@@ -7,18 +6,21 @@
         <div class="info-tabs">
             <div class="tab">
                 <img class="icon" src="../../assets/imgs/clock-icon.svg">
-                <div class="text-date">{{ creationDateMs | dateFormat }}</div> 
+                <div class="text-date">{{ creationDateMs | dateFormat }}</div>
             </div>
             <div class="tab">
                 <img class="icon" src="../../assets/imgs/project-icon.svg">
-                <div class="text-date"> {{ project }}</div> 
+                <div class="text-date"> {{ project }}</div>
             </div>
             <div class="tab" (click)="openUrl(urlLink, true)">
                 <img class="icon" src="../../assets/imgs/tab-icon.svg">
-                <div class="text-date"> Open in new tab</div> 
+                <div class="text-date"> Open in new tab</div>
             </div>
         </div>
-        <div class="text-title">{{ title | slice:0:40 }}</div>
+        <div class="text-title aligned">
+            {{ title | slice:0:40 }}
+            <ion-icon *ngIf="isPending" class="notifications" name="notifications"></ion-icon>
+        </div>
         <div class="text-url" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
     </div>
     <div class="stats-container">

@@ -5,6 +5,30 @@ ranking-card {
     .col-border {
         border-left: 1px solid rgb(231, 234, 237);
     }
+    .avatar-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+    }
+    .details-container {
+        display: flex;
+        flex-direction: column;
+    }
+    .rating-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: middle;
+    }
+    .rate-title {
+        font-size: 15px;
+        font-weight: bold;
+        color: #da930f;
+    }
+    .rate-img {
+        height: 20px;
+        width: auto;
+    }
+    /////////
     .avatar.ranking-card {
         widows: 80px;
         height: 80px;

@@ -21,10 +21,13 @@ commit-card {
         padding-right: 15px;
         padding-top: 10px;
         padding-bottom: 10px;
+        .text-title.aligned {
+            display: flex;
+        }
         .status {
             .box {
                 width: 3px;
-                height: 60px;
+                height: 70px;
             }
             .box.red {
                 background-color: color($colors, cherry);

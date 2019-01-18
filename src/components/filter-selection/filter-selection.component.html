@@ -1,15 +1,18 @@
 <div class="filter-container">
-        <select (change)="setProject($event.target.value)" class="dropdown">
+    <select (change)="setProject($event.target.value)" class="dropdown">
             <option value="all" selected="true">{{ "commits.allProjects" | translate }}</option>
             <option *ngFor="let option of projects" [value]="option">{{ option }}</option>
         </select>
-        <div [ngClass]="filterValue === INCOMPLETED ? 'filter-button active red' : 'filter-button'" (click)="setIncompleted()">
-            {{ "commits.pending" | translate }}
-        </div>
-        <div [ngClass]="filterValue === COMPLETED ? 'filter-button active blue' : 'filter-button'" (click)="setCompleted()">
-            {{ "commits.reviewed" | translate }}
-        </div>
-        <div [ngClass]="filterIsPending ? 'filter-button active yellow' : 'filter-button'" (click)="setPending()">
-            {{ "commits.updated" | translate }}
-        </div>
+    <div class="div-separator"></div>
+    <div [ngClass]="filterValue === INCOMPLETED ? 'filter-button active red' : 'filter-button'" (click)="setIncompleted()">
+        {{ "commits.pending" | translate }}
     </div>
+    <div class="div-separator"></div>
+    <div [ngClass]="filterValue === COMPLETED ? 'filter-button active blue' : 'filter-button'" (click)="setCompleted()">
+        {{ "commits.reviewed" | translate }}
+    </div>
+    <div class="div-separator"></div>
+    <div [ngClass]="filterIsPending ? 'filter-button active yellow' : 'filter-button'" (click)="setPending()">
+        {{ "commits.updated" | translate }}
+    </div>
+</div>

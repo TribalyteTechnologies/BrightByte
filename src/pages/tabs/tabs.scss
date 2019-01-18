@@ -6,9 +6,9 @@ page-tabs {
         width: 70px;
         background-color: rgb(40, 47, 58);
         .logo-container {
-            height: 100px;
+            height: 70px;
             width: 100%;
-            line-height: 100px;
+            line-height: 70px;
             text-align: center;
             background-color: #1d222b;
             .logo-icon {
@@ -43,15 +43,14 @@ page-tabs {
             }
         }
         .button-container.selected {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left: 5px solid color($colors, grass);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid color($colors, grass);
             .button-icon {
                 opacity: 1;
             }
         }
         .button-container:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         .button-container.logout {
             margin-top: auto;

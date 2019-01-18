@@ -1,4 +1,129 @@
 page-login {
+    .main-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
+    .container-left {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+        background: linear-gradient(to right, rgba(29, 34, 43, 1) 0%, rgba(39, 47, 58, 1) 100%);
+        .text-container {
+            display: flex;
+            flex-direction: column;
+            .logo {
+                height: 60px;
+                padding-bottom: 20px;
+            }
+            .title {
+                font-size: 25px;
+                font-weight: bolder;
+                color: #fff;
+            }
+            .subtitle {
+                padding-top: 10px;
+                font-size: 15px;
+                font-weight: 350;
+                color: #fff;
+            }
+        }
+    }
+    .container-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+        background-color: color($colors, backgroundLight);
+        .logo-container {
+            padding-top: 50px;
+            padding-right: 50px;
+            width: 100%;
+            align-self: flex-start;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            .logo {
+                width: 40px;
+            }
+            .title {
+                height: 40px;
+            }
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            width: 65%;
+            .mini-title {
+                font-size: 14px;
+                font-weight: bold;
+                color: rgba(0, 0, 0, 0.5);
+                padding-top: 20px;
+                padding-bottom: 10px;
+            }
+            .upload-form {
+                padding-bottom: 10px;
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            }
+            .password-form {
+                padding-bottom: 10px;
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            }
+            .remember {
+                display: flex;
+                padding-top: 20px;
+                .text {
+                    padding-left: 6px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: rgba(0, 0, 0, 0.5);
+                }
+            }
+            .buttons {
+                padding-top: 20px;
+                display: flex;
+                width: 100%;
+                .login {
+                    flex-grow: 1;
+                    height: 40px;
+                    border-radius: 20px;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                    color: #fff;
+                    font-size: 14px;
+                    font-weight: 500;
+                    background-color: #5eaeda;
+                }
+                .login:hover {
+                    background-color: rgba(29, 34, 43, 1);
+                }
+                .register {
+                    flex-grow: 1;
+                    font-size: 14px;
+                    font-weight: 500;
+                    height: 40px;
+                    border-radius: 20px;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+                .register:hover {
+                    background-color: rgba(0, 0, 0, 0.15);
+                }
+                .separator {
+                    width: 10px;
+                }
+            }
+        }
+    }
     .card {
         border-radius: 10px;
     }
@@ -14,12 +139,11 @@ page-login {
         color: white;
     }
     .page-body {
-        height: 100%;
-        background-size: 600px 600px;
-        background-position: -300px 50%;
+        background-size: 80%;
+        background-position: -40%;
         background-image: url("../../assets/imgs/logo_bkg.svg");
         background-repeat: no-repeat;
-        background-color: color($colors, loginBackground);
+        background-color: color($colors, backgroundLight);
     }
     .card-body {
         padding: 20px;
