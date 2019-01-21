@@ -1,36 +1,33 @@
-<td class="text-title align-middle rank-number">{{ userPosition }}</td>
-<td class="avatar-container">
-    <div class="avatar-icon">
-        <img src="http://identicon.org?t={{ name }}">
-    </div>
-</td>
-<td class="name-container">
-    <div class="details-container">
-        <div class="text-title"> {{ name }} </div>
-        <div class="text-description no-wrap"> {{ email }} </div>
-    </div>
+<td>
+    <ion-row padding class="text-details text-details--bold"> {{ userPosition }} </ion-row>
 </td>
 <td>
-    <div class="rating-container">
-        <div class="rate-title"> {{ reputation }} </div>
-        <img class="rate-img" src="../../assets/imgs/star-icon.svg">
-    </div>
+    <ion-row justify-content-center>
+        <img class="box-avatar" src="http://identicon.org?t={{ name }}">
+    </ion-row>
 </td>
 <td>
-    <div class="info-container">
-        <div class="text-info">{{ numReviews }}</div>
-        <div class="text-subtitle">{{ "ranking.reviews" | translate }}</div>
-    </div>
+    <ion-row class="text-title"> {{ name }} </ion-row>
+    <ion-row class="text-description no-wrap"> {{ email }} </ion-row>
 </td>
 <td>
-    <div class="info-container separations">
-        <div class="text-info">{{ numCommits }}</div>
-        <div class="text-subtitle">{{ "ranking.commits" | translate }}</div>
-    </div>
+    <ion-row align-items-center>
+        <ion-col class="text-title text-title--yellow"> {{ reputation }} </ion-col>
+        <ion-col>
+            <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+        </ion-col>
+    </ion-row>
+
 </td>
 <td>
-    <div class="info-container">
-        <div class="text-info">{{ agreed }}%</div>
-        <div class="text-subtitle">{{ "ranking.agreed" | translate }}</div>
-    </div>
+    <ion-row justify-content-center class="text-title">{{ numReviews }}</ion-row>
+    <ion-row justify-content-center class="text-description">{{ "ranking.reviews" | translate }}</ion-row>
+</td>
+<td>
+    <ion-row justify-content-center class="text-title">{{ numCommits }}</ion-row>
+    <ion-row justify-content-center class="text-description">{{ "ranking.commits" | translate }}</ion-row>
+</td>
+<td>
+    <ion-row justify-content-center class="text-title">{{ agreed }}%</ion-row>
+    <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }}</ion-row>
 </td>

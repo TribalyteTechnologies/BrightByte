@@ -1,43 +1,52 @@
 <ion-header no-border class="main-header">
-    <div class="title">{{ "commits.title" | translate }}</div>
-    <div class="button" (click)="openAddCommitDialog()">
-        <div class="button-container">
-            <div class="text">{{ "commits.add" | translate }}</div>
-        </div>
-    </div>
+    <ion-row no-padding class="header-row">
+        <ion-col no-padding align-self-center>
+            <div class="text-main">{{ "commits.title" | translate }}</div>
+        </ion-col>
+        <ion-col col-auto padding align-self-center>
+            <button (click)="openAddCommitDialog()" class="btn btn--paddings btn__dark">{{ "commits.add" | translate }}</button>
+        </ion-col>
+    </ion-row>
 </ion-header>
 
-<ion-content class="background-style" padding>
-
+<ion-content padding class="main-container">
     <filter-selection [projects]="projects" (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
-    <div class="header-contents">
-        <div class="title-left">Showing all your commits</div>
-        <div class="title-right" *ngIf="currentCommit">Details</div>
-    </div>
-    <div class="contents">
-        <div class="list-commits styled">
-            <div [ngClass]="setStyle(i)" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
-                <commit-card [commit]="commit"></commit-card>
-                <div class="card-style-separator"></div>
-            </div>
-        </div>
-        <div class="div-separator" *ngIf="currentCommit"></div>
-        <div class="list-comments" *ngIf="currentCommit">
-
-            <div class="commit-information">
-                <div class="text-title"> {{ currentCommit.title }} </div>
-                <div class="text-description">
-                    <img class="details-icon" src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
-                    <img class="details-icon" src="../../../../assets/imgs/user-icon.svg">{{ currentCommitName }} ({{ currentCommitEmail }})
+    <ion-row no-padding>
+        <ion-col padding class="text-details text-details--bold">
+            Showing all your commits
+        </ion-col>
+        <ion-col col-5 padding class="text-details text-details--bold" *ngIf="currentCommit">
+            Details
+        </ion-col>
+    </ion-row>
+    <ion-row no-padding>
+        <ion-col>
+            <div class="main-style">
+                <div [ngClass]="commit === currentCommit ? 'card card__selected' : 'card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
+                    <commit-card [commit]="commit"></commit-card>
                 </div>
             </div>
-            <div class="header-contents padding-bottom">
-                <div class="title-left">Current Reviews</div>
-            </div>
-            <div class="commit-information" *ngIf="commitComments.length === 0">
+        </ion-col>
+        <ion-col col-5 *ngIf="currentCommit">
+            <ion-row padding class="main-style">
+                <ion-col>
+                    <ion-row class="text-title"> {{ currentCommit.title }} </ion-row>
+                    <ion-row align-items-center class="text-description">
+                        <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
+                        <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+            <ion-row padding class="text-details text-details--bold">
+                Current Reviews
+            </ion-row>
+            <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
                 <div class="text-description">Nobody reviewed this commit</div>
-            </div>
-            <commit-comment *ngFor="let comment of commitComments; let j=index " [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
-        </div>
-    </div>
+            </ion-row>
+            <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
+                <commit-comment [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
+                <ion-row padding></ion-row>
+            </ion-col>
+        </ion-col>
+    </ion-row>
 </ion-content>

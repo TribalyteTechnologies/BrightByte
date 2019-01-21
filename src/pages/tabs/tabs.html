@@ -6,12 +6,12 @@
         <div class="avatar-container">
             <img class="avatar-icon" [src]="'http://identicon.org?t='+ name">
         </div>
-        <div *ngFor="let page of menuArray" (click)="goTo(page.url)" [ngClass]="page.url === currentPage ? 'button-container selected' : 'button-container'">
+        <button *ngFor="let page of menuArray" (click)="goTo(page.url)" [ngClass]="page.url === currentPage ? 'tab tab__selected' : 'tab'">
             <img class="button-icon" [src]="'../../assets/imgs/menu/'+ page.icon">
-        </div>
-        <div class="button-container logout" (click)="logout()">
+        </button>
+        <button class="tab logout" (click)="logout()">
             <img class="button-icon" src="../../assets/imgs/menu/logout.svg">
-        </div>
+        </button>
     </div>
     <ion-nav [root]="currentPage" main></ion-nav>
 </ion-split-pane>

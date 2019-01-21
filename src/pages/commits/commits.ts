@@ -189,13 +189,7 @@ export class CommitPage {
         
     }
 
-    public setStyle(idx: number): string{
-        if(idx === this.filterArrayCommits.indexOf(this.currentCommit)){
-            return "item-selected";
-        } else {
-            return "card-list-item";
-        }
-    }
+    
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{
         let hash = commit.author;

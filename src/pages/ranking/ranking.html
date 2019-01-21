@@ -1,90 +1,106 @@
 <ion-header no-border class="main-header">
-    <div class="title">{{ "ranking.title" | translate }}</div>
-    <div class="button" (click)="goBackToUser()">
-        <div class="button-container">
-            <div class="text">{{ "ranking.retrieve" | translate }}</div>
-        </div>
-    </div>
+    <ion-row no-padding class="header-row">
+        <ion-col no-padding align-self-center>
+            <div class="text-main">{{ "ranking.title" | translate }}</div>
+        </ion-col>
+        <ion-col col-auto padding align-self-center>
+            <button (click)="goBackToUser()" class="btn btn--paddings btn__dark">{{ "ranking.retrieve" | translate }}</button>
+        </ion-col>
+    </ion-row>
 </ion-header>
 
-<ion-content class="background-style">
-    <div class="page-container">
-        <div class="table-container">
-            <table class="table-style">
-                <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'main-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [ranking]="user"></tr>
+<ion-content padding class="main-container">
+    <ion-row no-padding>
+        <ion-col padding class="text-details text-details--bold">
+            User Ranking
+        </ion-col>
+        <ion-col col-5 padding class="text-details text-details--bold">
+            Details
+        </ion-col>
+    </ion-row>
+    <ion-row no-padding>
+        <ion-col>
+            <table class="table">
+                <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [ranking]="user"></tr>
             </table>
-        </div>
-        <div class="div-separator"></div>
-        <div class="profile-details-container">
-            <div class="card-profile">
-                <div class="profile-avatar">
-                    <img class="avatar-icon" src="http://identicon.org?t={{ userRankDetails.name }}">
-                </div>
-                <div class="text-title">{{ userRankDetails.name }}</div>
-                <div class="text-description"> {{ userRankDetails.email }}</div>
-                <div class="profile-ranks">
-                    <div class="info-card"> {{ userRankDetails.rank }} </div>
-                    <div class="info-card"> {{ "ranking.level" | translate }} {{ userRankDetails.level }} </div>
-                    <div class="info-card">
-                        <div>{{ userRankDetails.score }}</div>
-                        <img src="../../assets/imgs/star-icon.svg">
-                    </div>
-                </div>
-                <div class="details-container">
-                    <div class="details-col">
-                        <div class="text-info">{{ userRankDetails.reviews }}</div>
-                        <div class="text-subtitle">{{ "ranking.reviews" | translate }}</div>
-                    </div>
-                    <div class="separation-details"></div>
-                    <div class="details-col">
-                        <div class="text-info">{{ userRankDetails.commits }}</div>
-                        <div class="text-subtitle">{{ "ranking.commits" | translate }}</div>
-                    </div>
-                    <div class="separation-details"></div>
-                    <div class="details-col">
-                        <div class="text-info">{{ userRankDetails.agreed }}%</div>
-                        <div class="text-subtitle">{{ "ranking.agreed" | translate }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="div-separator-horizontal"></div>
-            <div class="card-profile paddings">
-                <div class="row-details">
-                    <div class="trophy-container">
-                        <div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[0]}}"></div>
-                        <div class="text-subtitle">{{ "ranking.tenCommits" | translate }}</div>
-                    </div>
-                    <div class="separation-details"></div>
-                    <div class="trophy-container">
-                        <div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[1]}}"></div>
-                        <div class="text-subtitle">{{ "ranking.fiftyCommits" | translate }}</div>
-                    </div>
-                    <div class="separation-details"></div>
-                    <div class="trophy-container">
-                        <div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[2]}}"></div>
-                        <div class="text-subtitle">{{ "ranking.hundredCommits" | translate }}</div>
-                    </div>
-                </div>
-                <div class="separation-details"></div>
-                <div class="row-details">
-                    <div class="trophy-container">
-                        <div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[3]}}"></div>
-                        <div class="text-subtitle">{{ "ranking.tenReviews" | translate }}</div>
-                    </div>
-                    <div class="separation-details"></div>
-                    <div class="trophy-container">
-                        <div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[4]}}"></div>
-                        <div class="text-subtitle">{{ "ranking.fiftyReviews" | translate }}</div>
-                    </div>
-                    <div class="separation-details"></div>
-                    <div class="trophy-container">
-                        <div class="trophy"><img src="../../assets/imgs/trophys/{{userTrophyList[5]}}"></div>
-                        <div class="text-subtitle">{{ "ranking.hundredReviews" | translate }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        </ion-col>
+        <ion-col col-5 class="profile-details-container">
+            <ion-row padding justify-content-center class="main-style">
+                <ion-col>
+                    <ion-row padding justify-content-center>
+                        <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ userRankDetails.name }}">
+                    </ion-row>
+                    <ion-row justify-content-center class="text-title">
+                        {{ userRankDetails.name }}
+                    </ion-row>
+                    <ion-row justify-content-center class="text-description">
+                        {{ userRankDetails.email }}
+                    </ion-row>
+                    <ion-row padding justify-content-center class="hor-separator">
+                        <ion-col col-auto>
+                            <button class="btn btn--label btn__grey"> {{ "ranking.level" | translate }} {{ userRankDetails.level }} </button>
+                        </ion-col>
+                        <ion-col col-auto>
+                            <button class="btn btn--label btn__grey"> {{ userRankDetails.rank }} </button>
+                        </ion-col>
+                        <ion-col col-auto>
+                            <button class="btn btn--label btn__grey">
+                                {{ userRankDetails.score }}
+                                <img class="btn--img" src="../../assets/imgs/star-icon.svg">
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row padding justify-content-center>
+                        <ion-col class="vert-separator">
+                            <ion-row justify-content-center class="text-title">{{ userRankDetails.reviews }}</ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.reviews" | translate }}</ion-row>
+                        </ion-col>
+                        <ion-col class="vert-separator">
+                            <ion-row justify-content-center class="text-title">{{ userRankDetails.commits }}</ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.commits" | translate }}</ion-row>
+                        </ion-col>
+                        <ion-col>
+                            <ion-row justify-content-center class="text-title"> {{ userRankDetails.agreed }}%</ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }}</ion-row>
+                        </ion-col>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+            <ion-row padding></ion-row>
+            <ion-row padding class="main-style">
+                <ion-col>
+                    <ion-row class="hor-separator">
+                        <ion-col class="vert-separator">
+                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[0]}}"></ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.tenCommits" | translate }}</ion-row>
+                        </ion-col>
+                        <ion-col class="vert-separator">
+                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[1]}}"></ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.fiftyCommits" | translate }}</ion-row>
+                        </ion-col>
+                        <ion-col>
+                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[2]}}"></ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.hundredCommits" | translate }}</ion-row>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col class="vert-separator">
+                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[3]}}"></ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.tenReviews" | translate }}</ion-row>
+                        </ion-col>
+                        <ion-col class="vert-separator">
+                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[4]}}"></ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.fiftyReviews" | translate }}</ion-row>
+                        </ion-col>
+                        <ion-col>
+                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[5]}}"></ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "ranking.hundredReviews" | translate }}</ion-row>
+                        </ion-col>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+        </ion-col>
+    </ion-row>
 
 
 

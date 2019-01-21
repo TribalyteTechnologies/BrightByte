@@ -1,18 +1,27 @@
-<div class="filter-container">
-    <select (change)="setProject($event.target.value)" class="dropdown">
+<ion-row>
+    <ion-col>
+        <select (change)="setProject($event.target.value)" class="dropdown">
             <option value="all" selected="true">{{ "commits.allProjects" | translate }}</option>
             <option *ngFor="let option of projects" [value]="option">{{ option }}</option>
         </select>
-    <div class="div-separator"></div>
-    <div [ngClass]="filterValue === INCOMPLETED ? 'filter-button active red' : 'filter-button'" (click)="setIncompleted()">
-        {{ "commits.pending" | translate }}
-    </div>
-    <div class="div-separator"></div>
-    <div [ngClass]="filterValue === COMPLETED ? 'filter-button active blue' : 'filter-button'" (click)="setCompleted()">
-        {{ "commits.reviewed" | translate }}
-    </div>
-    <div class="div-separator"></div>
-    <div [ngClass]="filterIsPending ? 'filter-button active yellow' : 'filter-button'" (click)="setPending()">
-        {{ "commits.updated" | translate }}
-    </div>
-</div>
+    </ion-col>
+    <ion-col col-5 no-padding>
+        <ion-row no-padding>
+            <ion-col>
+                <button [ngClass]="filterValue === INCOMPLETED ? 'btn btn--full btn__red' : 'btn btn--full btn__grey'" (click)="setIncompleted()">
+                    {{ "commits.pending" | translate }}
+                </button>
+            </ion-col>
+            <ion-col>
+                <button [ngClass]="filterValue === COMPLETED ? 'btn btn--full btn__blue' : 'btn btn--full btn__grey'" (click)="setCompleted()">
+                    {{ "commits.reviewed" | translate }}
+                </button>
+            </ion-col>
+            <ion-col>
+                <button [ngClass]="filterIsPending ? 'btn btn--full btn__yellow' : 'btn btn--full btn__grey'" (click)="setPending()">
+                    {{ "commits.updated" | translate }}
+                </button>
+            </ion-col>
+        </ion-row>
+    </ion-col>
+</ion-row>

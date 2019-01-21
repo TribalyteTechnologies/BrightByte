@@ -1,24 +1,28 @@
-<div class="card-comment">
-    <div class="header">
-        <img class="user-avatar" src="http://identicon.org?t={{ review.name }}">
-        <div class="user-information">
-            <div class="text-information">
-                <div class="text-title right-padding">{{ review.name }}</div>
-                <div class="text-date">{{ review.lastModificationDateMs | dateFormat }}</div>
-            </div>
-            <rating [rate]="review.score" readonly="true" small="true"></rating>
-        </div>
-    </div>
-    <div class="text-description text-margins">
+<ion-grid padding class="main-style">
+    <ion-row class="card">
+        <ion-col padding col-auto>
+            <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ review.name }}">
+        </ion-col>
+        <ion-col padding align-items-center>
+            <ion-row no-padding>
+                <ion-col col-auto class="text-title">{{ review.name }}</ion-col>
+                <ion-col class="text-details">{{ review.lastModificationDateMs | dateFormat }}</ion-col>
+            </ion-row>
+            <ion-row no-padding>
+                <rating [rate]="review.score" readonly="true" small="true"></rating>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+    <ion-row padding class="text-description card">
         {{ review.text }}
-    </div>
-    <ion-row>
-        <button class="button-classic-active" *ngIf="review.vote==0"> {{ "review.noVote" | translate }}</button>
     </ion-row>
-    <ion-row>
-        <button class="button-green-active" *ngIf="review.vote==1"> {{ "review.positiveVote" | translate }}</button>
+    <ion-row padding *ngIf="review.vote==0">
+        <button class="btn btn--full btn__blue">  {{ "review.noVote" | translate }}</button>
     </ion-row>
-    <ion-row>
-        <button class="button-red-active" *ngIf="review.vote==2"> {{ "review.negativeVote" | translate }}</button>
+    <ion-row padding *ngIf="review.vote==1">
+        <button class="btn btn--full btn__blue">  {{ "review.positiveVote" | translate }}</button>
     </ion-row>
-</div>
+    <ion-row padding *ngIf="review.vote==2">
+        <button class="btn btn--full btn__red"> {{ "review.negativeVote" | translate }}</button>
+    </ion-row>
+</ion-grid>

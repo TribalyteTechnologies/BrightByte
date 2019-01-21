@@ -29,30 +29,7 @@ page-tabs {
                 background-color: color($colors, backgroundLight);
             }
         }
-        .button-container {
-            height: 60px;
-            line-height: 60px;
-            width: 100%;
-            text-align: center;
-            margin-top: 10px;
-            .button-icon {
-                max-height: 20px;
-                max-width: 20px;
-                vertical-align: middle;
-                opacity: 0.25;
-            }
-        }
-        .button-container.selected {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid color($colors, grass);
-            .button-icon {
-                opacity: 1;
-            }
-        }
-        .button-container:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        .button-container.logout {
+        .logout {
             margin-top: auto;
         }
     }

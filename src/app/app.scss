@@ -1,271 +1,296 @@
-// http://ionicframework.com/docs/theming/
-// App Global Sass
-// --------------------------------------------------
-// Put style rules here that you want to apply globally. These
-// styles are for the entire app and not just one component.
-// Additionally, this file can be also used as an entry point
-// to import other Sass files to be included in the output CSS.
-//
-// Shared Sass variables, which can be used to adjust Ionic's
-// default Sass variables, belong in "theme/variables.scss".
-//
-// To declare rules for a specific mode, create a child rule
-// for the .md, .ios, or .wp mode classes. The mode class is
-// automatically applied to the <body> element in the app.
-//////////////////////////////////////////
-///////////////// HEADER /////////////////
-//////////////////////////////////////////
-.main-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 20px;
-    padding-right: 30px;
-    padding-left: 20px;
-    .title {
-        line-height: 40px;
-        font-size: 22px;
-        font-weight: 500;
-    }
-    .button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 40px;
-        padding-left: 30px;
-        padding-right: 30px;
-        color: #fff;
-        background-color: rgb(40, 47, 58);
-        border-radius: 20px;
-        .button-container {
-            display: flex;
-            flex-direction: row-reverse;
-            align-items: center;
-            .icon {
-                height: 18px;
-                width: auto;
-            }
-            .text {
-                font-size: 12px;
-                font-weight: 500;
-                padding-right: 5px;
-            }
+/**
+ * CONTENTS
+ *
+ * SETTINGS
+ * Global...............Global styles.
+ *
+ * BASE
+ * Texts.............Different font styles.
+ *
+ * OBJECTS
+ * Icons.............Icons definitions
+ * Wrappers.............Wrapping and constraining elements.
+ *
+ * COMPONENTS
+ * Buttons..............Button elements.
+ * - Tab buttons
+ * - General buttons
+ */
+
+
+/*------------------------------------*\
+  #SETTINGS
+/*------------------------------------*\
+
+/*----------- GLOBAL ----------*/
+
+.main-style {
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card__selected,
+.card:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.card:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-user {
+    background-color: rgba(137, 219, 247, 0.15);
+}
+
+.table {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-collapse: inherit;
+    tr:not(:last-child) {
+        td {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
     }
-    .button:hover {
-        background-color: rgb(52, 60, 73);
-        .button {
-            opacity: 1;
-        }
+    td {
+        background-color: #fff;
+        height: 80px;
+        padding: 10px;
     }
 }
 
-////////
-.background-style {
-    background-color: color($colors, backgroundLight);
+
+/*------------------------------------*\
+  #BASE
+/*------------------------------------*\
+/*----------- TEXTS ----------*/
+
+.text-main {
+    font-size: 22px;
+    font-weight: 500;
 }
 
 .text-title {
-    line-height: 25px;
     font-size: 17px;
     font-weight: bold;
 }
 
-.text-title.big {
-    font-size: 25px;
+.text-title--yellow {
+    color: #f39c12;
 }
 
-.text-title.padding {
-    padding-bottom: 15px;
+.text-details {
+    line-height: 25px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.text-details--bold {
+    font-weight: 600;
 }
 
 .text-description {
     line-height: 25px;
     font-size: 15px;
-    color: color($colors, greyText);
+    color: rgba(0, 0, 0, 0.5);
 }
 
 .text-url {
     font-size: 13px;
     line-height: 20px;
-    color: color($colors, link);
+    color: #3e8ef7;
 }
 
 .text-url:hover {
     text-decoration: underline;
 }
 
-.text-date {
-    line-height: 25px;
-    font-size: 13px;
-    color: color($colors, greyTextLight);
+
+/*------------------------------------*\
+  #OBJECTS
+\*------------------------------------*/
+
+
+/*----------- ICONS ----------*/
+
+.ico {
+    margin-right: 5px;
+    height: 13px;
 }
 
-.text-subtitle {
-    color: color($colors, greyTextLight);
-    font-size: 12px;
-    text-align: center;
-    width: 100%;
-}
-
-.text-info {
-    color: color($colors, greyText);
-    font-size: 22px;
-    font-weight: bold;
-    text-align: center;
-    width: 100%;
-}
-
-// ELEMENTS CLASSES
-.green-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: color($colors, grass);
-}
-
-.red-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: color($colors, cherry);
-}
-
-.notifications {
-    color: white;
-    background-color: color($colors, report);
-    border-radius: 50%;
+.ico__big {
     height: 25px;
-    width: 25px;
-    margin-left: 10px;
-    font-size: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
-.reviewers-left {
+.ico__margin {
+    margin-left: 10px;
+}
+
+.ico-trophy {
+    display: inline;
+    width: 50px;
+}
+
+.status {
+    width: 3px;
+    height: 85px;
+    margin-right: 15px;
+}
+
+.status--red {
+    background-color: #ff4c52;
+}
+
+.status--blue {
+    background-color: #67c9eb;
+}
+
+.box-reviewer {
+    height: 40px;
+    width: 40px;
+    color: rgba(0, 0, 0, 0.55);
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 40px;
+    background-color: transparent;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+}
+
+.box-reviewer:hover {
+    background-color: #67c9eb;
+    color: #fff;
+    border: 0px;
+}
+
+.box-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid color($colors, greyText);
-    color: color($colors, greyText);
-    font-weight: 500;
-    background-color: color($colors, backgroundLight);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #fff;
 }
 
-.reviewers-left:hover {
-    background-color: color($colors, greyText);
-    color: white;
+.box-avatar__big {
+    width: 60px;
+    height: 60px;
 }
 
-.card-style {
-    border-radius: 5px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+
+/*----------- WRAPPERS ----------*/
+
+.main-header {
+    padding: 0 15px;
+    height: 70px;
 }
 
-.label-user {
-    margin-right: 10px;
-    padding: 5px;
-    font-size: 10px;
-    color: white;
-    border-radius: 5px;
-}
-
-.label-user.green {
-    background-color: color($colors, grass);
-}
-
-.label-user.dark {
-    background-color: color($colors, dark);
-}
-
-.button-classic-active {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, main);
-    width: 100%;
+.header-row {
     height: 100%;
-    min-height: 40px;
 }
 
-.button-red-active {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, cherry);
+.main-container {
+    background-color: #f3f6f9;
+}
+
+.hor-separator {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.vert-separator {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+/*------------------------------------*\
+  #COMPONENTS
+\*------------------------------------*/
+
+
+/*----------- TAB BUTTONS ----------*/
+
+.tab {
+    height: 60px;
+    line-height: 60px;
     width: 100%;
-    height: 100%;
-    min-height: 40px;
+    margin-top: 10px;
+    background-color: transparent;
 }
 
-.button-red-inactive {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, cherryLight);
-    width: 100%;
-    height: 100%;
-    min-height: 40px;
+.tab img {
+    max-height: 20px;
+    max-width: 20px;
+    vertical-align: middle;
+    opacity: 0.25;
 }
 
-.button-green-active {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, grass);
-    width: 100%;
-    height: 100%;
-    min-height: 40px;
-}
-
-.button-green-inactive {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, grassLight);
-    width: 100%;
-    height: 100%;
-    min-height: 40px;
-}
-
-.button-yellow-active {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, report);
-    width: 100%;
-    height: 100%;
-    min-height: 40px;
-}
-
-.button-yellow-inactive {
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 15px;
-    background-color: color($colors, reportLight);
-    width: 100%;
-    height: 100%;
-    min-height: 40px;
-}
-
-.avatar {
-    margin-right: 10px;
-    margin-left: 10px;
-    border-radius: 50%;
-    background-color: color($colors, backgroundLight);
-    display: block;
-    box-sizing: border-box;
-    .img {
-        width: 100%;
-        height: 100%;
+.tab__selected {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #5eaeda;
+    img {
+        opacity: 1;
     }
 }
 
-.window-icon {
-    padding-left: 5px;
+
+/*----------- GENERAL BUTTONS ----------*/
+
+.btn {
+    font-size: 13px;
+    font-weight: 500;
+    height: 40px;
+    border-radius: 20px;
+}
+
+.btn--img {
+    display: inline-block;
+    width: 15px;
+    vertical-align: middle;
+}
+
+.btn--label {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.btn--paddings {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.btn--full {
+    width: 100%;
+}
+
+.btn__dark {
+    color: #fff;
+    background-color: #282f3a;
+}
+
+.btn__red {
+    color: #fff;
+    background-color: #ff4c52;
+}
+
+.btn__yellow {
+    color: #fff;
+    background-color: #f39c12;
+}
+
+.btn__blue {
+    color: #fff;
+    background-color: #5eaeda;
+}
+
+.btn__blue:hover {
+    background-color: #559fc7;
+}
+
+.btn__grey {
+    color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn__grey:hover {
+    background-color: rgba(0, 0, 0, 0.15);
 }

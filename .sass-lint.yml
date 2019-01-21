@@ -14,10 +14,6 @@ rules:
     - 0
     - allow-single-line: false
       style: '1tbs'
-  class-name-format:
-    - 2
-    - allow-leading-underscore: false
-      convention: hyphenatedlowercase
   clean-import-paths:
     - 0
     - filename-extension: true

@@ -8,7 +8,6 @@
   "src-not-empty": true,
   "title-require": true,
   "alt-require": false,
-  "id-class-value": "dash",
   "space-tab-mixed-disabled": "true",
   "id-class-ad-disabled": true,
   "attr-no-duplication": true,

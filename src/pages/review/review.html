@@ -1,60 +1,72 @@
 <ion-header no-border class="main-header">
-    <div class="title">{{ "review.title" | translate }}</div>
+    <ion-row no-padding class="header-row">
+        <ion-col no-padding align-self-center>
+            <div class="text-main">{{ "review.title" | translate }}</div>
+        </ion-col>
+    </ion-row>
 </ion-header>
 
-<ion-content class="background-style" padding>
+<ion-content padding class="main-container">
     <filter-selection [projects]="projects" (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
-    <div class="header-contents">
-        <div class="title-left">Showing all your commits</div>
-        <div class="title-right" *ngIf="currentCommit">Details</div>
-    </div>
-    <div class="contents">
-        <div class="list-commits">
-            <div [ngClass]="setStyle(i)" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
-                <review-card [commit]="commit"></review-card>
-            </div>
-        </div>
-        <div class="div-separator" *ngIf="currentCommit"></div>
-        <div class="list-comments" *ngIf="currentCommit">
-            <div class="commit-information">
-                <div class="text-title"> {{ currentCommit.title }} </div>
-                <div class="text-description">
-                    <img class="details-icon" src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
-                    <img class="details-icon" src="../../../../assets/imgs/user-icon.svg">{{ currentCommitName }} ({{ currentCommitEmail }})
+
+    <ion-row no-padding>
+        <ion-col padding class="text-details text-details--bold">
+            Showing all your commits
+        </ion-col>
+        <ion-col col-5 padding class="text-details text-details--bold" *ngIf="currentCommit">
+            Details
+        </ion-col>
+    </ion-row>
+    <ion-row no-padding>
+        <ion-col>
+            <div class="main-style">
+                <div [ngClass]="commit === currentCommit ? 'card card__selected' : 'card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
+                    <review-card [commit]="commit"></review-card>
                 </div>
             </div>
-            <div class="header-contents padding-bottom" *ngIf="needReview">
-                <div class="title-left">Set Review</div>
-            </div>
-            <div class="commit-information" *ngIf="needReview">
-                <ion-item>
-                    <div class="text-title">
-                        Set your review
-                    </div>
-                </ion-item>
-                <ion-item>
-                    <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment">
-                    </ion-textarea>
-                </ion-item>
-                <ion-item>
-                    <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
-                        <ion-icon clas="icon-size" name="{{ star[number] }}"></ion-icon>
-                    </button>
-                </ion-item>
-                <ion-item>
-                    <button class="button-green-active" (click)="setReview(currentCommit.url, textComment, rate); textComment =''">
-                        {{ "commitReview.review" | translate }}
-                    </button>
-                </ion-item>
-            </div>
-            <div class="header-contents padding-bottom" *ngIf="userCommitComment[0]">
-                <div class="title-left">Your Review</div>
-            </div>
+        </ion-col>
+        <ion-col col-5 *ngIf="currentCommit">
+            <ion-row padding class="main-style">
+                <ion-col>
+                    <ion-row class="text-title"> {{ currentCommit.title }} </ion-row>
+                    <ion-row align-items-center class="text-description">
+                        <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
+                        <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+            <ion-row *ngIf="needReview" padding class="title-left text-details text-details--bold">
+                Set Review
+            </ion-row>
+            <ion-row padding class="main-style" *ngIf="needReview">
+                <ion-col>
+                    <ion-row class="text-title">Set your review</ion-row>
+                    <ion-row>
+                        <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment"></ion-textarea>
+                    </ion-row>
+                    <ion-row padding justify-content-center>
+                        <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number)">
+                            <ion-icon clas="icon-size" name="{{ star[number] }}"></ion-icon>
+                        </button>
+                    </ion-row>
+                    <ion-row>
+                        <button class="btn btn--full btn__blue" (click)="setReview(currentCommit.url, textComment, rate); textComment =''">
+                            {{ "commitReview.review" | translate }}
+                        </button>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+            <ion-row padding *ngIf="userCommitComment[0]" class="text-details text-details--bold">
+                Your review
+            </ion-row>
             <review-comment [review]="userCommitComment[0]" *ngIf="userCommitComment[0]"></review-comment>
-            <div class="header-contents padding-bottom" *ngIf="commitComments.length > 0">
-                <div class="title-left">Other Reviews</div>
-            </div>
-            <review-comment [review]="comment" *ngFor="let comment of commitComments; let j=index "></review-comment>
-        </div>
-    </div>
+            <ion-row padding *ngIf="commitComments.length > 0" class="text-details text-details--bold">
+                Other Reviews
+            </ion-row>
+            <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
+                <review-comment *ngFor="let comment of commitComments; let j=index " [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></review-comment>
+                <ion-row padding></ion-row>
+            </ion-col>
+        </ion-col>
+    </ion-row>
 </ion-content>
