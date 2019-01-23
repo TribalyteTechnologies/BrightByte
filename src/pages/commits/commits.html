@@ -15,7 +15,7 @@
         <ion-col padding class="text-details text-details--bold">
             Showing all your commits
         </ion-col>
-        <ion-col col-5 padding class="text-details text-details--bold" *ngIf="currentCommit">
+        <ion-col col-6 padding class="text-details text-details--bold" *ngIf="currentCommit">
             Details
         </ion-col>
     </ion-row>
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </ion-col>
-        <ion-col col-5 *ngIf="currentCommit">
+        <ion-col col-6 *ngIf="currentCommit">
             <ion-row padding class="main-style">
                 <ion-col>
                     <ion-row class="text-title"> {{ currentCommit.title }} </ion-row>

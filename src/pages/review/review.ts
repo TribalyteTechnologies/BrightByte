@@ -119,7 +119,7 @@ export class ReviewPage {
 
     public shouldOpen(commit: UserCommit) {  
         this.spinnerService.showLoader();
-
+        commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.openedComments = true;

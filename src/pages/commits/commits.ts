@@ -163,6 +163,7 @@ export class CommitPage {
         this.log.d("Opening commit: " + commit.url);
         this.spinnerService.showLoader();
         this.log.d("Opening commit: " + commit.url);
+        commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: CommitComment[][]) => {
                 this.log.d("We received " + comments.length + " comments");

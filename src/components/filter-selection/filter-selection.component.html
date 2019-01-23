@@ -5,7 +5,7 @@
             <option *ngFor="let option of projects" [value]="option">{{ option }}</option>
         </select>
     </ion-col>
-    <ion-col col-5 no-padding>
+    <ion-col col-6 no-padding>
         <ion-row no-padding>
             <ion-col>
                 <button [ngClass]="filterValue === INCOMPLETED ? 'btn btn--full btn__red' : 'btn btn--full btn__grey'" (click)="setIncompleted()">

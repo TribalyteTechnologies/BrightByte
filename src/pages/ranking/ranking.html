@@ -14,7 +14,7 @@
         <ion-col padding class="text-details text-details--bold">
             User Ranking
         </ion-col>
-        <ion-col col-5 padding class="text-details text-details--bold">
+        <ion-col col-6 padding class="text-details text-details--bold">
             Details
         </ion-col>
     </ion-row>
@@ -24,7 +24,7 @@
                 <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [ranking]="user"></tr>
             </table>
         </ion-col>
-        <ion-col col-5 class="profile-details-container">
+        <ion-col col-6 class="profile-details-container">
             <ion-row padding justify-content-center class="main-style">
                 <ion-col>
                     <ion-row padding justify-content-center>

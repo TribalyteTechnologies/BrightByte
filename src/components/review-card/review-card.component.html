@@ -12,7 +12,9 @@
             <div class="text-details" (click)="openUrl(urlLink, true)"> Open in new tab</div>
         </ion-row>
         <ion-row class="text-title">
-            {{ title | slice:0:40 }}
+            <div class="text-ellipsis">
+                {{ title }}
+            </div>
             <ion-icon *ngIf="isReadNeeded" class="notifications" name="notifications"></ion-icon>
         </ion-row>
         <ion-row>
