@@ -60,6 +60,28 @@
     }
 }
 
+.form-style {
+    width: 100%;
+}
+
+.form-input {
+    font-size: 15px;
+    line-height: 15px;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.form-input:placeholder-shown {
+    font-size: 12px;
+    font-style: italic;
+    //border-bottom-color: #ff4c52;
+}
+
 
 /*------------------------------------*\
   #BASE
@@ -112,6 +134,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 
 /*------------------------------------*\
   #OBJECTS
@@ -182,6 +205,22 @@
     height: 60px;
 }
 
+.checkbox {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.checkbox--selected {
+    background-color: #5eaeda;
+    border: 2px solid #559fc7;
+}
+
+.checkbox--unselected {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
 
 /*----------- WRAPPERS ----------*/
 
@@ -204,6 +243,30 @@
 
 .vert-separator {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.label {
+    width: 100%;
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 40px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.label__error {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #ff4c52;
+}
+
+.label__success {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #559fc7;
 }
 
 
@@ -247,6 +310,10 @@
     border-radius: 20px;
 }
 
+.btn--margins {
+    margin: 5px;
+}
+
 .btn--img {
     display: inline-block;
     width: 15px;
@@ -265,6 +332,13 @@
 
 .btn--full {
     width: 100%;
+}
+
+.btn--switch {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
 
 .btn__dark {

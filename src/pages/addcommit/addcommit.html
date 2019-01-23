@@ -1,45 +1,113 @@
 <ion-content padding>
-    <div class="title">{{ "addCommit.add" | translate }}</div>
-    <form id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(myForm.get('url').value, myForm.get('title').value)" novalidate>
-        <ion-item>
-            <ion-label stacked>{{ "addCommit.titleCommit" | translate }}:</ion-label>
-            <ion-input formControlName="title" type="text" placeholder="{{ 'addCommit.inputTitle' | translate }}"></ion-input>
-        </ion-item>
-        <ion-item *ngIf="myForm.get('title').errors && myForm.get('title').dirty">
-            <p color="danger" ion-text *ngIf="myForm.get('title').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
-        </ion-item>
-        <ion-item>
-            <ion-label stacked>URL:</ion-label>
-            <ion-input formControlName="url" type="text" placeholder="URL"></ion-input>
-        </ion-item>
-        <ion-item *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
-            <p color="danger" ion-text *ngIf="myForm.get('url').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
-            <p color="danger" ion-text *ngIf="myForm.get('url').hasError('pattern')">{{ "addCommit.notUrl" | translate }}</p>
-        </ion-item>
-        <p class="error-message">{{ msg }}</p>
-        <ion-spinner [hidden]="!isTxOngoing"></ion-spinner>
-        <br>
-    </form>
-
-    <ion-item class="add-title">{{ "addCommit.users" | translate }}:</ion-item>
-
-    <ion-item>
-        <ion-searchbar (ionInput)="refreshSearchbar($event)" placeholder="email@example.com" [(ngModel)]="usersMail[i]">
-        </ion-searchbar>
-        <ion-list>
-            <ion-item *ngFor="let item of arraySearch" (click)="setEmailFromList(item)">
-                {{ item }}
-            </ion-item>
-        </ion-list>
-    </ion-item>
-    <ion-row>
-        <ion-col>
-            <div class="user-card" *ngFor="let item of userAdded; let j = index" (click)="removeUser(j)">{{ item }}</div>
+    <ion-row padding class="text-title">{{ "addCommit.add" | translate }}</ion-row>
+    <ion-row no-padding>
+        <ion-col no-padding>
+            <button [ngClass]="commitMethod === 'url' ?'btn btn--full btn--switch btn__blue':'btn btn--full btn--switch btn__grey'" (click)="setUploadMethod('url')">URL</button>
+        </ion-col>
+        <ion-col no-padding>
+            <button [ngClass]="commitMethod === 'bitbucket' ?'btn btn--full btn--switch btn__blue':'btn btn--full btn--switch btn__grey'" (click)="setUploadMethod('bitbucket')">Bitbucket</button>
         </ion-col>
     </ion-row>
-    <ion-item>
-        <button class="button-submit" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-    </ion-item>
+    <ion-row padding *ngIf="commitMethod === 'url'" class="form-container">
+        <form class="form-style" id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(formUrl, formTitle)" novalidate>
+            <ion-row class="text-details text-details--bold">
+                {{ "addCommit.titleCommit" | translate }}:
+            </ion-row>
+            <ion-row>
+                <input class="form-input" formControlName="title" type="text" placeholder="{{ 'addCommit.inputTitle' | translate }}" [(ngModel)]="formTitle">
+            </ion-row>
+            <ion-row *ngIf="myForm.get('title').errors && myForm.get('title').dirty">
+                <div class="label label__error" *ngIf="myForm.get('title').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</div>
+            </ion-row>
+            <ion-row class="text-details text-details--bold">URL:</ion-row>
+            <ion-row>
+                <input class="form-input" formControlName="url" type="text" placeholder="URL" [(ngModel)]="formUrl">
+            </ion-row>
+            <ion-row *ngIf="myForm.get('url').errors && myForm.get('url').dirty">
+                <div class="label label__error" *ngIf="myForm.get('url').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</div>
+                <div class="label label__error" *ngIf="myForm.get('url').hasError('pattern')">{{ "addCommit.notUrl" | translate }}</div>
+            </ion-row>
+            <ion-spinner [hidden]="!isTxOngoing"></ion-spinner>
+        </form>
+    </ion-row>
+
+    <ion-row padding *ngIf="commitMethod === 'bitbucket'" class="form-container">
+        <form *ngIf="!(bitbucketUser['display_name'])" class="form-style" id="bitbucket-login" [formGroup]="bitbucketForm" (ngSubmit)="loginBitbucket(bitbucketForm.get('username').value, bitbucketForm.get('password').value)" novalidate>
+            <ion-row class="text-details text-details--bold">
+                Bitbucket username:
+            </ion-row>
+            <ion-row>
+                <input class="form-input" formControlName="username" type="text" placeholder="Bitbucket username">
+            </ion-row>
+            <ion-row *ngIf="bitbucketForm.get('username').errors && bitbucketForm.get('username').dirty ">
+                <div class="label label__error" *ngIf="bitbucketForm.get('username').hasError('required')">Usuario necesario</div>
+            </ion-row>
+            <ion-row class="text-details text-details--bold">
+                Bitbucket username:
+            </ion-row>
+            <ion-row>
+                <input class="form-input" formControlName="password" type="password" placeholder="Bitbucket password">
+            </ion-row>
+            <ion-row *ngIf="bitbucketForm.get('password').errors && bitbucketForm.get('password').dirty">
+                <div class="label label__error" *ngIf="bitbucketForm.get('password').hasError('required')">Password necesario</div>
+            </ion-row>
+            <ion-row>
+                <button class="btn btn--full btn__dark" type="submit" form="bitbucket-login" [disabled]="bitbucketForm.invalid || isTxOngoing">Login Bitbucket</button>
+            </ion-row>
+        </form>
+        <ion-col *ngIf="(bitbucketUser['display_name'])">
+            <ion-row>
+                <div class="label label__success">Welcome: {{ bitbucketUser["display_name"] }} </div>
+            </ion-row>
+            <ion-row>
+                <select (change)="getProjectCommits($event.target.value)" class="dropdown dropdown__arrow">
+                    <option *ngFor="let option of bitbucketProjects" [value]="option">{{ option }}</option>
+                </select>
+            </ion-row>
+            <ion-row class="list-card" *ngFor="let commit of commitList" (click)="setFromBitbucket(commit)">
+                <ion-col>
+                    <ion-row class="text-title">
+                        {{ commit["title"] }}
+                    </ion-row>
+                    <ion-row>
+                        <div class="text-url">
+                            #{{ commit["hash"] | slice:0:10 }}
+                        </div>
+                    </ion-row>
+                </ion-col>
+                <ion-col no-padding col-auto align-self-center>
+                    <div [ngClass]="selectedCommit === commit ? 'checkbox checkbox--selected' : 'checkbox checkbox--unselected'"></div>
+                </ion-col>
+            </ion-row>
+        </ion-col>
+
+    </ion-row>
+
+    <ion-row padding></ion-row>
+
+    <ion-row padding class="form-container form-container__form-top-rounded">
+        <ion-col>
+            <ion-row class="text-details text-details--bold">{{ "addCommit.users" | translate }}:</ion-row>
+            <ion-row>
+                <input class="dropdown dropdown__search" (change)="refreshSearchbar($event)" placeholder="email@example.com">
+            </ion-row>
+            <ion-row class="text-description list-card" *ngFor="let item of arraySearch" (click)="setEmailFromList(item)">
+                {{ item }}
+            </ion-row>
+        </ion-col>
+    </ion-row>
+    <ion-row padding></ion-row>
+    <ion-col no-padding *ngFor="let item of userAdded; let j = index">
+        <button class="btn btn--label btn--margins btn__grey " (click)="removeUser(j)">{{ item }}</button>
+    </ion-col>
+    <ion-row paddings></ion-row>
+    <ion-row *ngIf="msg">
+        <div class="label label__error">{{ msg }}</div>
+    </ion-row>
+    <ion-row>
+        <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
+        <button *ngIf="commitMethod === 'bitbucket'" class="btn btn--full btn__blue" type="submit" [disabled]="!(selectedCommit)" (click)="addCommit(formUrl, formTitle)">{{ "addCommit.title" | translate }}</button>
+    </ion-row>
 
 
 </ion-content>

@@ -10,6 +10,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
 import { StorageService } from "../../core/storage.service";
+import { BitbucketService } from "../../domain/bitbucket.service";
 
 @Component({
     selector: "popover-addcommit",
@@ -25,7 +26,17 @@ export class AddCommitPopover {
     public arraySearch: string[];
     public myForm: FormGroup;
     public userAdded = new Array<string>();
-    
+
+    public bitbucketForm: FormGroup;
+    public bitbucketUser = {};
+    public bitbucketProjects: Array<string> = [];
+    public commitList = [];
+    public formUrl = "";
+    public formTitle = "";
+    public currentProject = "";
+    public commitMethod = "url";
+    public selectedCommit: any;
+
     private allEmails = new Array<string>();
     private searchInput = "";
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
@@ -41,7 +52,8 @@ export class AddCommitPopover {
         private loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
         private storageSrv: StorageService,
-        private loginService: LoginService
+        private loginService: LoginService,
+        private bitbucketSrv: BitbucketService
     ) {
         this.log = this.loggerSrv.get("AddCommitPage");
         this.myForm = this.fb.group({
@@ -49,6 +61,10 @@ export class AddCommitPopover {
             Validators.pattern(
                 /^(https)(:)\/\/(bitbucket|github)\.(org|com)\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\/(commits|commit)\/[a-zA-Z0-9]+$/)]],
             title: ["", [Validators.required]]
+        });
+        this.bitbucketForm = this.fb.group({
+            username: ["", [Validators.required]],
+            password: ["", [Validators.required]]
         });
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
         this.contractManagerService.getAllUserReputation()
@@ -152,6 +168,7 @@ export class AddCommitPopover {
 
 
     public refreshSearchbar(ev: any) { 
+        console.log(ev.target.value);
         let val = ev.target.value;
         this.searchInput = val;
         this.setUpList(val);
@@ -183,6 +200,56 @@ export class AddCommitPopover {
     public removeUser(idx: number){
         this.userAdded.splice(idx, 1);
         this.setUpList(this.searchInput);
+    }
+
+    public loginBitbucket(username: string, password: string){
+        console.log("Sending username: " + username + " and password: " + password);
+        this.bitbucketSrv.loginUser(username, password).then(() => {
+            console.log("Hash recieved succesfully");
+            return this.bitbucketSrv.getUsername();
+        }).then((usr) => {
+            console.log("User recieved: " + usr);
+            this.bitbucketUser = usr;
+            return this.bitbucketSrv.getRepositories();
+        }).then((repos) => {
+            console.log(repos);
+            this.bitbucketProjects = repos.map((repo) => {
+                return repo["name"];
+            });
+        });
+    }
+
+    public getProjectCommits(project: string){
+        this.currentProject = project;
+        console.log(project);
+        this.bitbucketSrv.getReposlug(project).then((val) => {
+            console.log(val);
+            let commits: Array<any> = val["values"];
+            let filteredList = commits.filter((com) => {
+                let author: any = com["author"]["user"]["nickname"];
+                return author === this.bitbucketUser["username"]; 
+            });
+            filteredList.forEach((com, idx) => {
+                let titulo = com["message"].split("\n");
+                let object = {
+                    "title": titulo[0],
+                    "hash": com["hash"]
+                };
+                this.commitList.push(object);
+            });
+            console.log(this.commitList);
+        });
+    }
+
+    public setFromBitbucket(commit: any){
+        console.log(commit);
+        this.selectedCommit = commit;
+        this.formTitle = commit["title"];
+        this.formUrl = "https://bitbucket.org/tribalyte/" + this.currentProject + "/commits/" + commit["hash"];
+    }
+
+    public setUploadMethod(method: string){
+        this.commitMethod = method;
     }
     
     

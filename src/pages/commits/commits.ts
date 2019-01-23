@@ -93,7 +93,7 @@ export class CommitPage {
     }
 
     public openAddCommitDialog() {
-        let popover = this.popoverCtrl.create(AddCommitPopover, { cssClass: "custom-popover" });
+        let popover = this.popoverCtrl.create(AddCommitPopover, {},  {cssClass: "add-commit-popover"});
         popover.present();
         popover.onDidDismiss(() => {
             this.refresh();

@@ -33,6 +33,8 @@ import { StorageService } from "../core/storage.service";
 import { ContractManagerService } from "../domain/contract-manager.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
 import { UserLoggerService } from "../domain/user-logger.service";
+import { BitbucketService } from "../domain/bitbucket.service";
+
 
 //Modules
 import { IonicRatingModule } from "ionic-rating";
@@ -114,6 +116,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         HttpClientModule,
         SpinnerService,
         StorageService,
+        BitbucketService,
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
