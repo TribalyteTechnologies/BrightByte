@@ -13,6 +13,7 @@ export interface ILogCall {
 export class LoggerService {
 
     public static readonly logFnsThis = [console, console, console];
+    //tslint:disable-next-line:no-console
     private logFns = [console.log, console.warn ? console.warn : console.log, console.error ? console.error : console.log];
     private msgPrefixes = [["[", "]"], ["[", "] WARN: "], ["[", "] ERROR: "]];
     private logDebug = false;
@@ -47,4 +48,3 @@ export class LoggerService {
         return ret;
     }
 }
-

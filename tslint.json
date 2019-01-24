@@ -38,6 +38,7 @@
     "no-consecutive-blank-lines": false,
     "no-console": [
       true,
+      "log",
       "debug",
       "info",
       "time",
