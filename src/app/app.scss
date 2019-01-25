@@ -269,6 +269,21 @@
     background-color: #559fc7;
 }
 
+.scroll-y {
+    height: 100%;
+}
+
+.scroll-dimensions {
+    width: 100%;
+    height: calc(100% - 120px);
+}
+
+.scrollable-content {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
 
 /*------------------------------------*\
   #COMPONENTS

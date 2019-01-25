@@ -19,34 +19,40 @@
             Details
         </ion-col>
     </ion-row>
-    <ion-row no-padding>
-        <ion-col>
-            <div class="main-style">
+    <ion-row no-padding class="scroll-dimensions">
+        <ion-col no-padding class="main-style scroll-y">
+            <div class="scrollable-content">
                 <div [ngClass]="commit === currentCommit ? 'card card__selected' : 'card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
                     <commit-card [commit]="commit"></commit-card>
                 </div>
             </div>
+
+
         </ion-col>
-        <ion-col col-6 *ngIf="currentCommit">
-            <ion-row padding class="main-style">
-                <ion-col>
-                    <ion-row class="text-title"> {{ currentCommit.title }} </ion-row>
-                    <ion-row align-items-center class="text-description">
-                        <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
-                        <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
-                    </ion-row>
+
+        <ion-col col-6 *ngIf="currentCommit" class="scroll-y">
+            <div class="scrollable-content">
+                <ion-row padding class="main-style">
+                    <ion-col>
+                        <ion-row class="text-title"> {{ currentCommit.title }} </ion-row>
+                        <ion-row align-items-center class="text-description">
+                            <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
+                            <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
+                        </ion-row>
+                    </ion-col>
+                </ion-row>
+                <ion-row padding class="text-details text-details--bold">
+                    Current Reviews
+                </ion-row>
+                <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
+                    <div class="text-description">Nobody reviewed this commit</div>
+                </ion-row>
+                <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
+                    <commit-comment [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
+                    <ion-row padding></ion-row>
                 </ion-col>
-            </ion-row>
-            <ion-row padding class="text-details text-details--bold">
-                Current Reviews
-            </ion-row>
-            <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
-                <div class="text-description">Nobody reviewed this commit</div>
-            </ion-row>
-            <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
-                <commit-comment [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
-                <ion-row padding></ion-row>
-            </ion-col>
+            </div>
+
         </ion-col>
     </ion-row>
 </ion-content>

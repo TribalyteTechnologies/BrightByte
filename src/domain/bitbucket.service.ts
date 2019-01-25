@@ -8,9 +8,7 @@ export class BitbucketService {
     private bearHash = "";
 
     constructor(private http: HttpClient, private storageSrv: StorageService) {
-        console.log("Bitbucket service created");
         this.bearHash = this.storageSrv.get("bearHash");
-        console.log("Bear Hash: " + this.bearHash);
     }
 
     public loginUser(username: string, password: string): Promise<boolean>{
@@ -24,11 +22,9 @@ export class BitbucketService {
         body.append("client_id", CLIENT_ID_INPUT);
         body.append("client_secret", CLIENT_SECRET_INPUT);
     
-        console.log("Accesing Bitbucket with username: " + username);
         
         return new Promise((resolve, reject) => {
             this.http.post(URL, body).subscribe((resp) => {
-                console.log("Token recieved: " + resp["access_token"]);
                 this.bearHash = resp["access_token"];
                 this.storageSrv.set("bearHash", this.bearHash);
                 resolve(true);
@@ -56,7 +52,6 @@ export class BitbucketService {
     });
     return new Promise(resolve => {
             let url = "https://api.bitbucket.org/2.0/repositories/" + "tribalyte";
-            console.log(url);
             this.http.get(url, { headers }).subscribe(val => {
             resolve(val["values"]);
         });

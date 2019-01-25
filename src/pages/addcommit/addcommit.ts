@@ -168,7 +168,6 @@ export class AddCommitPopover {
 
 
     public refreshSearchbar(ev: any) { 
-        console.log(ev.target.value);
         let val = ev.target.value;
         this.searchInput = val;
         this.setUpList(val);
@@ -203,16 +202,12 @@ export class AddCommitPopover {
     }
 
     public loginBitbucket(username: string, password: string){
-        console.log("Sending username: " + username + " and password: " + password);
         this.bitbucketSrv.loginUser(username, password).then(() => {
-            console.log("Hash recieved succesfully");
             return this.bitbucketSrv.getUsername();
         }).then((usr) => {
-            console.log("User recieved: " + usr);
             this.bitbucketUser = usr;
             return this.bitbucketSrv.getRepositories();
         }).then((repos) => {
-            console.log(repos);
             this.bitbucketProjects = repos.map((repo) => {
                 return repo["name"];
             });
@@ -221,9 +216,7 @@ export class AddCommitPopover {
 
     public getProjectCommits(project: string){
         this.currentProject = project;
-        console.log(project);
         this.bitbucketSrv.getReposlug(project).then((val) => {
-            console.log(val);
             let commits: Array<any> = val["values"];
             let filteredList = commits.filter((com) => {
                 let author: any = com["author"]["user"]["nickname"];
@@ -237,12 +230,10 @@ export class AddCommitPopover {
                 };
                 this.commitList.push(object);
             });
-            console.log(this.commitList);
         });
     }
 
     public setFromBitbucket(commit: any){
-        console.log(commit);
         this.selectedCommit = commit;
         this.formTitle = commit["title"];
         this.formUrl = "https://bitbucket.org/tribalyte/" + this.currentProject + "/commits/" + commit["hash"];

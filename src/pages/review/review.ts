@@ -193,7 +193,6 @@ export class ReviewPage {
     }
         
     public applyFilters(usercommits: UserCommit[]) {
-        console.log(usercommits);
         let projectFilter = this.setProjectFilter(usercommits);
         let statusFilter = this.setStatusFilter(projectFilter);
         let pendingFilter = this.setPendingFilter(statusFilter);
@@ -221,7 +220,6 @@ export class ReviewPage {
         this.applyFilters(this.displayCommitsToReview);
     }
     public setProject(name: string){
-        console.log(name);
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);
     }
