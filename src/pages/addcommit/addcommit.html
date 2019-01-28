@@ -1,13 +1,15 @@
 <ion-content padding>
     <ion-row padding class="text-title">{{ "addCommit.add" | translate }}</ion-row>
+    <!-- 
     <ion-row no-padding>
         <ion-col no-padding>
             <button [ngClass]="commitMethod === 'url' ?'btn btn--full btn--switch btn__blue':'btn btn--full btn--switch btn__grey'" (click)="setUploadMethod('url')">URL</button>
-        </ion-col>
+        </ion-col> 
         <ion-col no-padding>
             <button [ngClass]="commitMethod === 'bitbucket' ?'btn btn--full btn--switch btn__blue':'btn btn--full btn--switch btn__grey'" (click)="setUploadMethod('bitbucket')">Bitbucket</button>
         </ion-col>
     </ion-row>
+     -->
     <ion-row padding *ngIf="commitMethod === 'url'" class="form-container">
         <form class="form-style" id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(formUrl, formTitle)" novalidate>
             <ion-row class="text-details text-details--bold">

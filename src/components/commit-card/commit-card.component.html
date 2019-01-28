@@ -9,7 +9,7 @@
             <img class="ico ico__margin" src="../../assets/imgs/project-icon.svg">
             <div class="text-details"> {{ project }}</div>
             <img class="ico ico__margin" src="../../assets/imgs/tab-icon.svg">
-            <div class="text-details" (click)="openUrl(urlLink, true)"> Open in new tab</div>
+            <div class="text-details" (click)="openUrl(urlLink, true)"> New tab</div>
         </ion-row>
         <ion-row class="text-title">
             <div class="text-ellipsis">
@@ -18,10 +18,10 @@
             <ion-icon *ngIf="isPending" class="notifications" name="notifications"></ion-icon>
         </ion-row>
         <ion-row>
-            <div class="text-url" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
+            <div class="text-url text-ellipsis" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
         </ion-row>
     </ion-col>
-    <ion-col col-auto padding>
+    <ion-col col-5 padding>
         <ion-row justify-content-end>
             <rating [rate]="score" readonly="true" small="true"></rating>
         </ion-row>
