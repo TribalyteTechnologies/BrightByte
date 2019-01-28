@@ -66,7 +66,7 @@
                 <ion-row padding *ngIf="commitComments.length > 0" class="text-details text-details--bold">
                     Other Reviews
                 </ion-row>
-                <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
+                <ion-col no padding>
                     <review-comment *ngFor="let comment of commitComments; let j=index " [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></review-comment>
                     <ion-row padding></ion-row>
                 </ion-col>
