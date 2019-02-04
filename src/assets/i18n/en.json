@@ -59,7 +59,7 @@
     "home": {
         "title": "Home",
         "subTitle": "Home",
-        "info": "Welcome to BrightByte! Choose the available tabs to see your commits, reviews or the ranking"
+        "info": "Welcome to BrightByte! Choose the available tabs to see your commits, reviews or the ranking. GitHub repo: https://github.com/TribalyteTechnologies/BrightByte"
     },
     "newUser": {
         "title": "New user",
