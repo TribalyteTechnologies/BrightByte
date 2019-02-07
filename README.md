@@ -25,7 +25,7 @@ In order to deploy the application to a server:
 5. Upload the directory `platforms/browser/www/` to your web server.
 6. Open the URL pointing to your web server.
 
-For more information please visit our blog post about BrightByte: http://tech.tribalyte.eu/blog-brightbyte(Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
+For more information please visit our [blog post about BrightByte](http://tech.tribalyte.eu/blog-brightbyte) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
 
 Licensed under the conditions of `LICENSE.md`.
 
