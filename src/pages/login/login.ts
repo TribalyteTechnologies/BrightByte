@@ -141,7 +141,7 @@ export class LoginPage {
         this.navCtrl.push(NewuserPage);
     }
 
-    public migration(pass){
+    public migrate(pass){
         let alert = this.alertCtrl.create({
             title: "Migration",
             subTitle: "The migration has been successful",

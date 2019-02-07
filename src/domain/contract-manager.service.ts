@@ -421,7 +421,7 @@ export class ContractManagerService {
         });
     }
 
-     //////////////////////MIGRATION//////////////////////////////////
+     //////////////////////OPTIONAL MIGRATION FROM v0.2.1 TO v0.3.0//////////////////////////////////
 
      public initOld(user: Account, cont: number): Promise<any> {
         AppConfig.CURRENT_NODE_INDEX = cont;
@@ -606,7 +606,15 @@ export class ContractManagerService {
                 }
             }
 
-            this.log.d("Users" + users);
+            
+            for(let i = 0; i < users.length; i++){
+                if(users[i].email === "jsainz@tribalyte.com" || users[i].email === "s@s.com" ){
+                    users.splice(i, 1);
+                    i--;
+                }
+            }
+
+            this.log.d("Users: " + users);
 
             return users.reduce(
                 (prevVal, user) => {
