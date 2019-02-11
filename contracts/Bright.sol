@@ -4,12 +4,12 @@ import "./Root.sol";
 contract Bright {
     Root private root;
     uint constant finalDayMigrate = 1551103200;
-    uint256 private constant seasonLength = 7776000;
-    uint256 currentSeason;
+    uint256 private constant seasonLengthSecs = 90 * 24 * 60 * 60;
+    uint256 private initialSeasonTimestamp;
+    uint256 currentSeasonIndex;
     event UserProfileSetEvent (string name, address hash);
     mapping (address => UserProfile) private hashUserMap;
     mapping (bytes32 => address) private emailUserMap;
-    mapping (uint256 => uint256) private seasonsEnd;
     address[] private allUsersArray;
 
     address private rootAddress;
@@ -23,16 +23,11 @@ contract Bright {
         bytes32[] pendingCommits;
         bytes32[] finishedReviews;
         bytes32[] pendingReviews;
-        uint256 reputation;
-        uint256 agreedPercentage;
-        uint256 numberOfPoints;
-        uint256 numberOfTimesReview;
-        uint256 positeVotes;
-        uint256 negativeVotes;
         bytes32[] toRead;
-        mapping (uint256 => UserSeason) seasonsDetails;
+        UserStats globalStats;
+        mapping (uint256 => UserSeason) seasonData;
     }
-    struct UserSeason {
+    struct UserStats {
         uint256 reputation;
         uint256 numberOfPoints;
         uint256 numberOfTimesReview;
@@ -40,8 +35,11 @@ contract Bright {
         uint256 positeVotes;
         uint256 negativeVotes;
         uint256 reviewsMade;
-        mapping (bytes32 => bool) seasonCommits; //Guarda la ur del commit y como valor tiene si está pending o no
-        bytes32[] urlSeasonCommits; //todos los commits de esa temporada
+    }
+    struct UserSeason {
+        UserStats seasonStats;
+        mapping (bytes32 => bool) seasonCommits;
+        bytes32[] urlSeasonCommits;
     }
    
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -69,8 +67,8 @@ contract Bright {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        currentSeason = 1;
-        seasonsEnd[currentSeason] = block.timestamp + seasonLength;
+        currentSeasonIndex = 1;
+        initialSeasonTimestamp = block.timestamp;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -83,40 +81,38 @@ contract Bright {
         rootAddress = a;
     }
 
-    function setProfile (string _name, string _email) public onlyDapp {
+    function setProfile (string name, string email) public onlyDapp {
         address user = tx.origin;
         if (bytes(hashUserMap[user].name).length == 0 && bytes(hashUserMap[user].email).length == 0){
             UserProfile storage newUser = hashUserMap[user];
-            newUser.name = _name;
-            newUser.email = _email;
+            newUser.name = name;
+            newUser.email = email;
             newUser.hash = user;
-            newUser.agreedPercentage = 100;
-            newUser.seasonsDetails[currentSeason].agreedPercentage = 100;
-            bytes32 emailId = keccak256(_email);
+            bytes32 emailId = keccak256(email);
             emailUserMap[emailId] = user;
             allUsersArray.push(user);
         } else {
-            if (keccak256(_email) != keccak256(hashUserMap[user].email)){
-                require(emailUserMap[keccak256(_email)] == address(0));
+            if (keccak256(email) != keccak256(hashUserMap[user].email)){
+                require(emailUserMap[keccak256(email)] == address(0));
                 delete emailUserMap[keccak256(hashUserMap[user].email)];
-                hashUserMap[user].email = _email;
-                emailUserMap[keccak256(_email)] = user;
+                hashUserMap[user].email = email;
+                emailUserMap[keccak256(email)] = user;
             }
-            hashUserMap[user].name = _name;
+            hashUserMap[user].name = name;
         }
-        emit UserProfileSetEvent(_name, user);
+        emit UserProfileSetEvent(name, user);
     }
 
-    function getUser (address _hash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint, uint) {
-        UserProfile memory user = hashUserMap[_hash];
+    function getUser (address userHash) public onlyDapp view returns (string, string, uint,uint, uint, uint, uint, uint) {
+        UserProfile memory user = hashUserMap[userHash];
         return (user.name,
             user.email,
             user.finishedReviews.length,
             user.pendingReviews.length,
             user.finishedCommits.length,
             user.pendingCommits.length,
-            user.reputation,
-            user.agreedPercentage
+            user.globalStats.reputation,
+            user.globalStats.agreedPercentage
         );
     }
 
@@ -131,14 +127,15 @@ contract Bright {
         for (uint i = 0; i < hashUserMap[sender].pendingCommits.length; i++){
             if(hashUserMap[sender].pendingCommits[i] == url){
                 saved = true;
+                break;
             }
         }
         if(!saved){
             UserProfile storage user = hashUserMap[sender];
             user.pendingCommits.push(url);
             checkSeason();
-            user.seasonsDetails[currentSeason].urlSeasonCommits.push(url);
-            user.seasonsDetails[currentSeason].seasonCommits[url] = true;
+            user.seasonData[currentSeasonIndex].urlSeasonCommits.push(url);
+            user.seasonData[currentSeasonIndex].seasonCommits[url] = true;
             
         }
     }
@@ -185,8 +182,8 @@ contract Bright {
         }
     }
 
-    function getUserCommits(address _a) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]){
-        UserProfile memory user = hashUserMap[_a];
+    function getUserCommits(address add) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]){
+        UserProfile memory user = hashUserMap[add];
         return (user.pendingReviews,
                 user.finishedReviews,
                 user.pendingCommits,
@@ -194,18 +191,18 @@ contract Bright {
         );
     }
 
-    function getAllUserEmail(uint _index) public onlyDapp view returns(string){
-        return hashUserMap[allUsersArray[_index]].email;
+    function getAllUserEmail(uint index) public onlyDapp view returns(string){
+        return hashUserMap[allUsersArray[index]].email;
     }
 
-    function getAllUserReputation(uint _index) public onlyDapp view returns(string, uint,uint,uint,string, uint, uint, uint, address){
-        UserProfile memory user = hashUserMap[allUsersArray[_index]];
+    function getAllUserReputation(uint index) public onlyDapp view returns(string, uint,uint,uint,string, uint, uint, uint, address){
+        UserProfile memory user = hashUserMap[allUsersArray[index]];
         return (user.email,
-                user.reputation,
-                user.numberOfTimesReview,
-                user.numberOfPoints,
+                user.globalStats.reputation,
+                user.globalStats.numberOfTimesReview,
+                user.globalStats.numberOfPoints,
                 user.name,
-                user.agreedPercentage,
+                user.globalStats.agreedPercentage,
                 user.pendingCommits.length,
                 user.finishedReviews.length,
                 user.hash
@@ -216,17 +213,17 @@ contract Bright {
         return allUsersArray.length;
     }
 
-    function setReview(bytes32 url,address author, uint256 _points) public onlyRoot {
+    function setReview(bytes32 url,address author, uint256 points) public onlyRoot {
         address sender = tx.origin;
         require(hashUserMap[author].hash == author && hashUserMap[sender].hash == sender);
         checkSeason();
         UserProfile storage user = hashUserMap[author];
-        UserSeason storage userSeason = user.seasonsDetails[currentSeason];
+        UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
 
-        uint256 value = user.numberOfPoints + _points;
-        user.numberOfTimesReview ++;
-        user.numberOfPoints = value;
-        user.reputation = value/user.numberOfTimesReview;
+        uint256 value = user.globalStats.numberOfPoints + points;
+        user.globalStats.numberOfTimesReview ++;
+        user.globalStats.numberOfPoints = value;
+        user.globalStats.reputation = value/user.globalStats.numberOfTimesReview;
 
         UserProfile storage reviewer = hashUserMap[sender];
         for (uint j = 0 ; j < reviewer.pendingReviews.length; j++){
@@ -238,58 +235,49 @@ contract Bright {
         }
         hashUserMap[sender].finishedReviews.push(url);
         if(userSeason.seasonCommits[url]) {
-            uint256 seasonValue = userSeason.numberOfPoints + _points;
-            userSeason.numberOfTimesReview++;
-            userSeason.numberOfPoints = seasonValue;
-            userSeason.reputation = seasonValue/userSeason.numberOfTimesReview;
-            reviewer.seasonsDetails[currentSeason].reviewsMade++;
+            uint256 seasonValue = userSeason.seasonStats.numberOfPoints + points;
+            userSeason.seasonStats.numberOfTimesReview++;
+            userSeason.seasonStats.numberOfPoints = seasonValue;
+            userSeason.seasonStats.reputation = seasonValue/userSeason.seasonStats.numberOfTimesReview;
+            reviewer.seasonData[currentSeasonIndex].seasonStats.reviewsMade++;
         }
     }
 
-    function getUserName(address _hash) public onlyDapp view returns (string) {
-        return (hashUserMap[_hash].name);
+    function getUserName(address userHash) public onlyDapp view returns (string) {
+        return (hashUserMap[userHash].name);
     }
 
-    function getFeedback(bytes32 _url) public onlyDapp view returns (bool){
+    function getFeedback(bytes32 url) public onlyDapp view returns (bool){
         address sender = tx.origin;
         bool read = false;
         for (uint i = 0; i<hashUserMap[sender].toRead.length; i++){
-            if(hashUserMap[sender].toRead[i] == _url){
+            if(hashUserMap[sender].toRead[i] == url){
                 read = true;
             }
         }
         return read;
     }
 
-    function setFeedback(bytes32 _url, address user, bool value, uint8 vote) public onlyRoot{
+    function setFeedback(bytes32 url, address user, bool value, uint8 vote) public onlyRoot{
         address sender = user;
         address maker = tx.origin;
         UserProfile storage userMap = hashUserMap[sender];
-        UserSeason storage season = hashUserMap[sender].seasonsDetails[currentSeason];
         checkSeason();
         if(value){
-            bool actualSeason = hashUserMap[maker].seasonsDetails[currentSeason].seasonCommits[_url];
-            userMap.toRead.push(_url);
+            hashUserMap[maker].seasonData[currentSeasonIndex].seasonCommits[url];
+            userMap.toRead.push(url);
             if(vote == 1) {
-                userMap.positeVotes++;
-                if(actualSeason) {
-                    season.positeVotes++;
-                }
+                userMap.globalStats.positeVotes++;
             }
             else if (vote == 2){
-                userMap.negativeVotes++;
-                if(actualSeason) {
-                    season.negativeVotes++;
-                }
+                userMap.globalStats.negativeVotes++;
             }
-            userMap.agreedPercentage = (userMap.positeVotes * 100) / (userMap.positeVotes + userMap.negativeVotes);
-            if(actualSeason) {
-                season.agreedPercentage = (season.positeVotes * 100) / (season.positeVotes + season.negativeVotes);
-            }
+            userMap.globalStats.agreedPercentage = (userMap.globalStats.positeVotes * 100) / (userMap.globalStats.positeVotes + userMap.globalStats.negativeVotes);
+            setSeasonFeedback(hashUserMap[maker].seasonData[currentSeasonIndex].seasonCommits[url], user, vote);
         }
         else{
             for (uint i = 0 ; i < userMap.toRead.length; i++){
-                if (_url == userMap.toRead[i]){
+                if (url == userMap.toRead[i]){
                     userMap.toRead[i] = userMap.toRead[userMap.toRead.length - 1];
                     userMap.toRead.length--;
                     break;
@@ -298,41 +286,49 @@ contract Bright {
         }
     }
 
-    function getToRead(address _hash) public onlyDapp view returns (bytes32[]) {
-        return (hashUserMap[_hash].toRead);
+    function setSeasonFeedback(bool actualSeason, address user, uint8 vote) private {
+        if(actualSeason) {
+            UserSeason storage season = hashUserMap[user].seasonData[currentSeasonIndex];
+            if(vote == 1){
+                season.seasonStats.positeVotes++;
+            } else {
+                season.seasonStats.negativeVotes++;
+            }
+            season.seasonStats.agreedPercentage = (season.seasonStats.positeVotes * 100) / (season.seasonStats.positeVotes + season.seasonStats.negativeVotes);
+        }
     }
 
-    function getVotes(address _hash) public onlyDapp view returns (uint, uint) {
-        return (hashUserMap[_hash].positeVotes, hashUserMap[_hash].negativeVotes);
+    function getToRead(address userHash) public onlyDapp view returns (bytes32[]) {
+        return (hashUserMap[userHash].toRead);
     }
 
-    function getUserSeasonReputation(uint256 _index, uint256 _season) public onlyDapp view returns(string, uint, uint, uint, string, uint, uint, uint, address) {
-        checkSeason();
-        UserProfile memory user = hashUserMap[allUsersArray[_index]];
-        UserSeason memory season = hashUserMap[allUsersArray[_index]].seasonsDetails[_season];
-        return (user.email,
-            season.reputation,
-            season.numberOfTimesReview,
-            season.numberOfPoints,
+    function getVotes(address userHash) public onlyDapp view returns (uint, uint) {
+        return (hashUserMap[userHash].globalStats.positeVotes, hashUserMap[userHash].globalStats.negativeVotes);
+    }
+
+    function getUserReputation(uint ind,uint sea) public onlyDapp view returns(string, uint, uint, uint, string, uint, uint, uint, address) {
+        UserProfile memory user = hashUserMap[allUsersArray[ind]];
+        UserSeason memory season = hashUserMap[allUsersArray[ind]].seasonData[sea];
+        return(user.email,
+            season.seasonStats.reputation,
+            season.seasonStats.numberOfTimesReview,
+            season.seasonStats.numberOfPoints,
             user.name,
-            season.agreedPercentage,
+            season.seasonStats.agreedPercentage,
             season.urlSeasonCommits.length,
-            season.reviewsMade,
+            season.seasonStats.reviewsMade,
             user.hash
         );
     }
 
     function getCurrentSeason() public onlyDapp view returns (uint256, uint256) {
-        return (currentSeason, (seasonsEnd[currentSeason] - block.timestamp));
+        return (currentSeasonIndex, (initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs)));
     }
 
     function checkSeason() private {
-        if(block.timestamp > seasonsEnd[currentSeason]) { //Cambiar 
-            currentSeason++;
-            seasonsEnd[currentSeason] = seasonsEnd[currentSeason - 1] + seasonLength;
-            for(uint i = 0; i < allUsersArray.length; i++){
-                hashUserMap[allUsersArray[i]].seasonsDetails[currentSeason].agreedPercentage = 100;
-            }
+        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
+        if(block.timestamp > seasonFinale) {
+            currentSeasonIndex++;
         }
     }
 
@@ -342,19 +338,19 @@ contract Bright {
         user.name = name;
         user.email = mail;
         user.hash = hash;
-        user.agreedPercentage = perct;
-        user.numberOfPoints = pts;
-        user.numberOfTimesReview = tmRw;
-        user.positeVotes = pos;
-        user.negativeVotes = neg;
-        user.reputation = rep;
-        UserSeason storage season = user.seasonsDetails[0];
-        season.numberOfPoints = pts;
-        season.numberOfTimesReview = tmRw;
-        season.agreedPercentage = perct;
-        season.positeVotes = pos;
-        season.negativeVotes = neg;
-        season.reputation = rep;
+        user.globalStats.agreedPercentage = perct;
+        user.globalStats.numberOfPoints = pts;
+        user.globalStats.numberOfTimesReview = tmRw;
+        user.globalStats.positeVotes = pos;
+        user.globalStats.negativeVotes = neg;
+        user.globalStats.reputation = rep;
+        UserSeason storage season = user.seasonData[0];
+        season.seasonStats.numberOfPoints = pts;
+        season.seasonStats.numberOfTimesReview = tmRw;
+        season.seasonStats.agreedPercentage = perct;
+        season.seasonStats.positeVotes = pos;
+        season.seasonStats.negativeVotes = neg;
+        season.seasonStats.reputation = rep;
         bytes32 emailId = keccak256(mail);
         emailUserMap[emailId] = hash;
         allUsersArray.push(hash);
@@ -363,7 +359,7 @@ contract Bright {
     function setAllUserDataTwo(address h, bytes32[] finCom, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
         require (block.timestamp < finalDayMigrate);
         UserProfile storage user = hashUserMap[h];
-        UserSeason storage season = user.seasonsDetails[0];
+        UserSeason storage season = user.seasonData[0];
         for(uint i = 0; i < finCom.length; i++) {
             user.finishedCommits.push(finCom[i]);
         }
@@ -381,6 +377,6 @@ contract Bright {
         for(uint m = 0; m < toRd.length; m++) {
             user.toRead.push(toRd[m]);
         }
-        season.reviewsMade = finRev.length;
+        season.seasonStats.reviewsMade = finRev.length;
     }
 }

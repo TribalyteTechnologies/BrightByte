@@ -95,7 +95,10 @@
         "stars": "stars",
         "you": "you",
         "retrieve": "Go back to your user",
-        "rating": "Rating"
+        "rating": "Rating",
+        "getSeasonNumbers": "Error getting season numbers",
+        "global": "Ranking Global",
+        "season": "Season"
     },
     "review": {
         "getCommits": "Error getting commits to review",

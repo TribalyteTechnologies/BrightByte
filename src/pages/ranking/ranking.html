@@ -1,7 +1,11 @@
 <ion-header no-border class="main-header">
     <ion-row no-padding class="header-row">
-        <ion-col no-padding align-self-center>
+        <ion-col no-padding align-self-center col-4>
             <div class="text-main">{{ "ranking.title" | translate }}</div>
+        </ion-col>
+        <ion-col text-center col-4>
+            <div class="text-main">{{ "ranking.season" | translate }} {{ numberOfSeasons }}</div>
+            <div class="text-main">Ends in {{ days }} days {{ hours }} hours {{ minutes }} min {{ seconds }} sec </div>
         </ion-col>
         <ion-col col-auto padding align-self-center>
             <button (click)="goBackToUser()" class="btn btn--paddings btn__dark">{{ "ranking.retrieve" | translate }}</button>
@@ -9,7 +13,17 @@
     </ion-row>
 </ion-header>
 
+
 <ion-content padding class="main-container">
+    <ion-row>
+        <ion-col>
+            <select (change)="setSeason($event.target.value)" class="dropdown">
+                <option value="-1">{{ "ranking.global" | translate }}</option>
+                <option *ngFor="let option of seasons" [value]="option">{{ "ranking.season" | translate }} {{ option }}</option>
+            </select>
+        </ion-col>
+    </ion-row>
+    <ion-row no-padding></ion-row>
     <ion-row no-padding>
         <ion-col padding class="text-details text-details--bold">
             User Ranking
@@ -67,7 +81,7 @@
                 </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
-            <ion-row padding class="main-style">
+            <ion-row *ngIf="globalSelected" padding class="main-style">
                 <ion-col>
                     <ion-row class="hor-separator">
                         <ion-col class="vert-separator">

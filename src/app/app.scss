@@ -284,10 +284,6 @@
     overflow-y: scroll;
 }
 
-.scroll-content {
-    overflow: hidden;
-}
-
 
 /*------------------------------------*\
   #COMPONENTS
@@ -391,4 +387,27 @@
 
 .btn__grey:hover {
     background-color: rgba(0, 0, 0, 0.15);
+}
+
+.dropdown {
+    //Size
+    width: 100%;
+    line-height: 40px;
+    //Font styling
+    padding-left: 15px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.5);
+    //Shape styling
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    border: none;
+    //Remove default style
+    appearance: none;
+    //Dropdown arrow
+    background-image: url("../../assets/imgs/down-arrow-icon-dep.svg");
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 15px);
+    background-position-y: 50%;
 }
