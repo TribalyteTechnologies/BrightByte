@@ -616,7 +616,7 @@ export class ContractManagerService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < usersHash.length; i++){
-                let promise = brightOld.methods.getVotes(usersHash[i]).call();
+                let promise = brightOld.methods.getVotes(usersHash[i], true, 0).call();
                 promises.push(promise);
             }
             return Promise.all(promises);

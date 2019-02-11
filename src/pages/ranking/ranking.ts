@@ -41,7 +41,6 @@ export class RankingPage {
     public seasonSelected = 0;
     public seasonFinale = 0;
     public seasons = new Array<number>();
-    public countDownDate: number;
     public days: number;
     public hours: number;
     public minutes: number;
@@ -119,12 +118,15 @@ export class RankingPage {
         this.setUser(this.account.address);
     }
 
+    public setCurrentSeason() {
+        this.setSeason(this.numberOfSeasons);
+    }
+
     public getNumbersOfSeason(){
-        this.log.w("Se ejecuta en el getNumberofSeason");
         this.contractManagerService.getCurrentSeason()
         .then((season: number[]) => {
             this.numberOfSeasons = season[0];
-            this.seasonFinale = season[1];
+            this.seasonFinale = season[1] * 1000;
             let date = new Date(this.seasonFinale * 1000);
             this.log.d("The current season is the number: " + this.numberOfSeasons + ", that ends the" + date);
         }).catch((e) => {

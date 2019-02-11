@@ -98,7 +98,9 @@
         "rating": "Rating",
         "getSeasonNumbers": "Error getting season numbers",
         "global": "Ranking Global",
-        "season": "Season"
+        "season": "Season",
+        "current": "Current",
+        "retrieveToSeason": "Get current season"
     },
     "review": {
         "getCommits": "Error getting commits to review",

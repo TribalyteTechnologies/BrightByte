@@ -302,8 +302,13 @@ contract Bright {
         return (hashUserMap[userHash].toRead);
     }
 
-    function getVotes(address userHash) public onlyDapp view returns (uint, uint) {
-        return (hashUserMap[userHash].globalStats.positeVotes, hashUserMap[userHash].globalStats.negativeVotes);
+    function getVotes(address userHash, bool global, uint256 indSeason) public onlyDapp view returns (uint, uint) {
+        if(global) {
+            return (hashUserMap[userHash].globalStats.positeVotes, hashUserMap[userHash].globalStats.negativeVotes);
+        } else {
+            return (hashUserMap[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap[userHash].seasonData[indSeason].seasonStats.negativeVotes);
+        }
+        
     }
 
     function getUserReputation(uint ind,uint sea) public onlyDapp view returns(string, uint, uint, uint, string, uint, uint, uint, address) {

@@ -4,11 +4,14 @@
             <div class="text-main">{{ "ranking.title" | translate }}</div>
         </ion-col>
         <ion-col text-center col-4>
-            <div class="text-main">{{ "ranking.season" | translate }} {{ numberOfSeasons }}</div>
-            <div class="text-main">Ends in {{ days }} days {{ hours }} hours {{ minutes }} min {{ seconds }} sec </div>
+            <div class="text-main"> {{ "ranking.current" | translate }} {{ "ranking.season" | translate }}: {{ numberOfSeasons }}</div>
+            <div *ngIf="days > 0" class="text-main">Ends in {{ days }} days</div>
+            <div *ngIf="days <= 0" class="text-main">Ends in {{ hours }} hours {{ minutes }} mins</div>
+            
         </ion-col>
-        <ion-col col-auto padding align-self-center>
+        <ion-col col-4 padding align-self-center>
             <button (click)="goBackToUser()" class="btn btn--paddings btn__dark">{{ "ranking.retrieve" | translate }}</button>
+            <button (click)="setCurrentSeason()" class="btn btn--paddings btn__dark">{{ "ranking.retrieveToSeason" | translate }}</button>
         </ion-col>
     </ion-row>
 </ion-header>
