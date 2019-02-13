@@ -534,6 +534,8 @@ export class ContractManagerService {
         let usersHash = [];
         let users = [];
 
+        const numberOfCommits = 5;
+
         return this.initPromOld
         .then(([bright, commit, root]) => {
             brightOld = bright;
@@ -616,7 +618,7 @@ export class ContractManagerService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < usersHash.length; i++){
-                let promise = brightOld.methods.getVotes(usersHash[i], true, 0).call();
+                let promise = brightOld.methods.getVotes(usersHash[i]).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -674,26 +676,60 @@ export class ContractManagerService {
                 Promise.resolve()
             );
 
+
         }).then(trxResponse => { 
+
             return users.reduce(
-                (prevVal, user) => {
-                    return prevVal.then(() => {
-                        let byteCodeData = brightNew
-                        .methods
-                        .setAllUserDataTwo(
-                            user.hash, 
-                            [], 
-                            user.pendingCommits, 
-                            user.finishedReviews,
-                            user.pendingReviews, 
-                            user.toRead).encodeABI();
-                        return this.sendTx(byteCodeData, this.contractAddressBright);
-                    });
-                }, 
-                Promise.resolve()
-            );
+                    (prevVal, user) => {
+                        return prevVal.then(() => {
+                            let arrayMax = user.pendingCommits;
+                            let arrayToCount = [];
+                            if(arrayMax.length < user.finishedReviews.length){
+                                arrayMax = user.finishedReviews;
+                            }
+                            if(arrayMax.length < user.pendingReviews.length){
+                                arrayMax = user.pendingReviews;
+                            }
+                            if(arrayMax.length < user.toRead.length){
+                                arrayMax = user.toRead;
+                            }       
+                            let timesToRepeat = (arrayMax.length / numberOfCommits) + 1;
+                            for(let p = 0; p < timesToRepeat; p++){
+                                arrayToCount.push(p);
+                            }
+                            let i: number = 0;
+                            this.log.d("Setting user's commits with slice");
+                            return arrayToCount.reduce(
+                                (prevVal2, actual) => {
+                                    return prevVal2.then(() => {
+                                        let suma: number = i + numberOfCommits;
+                                        let comS = user.pendingCommits.slice(i, suma);
+                                        let finS = user.finishedReviews.slice(i, suma);
+                                        let pendS = user.pendingReviews.slice(i, suma);
+                                        let toReadS = user.toRead.slice(i, suma);
+                                        i = suma;
+                
+                                        let byteCodeData = brightNew
+                                        .methods
+                                        .setAllUserDataTwo(
+                                            user.hash, 
+                                            [], 
+                                            comS, 
+                                            finS,
+                                            pendS, 
+                                            toReadS).encodeABI();
+                                        return this.sendTx(byteCodeData, this.contractAddressBright);
+                                    });
+                                }, 
+                                Promise.resolve()
+                            );
+                        });
+                    },
+                    Promise.resolve()
+                );
+
         }).then(trx => {
-            this.log.w(this.web3.eth.accounts);
+            this.log.d(this.web3.eth.accounts);
             let byteCodeData = 
             rootNew.
             methods.
@@ -708,7 +744,6 @@ export class ContractManagerService {
             this.contractAddressRoot).encodeABI();
             return this.sendTxOwner(byteCodeData, this.contractAddressCommitsOld);
         });
-
     }
 
     private sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>

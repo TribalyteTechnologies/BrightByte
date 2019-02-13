@@ -382,6 +382,6 @@ contract Bright {
         for(uint m = 0; m < toRd.length; m++) {
             user.toRead.push(toRd[m]);
         }
-        season.seasonStats.reviewsMade = finRev.length;
+        season.seasonStats.reviewsMade += finRev.length;
     }
 }

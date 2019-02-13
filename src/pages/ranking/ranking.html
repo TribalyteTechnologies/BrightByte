@@ -5,7 +5,7 @@
         </ion-col>
         <ion-col text-center col-4>
             <div class="text-main"> {{ "ranking.current" | translate }} {{ "ranking.season" | translate }}: {{ numberOfSeasons }}</div>
-            <div *ngIf="days > 0" class="text-main"> {{ days }} {{ "ranking.days" | translate }}</div>
+            <div *ngIf="days > 0" class="text-main"> {{ days }} {{ "ranking.day" | translate }}</div>
             <div *ngIf="days <= 0" class="text-main">{{ "ranking.endIn" | translate }} {{ hours }} {{ "ranking.hours" | translate }} {{ minutes }} {{ "ranking.minutes" | translate }}</div>
             
         </ion-col>

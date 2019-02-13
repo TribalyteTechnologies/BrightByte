@@ -218,7 +218,7 @@ export class LoginPage {
                 this.log.d("Total success connecting the node " + currentNodeIndex);
                 return true;
             }).catch((e) => {
-                this.log.w("Failure to access the node " + currentNodeIndex);
+                this.log.d("Failure to access the node " + currentNodeIndex);
                 return(this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
             });
         }

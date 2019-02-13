@@ -105,7 +105,7 @@ export class RankingPage {
         let detailsUser = this.usersRep.find(user => user.userHash === hash);
         this.userRankDetails.name = detailsUser.name;
         this.userRankDetails.email = detailsUser.email;
-        this.userRankDetails.reviews = detailsUser.numReviews;
+        this.userRankDetails.reviews = detailsUser.finishedReviews;
         this.userRankDetails.commits = detailsUser.numberOfCommits;
         this.userRankDetails.agreed = detailsUser.agreedPercentage;
         this.userRankDetails.score = detailsUser.reputation;
