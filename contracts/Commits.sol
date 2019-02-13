@@ -29,6 +29,7 @@ contract Commits {
         string text;
         address author;
         uint score;
+        uint256[] points;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
         uint creationDate;
         uint lastModificationDate;
@@ -138,18 +139,21 @@ contract Commits {
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint,uint,uint,uint,address){
-        
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address){
+        Comment memory comment = storedData[url].commitComments[a];
         return(
-            storedData[url].commitComments[a].text,
-            storedData[url].commitComments[a].score,
-            storedData[url].commitComments[a].vote,
-            storedData[url].commitComments[a].creationDate,
-            storedData[url].commitComments[a].lastModificationDate,
-            storedData[url].commitComments[a].author
+            comment.text,
+            comment.score,
+            comment.vote,
+            comment.creationDate,
+            comment.lastModificationDate,
+            comment.author
         );
     }
-    function setReview(string _url,string _text, uint256 _points) onlyDapp public{
+    function getCommentPoints(bytes32 url, address a) public onlyDapp view returns(uint256[]){
+        return storedData[url].commitComments[a].points;
+    }
+    function setReview(string _url,string _text, uint256[] points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
 
@@ -164,21 +168,24 @@ contract Commits {
         }
         require(saved);
         storedData[url].finishedComments.push(author);
-
-        storedData[url].commitComments[author].text = _text;
-        storedData[url].commitComments[author].author = author;
-        storedData[url].commitComments[author].score = _points/100;
-        storedData[url].commitComments[author].creationDate = block.timestamp;
-        storedData[url].commitComments[author].lastModificationDate = block.timestamp;
+        Comment storage comment = storedData[url].commitComments[author];
+        uint256 calculatedPoints = root.calculatePonderation(points);
+        comment.text = _text;
+        comment.author = author;
+        comment.score = calculatedPoints/100;
+        comment.points = points;
+        comment.creationDate = block.timestamp;
+        comment.lastModificationDate = block.timestamp;
 
         storedData[url].isReadNeeded = true;
         storedData[url].currentNumberReviews ++;
         storedData[url].lastModificationDate = block.timestamp;
         //score per commit
-        uint points = storedData[url].points;
-        storedData[url].points = points + _points;
+        
+        uint commitPoints = storedData[url].points;
+        storedData[url].points = commitPoints + calculatedPoints;
         storedData[url].score = storedData[url].points/storedData[url].finishedComments.length;
-        root.setReview(url,storedData[url].author,_points);
+        root.setReview(url,storedData[url].author,calculatedPoints);
     }
     function setVote(bytes32 url, address user, uint8 vote) public onlyRoot {
         require(storedData[url].author == tx.origin);
@@ -224,13 +231,13 @@ contract Commits {
     }
 
     function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint v, uint crDt, uint lsMd) public onlyDapp {
-        Commit storage data = storedData[url];
-        data.commitComments[user].text = txt;
-        data.commitComments[user].author = ath;
-        data.commitComments[user].score = sc;
-        data.commitComments[user].vote = v;
-        data.commitComments[user].creationDate = crDt;
-        data.commitComments[user].lastModificationDate = lsMd;
+        Comment storage data = storedData[url].commitComments[user];
+        data.text = txt;
+        data.author = ath;
+        data.score = sc;
+        data.vote = v;
+        data.creationDate = crDt;
+        data.lastModificationDate = lsMd;
     }
 
     function setPendingCommentsData(bytes32 _url, address _hash)  public onlyDapp {
