@@ -85,20 +85,25 @@ contract Root{
             }
         }
     }
+
     function readCommit(string url) public onlyUser {
         remoteCommits.readCommit(keccak256(url));
     }
+    
     function setReview(bytes32 url,address a, uint256 points) public onlyCommit {
         remoteBright.setReview(url,a,points);
     }
+
     function setVote(string url, address user, uint8 vote) public onlyUser {
         bytes32 url_bytes = keccak256(url);
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
+
     function setFeedback(string url,address user) public onlyUser {
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
+
     function calculatePonderation(uint256[] points) public onlyCommit returns(uint256) {
         return remoteReputation.calculatePonderation(points);
     }

@@ -45,7 +45,7 @@ contract Reputation {
         rootAddress = a;
     }
 
-    function calculatePonderation(uint256[] points) public onlyOwner view returns (uint256) {
+    function calculatePonderation(uint256[] points) public onlyRoot view returns (uint256) {
         require(numberOfCriteria == points.length);
         uint256 ponderation = 0;
         for(uint i = 0; i < numberOfCriteria; i++) {

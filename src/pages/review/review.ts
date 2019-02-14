@@ -33,9 +33,11 @@ export class ReviewPage {
     public filterIsReviewed = false;
     public openedComments = false;
     public needReview = false;
-
-    public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
-    public rate = 0;
+    public numCriteria = 3;
+    public stars = [["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
+    , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
+    , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]];
+    public rate = [0, 0, 0];
     public name = "";
     public currentCommitName = "";
     public currentCommitEmail = "";
@@ -158,31 +160,38 @@ export class ReviewPage {
 
     }
 
-    public setReputation(value: number) {
-        this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
+    public setReputation(value: number, starNum: number) {
+        this.stars[starNum] = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
         for (let i = 0; i < value + 1; ++i) {
-            this.star[i] = "star";
+            this.stars[starNum][i] = "star";
         }
-        this.rate = (value + 1) * 100;
+        this.rate[starNum] = (value + 1) * 100;
     }
 
-    public setReview(url: string, text: string, points: number){
+    public setReview(url: string, text: string, points: number[]){
+        let point: number[] = points;
+        let criteriaWorth = 1 / points.length;
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
         .then((response) => {
+            this.log.d("Received response " + point);
             this.log.d("Received response " + response);
             let userAdress = this.loginService.getAccount();
-            this.setReputation(-1);
             this.needReview = false;
             this.userCommitComment[0] = new CommitComment();
             this.userCommitComment[0].name = this.name;
             this.userCommitComment[0].creationDateMs = Date.now();
             this.userCommitComment[0].text = text;
-            this.userCommitComment[0].score = (points / 100);
+            this.userCommitComment[0].score = ((point[0] * criteriaWorth + point[1] * criteriaWorth + point[2] * criteriaWorth) / 100);
+            this.userCommitComment[0].cleanCode = point[0] / 100;
+            this.userCommitComment[0].difficulty = point[1] / 100;
+            this.userCommitComment[0].reviewerExpercience = point[2] / 100;
             this.userCommitComment[0].vote = 0;
             this.userCommitComment[0].lastModificationDateMs = Date.now();
             this.userCommitComment[0].user = userAdress.address;
-
+            this.setReputation(-1, 0);
+            this.setReputation(-1, 1);
+            this.setReputation(-1, 2);
             this.spinnerService.hideLoader();   
             return;
         }).catch((error) => {

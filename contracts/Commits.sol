@@ -139,7 +139,7 @@ contract Commits {
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address){
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address, uint256[]){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
@@ -147,12 +147,11 @@ contract Commits {
             comment.vote,
             comment.creationDate,
             comment.lastModificationDate,
-            comment.author
+            comment.author,
+            comment.points
         );
     }
-    function getCommentPoints(bytes32 url, address a) public onlyDapp view returns(uint256[]){
-        return storedData[url].commitComments[a].points;
-    }
+
     function setReview(string _url,string _text, uint256[] points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
@@ -172,7 +171,7 @@ contract Commits {
         uint256 calculatedPoints = root.calculatePonderation(points);
         comment.text = _text;
         comment.author = author;
-        comment.score = calculatedPoints/100;
+        comment.score = calculatedPoints;
         comment.points = points;
         comment.creationDate = block.timestamp;
         comment.lastModificationDate = block.timestamp;

@@ -242,7 +242,7 @@ export class ContractManagerService {
         });
     }
 
-    public setReview(url: string, text: string, points: number): Promise<any> {
+    public setReview(url: string, text: string, points: number[]): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
             let contractArtifact = commit;
             this.log.d("Public Address: ", this.currentUser.address);
