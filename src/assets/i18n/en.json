@@ -119,7 +119,11 @@
         "titleCommit": "Title",
         "noVote": "This review has not been voted",
         "negativeVote": "The author disagrees with this review",
-        "positiveVote": "The author agrees with this review"
+        "positiveVote": "The author agrees with this review",
+        "average": "Average",
+        "cleanCode": "Clean Code",
+        "difficulty": "Difficulty",
+        "reviewerExperience": "Reviewer Experience"
     },
     "setProfile": {
         "title": "Welcome",

@@ -24,7 +24,7 @@ export class ReviewCommentComponent {
     }
 
     public ngDoCheck(): void {
-        this.review = this._review;  
+        this.review = this._review; 
     }
 
     constructor(public translateService: TranslateService){

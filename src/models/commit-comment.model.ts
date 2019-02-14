@@ -12,7 +12,7 @@ export class CommitComment {
     public static fromSmartContract(commentVals: Array<any>, userName: string): CommitComment{ 
         let comment = new CommitComment(); 
         comment.text = commentVals[0]; 
-        comment.score = commentVals[1] / 100; 
+        comment.score = Math.round(commentVals[1] / 100); 
         comment.vote = commentVals[2];
         comment.creationDateMs = commentVals[3];
         comment.lastModificationDateMs = commentVals[4] * 1000;

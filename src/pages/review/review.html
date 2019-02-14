@@ -47,25 +47,41 @@
                         <ion-row>
                             <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment"></ion-textarea>
                         </ion-row>
-                        <ion-row padding justify-content-center>
-                            <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, 0)">
-                                <ion-icon clas="icon-size" name="{{ stars[0][number] }}"></ion-icon>
-                            </button>
-                        </ion-row>
-                        <ion-row padding justify-content-center>
-                            <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, 1)">
-                                <ion-icon clas="icon-size" name="{{ stars[1][number] }}"></ion-icon>
-                            </button>
-                        </ion-row>
-                        <ion-row padding justify-content-center>
-                            <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, 2)">
-                                <ion-icon clas="icon-size" name="{{ stars[2][number] }}"></ion-icon>
-                            </button>
+                        <ion-row>
+                            <ion-col>
+                                    <ion-row class="paddingBottomSetReview paddingTopSetReview">
+                                            <div class="text-details">{{ "review.cleanCode" | translate }}: </div>
+                                    </ion-row>
+                                    <ion-row class="paddingBottomSetReview">
+                                            <div class="text-details">{{ "review.difficulty" | translate }}: </div>
+                                    </ion-row>
+                                    <ion-row >
+                                            <div class="text-details">{{ "review.reviewerExperience" | translate }}: </div>
+                                    </ion-row>
+                            </ion-col>
+                            <ion-col>
+                                <ion-row padding justify-content-left>
+                                    <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, 0)">
+                                        <ion-icon clas="icon-size" name="{{ stars[0][number] }}"></ion-icon>
+                                    </button>
+                                </ion-row>
+                                <ion-row padding >
+                                    <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, 1)">
+                                        <ion-icon clas="icon-size" name="{{ stars[1][number] }}"></ion-icon>
+                                    </button>
+                                </ion-row>
+                                <ion-row padding >
+                                    <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, 2)">
+                                        <ion-icon clas="icon-size" name="{{ stars[2][number] }}"></ion-icon>
+                                    </button>
+                                </ion-row>
+                                
+                            </ion-col>
                         </ion-row>
                         <ion-row>
                             <button class="btn btn--full btn__blue" (click)="setReview(currentCommit.url, textComment, rate); textComment =''">
                             {{ "commitReview.review" | translate }}
-                        </button>
+                            </button>
                         </ion-row>
                     </ion-col>
                 </ion-row>

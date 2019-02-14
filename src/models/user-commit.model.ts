@@ -30,7 +30,7 @@ export class UserCommit {
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6];
         commit.currentNumberReviews = commitVals[7];
-        commit.score = commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR ;
+        commit.score = Math.round(commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR) ;
         commit.reviewers = [];
         return commit;
     } 
