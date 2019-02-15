@@ -6,7 +6,7 @@ contract Reputation {
     address private rootAddress;
 
     uint256 private constant numberOfCriteria = 3;
-    uint256 private criteriaWorth;
+    uint256[] private criteriaWorth;
 
     address private owner;
    
@@ -32,7 +32,9 @@ contract Reputation {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        criteriaWorth = 1000 / numberOfCriteria;
+        criteriaWorth.push(800);
+        criteriaWorth.push(100);
+        criteriaWorth.push(100);
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -49,7 +51,7 @@ contract Reputation {
         require(numberOfCriteria == points.length);
         uint256 ponderation = 0;
         for(uint i = 0; i < numberOfCriteria; i++) {
-            ponderation += (points[i] * criteriaWorth);
+            ponderation += (points[i] * criteriaWorth[i]);
         }
         return ponderation/1000;
     }

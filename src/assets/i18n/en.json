@@ -13,7 +13,11 @@
         "debug": "Debug",
         "remember": "Keep session?",
         "connectionFailure": "There is no node available for connection.",
-        "anonymous": "Anonymous"
+        "anonymous": "Anonymous",
+        "welcome": "Welcome to BrightByte",
+        "enterCredentials": "Enter your credentials to sign in",
+        "uploadCredentials": "Upload your credentials",
+        "enterPass": "Enter your password"
     },
     "addCommit": {
         "title": "Add commit",
@@ -53,7 +57,8 @@
         "pending": "Pending",
         "reviewed": "Reviewed",
         "getCommitsPending": "Error getting pending commits",
-        "updated": "Updated"
+        "updated": "Updated",
+        "currentReview": "Current Reviews"
 
     },
     "home": {
@@ -94,17 +99,19 @@
         "hundredReviews": "100 Reviews",
         "stars": "stars",
         "you": "you",
-        "retrieve": "Go back to your user",
+        "retrieve": "Back to user",
         "rating": "Rating",
         "getSeasonNumbers": "Error getting season numbers",
         "global": "Ranking Global",
         "season": "Season",
         "current": "Current",
-        "retrieveToSeason": "Get current season",
+        "retrieveToSeason": "Current season",
         "day": "days",
         "endIn": "Ends in",
         "hours": "hours",
-        "minutes": "mins"
+        "minutes": "mins",
+        "details": "Details",
+        "userRanking": "User Ranking"
     },
     "review": {
         "getCommits": "Error getting commits to review",
@@ -112,7 +119,7 @@
         "title": "Reviews",
         "subTitle": "Reviews",
         "myReview": "My Review",
-        "otherReview": "Other reviews",
+        "otherReview": "Other Reviews",
         "asked": "You were asked to review a project on",
         "titleList": "List of commits to review",
         "author": "Author",
@@ -155,6 +162,9 @@
         "emptyField": "Please, write your review",
         "reviewDone": "Review successfully done",
         "txError": "Transaction error",
-        "description": "Enter the explanation of your review"
+        "description": "Enter the explanation of your review",
+        "showAllCommits": "Showing all your commits",
+        "details": "Details",
+        "setReview": "Set Review"
     }
 }

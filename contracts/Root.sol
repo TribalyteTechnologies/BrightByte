@@ -48,16 +48,16 @@ contract Root{
     }
 
     function changeContractAddress(address bright, address commits, address reputation) public onlyOwner {
-        if(bright != address(0)){
+        if(bright != address(0)) {
             remoteBright = Bright(bright);
             brightAddress = bright;
         }
-        if(commits != address(0)){
+        if(commits != address(0)) {
             remoteCommits = Commits(commits);
             commitsAddress = commits;
 	    }
-        if(reputation != address(0)){
-            remoteReputation = Reputation(commits);
+        if(reputation != address(0)) {
+            remoteReputation = Reputation(reputation);
             reputationAddress = reputation;
 	    }
     }
@@ -104,7 +104,7 @@ contract Root{
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
-    function calculatePonderation(uint256[] points) public onlyCommit returns(uint256) {
+    function calculatePonderation(uint256[] points) public onlyCommit view returns(uint256) {
         return remoteReputation.calculatePonderation(points);
     }
 }

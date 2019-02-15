@@ -229,7 +229,7 @@ contract Commits {
         }
     }
 
-    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint v, uint crDt, uint lsMd) public onlyDapp {
+    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint[] points, uint v, uint crDt, uint lsMd) public onlyDapp {
         Comment storage data = storedData[url].commitComments[user];
         data.text = txt;
         data.author = ath;
@@ -237,18 +237,21 @@ contract Commits {
         data.vote = v;
         data.creationDate = crDt;
         data.lastModificationDate = lsMd;
+        for(uint i = 0; i < points.length; i++) {
+            data.points.push(points[i]);
+        }
     }
 
-    function setPendingCommentsData(bytes32 _url, address _hash)  public onlyDapp {
+    function setPendingCommentsData(bytes32 url, address hash)  public onlyDapp {
         bool found = false;
-        for (uint i = 0; i < storedData[_url].pendingComments.length; i++){
-            if(storedData[_url].pendingComments[i] == _hash){
+        for (uint i = 0; i < storedData[url].pendingComments.length; i++){
+            if(storedData[url].pendingComments[i] == hash){
                 found = true;
                 break;
             }
         }
         if(!found){
-            storedData[_url].pendingComments.push(_hash);
+            storedData[url].pendingComments.push(hash);
         }
     }
 }
