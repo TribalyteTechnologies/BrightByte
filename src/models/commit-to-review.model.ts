@@ -1,3 +1,5 @@
+import { AppConfig } from "../app.config";
+
 export class CommitToReview { 
     public url: string; 
     public title: string; 
@@ -10,8 +12,8 @@ export class CommitToReview {
         commit.url = commitVals[0]; 
         commit.title = commitVals[1]; 
         commit.name = commitVals[2];
-        commit.creationDateMs = commitVals[3] * 1000;
-        commit.lastModificationDateMs = commitVals[4] * 1000;
+        commit.creationDateMs = commitVals[3] * AppConfig.DATE_MULTIPLY_FACTOR;
+        commit.lastModificationDateMs = commitVals[4] * AppConfig.DATE_MULTIPLY_FACTOR;
         commit.project = commitVals[5];
         return commit;
     } 

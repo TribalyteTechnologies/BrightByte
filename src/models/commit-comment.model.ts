@@ -1,3 +1,5 @@
+import { AppConfig } from "../app.config";
+
 export class CommitComment { 
     public text: string; 
     public user: string;
@@ -9,18 +11,20 @@ export class CommitComment {
     public cleanCode: number;
     public difficulty: number;
     public reviewerExpercience: number;
+    
     public static fromSmartContract(commentVals: Array<any>, userName: string): CommitComment{ 
         let comment = new CommitComment(); 
+
         comment.text = commentVals[0]; 
-        comment.score = Math.round(commentVals[1] / 100); 
+        comment.score = Math.round(commentVals[1] / AppConfig.SCORE_DIVISION_FACTOR); 
         comment.vote = commentVals[2];
         comment.creationDateMs = commentVals[3];
-        comment.lastModificationDateMs = commentVals[4] * 1000;
+        comment.lastModificationDateMs = commentVals[4] * AppConfig.DATE_MULTIPLY_FACTOR;
         comment.user = commentVals[5];
         comment.name = userName;
-        comment.cleanCode = commentVals[6][0] / 100;
-        comment.difficulty = commentVals[6][1] / 100;
-        comment.reviewerExpercience = commentVals[6][2] / 100;
+        comment.cleanCode = commentVals[6][0] / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.difficulty = commentVals[6][1] / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.reviewerExpercience = commentVals[6][2] / AppConfig.SCORE_DIVISION_FACTOR;
         return comment;
     } 
 }

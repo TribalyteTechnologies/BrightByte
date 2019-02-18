@@ -22,6 +22,7 @@ export class AppConfig {
     public static CURRENT_NODE_INDEX = 0;
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly SCORE_DIVISION_FACTOR = 100;
+    public static readonly DATE_MULTIPLY_FACTOR = 1000;
     public static readonly N_USER_RANKING_LIST = 5;
 
     public static readonly StorageKey = {
