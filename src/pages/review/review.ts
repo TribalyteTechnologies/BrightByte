@@ -185,7 +185,7 @@ export class ReviewPage {
             this.userCommitComment[0].score = ((point[0] * criteriaWorth + point[1] * criteriaWorth + point[2] * criteriaWorth) / 100);
             this.userCommitComment[0].cleanCode = point[0] / 100;
             this.userCommitComment[0].difficulty = point[1] / 100;
-            this.userCommitComment[0].reviewerExpercience = point[2] / 100;
+            this.userCommitComment[0].reviewerExperience = point[2] / 100;
             this.userCommitComment[0].vote = 0;
             this.userCommitComment[0].lastModificationDateMs = Date.now();
             this.userCommitComment[0].user = userAdress.address;
