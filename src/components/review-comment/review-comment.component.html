@@ -8,35 +8,17 @@
                 <ion-col col-auto class="text-title">{{ review.name }}</ion-col>
                 <ion-col class="text-details">{{ review.lastModificationDateMs | dateFormat }}</ion-col>
             </ion-row>
-            <ion-row no-padding>
+            <ion-row *ngFor="let critName of [ 'score', 'cleanCode', 'difficulty', 'reviewerExperience']" no-padding>
                 <ion-col>
                     <ion-row class="padding-bottom padding-top">
-                            <div class="average-text">{{ "review.average" | translate }}: </div>
-                    </ion-row>
-                    <ion-row class="padding-bottom">
-                            <div class="text-details">{{ "review.cleanCode" | translate }}: </div>
-                    </ion-row>
-                    <ion-row class="padding-bottom">
-                            <div class="text-details">{{ "review.difficulty" | translate }}: </div>
-                    </ion-row>
-                    <ion-row >
-                            <div class="text-details">{{ "review.reviewerExperience" | translate }}: </div>
+                        <div>{{ ("review." + critName) | translate }}</div>
                     </ion-row>
                 </ion-col>
                 <ion-col>
                     <ion-row>
-                            <rating class="right" [rate]="review.score" readonly="true" small="true"></rating>
+                        <rating class="right" [rate]="review[critName]" readonly="true" small="true"></rating>
                     </ion-row>
-                    <ion-row>
-                            <rating class="right" [rate]="review.cleanCode" readonly="true" small="true"></rating>
-                    </ion-row>
-                    <ion-row>
-                            <rating class="right" [rate]="review.difficulty" readonly="true" small="true"></rating>
-                    </ion-row>
-                    <ion-row>
-                            <rating class="right" [rate]="review.reviewerExpercience" readonly="true" small="true"></rating>
-                    </ion-row>
-                </ion-col>
+                </ion-col>           
             </ion-row>
         </ion-col>
     </ion-row>
