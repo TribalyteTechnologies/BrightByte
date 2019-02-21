@@ -8,6 +8,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { UserCommit } from "../../models/user-commit.model";
 import { CommitComment } from "../../models/commit-comment.model";
 import { SpinnerService } from "../../core/spinner.service";
+import { SessionStorageService } from "../../core/session.storage.service";
 import { AppConfig } from "../../app.config";
 
 @Component({
@@ -30,7 +31,7 @@ export class CommitPage {
     public currentCommitName = "";
     public currentCommitEmail = "";
     public filterValue = 2;
-    public filterIsPending = false;
+    public filterIsPending;
     public msg: string;
     private log: ILogger;
 
@@ -41,10 +42,13 @@ export class CommitPage {
         public http: HttpClient,
         public translateService: TranslateService,
         public spinnerService: SpinnerService,
+        public storageSrv: SessionStorageService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
+        this.filterValue = parseInt(this.storageSrv.get(AppConfig.StorageKey.COMMITFILTER));
+        this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true";
     }
 
     public ionViewWillEnter() {
@@ -135,10 +139,10 @@ export class CommitPage {
 
     public setFilter(name: string){
         switch (name) {
-            case "incompleted":
+            case "0":
                 this.filterValue === this.INCOMPLETED ? this.filterValue = 2 : this.filterValue = 0;
                 break;
-            case "completed":
+            case "1":
                 this.filterValue === this.COMPLETED ? this.filterValue = 2 : this.filterValue = 1;
                 break;
             case "pending":
@@ -149,6 +153,8 @@ export class CommitPage {
                 break;
         }
         this.openedComments = false;  
+        this.storageSrv.set(AppConfig.StorageKey.COMMITFILTER, this.filterValue.toString());
+        this.storageSrv.set(AppConfig.StorageKey.COMMITPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.arrayCommits);
     }
 

@@ -7,6 +7,7 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { LoginService } from "../../core/login.service";
 import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
+import { SessionStorageService } from "../../core/session.storage.service";
 import { AppConfig } from "../../app.config";
 
 @Component({
@@ -28,7 +29,7 @@ export class ReviewPage {
     public isFeedback = {} as {[key: string]: boolean};
 
     public filterValue = 2;
-    public filterIsPending = false;
+    public filterIsPending;
     public filterIsIncompleted = false;
     public filterIsReviewed = false;
     public openedComments = false;
@@ -53,11 +54,15 @@ export class ReviewPage {
         public navCtrl: NavController,
         public translateService: TranslateService,
         public spinnerService: SpinnerService,
+        public storageSrv: SessionStorageService,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
+        this.filterValue = parseInt(this.storageSrv.get(AppConfig.StorageKey.REVIEWFILTER));
+        this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === "true";
+        
     }
 
     public ionViewWillEnter(): void {
@@ -212,10 +217,10 @@ export class ReviewPage {
 
     public setFilter(name: string){
         switch (name) {
-            case "incompleted":
+            case "0":
                 this.filterValue === this.INCOMPLETED ? this.filterValue = 2 : this.filterValue = 0;
                 break;
-            case "completed":
+            case "1":
                 this.filterValue === this.COMPLETED ? this.filterValue = 2 : this.filterValue = 1;
                 break;
             case "pending":
@@ -226,8 +231,11 @@ export class ReviewPage {
                 break;
         }
         this.openedComments = false;  
+        this.storageSrv.set(AppConfig.StorageKey.REVIEWFILTER, this.filterValue.toString());
+        this.storageSrv.set(AppConfig.StorageKey.REVIEWPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.displayCommitsToReview);
     }
+
     public setProject(name: string){
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);

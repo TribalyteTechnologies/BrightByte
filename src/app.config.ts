@@ -30,7 +30,11 @@ export class AppConfig {
         PASSWORD: "brightPassword",
         USERMAILS: "brightEmails",
         LASTPAGE: "brightPage",
-        MIGRATION: "brightMigration"
+        MIGRATION: "brightMigration",
+        REVIEWFILTER: "reviewFilter",
+        REVIEWPENDINGFILTER: "reviewPendingFilter",
+        COMMITFILTER: "commitFilter",
+        COMMITPENDINGFILTER: "commitPendingFilter"
     };
 
     public static readonly UrlKey = {

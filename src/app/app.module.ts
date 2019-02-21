@@ -27,6 +27,7 @@ import { LoginService } from "../core/login.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
 import { SpinnerService } from "../core/spinner.service";
 import { StorageService } from "../core/storage.service";
+import { SessionStorageService } from "../core/session.storage.service";
 
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
@@ -111,6 +112,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         HttpClientModule,
         SpinnerService,
         StorageService,
+        SessionStorageService,
         BitbucketService,
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
