@@ -27,7 +27,8 @@ import { LoginService } from "../core/login.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
 import { SpinnerService } from "../core/spinner.service";
 import { StorageService } from "../core/storage.service";
-import { SessionStorageService } from "../core/session.storage.service";
+import { SessionStorageService } from "../core/session-storage.service";
+import { LocalStorageService } from "../core/local-storage.service";
 
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
@@ -113,6 +114,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         SpinnerService,
         StorageService,
         SessionStorageService,
+        LocalStorageService,
         BitbucketService,
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},

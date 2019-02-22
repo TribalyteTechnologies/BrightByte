@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { StorageService } from "../core/storage.service";
+import { LocalStorageService } from "../core/local-storage.service";
 
 @Injectable()
 export class BitbucketService {
     public userDetails = {};
     private bearHash = "";
 
-    constructor(private http: HttpClient, private storageSrv: StorageService) {
+    constructor(private http: HttpClient, private storageSrv: LocalStorageService) {
         this.bearHash = this.storageSrv.get("bearHash");
     }
 

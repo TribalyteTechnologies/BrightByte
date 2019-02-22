@@ -9,8 +9,8 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 export class FilterComponent {
 
     public readonly ALL = "all";
-    public readonly INCOMPLETED = 0;
-    public readonly COMPLETED = 1;
+    public readonly INCOMPLETED = "incompleted";
+    public readonly COMPLETED = "completed";
     public projectSelected: string = "";
     public filterValue: string;
     public filterIsPending: boolean;
@@ -56,12 +56,12 @@ export class FilterComponent {
     }
 
     public setIncompleted(){
-        this.filterValue = (this.filterValue.toString() ===  "0") ? "" : "0";
+        this.filterValue = (this.filterValue ===  this.INCOMPLETED) ? "" : this.INCOMPLETED;
         this.filterEmit.emit(this.filterValue);
     }
 
     public setCompleted(){
-        this.filterValue = (this.filterValue === "1") ? "" : "1";
+        this.filterValue = (this.filterValue === this.COMPLETED) ? "" : this.COMPLETED;
         this.filterEmit.emit(this.filterValue);
     }
 

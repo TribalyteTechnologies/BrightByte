@@ -1,7 +1,7 @@
 import { AppConfig } from "./../app.config";
 import { Injectable } from "@angular/core";
 import { ILogger, LoggerService } from "../core/logger.service";
-import { StorageService } from "../core/storage.service";
+import { LocalStorageService } from "../core/local-storage.service";
 
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UserLoggerService {
     private readonly STORAGE_KEY_MIGRATION = AppConfig.StorageKey.MIGRATION;
     private log: ILogger;
 
-    constructor(loggerSrv: LoggerService, private storageSrv: StorageService){ 
+    constructor(loggerSrv: LoggerService, private storageSrv: LocalStorageService){ 
         this.log = loggerSrv.get("UserLoggerService");
     }
 

@@ -11,7 +11,7 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { LoginPage } from "../login/login";
 import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
-import { StorageService } from "../../core/storage.service";
+import { LocalStorageService } from "../../core/local-storage.service";
 import { AppConfig } from "../../app.config";
 
 @Component({
@@ -37,7 +37,7 @@ export class TabsPage {
                 private navCtrl: NavController, 
                 private loginService: LoginService, 
                 private contractManagerService: ContractManagerService,
-                private storageSrv: StorageService) {
+                private storageSrv: LocalStorageService) {
         this.log = loggerSrv.get("TabsPage");
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
 
