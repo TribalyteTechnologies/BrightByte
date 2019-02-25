@@ -13,6 +13,9 @@ contract Root{
     address owner;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
+    uint256[] commitScores;
+    uint256[] commitComplexities;
+
     modifier onlyOwner() {
         require(msg.sender == owner);
         _;
@@ -43,8 +46,8 @@ contract Root{
         remoteBright.init(address(this));
         remoteReputation.init(address(this));
     }
-    function getHelperAddress() public view returns(address,address){
-        return(brightAddress,commitsAddress);
+    function getHelperAddress() public view returns(address, address, address){
+        return(brightAddress,commitsAddress, reputationAddress);
     }
 
     function changeContractAddress(address bright, address commits, address reputation) public onlyOwner {
@@ -55,11 +58,11 @@ contract Root{
         if(commits != address(0)) {
             remoteCommits = Commits(commits);
             commitsAddress = commits;
-	    }
+        }
         if(reputation != address(0)) {
             remoteReputation = Reputation(reputation);
             reputationAddress = reputation;
-	    }
+        }
     }
     function getUserAddressByEmail(string email) public onlyUser view returns(address){
         bytes32 index = keccak256(email);
@@ -90,12 +93,12 @@ contract Root{
         remoteCommits.readCommit(keccak256(url));
     }
     
-    function setReview(bytes32 url,address a, uint256 points) public onlyCommit {
-        remoteBright.setReview(url,a,points);
+    function setReview(bytes32 url,address a) public onlyCommit {
+        remoteBright.setReview(url,a);
     }
 
     function setVote(string url, address user, uint8 vote) public onlyUser {
-        bytes32 url_bytes = keccak256(url);
+        bytes32 url_bytes = keccak256(url); 
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
@@ -104,7 +107,23 @@ contract Root{
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
-    function calculatePonderation(uint256[] points) public onlyCommit view returns(uint256) {
-        return remoteReputation.calculatePonderation(points);
+    function calculatePonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyCommit view returns(uint256, uint256) {
+        return remoteReputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
+    }
+
+    function calculateUserReputation(bytes32[] commitsUrls) public returns (uint) {
+        uint256[] memory a;
+        uint256[] memory b;
+        commitScores = a;
+        commitComplexities = b;
+        
+        for(uint256 i = 0; i < commitsUrls.length; i++) {
+            uint256 score;
+            uint256 complexity;
+            (score, complexity) = remoteCommits.getCommitScores(commitsUrls[i]);
+            commitScores.push(score);
+            commitComplexities.push(complexity);
+        }
+        return  remoteReputation.calculateUserReputation(commitScores, commitComplexities);
     }
 }

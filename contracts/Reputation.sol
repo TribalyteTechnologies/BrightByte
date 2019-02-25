@@ -5,8 +5,7 @@ contract Reputation {
     Root private root;
     address private rootAddress;
 
-    uint256 private constant numberOfCriteria = 3;
-    uint256[] private criteriaWorth;
+    uint256 private constant DIVISION_PARAMETER = 1000;
 
     address private owner;
    
@@ -32,9 +31,6 @@ contract Reputation {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        criteriaWorth.push(800);
-        criteriaWorth.push(100);
-        criteriaWorth.push(100);
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -47,13 +43,30 @@ contract Reputation {
         rootAddress = a;
     }
 
-    function calculatePonderation(uint256[] points) public onlyRoot view returns (uint256) {
-        require(numberOfCriteria == points.length);
+    function calculateCommitPonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyRoot view returns (uint256, uint256) {
         uint256 ponderation = 0;
-        for(uint i = 0; i < numberOfCriteria; i++) {
-            ponderation += (points[i] * criteriaWorth[i]);
+        uint256 complexityPonderation = 0;
+        uint256 totalKnowledge = 0;
+        for(uint256 j = 0; j < cleanliness.length; j++) {
+            totalKnowledge += revKnowledge[j];
         }
-        return ponderation/1000;
+        for(uint256 i = 0; i < cleanliness.length; i++) {
+            uint256 userKnowledge = (revKnowledge[i] * DIVISION_PARAMETER) / totalKnowledge;
+            ponderation += ((cleanliness[i] * DIVISION_PARAMETER) * userKnowledge);
+            complexityPonderation += ((complexity[i] * DIVISION_PARAMETER) * userKnowledge);
+        }
+        return (ponderation/DIVISION_PARAMETER, complexityPonderation/(DIVISION_PARAMETER * 10));
     }
 
+    function calculateUserReputation(uint256[] scores, uint256[] complexities) public onlyRoot view returns (uint256) {
+        uint256 totalComplex = 0;
+        uint256 reputation = 0;
+        for(uint256 i = 0; i < complexities.length; i++) {
+            totalComplex += complexities[i];
+        }
+        for(uint256 j = 0; j < scores.length; j++) {
+            reputation += ((scores[j] * complexities[j] * DIVISION_PARAMETER) / totalComplex);
+        }
+        return reputation/(DIVISION_PARAMETER * 10);
+    }
 }

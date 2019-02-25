@@ -8,6 +8,10 @@ contract Commits {
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
+    uint256[] clean;
+    uint256[] know;
+    uint256[] complex;
+
     address private owner;
 
     struct Commit {
@@ -19,8 +23,8 @@ contract Commits {
         uint lastModificationDate;
         uint numberReviews;
         uint currentNumberReviews;
-        uint score;
-        uint points;
+        uint256 score;
+        uint256 weighComplexity;
         address[] pendingComments;
         address[] finishedComments;
         mapping (address => Comment) commitComments;
@@ -120,7 +124,7 @@ contract Commits {
         );
     }
     function getCommitScore(bytes32 _id) public onlyDapp view returns(uint,uint){
-        return(storedData[_id].score,storedData[_id].points);
+        return(storedData[_id].score, storedData[_id].weighComplexity);
     }
     function getNumbers() public onlyDapp view returns(uint){
         return allCommitsArray.length;
@@ -155,36 +159,48 @@ contract Commits {
     function setReview(string _url,string _text, uint256[] points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
-
+        
+        Commit storage commit = storedData[url];
         bool saved = false;
-        for (uint j = 0;j < storedData[url].pendingComments.length; j++){
-            if (author == storedData[url].pendingComments[j]){
-                storedData[url].pendingComments[j] = storedData[url].pendingComments[storedData[url].pendingComments.length-1];
-                storedData[url].pendingComments.length--;
+        for (uint256 j = 0;j < commit.pendingComments.length; j++){
+            if (author == commit.pendingComments[j]){
+                commit.pendingComments[j] = commit.pendingComments[commit.pendingComments.length-1];
+                commit.pendingComments.length--;
                 saved = true;
                 break;
             }
         }
         require(saved);
-        storedData[url].finishedComments.push(author);
-        Comment storage comment = storedData[url].commitComments[author];
-        uint256 calculatedPoints = root.calculatePonderation(points);
+        commit.finishedComments.push(author);
+        Comment storage comment = commit.commitComments[author];
         comment.text = _text;
         comment.author = author;
-        comment.score = calculatedPoints;
         comment.points = points;
         comment.creationDate = block.timestamp;
         comment.lastModificationDate = block.timestamp;
 
-        storedData[url].isReadNeeded = true;
-        storedData[url].currentNumberReviews ++;
-        storedData[url].lastModificationDate = block.timestamp;
+        uint256[] memory a;
+        uint256[] memory b;
+        uint256[] memory c;
+        clean = a;
+        complex = c;
+        know = b;
+        for(uint256 i = 0; i < storedData[url].finishedComments.length; i++) {
+            clean.push(commit.commitComments[commit.finishedComments[i]].points[0]);
+            know.push(commit.commitComments[commit.finishedComments[i]].points[2]);
+            complex.push(commit.commitComments[commit.finishedComments[i]].points[1]);
+        }
+        uint256 commitScore;
+        uint256 commitComplexity;
+        (commitScore, commitComplexity) = root.calculatePonderation(clean, complex, know);
+        commit.score = commitScore/100;
+        commit.weighComplexity = commitComplexity;
+        commit.isReadNeeded = true;
+        commit.currentNumberReviews ++;
+        commit.lastModificationDate = block.timestamp;
+        comment.score = commitComplexity/100;
         //score per commit
-        
-        uint commitPoints = storedData[url].points;
-        storedData[url].points = commitPoints + calculatedPoints;
-        storedData[url].score = storedData[url].points/storedData[url].finishedComments.length;
-        root.setReview(url,storedData[url].author,calculatedPoints);
+        root.setReview(url, commit.author);
     }
     function setVote(bytes32 url, address user, uint8 vote) public onlyRoot {
         require(storedData[url].author == tx.origin);
@@ -211,11 +227,11 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint sc, uint p) public onlyDapp {
+    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint256 sc, uint p) public onlyDapp {
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, p, a, a);
+        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, 0, a, a);
         allCommitsArray.push(_id);
     }
 
@@ -253,5 +269,9 @@ contract Commits {
         if(!found){
             storedData[url].pendingComments.push(hash);
         }
+    }
+
+    function getCommitScores(bytes32 url) public onlyRoot view returns(uint256, uint256) {
+        return(storedData[url].score, storedData[url].weighComplexity);
     }
 }
