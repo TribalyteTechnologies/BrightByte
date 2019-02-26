@@ -224,6 +224,7 @@ export class ReviewPage {
             this.setReputation(-1, 2);
             this.spinnerService.hideLoader();  
             this.textComment  = "";
+            this.refresh();
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();

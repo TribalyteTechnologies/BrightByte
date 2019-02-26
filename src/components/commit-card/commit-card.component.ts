@@ -30,8 +30,8 @@ export class CommitCard {
     @Input()
     public set commit(val: UserCommit){
         this._commit = val;
-        let split = val.url.split("/");
-        this.urlHash = split[6];
+        this.urlHash = /(commits\/|commit\/|pull-requests\/)(.+$)/.exec(val.url)[0];
+        this.urlHash = /\/.+/.exec(this.urlHash)[0].substr(1);
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
