@@ -5,7 +5,7 @@ contract Reputation {
     Root private root;
     address private rootAddress;
 
-    uint256 private constant DIVISION_PARAMETER = 1000;
+    uint40 private constant DIVISION_PARAMETER = 1000;
 
     address private owner;
    
@@ -43,30 +43,25 @@ contract Reputation {
         rootAddress = a;
     }
 
-    function calculateCommitPonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyRoot view returns (uint256, uint256) {
-        uint256 ponderation = 0;
-        uint256 complexityPonderation = 0;
-        uint256 totalKnowledge = 0;
-        for(uint256 j = 0; j < cleanliness.length; j++) {
+    function calculateCommitPonderation(uint40[] cleanliness, uint40[] complexity, uint40[] revKnowledge) public onlyRoot view returns (uint40, uint40) {
+        uint40 ponderation = 0;
+        uint40 complexityPonderation = 0;
+        uint40 totalKnowledge = 0;
+        for(uint8 j = 0; j < cleanliness.length; j++) {
             totalKnowledge += revKnowledge[j];
         }
-        for(uint256 i = 0; i < cleanliness.length; i++) {
-            uint256 userKnowledge = (revKnowledge[i] * DIVISION_PARAMETER) / totalKnowledge;
+        for(uint8 i = 0; i < cleanliness.length; i++) {
+            uint40 userKnowledge = (revKnowledge[i] * DIVISION_PARAMETER) / totalKnowledge;
             ponderation += ((cleanliness[i] * DIVISION_PARAMETER) * userKnowledge);
             complexityPonderation += ((complexity[i] * DIVISION_PARAMETER) * userKnowledge);
         }
-        return (ponderation/DIVISION_PARAMETER, complexityPonderation/(DIVISION_PARAMETER * 10));
+        return (ponderation/(DIVISION_PARAMETER * DIVISION_PARAMETER), complexityPonderation/(DIVISION_PARAMETER * 10));
     }
 
-    function calculateUserReputation(uint256[] scores, uint256[] complexities) public onlyRoot view returns (uint256) {
-        uint256 totalComplex = 0;
-        uint256 reputation = 0;
-        for(uint256 i = 0; i < complexities.length; i++) {
-            totalComplex += complexities[i];
-        }
-        for(uint256 j = 0; j < scores.length; j++) {
-            reputation += ((scores[j] * complexities[j] * DIVISION_PARAMETER) / totalComplex);
-        }
-        return reputation/(DIVISION_PARAMETER * 10);
+    function calculateUserReputation(uint40 prevReputation, uint40 prevPonderation, uint40 commitScore, uint40 commitComplexity, uint40 prevScore, uint40 prevComplexity) public onlyRoot view returns (uint40, uint40) {
+        uint40 num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
+        uint40 cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
+        uint40 reputation = (num * DIVISION_PARAMETER) / cumulativePonderation;
+        return (reputation/DIVISION_PARAMETER, cumulativePonderation);
     }
 }
