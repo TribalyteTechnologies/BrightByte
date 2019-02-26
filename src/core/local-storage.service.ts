@@ -6,7 +6,6 @@ import {Injectable} from "@angular/core";
 export class LocalStorageService extends StorageService {
 
     constructor(loggerSrv: LoggerService) {
-        super(loggerSrv);
-        this.storage = localStorage;
+        super(StorageService.StorageTypeEnum.Local, loggerSrv);
     }
 }

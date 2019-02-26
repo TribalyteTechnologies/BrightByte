@@ -49,7 +49,7 @@
                         </ion-row>
                         <ion-row *ngFor="let critName of ['cleanCode', 'difficulty', 'reviewerExperience']; let i = index">
                             <ion-col>
-                                    <ion-row class="paddingBottomSetReview paddingTopSetReview">
+                                    <ion-row class="padding-top-set-review padding-bottom-set-review">
                                             <div class="text-details">{{ "review."+critName | translate }}: </div>
                                     </ion-row>
                             </ion-col>
@@ -61,8 +61,13 @@
                                 </ion-row>
                             </ion-col>
                         </ion-row>
+                        <ion-row *ngIf="submitError != ''">
+                            <div class="error-body">
+                                {{ submitError }}
+                            </div>
+                        </ion-row>
                         <ion-row>
-                            <button class="btn btn--full btn__blue" (click)="setReview(currentCommit.url, textComment, rate); textComment =''">
+                            <button class="btn btn--full btn__blue" (click)="validateReview(currentCommit.url, textComment, rate);">
                             {{ "commitReview.review" | translate }}
                             </button>
                         </ion-row>
