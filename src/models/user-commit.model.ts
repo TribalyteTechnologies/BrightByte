@@ -24,8 +24,7 @@ export class UserCommit {
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
         commit.url = commitVals[0]; 
-        commit.urlHash = /(commits\/|commit\/|pull-requests\/)(.+$)/.exec(commit.url)[0];
-        commit.urlHash = /\/.+/.exec(commit.urlHash)[0].substr(1);
+        commit.urlHash = /[^/]+$/.exec(commit.url)[0];
         commit.title = commitVals[1];
         commit.author = commitVals[2];
         commit.project = UserCommit.getProjectFromUrl(commit.url);

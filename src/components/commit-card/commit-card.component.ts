@@ -30,8 +30,7 @@ export class CommitCard {
     @Input()
     public set commit(val: UserCommit){
         this._commit = val;
-        this.urlHash = /(commits\/|commit\/|pull-requests\/)(.+$)/.exec(val.url)[0];
-        this.urlHash = /\/.+/.exec(this.urlHash)[0].substr(1);
+        this.urlHash = /[^/]+$/.exec(val.url)[0];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
@@ -50,14 +49,18 @@ export class CommitCard {
     public ngDoCheck() {
         this.commit = this._commit;
     }
-  
-    public openUrl(url: string, isCommitParam: boolean){
+    
+    public openUrl(url: string, isCommitParam: boolean, e: Event){
+        
         let urlToOpen = url;
         if(isCommitParam){
+            window.open(urlToOpen, "_blank");
             urlToOpen = "?commitId=" + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
-        
+        if(e){
+            e.stopPropagation();
+        }
     }
 
     constructor(public translateService: TranslateService){

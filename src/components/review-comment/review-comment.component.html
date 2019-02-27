@@ -8,7 +8,7 @@
                 <ion-col col-auto class="text-title">{{ review.name }}</ion-col>
                 <ion-col class="text-details">{{ review.lastModificationDateMs | dateFormat }}</ion-col>
             </ion-row>
-            <ion-row *ngFor="let critName of [ 'score', 'cleanCode', 'difficulty', 'reviewerExperience']" no-padding>
+            <ion-row *ngFor="let critName of [ 'cleanCode', 'difficulty', 'reviewerExperience']" no-padding>
                 <ion-col>
                     <ion-row class="padding-bottom padding-top">
                         <div>{{ ("review." + critName) | translate }}</div>

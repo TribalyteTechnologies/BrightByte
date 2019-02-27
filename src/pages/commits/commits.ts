@@ -203,8 +203,6 @@ export class CommitPage {
         window.open(urlToOpen, "_blank");
     }
 
-    
-
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{
         let hash = commit.author;
         return this.contractManagerService.getUserDetails(hash)

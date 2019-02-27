@@ -31,8 +31,7 @@ export class ReviewCard {
     @Input()
     set commit(val: UserCommit){
         this._commit = val;
-        this.urlHash = /(commits\/|commit\/|pull-requests\/)(.+$)/.exec(val.url)[0];
-        this.urlHash = /\/.+/.exec(this.urlHash)[0].substr(1);
+        this.urlHash = /[^/]+$/.exec(val.url)[0];
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval =>  (userval.name === "") ? this.ANONYMOUS : userval.name);
@@ -51,12 +50,16 @@ export class ReviewCard {
     public ngDoCheck() {
         this.commit = this._commit;
     }
-    public openUrl(url: string, isReviewParam: boolean){
+    public openUrl(url: string, isReviewParam: boolean, e: Event){
         let urlToOpen = url;
         if(isReviewParam){
+            window.open(urlToOpen, "_blank");
             urlToOpen = "?reviewId=" + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
+        if(e){
+            e.stopPropagation();
+        }
     }
 
     constructor(public translateService: TranslateService){
