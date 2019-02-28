@@ -3,14 +3,8 @@ export default {
     {
       gasLimit: 2000000,
       gasPrice: 0,
-      netId: 0,
-      urlNode: "0"
-    },
-    {
-      gasLimit: 2000000,
-      gasPrice: 0,
       netId: 82584648528,
-      urlNode: "1"
+      urlNode: "http://5.56.62.209:22000"
     }
   ]
 };

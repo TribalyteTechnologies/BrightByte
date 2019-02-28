@@ -49,6 +49,7 @@ import { ReviewCard } from "../components/review-card/review-card.component";
 import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
+import { MigrationService } from "../domain/migration.service";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -119,7 +120,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
-        AppVersionService
+        AppVersionService,
+        MigrationService
     ]
 })
 
