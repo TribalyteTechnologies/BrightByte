@@ -59,9 +59,12 @@ export class AddCommitPopover {
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
             Validators.pattern(
-                /^(https)(:)\/\/(bitbucket|github)\.(org|com)\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\/(commits|commit)\/[a-zA-Z0-9]+$/)]],
+                /(^https\:\/\/(.+)\/(.+)\/)(.+(pull-requests|pull-request|commits|commit)\/.+)/)
+            ]],
             title: ["", [Validators.required]]
         });
+
+
         this.bitbucketForm = this.fb.group({
             username: ["", [Validators.required]],
             password: ["", [Validators.required]]

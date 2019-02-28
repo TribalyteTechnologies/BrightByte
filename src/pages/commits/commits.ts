@@ -31,7 +31,7 @@ export class CommitPage {
     public currentCommitName = "";
     public currentCommitEmail = "";
     public filterValue = "";
-    public filterIsPending;
+    public filterIsPending = false;
     public msg: string;
     private log: ILogger;
 
@@ -48,7 +48,7 @@ export class CommitPage {
     ) {
         this.log = loggerSrv.get("CommitsPage");
         this.filterValue = this.storageSrv.get(AppConfig.StorageKey.COMMITFILTER);
-        this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true";
+        this.filterIsPending = (this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true");
     }
 
     public ionViewWillEnter() {
@@ -152,8 +152,10 @@ export class CommitPage {
                 this.filterValue = "";
                 break;
         }
-        this.openedComments = false;  
-        this.storageSrv.set(AppConfig.StorageKey.COMMITFILTER, this.filterValue.toString());
+        this.openedComments = false;
+        if (this.filterValue !== null){
+            this.storageSrv.set(AppConfig.StorageKey.COMMITFILTER, this.filterValue.toString());
+        }
         this.storageSrv.set(AppConfig.StorageKey.COMMITPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.arrayCommits);
     }
@@ -196,7 +198,10 @@ export class CommitPage {
         
     }
 
-    
+    public openUrl(url: string){
+        let urlToOpen = url;
+        window.open(urlToOpen, "_blank");
+    }
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{
         let hash = commit.author;

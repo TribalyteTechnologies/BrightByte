@@ -2,17 +2,22 @@ import {ILogger, LoggerService} from "./logger.service";
 import {Injectable} from "@angular/core";
 
 @Injectable()
-export class StorageService {
+export abstract class StorageService {
 
-    public storage = localStorage;
+    private storage = localStorage;
     private log: ILogger;
-    private storageType: string;
-    
+    private storageType: StorageService.StorageTypeEnum;
 
-    constructor(loggerSrv: LoggerService) {
+    constructor(storageType: StorageService.StorageTypeEnum, loggerSrv: LoggerService) {
 
         this.log = loggerSrv.get("StorageService");
-        this.selectStorageType();
+        this.storageType = storageType;
+
+        if (storageType === StorageService.StorageTypeEnum.Local){
+            this.storage = localStorage;
+        }else{
+            this.storage = sessionStorage;
+        }
     }
 
     public set(key: string, item: any) {
@@ -35,13 +40,11 @@ export class StorageService {
         this.log.d("Clearing " + this.storageType);
         this.storage.clear();
     }
+}
 
-    private selectStorageType() {
-
-        if (this.storage === localStorage){
-            this.storageType = "localStorage";
-        }else{
-            this.storageType = "sessionStorage";
-        }
+export namespace StorageService {
+    export enum StorageTypeEnum {
+        Local = "LocalStorage",
+        Session = "SessionStorage"
     }
 }

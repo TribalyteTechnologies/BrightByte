@@ -29,7 +29,7 @@ export class ReviewPage {
     public isFeedback = {} as {[key: string]: boolean};
 
     public filterValue = "";
-    public filterIsPending;
+    public filterIsPending = false;
     public filterIsIncompleted = false;
     public filterIsReviewed = false;
     public openedComments = false;
@@ -46,6 +46,9 @@ export class ReviewPage {
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
     public filterArrayCommits = new Array<UserCommit>();
+    public textComment: any;
+
+    public submitError: string = "";
 
     
     private log: ILogger;
@@ -173,6 +176,28 @@ export class ReviewPage {
         this.rate[starNum] = (value + 1) * 100;
     }
 
+    public validateReview(url: string, text: string, points: number[]){
+        this.submitError = "";
+        let pointsEmpty = false;
+        for(let i = 0; i < points.length; i++){
+            pointsEmpty = (points[i] === 0);
+        }
+
+        if (text === "" || text === undefined){
+            this.translateService.get("review.reviewCommentError").subscribe(
+                msg => {
+                    this.submitError = msg;
+                });
+        } else if(pointsEmpty) {
+            this.translateService.get("review.reviewEmptyRatingError").subscribe(
+                msg => {
+                    this.submitError = msg;
+                });
+        } else{
+            this.setReview(url, text, points);
+        }
+    }
+
     public setReview(url: string, text: string, points: number[]){
         let point: number[] = points;
         let criteriaWorth = 1 / points.length;
@@ -197,7 +222,9 @@ export class ReviewPage {
             this.setReputation(-1, 0);
             this.setReputation(-1, 1);
             this.setReputation(-1, 2);
-            this.spinnerService.hideLoader();   
+            this.spinnerService.hideLoader();  
+            this.textComment  = "";
+            this.refresh();
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();
@@ -230,8 +257,10 @@ export class ReviewPage {
                 this.filterValue = "";
                 break;
         }
-        this.openedComments = false;  
-        this.storageSrv.set(AppConfig.StorageKey.REVIEWFILTER, this.filterValue.toString());
+        this.openedComments = false;
+        if (this.filterValue !== null){
+            this.storageSrv.set(AppConfig.StorageKey.REVIEWFILTER, this.filterValue.toString());
+        }
         this.storageSrv.set(AppConfig.StorageKey.REVIEWPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.displayCommitsToReview);
     }

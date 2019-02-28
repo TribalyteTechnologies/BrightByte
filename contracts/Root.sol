@@ -13,8 +13,6 @@ contract Root{
     address owner;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    uint256[] commitScores;
-    uint256[] commitComplexities;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -107,23 +105,16 @@ contract Root{
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
-    function calculatePonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyCommit view returns(uint256, uint256) {
+    function calculatePonderation(uint40[] cleanliness, uint40[] complexity, uint40[] revKnowledge) public onlyCommit view returns(uint40, uint40) {
         return remoteReputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
-    function calculateUserReputation(bytes32[] commitsUrls) public returns (uint) {
-        uint256[] memory a;
-        uint256[] memory b;
-        commitScores = a;
-        commitComplexities = b;
-        
-        for(uint256 i = 0; i < commitsUrls.length; i++) {
-            uint256 score;
-            uint256 complexity;
-            (score, complexity) = remoteCommits.getCommitScores(commitsUrls[i]);
-            commitScores.push(score);
-            commitComplexities.push(complexity);
-        }
-        return  remoteReputation.calculateUserReputation(commitScores, commitComplexities);
+    function calculateUserReputation(bytes32 commitsUrl, uint40 reputation, uint40 cumulativeComplexity) public returns (uint40, uint40) {
+        uint40 commitScore;
+        uint40 commitPonderation;
+        uint40 previousScore;
+        uint40 previousPonderation;
+        (commitScore, commitPonderation, previousScore, previousPonderation) = remoteCommits.getCommitScores(commitsUrl);
+        return  remoteReputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }
 }

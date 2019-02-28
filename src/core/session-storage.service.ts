@@ -6,7 +6,6 @@ import {Injectable} from "@angular/core";
 export class SessionStorageService extends StorageService {
 
     constructor(loggerSrv: LoggerService) {
-        super(loggerSrv);
-        this.storage = sessionStorage;
+        super(StorageService.StorageTypeEnum.Session, loggerSrv);
     }
 }

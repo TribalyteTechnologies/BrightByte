@@ -28,7 +28,8 @@ contract Bright {
         mapping (uint256 => UserSeason) seasonData;
     }
     struct UserStats {
-        uint256 reputation;
+        uint40 reputation;
+        uint40 cumulativeComplexity;
         uint256 numberOfPoints;
         uint256 numberOfTimesReview;
         uint256 agreedPercentage;
@@ -222,7 +223,7 @@ contract Bright {
         UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
 
         user.globalStats.numberOfTimesReview ++;
-        user.globalStats.reputation = root.calculateUserReputation(user.pendingCommits);
+        (user.globalStats.reputation, user.globalStats.cumulativeComplexity) = root.calculateUserReputation(url, user.globalStats.reputation, user.globalStats.cumulativeComplexity);
         
         UserProfile storage reviewer = hashUserMap[sender];
         for (uint j = 0 ; j < reviewer.pendingReviews.length; j++){
@@ -235,7 +236,7 @@ contract Bright {
         hashUserMap[sender].finishedReviews.push(url);
         if(userSeason.seasonCommits[url]) {
             userSeason.seasonStats.numberOfTimesReview++;
-            userSeason.seasonStats.reputation = root.calculateUserReputation(userSeason.urlSeasonCommits);
+            (userSeason.seasonStats.reputation, userSeason.seasonStats.cumulativeComplexity) = root.calculateUserReputation(url, userSeason.seasonStats.reputation, userSeason.seasonStats.cumulativeComplexity);
             reviewer.seasonData[currentSeasonIndex].seasonStats.reviewsMade++;
         }
     }

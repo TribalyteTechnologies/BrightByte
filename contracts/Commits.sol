@@ -8,9 +8,9 @@ contract Commits {
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
-    uint256[] clean;
-    uint256[] know;
-    uint256[] complex;
+    uint40[] clean;
+    uint40[] know;
+    uint40[] complex;
 
     address private owner;
 
@@ -23,8 +23,10 @@ contract Commits {
         uint lastModificationDate;
         uint numberReviews;
         uint currentNumberReviews;
-        uint256 score;
-        uint256 weighComplexity;
+        uint40 score;
+        uint40 weighComplexity;
+        uint40 previousScore;
+        uint40 previousComplexity;
         address[] pendingComments;
         address[] finishedComments;
         mapping (address => Comment) commitComments;
@@ -33,7 +35,7 @@ contract Commits {
         string text;
         address author;
         uint score;
-        uint256[] points;
+        uint40[] points;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
         uint creationDate;
         uint lastModificationDate;
@@ -77,7 +79,7 @@ contract Commits {
         address[] memory a;
         bytes32 _id = keccak256(_url);
         if(storedData[_id].author == address(0)){
-            storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp,_users, 0, 0, 0, a,a);
+            storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp,_users, 0, 0, 0, 0, 0, a,a);
             allCommitsArray.push(_id);
             if(msg.sender == tx.origin){
                 root.setNewCommit(_id);
@@ -142,7 +144,7 @@ contract Commits {
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address, uint256[]){
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address, uint40[]){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
@@ -155,13 +157,13 @@ contract Commits {
         );
     }
 
-    function setReview(string _url,string _text, uint256[] points) onlyDapp public{
+    function setReview(string _url,string _text, uint40[] points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
         
         Commit storage commit = storedData[url];
         bool saved = false;
-        for (uint256 j = 0;j < commit.pendingComments.length; j++){
+        for (uint40 j = 0;j < commit.pendingComments.length; j++){
             if (author == commit.pendingComments[j]){
                 commit.pendingComments[j] = commit.pendingComments[commit.pendingComments.length-1];
                 commit.pendingComments.length--;
@@ -178,26 +180,28 @@ contract Commits {
         comment.creationDate = block.timestamp;
         comment.lastModificationDate = block.timestamp;
 
-        uint256[] memory a;
-        uint256[] memory b;
-        uint256[] memory c;
+        uint40[] memory a;
+        uint40[] memory b;
+        uint40[] memory c;
         clean = a;
-        complex = c;
-        know = b;
-        for(uint256 i = 0; i < storedData[url].finishedComments.length; i++) {
+        complex = b;
+        know = c;
+        for(uint40 i = 0; i < storedData[url].finishedComments.length; i++) {
             clean.push(commit.commitComments[commit.finishedComments[i]].points[0]);
-            know.push(commit.commitComments[commit.finishedComments[i]].points[2]);
             complex.push(commit.commitComments[commit.finishedComments[i]].points[1]);
+            know.push(commit.commitComments[commit.finishedComments[i]].points[2]);
         }
-        uint256 commitScore;
-        uint256 commitComplexity;
+        uint40 commitScore;
+        uint40 commitComplexity;
         (commitScore, commitComplexity) = root.calculatePonderation(clean, complex, know);
-        commit.score = commitScore/100;
+        commit.previousScore = commit.score;
+        commit.previousComplexity = commit.weighComplexity;
+        commit.score = commitScore;
         commit.weighComplexity = commitComplexity;
         commit.isReadNeeded = true;
         commit.currentNumberReviews ++;
         commit.lastModificationDate = block.timestamp;
-        comment.score = commitComplexity/100;
+        comment.score = commitComplexity;
         //score per commit
         root.setReview(url, commit.author);
     }
@@ -224,11 +228,11 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint256 sc, uint256 wc) public onlyDapp {
+    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint40 sc, uint p) public onlyDapp {
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, wc, a, a);
+        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, 0, 0, 0, a, a);
         allCommitsArray.push(_id);
     }
 
@@ -242,7 +246,7 @@ contract Commits {
         }
     }
 
-    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint[] points, uint v, uint crDt, uint lsMd) public onlyDapp {
+    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint40[] points, uint v, uint crDt, uint lsMd) public onlyDapp {
         Comment storage data = storedData[url].commitComments[user];
         data.text = txt;
         data.author = ath;
@@ -268,7 +272,7 @@ contract Commits {
         }
     }
 
-    function getCommitScores(bytes32 url) public onlyRoot view returns(uint256, uint256) {
-        return(storedData[url].score, storedData[url].weighComplexity);
+    function getCommitScores(bytes32 url) public onlyRoot view returns(uint40, uint40, uint40, uint40) {
+        return(storedData[url].score, storedData[url].weighComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
 }
