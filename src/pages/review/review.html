@@ -14,7 +14,7 @@
             {{ "commitReview.showAllCommits" | translate }}
         </ion-col>
         <ion-col col-6 padding class="text-details text-details--bold" *ngIf="currentCommit">
-            {{ "review.details" | translate }}
+            {{ "commitReview.details" | translate }}
         </ion-col>
     </ion-row>
     <ion-row no-padding class="scroll-dimensions">
@@ -35,6 +35,9 @@
                         <ion-row align-items-center class="text-description">
                             <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
                             <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
+                        </ion-row>
+                        <ion-row>
+                            <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url, false)">  #{{ currentCommit.urlHash }}</div>
                         </ion-row>
                     </ion-col>
                 </ion-row>

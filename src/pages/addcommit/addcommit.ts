@@ -59,7 +59,7 @@ export class AddCommitPopover {
         this.myForm = this.fb.group({
             url: ["", [Validators.required,
             Validators.pattern(
-                /(^https\:\/\/(.+)\/(.+)\/)(.+(pull-requests|pull-request|commits|commit)\/.+)/)
+                /(^https\:\/\/(.+)\/(.+)\/)(.+(pull-requests|pull-request|commits|commit|pull)\/.+)/)
             ]],
             title: ["", [Validators.required]]
         });

@@ -130,7 +130,7 @@
         "score": "Score",
         "cleanCode": "Clean Code",
         "difficulty": "Difficulty",
-        "reviewerExperience": "Reviewer Experience",
+        "reviewerExperience": "Reviewer Confidence",
         "reviewCommentError": "Empty comment",
         "reviewEmptyRatingError": "One or more star ratings are empty"
 
