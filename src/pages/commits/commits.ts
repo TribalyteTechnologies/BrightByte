@@ -60,9 +60,9 @@ export class CommitPage {
         this.spinnerService.showLoader();
         let commits: UserCommit[];
         this.contractManagerService.getCommits()
-            .then((commitConcat: UserCommit[][]) => {
+            .then((commitConcat: UserCommit[]) => {
                 this.log.d("User Commits received");
-                commits = commitConcat[0].concat(commitConcat[1]);
+                commits = commitConcat;
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
@@ -194,7 +194,7 @@ export class CommitPage {
                 this.log.e(err);
                 this.spinnerService.hideLoader();
             });
-
+            
         
     }
 

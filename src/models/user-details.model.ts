@@ -5,8 +5,7 @@ export class UserDetails {
     public email: string; 
     public numberCommitsReviewedByMe: number; 
     public numberCommitsToReviewByMe: number; 
-    public numbermyCommitsPending: number; 
-    public numbermyCommitsFinished: number;
+    public numbermyCommitsPending: number;
     public reputation: number;
     public agreedPercentage: number;
     public static fromSmartContract(userVals: Array<any>): UserDetails{ 
@@ -14,11 +13,10 @@ export class UserDetails {
         user.name = userVals[0]; 
         user.email = userVals[1]; 
         user.numberCommitsReviewedByMe = userVals[2]; 
-        user.numberCommitsToReviewByMe = userVals[3]; 
-        user.numbermyCommitsFinished = userVals[4]; 
-        user.numbermyCommitsPending = userVals[5];
-        user.reputation = userVals[6] / AppConfig.SCORE_DIVISION_FACTOR;
-        user.agreedPercentage = userVals[7];
+        user.numberCommitsToReviewByMe = userVals[3];
+        user.numbermyCommitsPending = userVals[4];
+        user.reputation = userVals[5] / AppConfig.SCORE_DIVISION_FACTOR;
+        user.agreedPercentage = userVals[6];
         return user; 
     } 
 } 

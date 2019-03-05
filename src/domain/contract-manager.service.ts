@@ -170,10 +170,9 @@ export class ContractManagerService {
             throw e;
         });
     }
-    public getCommits(): Promise<Array<Array<UserCommit>>> {
+    public getCommits(): Promise<Array<UserCommit>> {
         let allUserCommits: Array<any>;
         let promisesPending = new Array<Promise<UserCommit>>();
-        let promisesFinished = new Array<Promise<UserCommit>>();
         return this.initProm.then(([bright, commit, root]) => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", bright);
@@ -187,12 +186,7 @@ export class ContractManagerService {
                     .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true));
                 promisesPending.push(promisePending);
             }
-            for (let i = 0; i < allUserCommits[3].length; i++) {
-                let promiseFinished: Promise<UserCommit> = commit.methods.getDetailsCommits(allUserCommits[3][i]).call()
-                    .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, false));
-                promisesFinished.push(promiseFinished);
-            }
-            return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
+            return Promise.all(promisesPending);
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
             throw err;
