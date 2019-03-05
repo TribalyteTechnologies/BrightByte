@@ -5,7 +5,7 @@ contract Reputation {
     Root private root;
     address private rootAddress;
 
-    uint40 private constant DIVISION_PARAMETER = 1000;
+    uint32 private constant WEIGHT_FACTOR = 1000;
 
     address private owner;
    
@@ -43,25 +43,25 @@ contract Reputation {
         rootAddress = a;
     }
 
-    function calculateCommitPonderation(uint40[] cleanliness, uint40[] complexity, uint40[] revKnowledge) public onlyRoot view returns (uint40, uint40) {
-        uint40 ponderation = 0;
-        uint40 complexityPonderation = 0;
-        uint40 totalKnowledge = 0;
+    function calculateCommitPonderation(uint16[] cleanliness, uint16[] complexity, uint16[] revKnowledge) public onlyRoot view returns (uint32, uint32) {
+        uint32 weightedCleanliness = 0;
+        uint32 complexityPonderation = 0;
+        uint32 totalKnowledge = 0;
         for(uint8 j = 0; j < cleanliness.length; j++) {
             totalKnowledge += revKnowledge[j];
         }
         for(uint8 i = 0; i < cleanliness.length; i++) {
-            uint40 userKnowledge = (revKnowledge[i] * DIVISION_PARAMETER) / totalKnowledge;
-            ponderation += ((cleanliness[i] * DIVISION_PARAMETER) * userKnowledge);
-            complexityPonderation += ((complexity[i] * DIVISION_PARAMETER) * userKnowledge);
+            uint32 userKnowledge = (revKnowledge[i] * WEIGHT_FACTOR) / totalKnowledge;
+            weightedCleanliness += (cleanliness[i] * userKnowledge);
+            complexityPonderation += (complexity[i] * userKnowledge);
         }
-        return (ponderation/(DIVISION_PARAMETER * DIVISION_PARAMETER), complexityPonderation/(DIVISION_PARAMETER * 10));
+        return (weightedCleanliness/WEIGHT_FACTOR, complexityPonderation/WEIGHT_FACTOR);
     }
 
-    function calculateUserReputation(uint40 prevReputation, uint40 prevPonderation, uint40 commitScore, uint40 commitComplexity, uint40 prevScore, uint40 prevComplexity) public onlyRoot view returns (uint40, uint40) {
-        uint40 num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
-        uint40 cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
-        uint40 reputation = (num * DIVISION_PARAMETER) / cumulativePonderation;
-        return (reputation/DIVISION_PARAMETER, cumulativePonderation);
+    function calculateUserReputation(uint32 prevReputation, uint32 prevPonderation, uint32 commitScore, uint32 commitComplexity, uint32 prevScore, uint32 prevComplexity) public onlyRoot view returns (uint32, uint32) {
+        uint32 num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
+        uint32 cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
+        uint32 reputation = (num * WEIGHT_FACTOR) / cumulativePonderation;
+        return (reputation/WEIGHT_FACTOR, cumulativePonderation);
     }
 }

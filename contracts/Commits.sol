@@ -8,9 +8,9 @@ contract Commits {
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
-    uint40[] clean;
-    uint40[] know;
-    uint40[] complex;
+    uint16[] quality;
+    uint16[] confidence;
+    uint16[] complexity;
 
     address private owner;
 
@@ -23,10 +23,10 @@ contract Commits {
         uint lastModificationDate;
         uint numberReviews;
         uint currentNumberReviews;
-        uint40 score;
-        uint40 weighComplexity;
-        uint40 previousScore;
-        uint40 previousComplexity;
+        uint32 score;
+        uint32 weightedComplexity;
+        uint32 previousScore;
+        uint32 previousComplexity;
         address[] pendingComments;
         address[] finishedComments;
         mapping (address => Comment) commitComments;
@@ -35,7 +35,7 @@ contract Commits {
         string text;
         address author;
         uint score;
-        uint40[] points;
+        uint16[] points;
         uint vote; //0 => no vote, 1 => dont agree, 2 => agree
         uint creationDate;
         uint lastModificationDate;
@@ -125,7 +125,7 @@ contract Commits {
         );
     }
     function getCommitScore(bytes32 _id) public onlyDapp view returns(uint,uint){
-        return(storedData[_id].score, storedData[_id].weighComplexity);
+        return(storedData[_id].score, storedData[_id].weightedComplexity);
     }
     function getNumbers() public onlyDapp view returns(uint){
         return allCommitsArray.length;
@@ -144,7 +144,7 @@ contract Commits {
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address, uint40[]){
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address, uint16[]){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
@@ -157,13 +157,13 @@ contract Commits {
         );
     }
 
-    function setReview(string _url,string _text, uint40[] points) onlyDapp public{
+    function setReview(string _url,string _text, uint16[] points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
         
         Commit storage commit = storedData[url];
         bool saved = false;
-        for (uint40 j = 0;j < commit.pendingComments.length; j++){
+        for (uint8 j = 0;j < commit.pendingComments.length; j++){
             if (author == commit.pendingComments[j]){
                 commit.pendingComments[j] = commit.pendingComments[commit.pendingComments.length-1];
                 commit.pendingComments.length--;
@@ -180,28 +180,27 @@ contract Commits {
         comment.creationDate = block.timestamp;
         comment.lastModificationDate = block.timestamp;
 
-        uint40[] memory a;
-        uint40[] memory b;
-        uint40[] memory c;
-        clean = a;
-        complex = b;
-        know = c;
-        for(uint40 i = 0; i < storedData[url].finishedComments.length; i++) {
-            clean.push(commit.commitComments[commit.finishedComments[i]].points[0]);
-            complex.push(commit.commitComments[commit.finishedComments[i]].points[1]);
-            know.push(commit.commitComments[commit.finishedComments[i]].points[2]);
+        uint16[] memory qualityArray;
+        uint16[] memory complexityArray;
+        uint16[] memory confidenceArray;
+        quality = qualityArray;
+        complexity = complexityArray;
+        confidence = confidenceArray;
+        for(uint8 i = 0; i < storedData[url].finishedComments.length; i++) {
+            quality.push(commit.commitComments[commit.finishedComments[i]].points[0]);
+            complexity.push(commit.commitComments[commit.finishedComments[i]].points[1]);
+            confidence.push(commit.commitComments[commit.finishedComments[i]].points[2]);
         }
-        uint40 commitScore;
-        uint40 commitComplexity;
-        (commitScore, commitComplexity) = root.calculatePonderation(clean, complex, know);
+        uint32 commitScore;
+        uint32 commitComplexity;
+        (commitScore, commitComplexity) = root.calculatePonderation(quality, complexity, confidence);
         commit.previousScore = commit.score;
-        commit.previousComplexity = commit.weighComplexity;
+        commit.previousComplexity = commit.weightedComplexity;
         commit.score = commitScore;
-        commit.weighComplexity = commitComplexity;
+        commit.weightedComplexity = commitComplexity;
         commit.isReadNeeded = true;
         commit.currentNumberReviews ++;
         commit.lastModificationDate = block.timestamp;
-        comment.score = commitComplexity;
         //score per commit
         root.setReview(url, commit.author);
     }
@@ -228,7 +227,7 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint40 sc, uint p) public onlyDapp {
+    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint32 sc, uint p) public onlyDapp {
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
@@ -246,7 +245,7 @@ contract Commits {
         }
     }
 
-    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint40[] points, uint v, uint crDt, uint lsMd) public onlyDapp {
+    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint16[] points, uint v, uint crDt, uint lsMd) public onlyDapp {
         Comment storage data = storedData[url].commitComments[user];
         data.text = txt;
         data.author = ath;
@@ -272,7 +271,7 @@ contract Commits {
         }
     }
 
-    function getCommitScores(bytes32 url) public onlyRoot view returns(uint40, uint40, uint40, uint40) {
-        return(storedData[url].score, storedData[url].weighComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
+    function getCommitScores(bytes32 url) public onlyDapp view returns (uint32, uint32, uint32, uint32) {
+        return(storedData[url].score, storedData[url].weightedComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
 }

@@ -105,15 +105,15 @@ contract Root{
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
-    function calculatePonderation(uint40[] cleanliness, uint40[] complexity, uint40[] revKnowledge) public onlyCommit view returns(uint40, uint40) {
+    function calculatePonderation(uint16[] cleanliness, uint16[] complexity, uint16[] revKnowledge) public onlyCommit view returns(uint32, uint32) {
         return remoteReputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
-    function calculateUserReputation(bytes32 commitsUrl, uint40 reputation, uint40 cumulativeComplexity) public returns (uint40, uint40) {
-        uint40 commitScore;
-        uint40 commitPonderation;
-        uint40 previousScore;
-        uint40 previousPonderation;
+    function calculateUserReputation(bytes32 commitsUrl, uint32 reputation, uint32 cumulativeComplexity) public returns (uint32, uint32) {
+        uint32 commitScore;
+        uint32 commitPonderation;
+        uint32 previousScore;
+        uint32 previousPonderation;
         (commitScore, commitPonderation, previousScore, previousPonderation) = remoteCommits.getCommitScores(commitsUrl);
         return  remoteReputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }

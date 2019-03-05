@@ -4,7 +4,7 @@ import "./Root.sol";
 contract Bright {
     Root private root;
     uint constant finalDayMigrate = 1553122800;
-    uint256 private constant seasonLengthSecs = 300000;
+    uint256 private constant seasonLengthSecs = 90 * 24 * 60 * 60;
     uint256 private initialSeasonTimestamp;
     uint256 currentSeasonIndex;
     event UserProfileSetEvent (string name, address hash);
@@ -28,8 +28,8 @@ contract Bright {
         mapping (uint256 => UserSeason) seasonData;
     }
     struct UserStats {
-        uint40 reputation;
-        uint40 cumulativeComplexity;
+        uint32 reputation;
+        uint32 cumulativeComplexity;
         uint256 numberOfPoints;
         uint256 numberOfTimesReview;
         uint256 agreedPercentage;
@@ -287,14 +287,13 @@ contract Bright {
     }
 
     function setSeasonFeedback(address user, uint8 vote) private {
-        UserSeason storage season = hashUserMap[user].seasonData[currentSeasonIndex];
+        UserStats storage season = hashUserMap[user].seasonData[currentSeasonIndex].seasonStats;
         if(vote == 1){
-            season.seasonStats.positeVotes++;
+            season.positeVotes++;
         } else {
-            season.seasonStats.negativeVotes++;
+            season.negativeVotes++;
         }
-        season.seasonStats.agreedPercentage = (season.seasonStats.positeVotes * 100) / 
-        (season.seasonStats.positeVotes + season.seasonStats.negativeVotes);
+        season.agreedPercentage = (season.positeVotes * 100) / (season.positeVotes + season.negativeVotes);
     }
 
     function getToRead(address userHash) public onlyDapp view returns (bytes32[]) {
@@ -341,7 +340,7 @@ contract Bright {
         }
     }
 
-    function setAllUserData(string name, string mail, address hash, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint rep, uint rev) public onlyDapp {
+    function setAllUserData(string name, string mail, address hash, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint32 rep, uint rev) public onlyDapp {
         require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < finalDayMigrate);
         UserProfile storage user = hashUserMap[hash];
         user.name = name;
@@ -359,7 +358,7 @@ contract Bright {
         allUsersArray.push(hash);
     }
 
-    function setAllUserSeasonData(uint sea, address userAddr, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint rep, uint rev) public onlyDapp {
+    function setAllUserSeasonData(uint sea, address userAddr, uint perct, uint pts, uint tmRw, uint pos, uint256 neg, uint32 rep, uint rev) public onlyDapp {
         UserProfile storage user = hashUserMap[userAddr];
         UserSeason storage season = user.seasonData[sea];
         season.seasonStats.numberOfPoints = pts;
