@@ -205,7 +205,6 @@ export class ReviewPage {
 
     public setReview(url: string, text: string, points: number[]){
         let point: number[] = points;
-        let criteriaWorth = 1 / points.length;
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
         .then((response) => {
@@ -217,7 +216,6 @@ export class ReviewPage {
             this.userCommitComment[0].name = this.name;
             this.userCommitComment[0].creationDateMs = Date.now();
             this.userCommitComment[0].text = text;
-            this.userCommitComment[0].score = ((point[0] * criteriaWorth + point[1] * criteriaWorth + point[2] * criteriaWorth) / 100);
             this.userCommitComment[0].cleanCode = point[0] / 100;
             this.userCommitComment[0].difficulty = point[1] / 100;
             this.userCommitComment[0].reviewerExperience = point[2] / 100;

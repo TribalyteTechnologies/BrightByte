@@ -4,7 +4,7 @@ import "./Root.sol";
 contract Commits {
     Root private root;
     address private rootAddress;
-    uint constant finalDayMigrate = 1553122800;
+    uint32 constant finalDayMigrate = 1553122800;
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
@@ -18,11 +18,11 @@ contract Commits {
         string title;
         string url;
         address author;
-        uint creationDate;
+        uint256 creationDate;
         bool isReadNeeded;
-        uint lastModificationDate;
-        uint numberReviews;
-        uint currentNumberReviews;
+        uint256 lastModificationDate;
+        uint8 numberReviews;
+        uint8 currentNumberReviews;
         uint32 score;
         uint32 weightedComplexity;
         uint32 previousScore;
@@ -34,11 +34,10 @@ contract Commits {
     struct Comment{
         string text;
         address author;
-        uint score;
         uint16[] points;
-        uint vote; //0 => no vote, 1 => dont agree, 2 => agree
-        uint creationDate;
-        uint lastModificationDate;
+        uint8 vote; //0 => no vote, 1 => dont agree, 2 => agree
+        uint256 creationDate;
+        uint256 lastModificationDate;
     }
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -74,7 +73,7 @@ contract Commits {
         rootAddress = a;
     }
 
-    function setNewCommit (string _title, string _url, uint _users) public onlyDapp {
+    function setNewCommit (string _title, string _url, uint8 _users) public onlyDapp {
         address auth = tx.origin;
         address[] memory a;
         bytes32 _id = keccak256(_url);
@@ -92,7 +91,7 @@ contract Commits {
     function notifyCommit(bytes32 url,address a) public onlyRoot {
         require(storedData[url].author == tx.origin);
         bool saved = false;
-        for(uint i = 0; i < storedData[url].pendingComments.length; i++){
+        for(uint8 i = 0; i < storedData[url].pendingComments.length; i++){
             if(a == storedData[url].pendingComments[i]){
                 saved = true;
                 break;
@@ -110,7 +109,7 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
-    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint, uint, uint){
+    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint8, uint8, uint32){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,
@@ -124,7 +123,7 @@ contract Commits {
                 data.score
         );
     }
-    function getCommitScore(bytes32 _id) public onlyDapp view returns(uint,uint){
+    function getCommitScore(bytes32 _id) public onlyDapp view returns(uint32, uint32){
         return(storedData[_id].score, storedData[_id].weightedComplexity);
     }
     function getNumbers() public onlyDapp view returns(uint){
@@ -144,11 +143,10 @@ contract Commits {
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string,uint ,uint,uint,uint,address, uint16[]){
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string, uint8, uint, uint, address, uint16[]){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
-            comment.score,
             comment.vote,
             comment.creationDate,
             comment.lastModificationDate,
@@ -227,32 +225,31 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string tit,string url,address ath,uint crDt,bool need,uint lt,uint rev,uint ctR, uint32 sc, uint p) public onlyDapp {
+    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint8 numberReview, uint8 currentReviews, uint32 score, uint32 weightedComplexity) public onlyDapp {
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(tit, url, msg.sender, crDt, need, lt, rev, ctR, sc, 0, 0, 0, a, a);
+        storedData[_id] = Commit(title, url, author, creationDate, needRead, lastMod, numberReview, currentReviews, score, weightedComplexity, 0, 0, a, a);
         allCommitsArray.push(_id);
     }
 
-    function setAllCommitDataTwo(bytes32 _url, address[] pdCom, address[] fnCom) public onlyDapp {
-        Commit storage data = storedData[_url];
-        for(uint i = 0; i < pdCom.length; i++) {
-            data.pendingComments.push(pdCom[i]);
+    function setAllCommitDataTwo(bytes32 url, address[] pendingCommets, address[] finishedCommets) public onlyDapp {
+        Commit storage data = storedData[url];
+        for(uint i = 0; i < pendingCommets.length; i++) {
+            data.pendingComments.push(pendingCommets[i]);
         }
-        for(uint j = 0; j < fnCom.length; j++) {
-            data.finishedComments.push(fnCom[j]);
+        for(uint j = 0; j < finishedCommets.length; j++) {
+            data.finishedComments.push(finishedCommets[j]);
         }
     }
 
-    function setAllCommentData(bytes32 url,address user,string txt,address ath,uint sc, uint16[] points, uint v, uint crDt, uint lsMd) public onlyDapp {
+    function setAllCommentData(bytes32 url, address user, string txt, address author, uint16[] points, uint8 vote, uint creationDate, uint lastMod) public onlyDapp {
         Comment storage data = storedData[url].commitComments[user];
         data.text = txt;
-        data.author = ath;
-        data.score = sc;
-        data.vote = v;
-        data.creationDate = crDt;
-        data.lastModificationDate = lsMd;
+        data.author = author;
+        data.vote = vote;
+        data.creationDate = creationDate;
+        data.lastModificationDate = lastMod;
         for(uint i = 0; i < points.length; i++) {
             data.points.push(points[i]);
         }

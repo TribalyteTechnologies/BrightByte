@@ -275,7 +275,7 @@ export class ContractManagerService {
                     for (let i = 0; i < allComments[1].length; i++) {
                         let promiseFinished = commit.methods.getCommentDetail(urlKeccak, allComments[1][i]).call()
                             .then((commitVals: any) => {
-                                return Promise.all([commitVals, bright.methods.getUserName(commitVals[5]).call()]);
+                                return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
                             })
                             .then((data) => {
                                 return CommitComment.fromSmartContract(data[0], data[1]);
