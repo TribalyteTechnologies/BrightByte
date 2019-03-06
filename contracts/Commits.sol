@@ -2,9 +2,9 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
+    uint32 private constant FINAL_DAY_MIGRATE = 1553122800;
     Root private root;
     address private rootAddress;
-    uint32 constant finalDayMigrate = 1553122800;
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
@@ -35,7 +35,7 @@ contract Commits {
         string text;
         address author;
         uint16[] points;
-        uint8 vote; //0 => no vote, 1 => dont agree, 2 => agree
+        uint8 vote; //0 => no vote, 1 => dont agree, 2 => agree, 3 => report abuse
         uint256 creationDate;
         uint256 lastModificationDate;
     }
@@ -178,24 +178,26 @@ contract Commits {
         comment.creationDate = block.timestamp;
         comment.lastModificationDate = block.timestamp;
 
-        uint16[] memory qualityArray;
-        uint16[] memory complexityArray;
-        uint16[] memory confidenceArray;
-        quality = qualityArray;
-        complexity = complexityArray;
-        confidence = confidenceArray;
-        for(uint8 i = 0; i < storedData[url].finishedComments.length; i++) {
-            quality.push(commit.commitComments[commit.finishedComments[i]].points[0]);
-            complexity.push(commit.commitComments[commit.finishedComments[i]].points[1]);
-            confidence.push(commit.commitComments[commit.finishedComments[i]].points[2]);
+        if(root.checkCommitSeason(url, commit.author)) {
+            uint16[] memory qualityArray;
+            uint16[] memory complexityArray;
+            uint16[] memory confidenceArray;
+            quality = qualityArray;
+            complexity = complexityArray;
+            confidence = confidenceArray;
+            for(uint8 i = 0; i < storedData[url].finishedComments.length; i++) {
+                quality.push(commit.commitComments[commit.finishedComments[i]].points[0]);
+                complexity.push(commit.commitComments[commit.finishedComments[i]].points[1]);
+                confidence.push(commit.commitComments[commit.finishedComments[i]].points[2]);
+            }
+            uint32 commitScore;
+            uint32 commitComplexity;
+            (commitScore, commitComplexity) = root.calculatePonderation(quality, complexity, confidence);
+            commit.previousScore = commit.score;
+            commit.previousComplexity = commit.weightedComplexity;
+            commit.score = commitScore;
+            commit.weightedComplexity = commitComplexity;   
         }
-        uint32 commitScore;
-        uint32 commitComplexity;
-        (commitScore, commitComplexity) = root.calculatePonderation(quality, complexity, confidence);
-        commit.previousScore = commit.score;
-        commit.previousComplexity = commit.weightedComplexity;
-        commit.score = commitScore;
-        commit.weightedComplexity = commitComplexity;
         commit.isReadNeeded = true;
         commit.currentNumberReviews ++;
         commit.lastModificationDate = block.timestamp;
@@ -204,7 +206,7 @@ contract Commits {
     }
     function setVote(bytes32 url, address user, uint8 vote) public onlyRoot {
         require(storedData[url].author == tx.origin);
-        assert(vote == 1 || vote == 2);
+        assert(vote == 1 || vote == 2 || vote == 3);
         require(storedData[url].commitComments[user].author == user);
         storedData[url].commitComments[user].vote = vote;
     }
@@ -233,13 +235,13 @@ contract Commits {
         allCommitsArray.push(_id);
     }
 
-    function setAllCommitDataTwo(bytes32 url, address[] pendingCommets, address[] finishedCommets) public onlyDapp {
+    function setAllCommitDataTwo(bytes32 url, address[] pendingComments, address[] finishedComments) public onlyDapp {
         Commit storage data = storedData[url];
-        for(uint i = 0; i < pendingCommets.length; i++) {
-            data.pendingComments.push(pendingCommets[i]);
+        for(uint i = 0; i < pendingComments.length; i++) {
+            data.pendingComments.push(pendingComments[i]);
         }
-        for(uint j = 0; j < finishedCommets.length; j++) {
-            data.finishedComments.push(finishedCommets[j]);
+        for(uint j = 0; j < finishedComments.length; j++) {
+            data.finishedComments.push(finishedComments[j]);
         }
     }
 

@@ -2,11 +2,9 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Reputation {
+    uint32 private constant WEIGHT_FACTOR = 1000;
     Root private root;
     address private rootAddress;
-
-    uint32 private constant WEIGHT_FACTOR = 1000;
-
     address private owner;
    
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);

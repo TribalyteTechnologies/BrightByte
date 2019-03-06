@@ -2,12 +2,12 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Bright {
-    Root private root;
-    uint32 constant finalDayMigrate = 1553122800;
-    uint24 private constant seasonLengthSecs = 90 * 24 * 60 * 60;
-    uint256 private initialSeasonTimestamp;
-    uint8 private currentSeasonIndex;
     uint8 private constant FEEDBACK_MULTIPLER = 100;
+    uint24 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
+    uint32 private constant FINAL_DAY_MIGRATE = 1553122800;
+    Root private root;
+    uint16 private currentSeasonIndex;
+    uint256 private initialSeasonTimestamp;
     event UserProfileSetEvent (string name, address hash);
     mapping (address => UserProfile) private hashUserMap;
     mapping (bytes32 => address) private emailUserMap;
@@ -25,7 +25,7 @@ contract Bright {
         bytes32[] pendingReviews;
         bytes32[] toRead;
         UserStats globalStats;
-        mapping (uint8 => UserSeason) seasonData;
+        mapping (uint16 => UserSeason) seasonData;
     }
     struct UserStats {
         uint32 reputation;
@@ -278,16 +278,15 @@ contract Bright {
         return (hashUserMap[userHash].toRead);
     }
 
-    function getVotes(address userHash, bool global, uint8 indSeason) public onlyDapp view returns (uint, uint) {
+    function getVotes(address userHash, bool global, uint16 indSeason) public onlyDapp view returns (uint, uint) {
         if(global) {
             return (hashUserMap[userHash].globalStats.positeVotes, hashUserMap[userHash].globalStats.negativeVotes);
         } else {
             return (hashUserMap[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap[userHash].seasonData[indSeason].seasonStats.negativeVotes);
         }
-        
     }
 
-    function getUserReputation(uint ind, uint8 sea) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
+    function getUserReputation(uint ind, uint16 sea) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
         UserProfile memory user = hashUserMap[allUsersArray[ind]];
         UserSeason memory season = hashUserMap[allUsersArray[ind]].seasonData[sea];
         return(user.email,
@@ -301,24 +300,24 @@ contract Bright {
         );
     }
 
-    function getCurrentSeason() public onlyDapp view returns (uint8, uint256) {
-        return (currentSeasonIndex, (initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs)));
+    function getCurrentSeason() public onlyDapp view returns (uint16, uint256) {
+        return (currentSeasonIndex, (initialSeasonTimestamp + (currentSeasonIndex * SEASON_LENGTH_SECS)));
     }
 
-    function getSeasonCommits(uint ind, uint8 sea) public onlyDapp view returns(bytes32[]){
+    function getSeasonCommits(uint ind, uint16 sea) public onlyDapp view returns(bytes32[]){
         UserSeason memory season = hashUserMap[allUsersArray[ind]].seasonData[sea];
         return(season.urlSeasonCommits);
     }
 
     function checkSeason() private {
-        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
+        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * SEASON_LENGTH_SECS);
         if(block.timestamp > seasonFinale) {
             currentSeasonIndex++;
         }
     }
 
     function setAllUserData(string name, string mail, address hash, uint16 perct, uint16 tmRw, uint16 pos, uint16 neg, uint32 rep, uint16 rev) public onlyDapp {
-        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < finalDayMigrate);
+        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < FINAL_DAY_MIGRATE);
         UserProfile storage user = hashUserMap[hash];
         user.name = name;
         user.email = mail;
@@ -345,7 +344,7 @@ contract Bright {
         season.seasonStats.reviewsMade = rev;
     }
 
-    function setAllUserSeasonUrl(uint8 sea, address userAddr, bytes32 url) public onlyDapp {
+    function setAllUserSeasonUrl(uint16 sea, address userAddr, bytes32 url) public onlyDapp {
         UserProfile storage user = hashUserMap[userAddr];
         UserSeason storage season = user.seasonData[sea];
         season.seasonCommits[url] = true;
@@ -353,7 +352,7 @@ contract Bright {
     }
 
     function setAllUserDataTwo(address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
-        require (block.timestamp < finalDayMigrate);
+        require (block.timestamp < FINAL_DAY_MIGRATE);
         UserProfile storage user = hashUserMap[h];
         for(uint j = 0; j < pendCom.length; j++) {
             user.pendingCommits.push(pendCom[j]);
@@ -369,8 +368,12 @@ contract Bright {
         }
     }
 
-    function setSeasonData(uint256 initialSeasonTime, uint8 currentSeasonInd) public onlyRoot {
+    function setSeasonData(uint256 initialSeasonTime, uint16 currentSeasonInd) public onlyRoot {
         initialSeasonTimestamp = initialSeasonTime;
         currentSeasonIndex = currentSeasonInd;
+    }
+
+    function checkCommitSeason(bytes32 url,address author) public onlyRoot view returns (bool) {
+        return hashUserMap[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
 }

@@ -117,4 +117,8 @@ contract Root{
         (commitScore, commitPonderation, previousScore, previousPonderation) = remoteCommits.getCommitScores(commitsUrl);
         return  remoteReputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }
+
+    function checkCommitSeason(bytes32 url,address author) public onlyCommit view returns (bool) {
+        return remoteBright.checkCommitSeason(url,author);
+    }
 }
