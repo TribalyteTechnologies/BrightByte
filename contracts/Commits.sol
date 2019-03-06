@@ -225,11 +225,11 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint8 numberReview, uint8 currentReviews, uint32 score, uint32 weightedComplexity) public onlyDapp {
+    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint8 numberReview, uint8 currentReviews, uint32 score) public onlyDapp {
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(title, url, author, creationDate, needRead, lastMod, numberReview, currentReviews, score, weightedComplexity, 0, 0, a, a);
+        storedData[_id] = Commit(title, url, author, creationDate, needRead, lastMod, numberReview, currentReviews, score, 0, 0, 0, a, a);
         allCommitsArray.push(_id);
     }
 

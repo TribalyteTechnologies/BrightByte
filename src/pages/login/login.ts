@@ -15,7 +15,7 @@ import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
-import { MigrationService } from "../../domain/migration.service";
+import { MigrationService } from "../../migration/migration.service";
 
 @Component({
     selector: "page-login",

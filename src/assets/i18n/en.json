@@ -17,7 +17,9 @@
         "welcome": "Welcome to BrightByte",
         "enterCredentials": "Enter your credentials to sign in",
         "uploadCredentials": "Upload your credentials",
-        "enterPass": "Enter your password"
+        "enterPass": "Enter your password",
+        "error": "Error",
+        "accept": "Accept"
     },
     "addCommit": {
         "title": "Add commit",
@@ -169,5 +171,10 @@
         "showAllCommits": "Showing all your commits",
         "details": "Details",
         "setReview": "Set Review"
+    },
+    "migration": {
+        "migrationTitle": "Migration",
+        "migrationSuc": "The migration has been successful",
+        "migrationErr": "The migration has failed"
     }
 }

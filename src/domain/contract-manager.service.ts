@@ -455,7 +455,9 @@ export class ContractManagerService {
     }
     
     public getAddresses(){
-        return ([this.contractAddressRoot, this.contractAddressBright, this.contractAddressCommits]);
+        return this.initProm.then(([bright, commit, root]) => {
+            return ([bright, commit, root]);
+        });
     }
 
     public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>

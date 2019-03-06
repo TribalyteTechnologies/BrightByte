@@ -6,7 +6,7 @@ import { HttpClient } from "@angular/common/http";
 import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import {Account } from "web3/types";
-import { ContractManagerService } from "./contract-manager.service";
+import { ContractManagerService } from "../domain/contract-manager.service";
 
 
 interface ItrbSmartContact { //Web3.Eth.Contract
@@ -99,10 +99,11 @@ export class MigrationService {
 
 
     public getUserMigration() {
+        const NUMBER_SET_COMMITS = 5;
 
-        let brightOld;
-        let commitOld;
-        let rootOld;
+        let brightV030;
+        let commitV030;
+        let rootV030;
 
         let brightNew;
         let commitNew;
@@ -110,8 +111,6 @@ export class MigrationService {
 
         let usersHash = [];
         let users = [];
-
-        const NUMBER_SET_COMMITS = 5;
 
         let commitsUrls = [];
         let commits = [];
@@ -130,22 +129,22 @@ export class MigrationService {
 
         return this.initPromV030
         .then(([bright, commit, root]) => {
-            brightOld = bright;
-            commitOld = commit;
-            rootOld = root;
+            brightV030 = bright;
+            commitV030 = commit;
+            rootV030 = root;
             return this.contractManagerService.getInitProm();
         }).then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
             rootNew = root;
             
-            return brightOld.methods.getNumbers().call();
+            return brightV030.methods.getNumbers().call();
         }).then(userNumber => {
 
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < userNumber; i++){
-                let promise = brightOld.methods.getAllUserEmail(i).call();
+                let promise = brightV030.methods.getAllUserEmail(i).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -153,7 +152,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < emails.length; i++){
-                let promise = brightOld.methods.getAddressByEmail(this.web3.utils.keccak256(emails[i])).call();
+                let promise = brightV030.methods.getAddressByEmail(this.web3.utils.keccak256(emails[i])).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -161,7 +160,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
             usersHash = addr;
             for(let i = 0; i < addr.length; i++){
-                let promise = brightOld.methods.getUser(addr[i]).call();
+                let promise = brightV030.methods.getUser(addr[i]).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -180,7 +179,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < usersHash.length; i++){
-                let promise = brightOld.methods.getUserCommits(usersHash[i]).call();
+                let promise = brightV030.methods.getUserCommits(usersHash[i]).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -191,13 +190,12 @@ export class MigrationService {
                 users[i].finishedReviews = userCommits[i][1];
                 users[i].globalStats.reviewsMade = userCommits[i][1].length;
                 users[i].pendingCommits = userCommits[i][2];
-                users[i].finishedCommits = userCommits[i][3];
             }
 
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < usersHash.length; i++){
-                let promise = brightOld.methods.getToRead(usersHash[i]).call();
+                let promise = brightV030.methods.getToRead(usersHash[i]).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -211,7 +209,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < usersHash.length; i++){
-                let promise = brightOld.methods.getVotes(usersHash[i], true, 0).call();
+                let promise = brightV030.methods.getVotes(usersHash[i], true, 0).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -225,7 +223,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < usersHash.length; i++){
-                let promise = brightOld.methods.getAllUserReputation(i).call();
+                let promise = brightV030.methods.getAllUserReputation(i).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -235,12 +233,11 @@ export class MigrationService {
                 for(let j = 0; j < reputation.length; j++){
                     if(usersHash[i] === reputation[j][8]){
                         users[i].globalStats.numberOfTimesReview = reputation[i][2];
-                        users[i].globalStats.numberOfPoints = reputation[i][3];
                     }
                 }
             }
 
-            return brightOld.methods.getCurrentSeason().call();
+            return brightV030.methods.getCurrentSeason().call();
         }).then((numSeason) => {
             seasonNumber = numSeason[0];
             season1End = numSeason[1];
@@ -250,7 +247,7 @@ export class MigrationService {
 
             for(let i = 0; i < usersHash.length; i++){
                 for(let j = 0; j <= seasonNumber; j++){
-                    let promise = brightOld.methods.getUserReputation(i, j).call();
+                    let promise = brightV030.methods.getUserReputation(i, j).call();
                     promises.push(promise);
                 }
             }
@@ -263,7 +260,6 @@ export class MigrationService {
                 for(let j = 0; j <= seasonNumber; j++){
                     let userSeason =  new UserSeason();
                     userSeason.seasonStats.reputation = seasonReputation[counter][1];
-                    userSeason.seasonStats.numberOfPoints = seasonReputation[counter][3];
                     userSeason.seasonStats.numberOfTimesReview = seasonReputation[counter][2];
                     userSeason.seasonStats.agreedPercentage = seasonReputation[counter][5];
                     userSeason.seasonStats.reviewsMade = seasonReputation[counter][7];
@@ -276,7 +272,7 @@ export class MigrationService {
 
             for(let i = 0; i < usersHash.length; i++){
                 for(let j = 0; j <= seasonNumber; j++){
-                    let promise = brightOld.methods.getVotes(usersHash[i], false, j).call();
+                    let promise = brightV030.methods.getVotes(usersHash[i], false, j).call();
                     promises.push(promise);
                 }
             }
@@ -296,11 +292,11 @@ export class MigrationService {
             this.log.d("Users: " + users);
 
 
-            return commitOld.methods.getNumbers().call();
+            return commitV030.methods.getNumbers().call();
         }).then((commitsLen) => {
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsLen; i++){
-                let promise = commitOld.methods.getAllCommitsId(i).call();
+                let promise = commitV030.methods.getAllCommitsId(i).call();
                 promisesAddress.push(promise);
             }
             return Promise.all(promisesAddress);
@@ -309,17 +305,18 @@ export class MigrationService {
             commitsUrls = commitsUrl;
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrl.length; i++){
-                let promise = commitOld.methods.getDetailsCommits(commitsUrl[i]).call();
+                let promise = commitV030.methods.getDetailsCommits(commitsUrl[i]).call();
                 promisesAddress.push(promise);
             }
             return Promise.all(promisesAddress);
 
         }).then((commitsDetails) => {
             let found: boolean;
+            let user;
             for(let i = 0; i < commitsDetails.length; i++){
                 let commit = new CommitDataMigraton();
                 commit.url = commitsDetails[i][0];
-                let url_keccak = this.web3.utils.keccak256(commit.url);
+                let urlKeccak = this.web3.utils.keccak256(commit.url);
                 commit.title = commitsDetails[i][1];
                 commit.author = commitsDetails[i][2];
                 commit.creationDate = commitsDetails[i][3];
@@ -331,13 +328,14 @@ export class MigrationService {
                 commits.push(commit);
                 found = false;
                 for(let j = 0; j < users.length && !found; j++){
-                    if(users[j].hash === commit.author){
+                    user = users[j]; 
+                    if(user.hash === commit.author){
                         if(commit.creationDate < season0End){
-                            users[j].seasonData[0].urlSeasonCommits.push(url_keccak);
+                            user.seasonData[0].urlSeasonCommits.push(urlKeccak);
                         } else if (commit.creationDate < season1End){
-                            users[j].seasonData[1].urlSeasonCommits.push(url_keccak);
+                            user.seasonData[1].urlSeasonCommits.push(urlKeccak);
                         } else{
-                            users[j].seasonData[2].urlSeasonCommits.push(url_keccak);
+                            user.seasonData[2].urlSeasonCommits.push(urlKeccak);
                         }
                         found = true;
                     }
@@ -346,7 +344,7 @@ export class MigrationService {
            
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrls.length; i++){
-                let promise = commitOld.methods.getCommentsOfCommit(commitsUrls[i]).call();
+                let promise = commitV030.methods.getCommentsOfCommit(commitsUrls[i]).call();
                 promisesAddress.push(promise);
             }
             return Promise.all(promisesAddress);
@@ -358,7 +356,7 @@ export class MigrationService {
 
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrls.length; i++){
-                let promise = commitOld.methods.getCommentsOfCommit(commitsUrls[i]).call();
+                let promise = commitV030.methods.getCommentsOfCommit(commitsUrls[i]).call();
                 promisesAddress.push(promise);
             }
             return Promise.all(promisesAddress);
@@ -371,7 +369,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrls.length; i++){
                 for(let j = 0; j < pendFinCom[i][1].length; j++){
-                    let promise = commitOld.methods.getCommentDetail(commitsUrls[i], commits[i].finishedComments[j]).call();
+                    let promise = commitV030.methods.getCommentDetail(commitsUrls[i], commits[i].finishedComments[j]).call();
                     promises.push(promise);
                 }
             }
@@ -383,8 +381,7 @@ export class MigrationService {
                     let comment = new CommentDataMigration();
                     comment.text = comments[counter][0];
                     comment.user = comments[counter][5];
-                    comment.scoreComment = comments[counter][1];
-                    comment.points.push(0);
+                    comment.points.push(comments[counter][1] * 100);
                     comment.points.push(0);
                     comment.points.push(0);
                     comment.vote = comments[counter][2];
@@ -394,33 +391,11 @@ export class MigrationService {
                     counter ++; 
                 } 
             }
-            let commitIndex = [];
-            for (let i = 0; i < users.length; i++){
-                for (let j = 0; j < users[i].seasonData.length; j++){
-                    for (let z = 0; z < users[i].seasonData[j].urlSeasonCommits.length; z++){
-                        let found: boolean = false;
-                        for (let w = 0; w < commits.length && !found; w++){
-                            if(this.web3.utils.keccak256(commits[w].url) === users[i].seasonData[j].urlSeasonCommits[z]){
-                                commitIndex.push(w);
-                                users[i].seasonData[j].totalScore += parseInt(commits[w].score);
-                                found = true;
-                            }
-                        }
-                        if (found === false){
-                            this.log.d(users);
-                        }
-                    }
-                    for(let q = 0; q < commitIndex.length; q++){
-                        commits[commitIndex[q]].weighComplexity = users[i].seasonData[j].totalScore / 
-                                                                users[i].seasonData[j].urlSeasonCommits.length;
-                    }
-                    commitIndex = [];
-                }
-            }
-        
+
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
-
+        
+            this.log.d(comments);
             return users.reduce(
                 (prevVal, user) => {
                     return prevVal.then(() => {
@@ -430,7 +405,7 @@ export class MigrationService {
                             user.name, 
                             user.email, 
                             user.hash, 
-                            user.globalStats.agreedPercentage, user.globalStats.numberOfPoints, 
+                            user.globalStats.agreedPercentage, 
                             user.globalStats.numberOfTimesReview, user.globalStats.positiveVotes, 
                             user.globalStats.negativeVotes, user.globalStats.reputation,
                             user.globalStats.reviewsMade).encodeABI(); // Reviews made
@@ -452,7 +427,7 @@ export class MigrationService {
                                     .setAllUserSeasonData(
                                         index, 
                                         user.hash,
-                                        data.seasonStats.agreedPercentage, data.seasonStats.numberOfPoints, 
+                                        data.seasonStats.agreedPercentage, 
                                         data.seasonStats.numberOfTimesReview, data.seasonStats.positiveVotes, 
                                         data.seasonStats.negativeVotes, data.seasonStats.reputation,
                                         data.seasonStats.reviewsMade).encodeABI(); // Reviews made
@@ -520,18 +495,17 @@ export class MigrationService {
                             return arrayToCount.reduce(
                                 (prevVal2, actual) => {
                                     return prevVal2.then(() => {
-                                        let suma: number = i + NUMBER_SET_COMMITS;
-                                        let comS = user.pendingCommits.slice(i, suma);
-                                        let finS = user.finishedReviews.slice(i, suma);
-                                        let pendS = user.pendingReviews.slice(i, suma);
-                                        let toReadS = user.toRead.slice(i, suma);
-                                        i = suma;
+                                        let sum: number = i + NUMBER_SET_COMMITS;
+                                        let comS = user.pendingCommits.slice(i, sum);
+                                        let finS = user.finishedReviews.slice(i, sum);
+                                        let pendS = user.pendingReviews.slice(i, sum);
+                                        let toReadS = user.toRead.slice(i, sum);
+                                        i = sum;
                 
                                         let byteCodeData = brightNew
                                         .methods
                                         .setAllUserDataTwo(
-                                            user.hash, 
-                                            [], 
+                                            user.hash,  
                                             comS, 
                                             finS,
                                             pendS, 
@@ -560,8 +534,7 @@ export class MigrationService {
                             commit.isReadNeeded, 
                             commit.lastModificationDate,
                             commit.numberReviews,
-                            commit.currentNumberReviews, commit.score, commit.weighComplexity
-                        ).encodeABI();
+                            commit.currentNumberReviews, commit.score).encodeABI();
                         return this.contractManagerService.sendTx(byteCodeData, commitNewAddress);
                     });
                 },
@@ -594,7 +567,6 @@ export class MigrationService {
                                         comment.user,
                                         comment.text, 
                                         comment.user,
-                                        comment.scoreComment,
                                         comment.points, 
                                         comment.vote,
                                         comment.lastModificationDateComment,
@@ -609,6 +581,7 @@ export class MigrationService {
                 },
                 Promise.resolve()
             );
+            
         }).then((trxResponse) => {
             this.log.d("Migration Finished");
         });
@@ -658,7 +631,6 @@ class User{
     public name: string;
     public email: string;
     public hash;
-    public finishedCommits = [];
     public pendingCommits = [];
     public finishedReviews = [];
     public pendingReviews = [];
@@ -670,7 +642,6 @@ class User{
 
 class UserStats {
     public reputation: number;
-    public numberOfPoints: number;
     public numberOfTimesReview: number;
     public agreedPercentage: number;
     public positiveVotes: number;
@@ -695,7 +666,6 @@ class CommitDataMigraton{
     public currentNumberReviews: number;
     public lastModificationDate: number;
     public score: number;
-    public weighComplexity: number = 0;
     public pendingComments: Array<any>;
     public finishedComments: Array<any>;
     public commentDataMigration = [];
@@ -705,7 +675,6 @@ class CommitDataMigraton{
 class CommentDataMigration{
     public text: string;
     public user;
-    public scoreComment: number;
     public points = [];
     public vote: number; 
     public creationDateComment: number;
