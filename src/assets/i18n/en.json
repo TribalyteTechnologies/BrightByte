@@ -17,9 +17,15 @@
         "welcome": "Welcome to BrightByte",
         "enterCredentials": "Enter your credentials to sign in",
         "uploadCredentials": "Upload your credentials",
-        "enterPass": "Enter your password",
         "error": "Error",
-        "accept": "Accept"
+        "accept": "Accept",
+        "enterPass": "Enter your password",
+        "createUser": "Create user",
+        "cancel": "Cancel",
+        "terms": "Terms & Conditions",
+        "agreeTerms": "I agree the terms and conditions",
+        "explanationText": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally."
+
     },
     "addCommit": {
         "title": "Add commit",
@@ -60,7 +66,8 @@
         "reviewed": "Reviewed",
         "getCommitsPending": "Error getting pending commits",
         "updated": "Updated",
-        "currentReview": "Current Reviews"
+        "currentReview": "Current Reviews",
+        "newTab": "New tab"
 
     },
     "home": {
@@ -75,7 +82,8 @@
         "password": "Password",
         "register": "Register",
         "newUser": "Create new user",
-        "download": "Download identity file"
+        "download": "Download identity file again",
+        "goToLogin": "Go to login"
     },
     "ranking": {
         "getUserInfo": "Error getting user information",
@@ -140,9 +148,12 @@
     "setProfile": {
         "title": "Welcome",
         "header": "Set your user profile information",
+        "enterName": "Enter your name",
         "name": "Name",
         "set": "Set profile",
         "tx": "Transaction error",
+        "enterEmail": "Enter an email",
+        "emailFormat": "email@example.com",
         "emailUsed": "Email already in use",
         "getEmails": "Error getting emails",
         "notEmail": "It is not an email"

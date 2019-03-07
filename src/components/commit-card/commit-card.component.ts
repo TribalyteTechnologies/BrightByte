@@ -50,7 +50,7 @@ export class CommitCard {
         this.commit = this._commit;
     }
     
-    public openUrl(url: string, isCommitParam: boolean, e: Event){
+    public openUrl(url: string, isCommitParam = false, e?: Event){
         
         let urlToOpen = url;
         if(isCommitParam){

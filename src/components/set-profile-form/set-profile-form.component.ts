@@ -9,10 +9,12 @@ import { TranslateService } from "@ngx-translate/core";
 import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
-    selector: "page-setprofile",
-    templateUrl: "setprofile.html"
+    selector: "set-profile-form",
+    templateUrl: "set-profile-form.component.html",
+    styles: ["set-profile-form.component.scss"]
 })
-export class SetProfilePage {
+
+export class SetProfileForm {
     public myForm: FormGroup;
     public isButtonPressed: boolean;
     public msg: string;
@@ -72,3 +74,4 @@ export class SetProfilePage {
         });
     }
 }
+

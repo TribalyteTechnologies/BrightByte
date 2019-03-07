@@ -37,7 +37,7 @@
                             <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
                         </ion-row>
                         <ion-row>
-                            <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url, false)">  #{{ currentCommit.urlHash }}</div>
+                            <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url)">  #{{ currentCommit.urlHash }}</div>
                         </ion-row>
                     </ion-col>
                 </ion-row>
@@ -70,7 +70,7 @@
                             </div>
                         </ion-row>
                         <ion-row>
-                            <button class="btn btn--full btn__blue" (click)="validateReview(currentCommit.url, textComment, rate);">
+                            <button class="btn btn--full btn__blue" (click)="validateAndSetReview(currentCommit.url, textComment, rate);">
                             {{ "commitReview.review" | translate }}
                             </button>
                         </ion-row>

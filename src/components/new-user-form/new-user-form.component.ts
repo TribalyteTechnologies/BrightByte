@@ -1,18 +1,23 @@
-import { Component } from "@angular/core";
+import { Component, Output, EventEmitter } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 
 @Component({
-    selector: "page-newuser",
-    templateUrl: "newuser.html"
+    selector: "new-user-form",
+    templateUrl: "new-user-form.component.html",
+    styles: ["new-user-form.component.scss"]
 })
 
-export class NewuserPage {
+export class NewUserForm {
+
+    @Output()
+    public goToLoginEvent = new EventEmitter();
 
     public file: Blob;
     public isUserCreated = false;
+    public isTermsAgreed = false;
     private log: ILogger;
 
     constructor(
@@ -22,7 +27,6 @@ export class NewuserPage {
         private contractManager: ContractManagerService
     ) {
         this.log = loggerSrv.get("NewUserPage");
-
     }
 
     public createUser(pass: string) {
@@ -33,6 +37,14 @@ export class NewuserPage {
                 this.isUserCreated = true;
 
             });
+    }
+
+    public changeTerms(){
+        this.isTermsAgreed = !this.isTermsAgreed;
+    }
+
+    public goToLogin(){
+        this.goToLoginEvent.next();
     }
 
     public saveFileLink(contentinBlob: Blob, filename: string) {
@@ -56,5 +68,3 @@ export class NewuserPage {
     }
 
 }
-
-

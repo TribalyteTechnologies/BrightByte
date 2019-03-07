@@ -46,9 +46,9 @@ export class ReviewPage {
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
     public filterArrayCommits = new Array<UserCommit>();
-    public textComment: any;
+    public textComment = "";
 
-    public submitError: string = "";
+    public submitError = "";
 
     
     private log: ILogger;
@@ -181,60 +181,26 @@ export class ReviewPage {
         this.rate[starNum] = (value + 1) * 100;
     }
 
-    public validateReview(url: string, text: string, points: number[]){
+    public validateAndSetReview(url: string, text: string, points: number[]){
         this.submitError = "";
-        let pointsEmpty = false;
-        for(let i = 0; i < points.length; i++){
-            pointsEmpty = (points[i] === 0);
-        }
+        let isPointsEmpty = false;
 
-        if (text === "" || text === undefined){
-            this.translateService.get("review.reviewCommentError").subscribe(
-                msg => {
-                    this.submitError = msg;
-                });
-        } else if(pointsEmpty) {
-            this.translateService.get("review.reviewEmptyRatingError").subscribe(
-                msg => {
-                    this.submitError = msg;
-                });
+        let zero = function(element){
+            return (element === 0);
+        };
+
+        isPointsEmpty = points.some(zero);
+
+        if (!text){
+            this.obtainTranslatedError("review.reviewCommentError");
+        } else if(isPointsEmpty) {
+            this.obtainTranslatedError("review.reviewEmptyRatingError");
         } else{
             this.setReview(url, text, points);
         }
     }
 
-    public setReview(url: string, text: string, points: number[]){
-        let point: number[] = points;
-        this.spinnerService.showLoader();
-        this.contractManagerService.setReview(url, text, points)
-        .then((response) => {
-            this.log.d("Received response " + point);
-            this.log.d("Received response " + response);
-            let userAdress = this.loginService.getAccount();
-            this.needReview = false;
-            this.userCommitComment[0] = new CommitComment();
-            this.userCommitComment[0].name = this.name;
-            this.userCommitComment[0].creationDateMs = Date.now();
-            this.userCommitComment[0].text = text;
-            this.userCommitComment[0].cleanCode = point[0] / 100;
-            this.userCommitComment[0].difficulty = point[1] / 100;
-            this.userCommitComment[0].reviewerExperience = point[2] / 100;
-            this.userCommitComment[0].vote = 0;
-            this.userCommitComment[0].lastModificationDateMs = Date.now();
-            this.userCommitComment[0].user = userAdress.address;
-            this.setReputation(-1, 0);
-            this.setReputation(-1, 1);
-            this.setReputation(-1, 2);
-            this.spinnerService.hideLoader();  
-            this.textComment  = "";
-            this.refresh();
-            return;
-        }).catch((error) => {
-            this.spinnerService.hideLoader();
-            this.log.e("Catched error " + error);
-        });
-        
-    }
+    
         
     public applyFilters(usercommits: UserCommit[]) {
         let projectFilter = this.setProjectFilter(usercommits);
@@ -279,6 +245,45 @@ export class ReviewPage {
         } else {
             return "card-list-item";
         }
+    }
+
+    private setReview(url: string, text: string, points: number[]){
+        let point: number[] = points;
+        this.spinnerService.showLoader();
+        this.contractManagerService.setReview(url, text, points)
+        .then((response) => {
+            this.log.d("Received response " + point);
+            this.log.d("Received response " + response);
+            let userAdress = this.loginService.getAccount();
+            this.needReview = false;
+            this.userCommitComment[0] = new CommitComment();
+            this.userCommitComment[0].name = this.name;
+            this.userCommitComment[0].creationDateMs = Date.now();
+            this.userCommitComment[0].text = text;
+            this.userCommitComment[0].cleanCode = point[0] / 100;
+            this.userCommitComment[0].difficulty = point[1] / 100;
+            this.userCommitComment[0].reviewerExperience = point[2] / 100;
+            this.userCommitComment[0].vote = 0;
+            this.userCommitComment[0].lastModificationDateMs = Date.now();
+            this.userCommitComment[0].user = userAdress.address;
+            this.setReputation(-1, 0);
+            this.setReputation(-1, 1);
+            this.setReputation(-1, 2);
+            this.spinnerService.hideLoader();  
+            this.textComment  = "";
+            this.refresh();
+            return;
+        }).catch((error) => {
+            this.spinnerService.hideLoader();
+            this.log.e("Catched error " + error);
+        });
+    }
+
+    private obtainTranslatedError(translation: string){
+        this.translateService.get(translation).subscribe(
+            msg => {
+                this.submitError = msg;
+            });
     }
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{

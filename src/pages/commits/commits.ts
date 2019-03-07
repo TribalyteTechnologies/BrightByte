@@ -48,7 +48,7 @@ export class CommitPage {
     ) {
         this.log = loggerSrv.get("CommitsPage");
         this.filterValue = this.storageSrv.get(AppConfig.StorageKey.COMMITFILTER);
-        this.filterIsPending = (this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true");
+        this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true";
     }
 
     public ionViewWillEnter() {

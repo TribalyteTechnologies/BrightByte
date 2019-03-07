@@ -1,50 +1,52 @@
 <ion-content class="page-body">
-    <div class="main-container">
-        <div class="container-left">
-            <div class="text-container">
-                <img class="logo" src="../../assets/imgs/logo_bkg.svg">
-                <div class="title">{{ "app.welcome" | translate }}</div>
-                <div class="subtitle">{{ "app.enterCredentials" | translate }}</div>
-            </div>
 
-        </div>
-        <div class="container-right">
-            <div class="logo-container">
-                <img class="logo" src="../../assets/imgs/logo_bkg.svg">
-                <img class="title" src="../../assets/imgs/logo_title.svg">
-            </div>
-            
-            <div class="form-container">
-                <div class="mini-title">{{ "app.uploadCredentials" | translate }}</div>
-                <div class="upload-form">
-                    <input type='file' (change)='openFile($event)'>
-                </div>
-                <div class="mini-title">{{ "app.enterPass" | translate }}</div>
-                <input class="password-form" type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)">
-                <ion-row *ngIf="msg">
-                    <div class="error-body">
-                        {{ msg }}
-                    </div>
+    <ion-row class="main-container">
+        <ion-col col-6 class="container-left">
+            <ion-col class="overlay">
+                <ion-row justify-content-center align-items-center  class= "text-container">
+                    <ion-col>
+                            <img class="logo" src="../../assets/imgs/logo_bkg.svg">
+                            <div class="title">{{ "app.welcome" | translate }}</div>
+                            <div class="subtitle">{{ "app.enterCredentials" | translate }}</div>
+                    </ion-col>
                 </ion-row>
-                <div class="remember">
-                    <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
-                    <div class="text">{{ "app.remember" | translate }}</div>
-                </div>
-                <div class="buttons">
-                    <button class="btn btn--full btn__blue" (click)="login(pass)">{{ "app.login" | translate }}</button>
-                    <div class="separator"></div>
-                    <button class="btn btn--full btn__grey" (click)="register()">{{ "app.register" | translate }}</button>
-                    <div class="separator"></div>
-                    <button class="btn btn--full btn__grey" (click)="migrate(pass)">Migrate</button>
-                </div>
-            </div>
-            <div class="project-version">
-                <ion-label>{{ "app.title" | translate }} v{{ appVersion }}</ion-label>
-            </div>
-        </div>
-    </div>
+                <ion-footer no-border>
+                    <div class="project-version">
+                        <ion-label>{{ "app.title" | translate }} v{{ appVersion }}</ion-label>
+                    </div>
+                </ion-footer>
+            </ion-col>
 
-
-
-
+        </ion-col>
+        <ion-col col-6 class="container-right">
+            <ion-row class="logo-container">
+                <ion-col col-4 offset-8>
+                    <img class="logo" src="../../assets/imgs/bright_logo.svg"> 
+                </ion-col>
+            </ion-row>
+            <ion-row justify-content-center class="form-container">
+                <ion-col col-8 [ngSwitch]="loginState">
+                    <login-form *ngSwitchCase="'login'" (registerEvent)="registerEvent()" (setProfileEvent)="setProfileEvent()"></login-form>
+                    <new-user-form *ngSwitchCase="'new-user'" (goToLoginEvent)="goToLoginEvent()"></new-user-form>
+                    <set-profile-form *ngSwitchCase="'set-profile'"></set-profile-form>
+                </ion-col>
+            </ion-row>
+            
+            <ion-footer no-border>
+                <ion-row>
+                    <ion-col col-6>
+                        <div class="tribalyte-logo">
+                            <img class="logo" src="../../assets/imgs/tribalytetech.png">
+                        </div>
+                    </ion-col>
+                    <ion-col col-6>
+                        <div class="terms-conditions">
+                            <ion-label (click)="showTerms()">{{ "app.terms" | translate }}</ion-label>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-footer>
+        </ion-col>
+        
+    </ion-row>
 </ion-content>
