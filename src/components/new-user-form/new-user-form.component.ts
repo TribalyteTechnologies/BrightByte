@@ -1,8 +1,10 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { NavController } from "ionic-angular";
+import { NavController, PopoverController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
+import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
+
 
 @Component({
     selector: "new-user-form",
@@ -18,10 +20,14 @@ export class NewUserForm {
     public file: Blob;
     public isUserCreated = false;
     public isTermsAgreed = false;
+
+    private readonly LOGIN = "login";
+
     private log: ILogger;
 
     constructor(
         public navCtrl: NavController,
+        public popoverCtrl: PopoverController,
         public http: HttpClient,
         loggerSrv: LoggerService,
         private contractManager: ContractManagerService
@@ -44,7 +50,12 @@ export class NewUserForm {
     }
 
     public goToLogin(){
-        this.goToLoginEvent.next();
+        this.goToLoginEvent.next(this.LOGIN);
+    }
+
+    public showTerms(){
+        let popover = this.popoverCtrl.create(TermsAndConditions, {},  {cssClass: "terms-popover"});
+        popover.present();
     }
 
     public saveFileLink(contentinBlob: Blob, filename: string) {

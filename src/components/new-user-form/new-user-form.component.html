@@ -8,7 +8,7 @@
 </ion-row>
 <ion-row class="remember">
     <input type="checkbox" (change)="changeTerms()">
-    <ion-row class="text">{{ "app.agreeTerms" | translate }}</ion-row>
+    <ion-row class="text"><a (click)="showTerms()">{{ "app.agreeTerms" | translate }}</a></ion-row>
 </ion-row>
 <div class="buttons">
     <button class="btn btn--full btn__blue" *ngIf="isUserCreated" (click)="createUser(pass)">{{ "newUser.download" | translate }}</button>

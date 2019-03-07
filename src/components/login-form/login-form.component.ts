@@ -29,6 +29,8 @@ export class LoginForm {
     @Output() 
     public setProfileEvent = new EventEmitter();
 
+    
+
     public msg: string;
     public text: any;
     public debuggingText: string;
@@ -36,7 +38,12 @@ export class LoginForm {
     public appVersion = "DEV";
     public migrationDone = false;
     public isKeepCredentialsOn = false;
+
+    private readonly NEW_USER = "new-user";
+    private readonly SET_PROFILE = "set-profile";
+
     private log: ILogger;
+    
 
     constructor(
         private navCtrl: NavController,
@@ -61,7 +68,7 @@ export class LoginForm {
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
-    public ionViewWillEnter(){
+    public ngOnInit(){
         let retrievedUser = this.userLoggerService.retrieveAccount();
         this.text = retrievedUser.user;
         let password = retrievedUser.password;
@@ -69,7 +76,6 @@ export class LoginForm {
             this.log.d("User retrieved from localStorage: " + this.text);
             this.login(password);
         }
-    
     }
 
     public openFile = (event: Event) => {
@@ -144,7 +150,7 @@ export class LoginForm {
     }
 
     public register() {
-        this.registerEvent.next();
+        this.registerEvent.next(this.NEW_USER);
     }
 
     public showTerms(){
@@ -228,7 +234,7 @@ export class LoginForm {
             }).then((detailsUser: UserDetails) => {
                 this.log.d("Email: ", detailsUser.email);
                 if (!detailsUser.email) {
-                    this.setProfileEvent.next();
+                    this.setProfileEvent.next(this.SET_PROFILE);
                 } else {
                     this.navCtrl.push(TabsPage);
                 }
