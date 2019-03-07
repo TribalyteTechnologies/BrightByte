@@ -5,7 +5,7 @@ import { ILogger, LoggerService } from "../core/logger.service";
 import { HttpClient } from "@angular/common/http";
 import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
-import {Account } from "web3/types";
+import { Account } from "web3/types";
 import { ContractManagerService } from "../domain/contract-manager.service";
 
 
