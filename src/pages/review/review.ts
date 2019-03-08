@@ -40,6 +40,7 @@ export class ReviewPage {
     , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]];
     public rate = [0, 0, 0];
     public name = "";
+    public email = "";
     public currentCommitName = "";
     public currentCommitEmail = "";
     public userCommitComment: CommitComment[];
@@ -111,6 +112,7 @@ export class ReviewPage {
                 return this.contractManagerService.getUserDetails(userAdress.address);
             }).then((ud) => {
                 this.name = ud.name;
+                this.email = ud.email;
                 let url = new URLSearchParams(document.location.search);
                 if(url.has(AppConfig.UrlKey.REVIEWID)){
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));

@@ -1,5 +1,7 @@
 import { AppConfig } from "../app.config";
 import { UserDetails } from "./user-details.model";
+import { UtilsService } from "../core/utils.service";
+
 export class UserCommit { 
     public url: string; 
     public urlHash: string;
@@ -16,15 +18,15 @@ export class UserCommit {
     public reviewers: UserDetails[][];
 
     public static getProjectFromUrl(url: string): string {
-        let aux: string = /([a-zA-Z0-9]+\/(pull-requests|pull-request|commits|commit)\/.+)/.exec(url)[0];
-        aux = /^.[^/]+/.exec(aux)[0];
-        return aux;
+        let utilsSrv = new UtilsService();
+        return utilsSrv.getProjectFromUrl(url);
     }
 
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
+        let utilsSrv = new UtilsService();
         let commit = new UserCommit(); 
         commit.url = commitVals[0]; 
-        commit.urlHash = /[^/]+$/.exec(commit.url)[0];
+        commit.urlHash = utilsSrv.getHashFromUrl(commit.url);
         commit.title = commitVals[1];
         commit.author = commitVals[2];
         commit.project = UserCommit.getProjectFromUrl(commit.url);
@@ -37,5 +39,5 @@ export class UserCommit {
         commit.score = Math.round(commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR) ;
         commit.reviewers = [];
         return commit;
-    } 
+    }
 }
