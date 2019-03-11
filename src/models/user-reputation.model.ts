@@ -10,6 +10,7 @@ export class UserReputation {
     public finishedReviews: number;
     public userPosition: number;
     public userHash: string;
+    public engagementIndex: number;
     public static fromSmartContract(userVals: Array<any>): UserReputation{ 
         let user = new UserReputation(); 
         user.email = userVals[0]; 
@@ -21,6 +22,8 @@ export class UserReputation {
         user.finishedReviews = userVals[6];
         user.userHash = userVals[7];
         user.userPosition = 0;
+        let engagementIndex = (user.numberOfCommits * AppConfig.COMMIT_WEIGH) + (user.finishedReviews * AppConfig.REVIEW_WEIGH);
+        user.engagementIndex = Math.round(engagementIndex *  AppConfig.SCORE_DIVISION_FACTOR) /  AppConfig.SCORE_DIVISION_FACTOR;
         return user; 
     } 
 } 

@@ -3,39 +3,38 @@
         <ion-col no-padding align-self-center col-4>
             <div class="text-main">{{ "ranking.title" | translate }}</div>
         </ion-col>
-        <ion-col text-center col-4>
-            <div class="text-main"> {{ "ranking.current" | translate }} {{ "ranking.season" | translate }}: {{ numberOfSeasons }}</div>
-            <div *ngIf="days > 0" class="text-main">{{ "ranking.endIn" | translate }} {{ days }} {{ "ranking.day" | translate }}</div>
-            <div *ngIf="days <= 0" class="text-main">{{ "ranking.endIn" | translate }} {{ hours }} {{ "ranking.hours" | translate }} {{ minutes }} {{ "ranking.minutes" | translate }}</div>
-            
+        <ion-col col-4 no-padding class="text-ranking">
+            <div class="ranking-top">
+                <ion-row>
+                    <ion-col col-7>{{ "ranking.current" | translate }} {{ "ranking.season" | translate }}: {{ numberOfSeasons }}</ion-col>
+                    <ion-col col-5 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }} {{ "ranking.left" | translate }}</ion-col>
+                    <ion-col col-5 *ngIf="days <= 0" class="ranking-left">{{ hours }} {{ "ranking.hours" | translate }}, {{ minutes }} {{ "ranking.minutes" | translate }}  {{ "ranking.left" | translate }} </ion-col>
+                </ion-row>
+            </div>
         </ion-col>
-        <ion-col col-4 padding align-self-center>
-            <ion-col>
-                <button (click)="goBackToUser()" class="btn btn--paddings--ranking btn__dark">{{ "ranking.retrieve" | translate }}</button>
-            </ion-col>
-            <ion-col>
-                <button (click)="setCurrentSeason()" class="btn btn--paddings--ranking btn__dark">{{ "ranking.retrieveToSeason" | translate }}</button>
-            </ion-col>
+        <ion-col col-4 padding>
+            <select [value]="seasonSelected" (change)="setSeason($event.target.value)" class="dropdown dropdown--ranking">
+                <option value="-1">{{ "ranking.global" | translate }}</option>
+                <option *ngFor="let option of seasons" [value]="option">{{ "ranking.season" | translate }} {{ option }}</option>
+            </select>
         </ion-col>
     </ion-row>
 </ion-header>
 
 
 <ion-content padding class="main-container">
-    <ion-row>
-        <ion-col>
-            <select [value]="seasonSelected" (change)="setSeason($event.target.value)" class="dropdown">
-                <option value="-1">{{ "ranking.global" | translate }}</option>
-                <option *ngFor="let option of seasons" [value]="option">{{ "ranking.season" | translate }} {{ option }}</option>
-            </select>
-        </ion-col>
-    </ion-row>
     <ion-row no-padding></ion-row>
     <ion-row no-padding>
         <ion-col padding class="text-details text-details--bold">
-                <div *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</div>
-                <ng-template #elseBlock>{{ "ranking.title" | translate }} {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
-
+            <ion-row>
+                <ion-col col-10>
+                    <div *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</div>
+                    <ng-template #elseBlock>{{ "ranking.title" | translate }} {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+                </ion-col>
+                <ion-col class="text-details ranking-a" col-2>
+                    <a no-padding (click)="goBackToUser()">Find me</a>
+                </ion-col>
+            </ion-row>
         </ion-col>
         <ion-col col-6 padding class="text-details text-details--bold">        
             {{ "ranking.details" | translate }}
@@ -44,7 +43,7 @@
     <ion-row no-padding>
         <ion-col>
             <table class="table">
-                <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [ranking]="user"></tr>
+                <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user"></tr>
             </table>
         </ion-col>
         <ion-col col-6 class="profile-details-container">
@@ -67,7 +66,8 @@
                             <button class="btn btn--label btn__grey"> {{ userRankDetails.rank }} </button>
                         </ion-col>
                         <ion-col col-auto>
-                            <button class="btn btn--label btn__grey">
+                            <button class="btn btn--label btn__grey" *ngIf="globalSelected">{{ userRankDetails.engagementIndex }} {{ "ranking.engagementIndex" | translate }}</button>
+                            <button class="btn btn--label btn__grey" *ngIf="!globalSelected"> 
                                 {{ userRankDetails.score }}
                                 <img class="btn--img" src="../../assets/imgs/star-icon.svg">
                             </button>

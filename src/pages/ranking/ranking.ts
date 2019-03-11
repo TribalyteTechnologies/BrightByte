@@ -18,6 +18,7 @@ class UserRankDetails {
     public reviews = 0;
     public commits = 0;
     public agreed = 0;
+    public engagementIndex = 0;
 }  
 
 @Component({
@@ -84,7 +85,11 @@ export class RankingPage {
     public refresh() {
         this.contractManagerService.getAllUserReputationSeason(this.seasonSelected, this.globalSelected)
         .then((usersRep: UserReputation[]) => {
-            this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
+            if(this.globalSelected) {
+                this.usersRep = usersRep.sort((a, b) => { return b.engagementIndex - a.engagementIndex; });
+            } else {
+                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
+            }
             this.usersRep.forEach(user => {
                 user.userPosition = this.usersRep.indexOf(user) + 1;
             });
@@ -111,6 +116,7 @@ export class RankingPage {
         this.userRankDetails.score = detailsUser.reputation;
         this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
         this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
+        this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
         this.setUpTrophys();
     }
 

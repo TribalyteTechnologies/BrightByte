@@ -4,7 +4,7 @@ import "./Root.sol";
 contract Bright {
     uint8 private constant FEEDBACK_MULTIPLER = 100;
     uint24 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint32 private constant FINAL_DAY_MIGRATE = 1553122800;
+    uint32 private constant MIGRATION_END_TIMESTAMP = 1553558400;
     Root private root;
     uint16 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -317,7 +317,7 @@ contract Bright {
     }
 
     function setAllUserData(string name, string mail, address hash, uint16 perct, uint16 tmRw, uint16 pos, uint16 neg, uint32 rep, uint16 rev) public onlyDapp {
-        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < FINAL_DAY_MIGRATE);
+        require (bytes(hashUserMap[hash].name).length == 0 && bytes(hashUserMap[hash].email).length == 0 && block.timestamp < MIGRATION_END_TIMESTAMP);
         UserProfile storage user = hashUserMap[hash];
         user.name = name;
         user.email = mail;
@@ -352,7 +352,7 @@ contract Bright {
     }
 
     function setAllUserDataTwo(address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
-        require (block.timestamp < FINAL_DAY_MIGRATE);
+        require (block.timestamp < MIGRATION_END_TIMESTAMP);
         UserProfile storage user = hashUserMap[h];
         for(uint j = 0; j < pendCom.length; j++) {
             user.pendingCommits.push(pendCom[j]);

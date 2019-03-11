@@ -40,7 +40,7 @@ export class ReviewPage {
     , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]];
     public rate = [0, 0, 0];
     public name = "";
-    public email = "";
+    public address = "";
     public currentCommitName = "";
     public currentCommitEmail = "";
     public userCommitComment: CommitComment[];
@@ -96,12 +96,16 @@ export class ReviewPage {
                     return this.contractManagerService.getFeedback(com.url)
                     .then((rsp) => {
                         com.isReadNeeded = rsp;
+                        return this.contractManagerService.getCommentsOfCommit(com.url);
+                    }).then((arrayReviewers) => {
+                        arrayReviewers[1].forEach((user) => {
+                            com.reviewsAlreadyDone.push(user.user);
+                        });
                         return com;
                     });
                 });
                 return Promise.all(commitsPromises);
-            })
-            .then((rsp) => {
+            }).then((rsp) => {
                 commits = rsp;
                 this.log.d("Response received: " + rsp);
                 this.displayCommitsToReview = commits;
@@ -112,7 +116,7 @@ export class ReviewPage {
                 return this.contractManagerService.getUserDetails(userAdress.address);
             }).then((ud) => {
                 this.name = ud.name;
-                this.email = ud.email;
+                this.address = userAdress.address;
                 let url = new URLSearchParams(document.location.search);
                 if(url.has(AppConfig.UrlKey.REVIEWID)){
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));

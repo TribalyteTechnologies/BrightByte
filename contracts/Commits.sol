@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
-    uint32 private constant FINAL_DAY_MIGRATE = 1553122800;
+    uint32 private constant MIGRATION_END_TIMESTAMP = 1553558400;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
@@ -186,9 +186,10 @@ contract Commits {
             complexity = complexityArray;
             confidence = confidenceArray;
             for(uint8 i = 0; i < storedData[url].finishedComments.length; i++) {
-                quality.push(commit.commitComments[commit.finishedComments[i]].points[0]);
-                complexity.push(commit.commitComments[commit.finishedComments[i]].points[1]);
-                confidence.push(commit.commitComments[commit.finishedComments[i]].points[2]);
+                Comment memory reviewerComment = commit.commitComments[commit.finishedComments[i]];
+                quality.push(reviewerComment.points[0]);
+                complexity.push(reviewerComment.points[1]);
+                confidence.push(reviewerComment.points[2]);
             }
             uint32 commitScore;
             uint32 commitComplexity;

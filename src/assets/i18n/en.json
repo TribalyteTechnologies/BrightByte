@@ -122,7 +122,9 @@
         "hours": "hours",
         "minutes": "mins",
         "details": "Details",
-        "userRanking": "User Ranking"
+        "userRanking": "User Ranking",
+        "left": "left",
+        "engagementIndex": "EI"
     },
     "review": {
         "getCommits": "Error getting commits to review",

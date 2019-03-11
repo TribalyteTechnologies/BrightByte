@@ -16,6 +16,7 @@ export class UserCommit {
     public numberReviews: number;
     public currentNumberReviews: number;
     public reviewers: UserDetails[][];
+    public reviewsAlreadyDone: string[];
 
     public static getProjectFromUrl(url: string): string {
         let utilsSrv = new UtilsService();
@@ -38,6 +39,7 @@ export class UserCommit {
         commit.currentNumberReviews = commitVals[7];
         commit.score = Math.round(commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR) ;
         commit.reviewers = [];
+        commit.reviewsAlreadyDone = [];
         return commit;
     }
 }

@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Reputation {
-    uint32 private constant WEIGHT_FACTOR = 1000;
+    uint16 private constant WEIGHT_FACTOR = 1000;
     Root private root;
     address private rootAddress;
     address private owner;
@@ -49,7 +49,7 @@ contract Reputation {
             totalKnowledge += revKnowledge[j];
         }
         for(uint8 i = 0; i < cleanliness.length; i++) {
-            uint32 userKnowledge = (revKnowledge[i] * WEIGHT_FACTOR) / totalKnowledge;
+            uint32 userKnowledge = (uint32(revKnowledge[i]) * WEIGHT_FACTOR) / totalKnowledge;
             weightedCleanliness += (cleanliness[i] * userKnowledge);
             complexityPonderation += (complexity[i] * userKnowledge);
         }
