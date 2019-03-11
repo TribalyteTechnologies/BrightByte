@@ -1,7 +1,6 @@
 import { Component, Output, EventEmitter } from "@angular/core";
 import { NavController} from "ionic-angular";
 import { TranslateService } from "@ngx-translate/core";
-import { AlertController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
@@ -24,10 +23,10 @@ import { MigrationService } from "../../migration/migration.service";
 export class LoginForm {
 
     @Output() 
-    public registerEvent = new EventEmitter();
+    public goToRegister = new EventEmitter();
 
     @Output() 
-    public setProfileEvent = new EventEmitter();
+    public goToSetProfile = new EventEmitter();
 
     
 
@@ -53,12 +52,11 @@ export class LoginForm {
         private loginService: LoginService,
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
-        private alertCtrl: AlertController,
         private migrationService: MigrationService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
-        this.log = loggerSrv.get("LoginPage");
+        this.log = loggerSrv.get("LoginForm");
         appVersionSrv.getAppVersion().subscribe(
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
@@ -149,16 +147,7 @@ export class LoginForm {
     }
 
     public register() {
-        this.registerEvent.next(this.NEW_USER);
-    }
-
-    public showTerms(){
-        let terms = this.alertCtrl.create({
-            title: "Terms and Conditions",
-            subTitle: "The migration has been successful The migration has been successfulThe mbeen successful",
-            buttons: ["Accept"]
-        });
-        terms.present();
+        this.goToRegister.next(this.NEW_USER);
     }
 
     public migrate(pass: string){
@@ -175,7 +164,7 @@ export class LoginForm {
             }).then((detailsUser: UserDetails) => {
                 this.log.d("Email: ", detailsUser.email);
                 if (!detailsUser.email) {
-                    this.setProfileEvent.next(this.SET_PROFILE);
+                    this.goToSetProfile.next(this.SET_PROFILE);
                 } else {
                     this.navCtrl.push(TabsPage);
                 }

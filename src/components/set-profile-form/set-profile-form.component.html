@@ -13,7 +13,7 @@
     <ion-row *ngIf="(myForm.get('email').errors && myForm.get('email').dirty) || msg">
         <ion-row class="error-body">
             {{ msg }}
-            <p color="danger" *ngIf="myForm.get('email').hasError('email')">{{ "setProfile.notEmail" | translate }}</p>
+            <p color="danger" *ngIf="myForm.get('email').hasError('pattern')">{{ "setProfile.notEmail" | translate }}</p>
             <p color="danger" *ngIf="myForm.get('email').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
         </ion-row>
     </ion-row>

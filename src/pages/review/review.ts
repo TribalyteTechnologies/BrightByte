@@ -191,11 +191,7 @@ export class ReviewPage {
         this.submitError = "";
         let isPointsEmpty = false;
 
-        let zero = function(element){
-            return (element === 0);
-        };
-
-        isPointsEmpty = points.some(zero);
+        isPointsEmpty = points.some(val => val === 0);
 
         if (!text){
             this.obtainTranslatedError("review.reviewCommentError");
@@ -262,19 +258,20 @@ export class ReviewPage {
             this.log.d("Received response " + response);
             let userAdress = this.loginService.getAccount();
             this.needReview = false;
-            this.userCommitComment[0] = new CommitComment();
-            this.userCommitComment[0].name = this.name;
-            this.userCommitComment[0].creationDateMs = Date.now();
-            this.userCommitComment[0].text = text;
-            this.userCommitComment[0].cleanCode = point[0] / 100;
-            this.userCommitComment[0].difficulty = point[1] / 100;
-            this.userCommitComment[0].reviewerExperience = point[2] / 100;
-            this.userCommitComment[0].vote = 0;
-            this.userCommitComment[0].lastModificationDateMs = Date.now();
-            this.userCommitComment[0].user = userAdress.address;
-            this.setReputation(-1, 0);
-            this.setReputation(-1, 1);
-            this.setReputation(-1, 2);
+            let commitComment = new CommitComment();
+            commitComment.name = this.name;
+            commitComment.creationDateMs = Date.now();
+            commitComment.text = text;
+            commitComment.cleanCode = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.difficulty = point[1] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.reviewerExperience = point[2] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.vote = 0;
+            commitComment.lastModificationDateMs = Date.now();
+            commitComment.user = userAdress.address;
+            this.userCommitComment[0] = commitComment;
+            for(let i = 0; i < this.numCriteria; i++){
+                this.setReputation(-1, i);
+            }
             this.spinnerService.hideLoader();  
             this.textComment  = "";
             this.refresh();
@@ -316,7 +313,8 @@ export class ReviewPage {
         switch(this.filterValue){
             case "incompleted":
                 return usercommits.filter(commit => {
-                    return (commit.numberReviews !== commit.currentNumberReviews);
+                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    return (!isReviewed);
                 });
             case "completed":
                 return usercommits.filter(commit => {

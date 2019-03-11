@@ -11,7 +11,7 @@ import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { BitbucketService } from "../../domain/bitbucket.service";
-import { UtilsService } from "../../core/utils.service";
+import { FormatUtils } from "../../core/format-utils";
 
 @Component({
     selector: "popover-addcommit",
@@ -52,12 +52,11 @@ export class AddCommitPopover {
         public translateService: TranslateService,
         private loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
-        private utilsSrv: UtilsService,
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
         private bitbucketSrv: BitbucketService
     ) {
-        let validator =  this.utilsSrv.getUrlValidator();
+        let validator =  FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
         this.myForm = this.fb.group({
             url: ["", [Validators.required,

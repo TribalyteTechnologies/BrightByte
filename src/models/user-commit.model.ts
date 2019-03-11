@@ -1,6 +1,6 @@
 import { AppConfig } from "../app.config";
 import { UserDetails } from "./user-details.model";
-import { UtilsService } from "../core/utils.service";
+import { FormatUtils } from "../core/format-utils";
 
 export class UserCommit { 
     public url: string; 
@@ -18,19 +18,13 @@ export class UserCommit {
     public reviewers: UserDetails[][];
     public reviewsAlreadyDone: string[];
 
-    public static getProjectFromUrl(url: string): string {
-        let utilsSrv = new UtilsService();
-        return utilsSrv.getProjectFromUrl(url);
-    }
-
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
-        let utilsSrv = new UtilsService();
         let commit = new UserCommit(); 
         commit.url = commitVals[0]; 
-        commit.urlHash = utilsSrv.getHashFromUrl(commit.url);
+        commit.urlHash = FormatUtils.getHashFromUrl(commit.url);
         commit.title = commitVals[1];
         commit.author = commitVals[2];
-        commit.project = UserCommit.getProjectFromUrl(commit.url);
+        commit.project = FormatUtils.getProjectFromUrl(commit.url);
         commit.isPending = isPending;
         commit.creationDateMs = commitVals[3] * AppConfig.DATE_MULTIPLY_FACTOR;
         commit.lastModificationDateMs = commitVals[4] * AppConfig.DATE_MULTIPLY_FACTOR;

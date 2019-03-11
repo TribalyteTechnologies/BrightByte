@@ -28,7 +28,6 @@ import { SpinnerService } from "../core/spinner.service";
 import { StorageService } from "../core/storage.service";
 import { SessionStorageService } from "../core/session-storage.service";
 import { LocalStorageService } from "../core/local-storage.service";
-import { UtilsService } from "../core/utils.service";
 
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
@@ -120,7 +119,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginService,
         HttpClientModule,
         SpinnerService,
-        UtilsService,
         LocalStorageService,
         SessionStorageService,
         {provide: StorageService, useClass: SessionStorageService},

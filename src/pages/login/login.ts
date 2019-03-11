@@ -37,7 +37,7 @@ export class LoginPage {
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
-    public manageEvent(e){
+    public manageEvent(e: string){
         this.loginState = e;
     }
 
