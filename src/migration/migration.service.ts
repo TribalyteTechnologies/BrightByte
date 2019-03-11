@@ -7,6 +7,9 @@ import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import { Account } from "web3/types";
 import { ContractManagerService } from "../domain/contract-manager.service";
+import { AlertController, LoadingController } from "ionic-angular";
+import { TranslateService } from "@ngx-translate/core";
+import { LoginService } from "../core/login.service";
 
 
 interface ItrbSmartContact { //Web3.Eth.Contract
@@ -19,6 +22,9 @@ interface ItrbSmartContractJson {
 
 @Injectable()
 export class MigrationService {
+    
+    public msg: string;
+    public text: any;
     private contractAddressRootV030: string;
     private contractAddressBrightV030: string;
     private contractAddressCommitsV030: string;
@@ -26,19 +32,86 @@ export class MigrationService {
     private log: ILogger;
     private web3: Web3;
     private currentUser;
+    
 
     constructor(
         private http: HttpClient,
         private web3Service: Web3Service,
         private loggerSrv: LoggerService,
-        private contractManagerService: ContractManagerService
+        private contractManagerService: ContractManagerService,
+        private alertCtrl: AlertController,
+        private loadingCtrl: LoadingController,
+        private translateService: TranslateService,
+        private loginService: LoginService
     ) {
-        this.log = loggerSrv.get("ContractManagerService");
+        this.log = loggerSrv.get("MigrationService");
         this.web3 = web3Service.getWeb3();
         this.web3Service = web3Service;
     }
 
+    public buttonMigrate(pass: string, text) {
+        let alert = this.alertCtrl.create({
+            title: "Migration",
+            subTitle: "The migration has been successful",
+            buttons: ["Accept"]
+        });
+
+        let alertError = this.alertCtrl.create({
+            title: "Error",
+            subTitle: "The migration has failed",
+            buttons: ["Accept"]
+        });
+
+        let loader = this.loadingCtrl.create();
+        loader.present();
+        try {
+            this.log.d("File imported: ", text);
+            if (text === undefined) {
+                this.log.e("File not loaded");
+                this.translateService.get("app.fileNotLoaded").subscribe(
+                    msg => {
+                        loader.dismiss();
+                        this.msg = msg;
+                    });
+            } else {
+                let account = this.web3Service.getWeb3().eth.accounts.decrypt(text, pass);
+                this.log.d("Imported account from the login file: ", account);
+                this.loginService.setAccount(account);
+                this.contractManagerService.init(account, 0)
+                    .then(() => {
+                        return this.initOld(account, 0);
+                    }).then((result) => {
+                        return this.getUserMigration();
+                    }).then((result) => {
+                        loader.dismiss();
+                        alert.present();
+                    })
+                    .catch((e) => {
+                        window.alert(e);
+                        this.translateService.get("app.noRpc").subscribe(
+                            msg => {
+                                loader.dismiss();
+                                this.msg = msg;
+                            });
+                        this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
+                        loader.dismiss();
+                        alertError.present();
+                    });
+
+            }
+        } catch (e) {
+            this.translateService.get("app.wrongPassword").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                    loader.dismiss();
+                });
+        }
+    }
+
     /////////////////MIGRATION FROM v0.3.0 to v0.4.0/////////////////////////
+
+
 
     public initOld(user: Account, cont: number): Promise<any> {
         AppConfig.CURRENT_NODE_INDEX = cont;
@@ -132,7 +205,7 @@ export class MigrationService {
             brightV030 = bright;
             commitV030 = commit;
             rootV030 = root;
-            return this.contractManagerService.getInitProm();
+            return this.contractManagerService.getContracts();
         }).then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
@@ -312,7 +385,6 @@ export class MigrationService {
 
         }).then((commitsDetails) => {
             let found: boolean;
-            let user;
             for(let i = 0; i < commitsDetails.length; i++){
                 let commit = new CommitDataMigraton();
                 commit.url = commitsDetails[i][0];
@@ -328,7 +400,7 @@ export class MigrationService {
                 commits.push(commit);
                 found = false;
                 for(let j = 0; j < users.length && !found; j++){
-                    user = users[j]; 
+                    let user = users[j]; 
                     if(user.hash === commit.author){
                         if(commit.creationDate < season0End){
                             user.seasonData[0].urlSeasonCommits.push(urlKeccak);
@@ -394,8 +466,7 @@ export class MigrationService {
 
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
-        
-            this.log.d(comments);
+            this.log.d("Setting Comments" + comments);
             return users.reduce(
                 (prevVal, user) => {
                     return prevVal.then(() => {

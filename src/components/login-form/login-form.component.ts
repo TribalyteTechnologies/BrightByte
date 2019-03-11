@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { NavController , LoadingController} from "ionic-angular";
+import { NavController} from "ionic-angular";
 import { TranslateService } from "@ngx-translate/core";
 import { AlertController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
@@ -54,7 +54,6 @@ export class LoginForm {
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
         private alertCtrl: AlertController,
-        private loadingCtrl: LoadingController,
         private migrationService: MigrationService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
@@ -162,66 +161,8 @@ export class LoginForm {
         terms.present();
     }
 
-    public migrate(pass){
-        let alert = this.alertCtrl.create({
-            title: "Migration",
-            subTitle: "The migration has been successful",
-            buttons: ["Accept"]
-        });
-
-        let alertError = this.alertCtrl.create({
-            title: "Error",
-            subTitle: "The migration has failed",
-            buttons: ["Accept"]
-        });
-
-        let loader = this.loadingCtrl.create();
-        loader.present();
-        try {
-            this.log.d("File imported: ", this.text);
-            if (this.text === undefined) {
-                this.log.e("File not loaded");
-                this.translateService.get("app.fileNotLoaded").subscribe(
-                    msg => {
-                        loader.dismiss();
-                        this.msg = msg;
-                    });
-            } else {
-                let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
-                this.log.d("Imported account from the login file: ", account);
-                this.loginService.setAccount(account);
-                this.contractManager.init(account, 0)
-                    .then(() => {
-                        return this.migrationService.initOld(account, 0);
-                    }).then((result) => {
-                        return this.migrationService.getUserMigration();
-                    }).then((result) => {
-                        this.migrationDone = true;
-                        this.userLoggerService.setMigration();
-                        loader.dismiss();
-                        alert.present();
-                    })
-                    .catch((e) => {
-                        window.alert(e);
-                        this.translateService.get("app.noRpc").subscribe(
-                            msg => {
-                                loader.dismiss();
-                                this.msg = msg;
-                            });
-                        this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
-                        loader.dismiss();
-                        alertError.present();
-                    });
-
-            }
-        } catch (e) {
-            this.translateService.get("app.wrongPassword").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                    loader.dismiss();
-                });
-        }
+    public migrate(pass: string){
+        this.migrationService.buttonMigrate(pass, this.text);
     }
 
     private checkNodesAndOpenHomePage (account: Account, currentNodeIndex: number): Promise<boolean> {

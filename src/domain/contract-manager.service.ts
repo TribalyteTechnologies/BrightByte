@@ -450,14 +450,12 @@ export class ContractManagerService {
         });
     }
 
-    public getInitProm(){
+    public getContracts(): Promise<Array<ItrbSmartContact>>{
         return this.initProm;
     }
     
     public getAddresses(){
-        return this.initProm.then(([bright, commit, root]) => {
-            return ([bright, commit, root]);
-        });
+        return ([this.contractAddressRoot, this.contractAddressBright, this.contractAddressCommits]);
     }
 
     public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
