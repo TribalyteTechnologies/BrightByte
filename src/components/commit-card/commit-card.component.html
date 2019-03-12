@@ -21,9 +21,9 @@
             <div class="text-url text-ellipsis" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
         </ion-row>
     </ion-col>
-    <ion-col col-5 padding>
-        <ion-row justify-content-end>
-            <rating [rate]="score" readonly="true" small="true"></rating>
+    <ion-col col-5>
+        <ion-row  justify-content-end>
+            <custom-rating [rate]="score" readOnly="true" small="true" padding="true"></custom-rating>
         </ion-row>
         <ion-row justify-content-end>
             <ion-col col-auto *ngFor="let user of reviewers">

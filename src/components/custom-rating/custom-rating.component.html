@@ -1,0 +1,10 @@
+<ion-row justify-content-left *ngIf="!readOnly">
+    <button class="star-style" *ngFor="let number of starIds" (click)="setReputation(number)">
+        <ion-icon [ngClass]="{'icon-small': small,'icon-padding': padding}" name="{{ stars[number] }}"></ion-icon>
+    </button>
+</ion-row>
+<ion-row  justify-content-left *ngIf="readOnly">
+    <div class="star-style" *ngFor="let number of starIds">
+        <ion-icon [ngClass]="{'icon-small': small,'icon-padding': padding}" name="{{ stars[number] }}"></ion-icon>
+    </div>
+</ion-row>

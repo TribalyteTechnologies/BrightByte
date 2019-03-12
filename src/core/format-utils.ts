@@ -4,7 +4,7 @@ export class FormatUtils {
     private static readonly EMAIL_VALIDATOR = /.*@.*\..+$/;
     private static readonly PROJECT_FROM_URL_1 = /([a-zA-Z0-9]+\/(pull-requests|pull-request|commits|commit)\/.+)/;
     private static readonly PROJECT_FROM_URL_2 = /^.[^/]+/;
-    private static readonly HASH_FROM_URL = /^.[^/]+/;
+    private static readonly HASH_FROM_URL = /[^/]+$/;
 
     public static getUrlValidatorPattern(): RegExp{
         return this.URL_VALIDATOR;

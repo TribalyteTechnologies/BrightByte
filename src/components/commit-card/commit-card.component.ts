@@ -1,6 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { UserCommit } from "../../models/user-commit.model";
 import { TranslateService } from "@ngx-translate/core";
+import { FormatUtils } from "../../core/format-utils";
+
 
 
 @Component({
@@ -30,7 +32,7 @@ export class CommitCard {
     @Input()
     public set commit(val: UserCommit){
         this._commit = val;
-        this.urlHash = /[^/]+$/.exec(val.url)[0];
+        this.urlHash = FormatUtils.getHashFromUrl(val.url);
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));

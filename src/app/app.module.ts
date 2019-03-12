@@ -48,6 +48,7 @@ import { NewUserForm } from "../components/new-user-form/new-user-form.component
 import { SetProfileForm } from "../components/set-profile-form/set-profile-form.component";
 import { CommentComponent } from "../components/comment/comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
+import { CustomRating } from "../components/custom-rating/custom-rating.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
 import { MigrationService } from "../migration/migration.service";
 export function HttpLoaderFactory(http: HttpClient) {
@@ -72,6 +73,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         NewUserForm,
         SetProfileForm,
         FilterComponent,
+        CustomRating,
         RankingCard
     ],
     imports: [
@@ -104,6 +106,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         NewUserForm,
         SetProfileForm,
         FilterComponent,
+        CustomRating,
         RankingCard
     ],
     providers: [
