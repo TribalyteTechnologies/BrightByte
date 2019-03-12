@@ -157,6 +157,9 @@ page-login {
         color: white;
         margin: 5px;
     }
+    .error-body-no-v-padding {
+        padding: 0px 10px;
+    }
     .page-body {
         background-color: color($colors, backgroundLight);
     }
@@ -188,8 +191,9 @@ page-login {
         margin-bottom: 20px;
     }
     .tribalyte-logo {
-        width: 200px;
+        width: 150px;
         margin-left: 15px;
+        margin-top: 10px;
     }
     .terms-conditions {
         text-align: right;

@@ -111,12 +111,12 @@ export class ReviewPage {
                 this.displayCommitsToReview = commits;
                 let projects = commits.map( commit => commit.project );
                 this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
-                this.applyFilters(this.displayCommitsToReview);
                 this.spinnerService.hideLoader();
                 return this.contractManagerService.getUserDetails(userAdress.address);
             }).then((ud) => {
                 this.name = ud.name;
                 this.address = userAdress.address;
+                this.applyFilters(this.displayCommitsToReview);
                 let url = new URLSearchParams(document.location.search);
                 if(url.has(AppConfig.UrlKey.REVIEWID)){
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
@@ -318,7 +318,8 @@ export class ReviewPage {
                 });
             case "completed":
                 return usercommits.filter(commit => {
-                    return (commit.numberReviews === commit.currentNumberReviews);
+                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    return (isReviewed);
                 });
             default:
                 return usercommits;

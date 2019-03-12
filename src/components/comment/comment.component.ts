@@ -3,9 +3,9 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
-    selector: "commit-comment",
-    templateUrl: "commit-comment.component.html",
-    styles: ["commit-comment.component.scss"]
+    selector: "comment",
+    templateUrl: "comment.component.html",
+    styles: ["comment.component.scss"]
  })
 
 export class CommentComponent {
@@ -19,6 +19,16 @@ export class CommentComponent {
     public thumbsDown = new EventEmitter();
 
     private _review: CommitComment;
+    private _isReview: boolean = true;
+
+    @Input()
+    public set isReview(val: boolean){
+        this._isReview = val;
+    }
+
+    public get isReview(){
+        return this._isReview;
+    }
 
     @Input()
     public set review(val: CommitComment){
@@ -41,11 +51,13 @@ export class CommentComponent {
     public setThumbsDown(){
         this.thumbsDown.next();
     }
-    
+
     constructor(public translateService: TranslateService){
         translateService.get("app.anonymous").subscribe(
             msg => {
                 this.ANONYMOUS = msg;
             });
     }
+
+
 }

@@ -43,12 +43,10 @@ import { IonicRatingModule } from "ionic-rating";
 // Components
 import { BrightByteApp } from "./app.component";
 import { CommitCard } from "../components/commit-card/commit-card.component";
-import { CommentComponent } from "../components/commit-comment/commit-comment.component";
 import { LoginForm } from "../components/login-form/login-form.component";
 import { NewUserForm } from "../components/new-user-form/new-user-form.component";
 import { SetProfileForm } from "../components/set-profile-form/set-profile-form.component";
-import { ReviewCard } from "../components/review-card/review-card.component";
-import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
+import { CommentComponent } from "../components/comment/comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
 import { MigrationService } from "../migration/migration.service";
@@ -73,8 +71,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginForm,
         NewUserForm,
         SetProfileForm,
-        ReviewCard,
-        ReviewCommentComponent,
         FilterComponent,
         RankingCard
     ],
@@ -107,8 +103,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginForm,
         NewUserForm,
         SetProfileForm,
-        ReviewCard,
-        ReviewCommentComponent,
         FilterComponent,
         RankingCard
     ],

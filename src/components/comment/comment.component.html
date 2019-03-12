@@ -1,0 +1,64 @@
+<ion-grid padding class="main-style">
+    <ion-row class="card">
+        <ion-col padding col-auto>
+            <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ review.name }}">
+        </ion-col>
+        <ion-col padding align-items-center>
+            <ion-row no-padding>
+                <ion-col col-auto class="text-title">{{ review.name }}</ion-col>
+                <ion-col class="text-details">{{ review.lastModificationDateMs | dateFormat }}</ion-col>
+            </ion-row>
+            <ion-row *ngFor="let critName of [ 'cleanCode', 'difficulty', 'reviewerExperience']" no-padding>
+                <ion-col>
+                    <ion-row class="padding-bottom padding-top">
+                        <div>{{ ("review." + critName) | translate }}</div>
+                    </ion-row>
+                </ion-col>
+                <ion-col>
+                    <ion-row>
+                        <rating class="right" [rate]="review[critName]" readonly="true" small="true"></rating>
+                    </ion-row>
+                </ion-col>           
+            </ion-row>
+        </ion-col>
+    </ion-row>
+    <ion-col col-12 *ngIf="isReview">
+        <ion-row padding class="text-description card">
+            {{ review.text }}
+        </ion-row>
+        <ion-row padding *ngIf="review.vote==0">
+            <button class="btn btn--full btn__blue">  {{ "review.noVote" | translate }}</button>
+        </ion-row>
+        <ion-row padding *ngIf="review.vote==1">
+            <button class="btn btn--full btn__blue">  {{ "review.positiveVote" | translate }}</button>
+        </ion-row>
+        <ion-row padding *ngIf="review.vote==2">
+            <button class="btn btn--full btn__red"> {{ "review.negativeVote" | translate }}</button>
+        </ion-row>
+    </ion-col>
+    <ion-col col-12 *ngIf="!isReview">
+        <ion-row padding class="text-description card">
+            {{ review.text }}
+        </ion-row>
+        <ion-row padding *ngIf="review.vote==0">
+            <ion-col>
+                <button class="btn btn--full btn__blue" (click)="setThumbsUp()">{{ "commits.agree" | translate }}</button>
+            </ion-col>
+            <ion-col>
+                <button class="btn btn--full btn__red" (click)="setThumbsDown()">{{ "commits.disagree" | translate }}</button>
+            </ion-col>
+            <ion-col>
+                <button class="btn btn--full btn__yellow">
+                            <ion-icon name="warning"></ion-icon>
+                        </button>
+            </ion-col>
+        </ion-row>
+        <ion-row padding *ngIf="review.vote==1">
+            <button class="btn btn--full btn__blue">  {{ "commits.ratedAgree" | translate }}</button>
+        </ion-row>
+        <ion-row padding *ngIf="review.vote==2">
+            <button class="btn btn--full btn__red"> {{ "commits.ratedDisagree" | translate }}</button>
+        </ion-row>
+    </ion-col>
+
+</ion-grid>
