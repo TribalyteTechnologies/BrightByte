@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 
 @Component({
@@ -9,6 +9,9 @@ import { Component, Input } from "@angular/core";
 
 export class CustomRating {
 
+    @Output()
+    public value = new EventEmitter<number>();
+
     @Input()
     public max: number = 5;
 
@@ -16,13 +19,13 @@ export class CustomRating {
     public rate: number = 3;
 
     @Input()
-    public readOnly: boolean = false;
+    public setstars: boolean = false;
 
     @Input()
     public small: boolean = false;
 
     @Input()
-    public padding: boolean = false;
+    public starPadding: boolean = false;
 
     public starIds: number[];
     public stars: string[];
@@ -44,6 +47,8 @@ export class CustomRating {
         for (let i = 0; i <= value; ++i) {
             this.stars[i] = "star";
         }
+        this.rate = value;
+        this.value.next((this.rate + 1) * 100);
     }
    
 }

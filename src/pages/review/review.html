@@ -41,50 +41,22 @@
                         </ion-row>
                     </ion-col>
                 </ion-row>
-                <ion-row *ngIf="needReview" padding class="title-left text-details text-details--bold">
+                <ion-row  *ngIf="needReview" padding class="title-left text-details text-details--bold">
                     {{ "commitReview.setReview" | translate }}
                 </ion-row>
-                <ion-row padding class="main-style" *ngIf="needReview">
-                    <ion-col>
-                        <ion-row class="text-title">Set your review</ion-row>
-                        <ion-row>
-                            <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" [(ngModel)]="textComment"></ion-textarea>
-                        </ion-row>
-                        <ion-row *ngFor="let critName of ['cleanCode', 'difficulty', 'reviewerExperience']; let i = index">
-                            <ion-col>
-                                    <ion-row class="padding-top-set-review padding-bottom-set-review">
-                                            <div class="text-details">{{ "review."+critName | translate }}: </div>
-                                    </ion-row>
-                            </ion-col>
-                            <ion-col>
-                                <ion-row padding justify-content-left>
-                                    <button class="star-style" *ngFor="let number of [0,1,2,3,4]" (click)="setReputation(number, i)">
-                                        <ion-icon class="icon-size" name="{{ stars[i][number] }}"></ion-icon>
-                                    </button>
-                                </ion-row>
-                            </ion-col>
-                        </ion-row>
-                        <ion-row *ngIf="submitError != ''">
-                            <div class="error-body">
-                                {{ submitError }}
-                            </div>
-                        </ion-row>
-                        <ion-row>
-                            <button class="btn btn--full btn__blue" (click)="validateAndSetReview(currentCommit.url, textComment, rate);">
-                            {{ "commitReview.review" | translate }}
-                            </button>
-                        </ion-row>
-                    </ion-col>
-                </ion-row>
+                
+                <div *ngIf="needReview">
+                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="needReview" [isReviewPage]="true" [review]="comment" (submitReview)=setReview(currentCommit.url,$event.txt,$event.points)></comment>
+                </div>
                 <ion-row padding *ngIf="userCommitComment[0]" class="text-details text-details--bold">
                     Your review
                 </ion-row>
-                <comment [isReview]="true" [review]="userCommitComment[0]" *ngIf="userCommitComment[0]"></comment>
+                <comment [isReviewPage]="true" [review]="userCommitComment[0]" *ngIf="userCommitComment[0]"></comment>
                 <ion-row padding *ngIf="!needReview" class="text-details text-details--bold">
                     {{ "review.otherReview" | translate }}
                 </ion-row>
                 <ion-col no padding *ngIf="!needReview">
-                    <comment *ngFor="let comment of commitComments; let j=index " [isReview]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
+                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="needReview" [isReviewPage]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
                     <ion-row padding></ion-row>
                 </ion-col>
             </div>

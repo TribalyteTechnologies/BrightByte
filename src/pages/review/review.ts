@@ -186,22 +186,6 @@ export class ReviewPage {
         }
         this.rate[starNum] = (value + 1) * 100;
     }
-
-    public validateAndSetReview(url: string, text: string, points: number[]){
-        this.submitError = "";
-        let isPointsEmpty = false;
-
-        isPointsEmpty = points.some(val => val === 0);
-
-        if (!text){
-            this.obtainTranslatedError("review.reviewCommentError");
-        } else if(isPointsEmpty) {
-            this.obtainTranslatedError("review.reviewEmptyRatingError");
-        } else{
-            this.setReview(url, text, points);
-        }
-    }
-
     
         
     public applyFilters(usercommits: UserCommit[]) {
@@ -249,7 +233,7 @@ export class ReviewPage {
         }
     }
 
-    private setReview(url: string, text: string, points: number[]){
+    public setReview(url: string, text: string, points: number[]){
         let point: number[] = points;
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
@@ -280,13 +264,6 @@ export class ReviewPage {
             this.spinnerService.hideLoader();
             this.log.e("Catched error " + error);
         });
-    }
-
-    private obtainTranslatedError(translation: string){
-        this.translateService.get(translation).subscribe(
-            msg => {
-                this.submitError = msg;
-            });
     }
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{

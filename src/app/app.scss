@@ -497,3 +497,26 @@
     }
     text-align: right;
 }
+
+.criterial-border:not(:last-child)  {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.criterial-center {
+    text-align: center;
+}
+
+.criterial-text {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.card-criterial-border {
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-criterial-padding-top {
+    padding-top: 25px;
+}

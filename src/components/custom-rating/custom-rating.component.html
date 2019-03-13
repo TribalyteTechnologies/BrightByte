@@ -1,10 +1,10 @@
-<ion-row justify-content-left *ngIf="!readOnly">
+<ion-row  justify-content-center *ngIf="setstars">
     <button class="star-style" *ngFor="let number of starIds" (click)="setReputation(number)">
-        <ion-icon [ngClass]="{'icon-small': small,'icon-padding': padding}" name="{{ stars[number] }}"></ion-icon>
+        <ion-icon [ngClass]="{'icon-small': small,'star-padding': starPadding}" name="{{ stars[number] }}"></ion-icon>
     </button>
 </ion-row>
-<ion-row  justify-content-left *ngIf="readOnly">
+<ion-row  justify-content-center *ngIf="!setstars">
     <div class="star-style" *ngFor="let number of starIds">
-        <ion-icon [ngClass]="{'icon-small': small,'icon-padding': padding}" name="{{ stars[number] }}"></ion-icon>
+        <ion-icon [ngClass]="{'icon-small': small,'star-padding': starPadding}" name="{{ stars[number] }}"></ion-icon>
     </div>
 </ion-row>
