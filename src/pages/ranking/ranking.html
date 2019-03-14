@@ -29,7 +29,7 @@
             <ion-row>
                 <ion-col col-10>
                     <div *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</div>
-                    <ng-template #elseBlock>{{ "ranking.title" | translate }} {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+                    <ng-template #elseBlock>{{ "app.ranking" | translate }} {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
                 </ion-col>
                 <ion-col class="text-details ranking-a" col-2>
                     <a no-padding (click)="goBackToUser()">Find me</a>
@@ -76,11 +76,11 @@
                     <ion-row padding justify-content-center>
                         <ion-col class="vert-separator">
                             <ion-row justify-content-center class="text-title">{{ userRankDetails.reviews }}</ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.reviews" | translate }}</ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
                         </ion-col>
                         <ion-col class="vert-separator">
                             <ion-row justify-content-center class="text-title">{{ userRankDetails.commits }}</ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.commits" | translate }}</ion-row>
+                            <ion-row justify-content-center class="text-description">{{ "app.commits" | translate }}</ion-row>
                         </ion-col>
                         <ion-col>
                             <ion-row justify-content-center class="text-title"> {{ userRankDetails.agreed }}%</ion-row>

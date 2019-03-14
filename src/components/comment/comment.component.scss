@@ -24,4 +24,11 @@ comment {
         color: white;
         margin: 5px;
     }
+
+    .center-button {
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }

@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { CommitComment } from "../../models/commit-comment.model";
 import { TranslateService } from "@ngx-translate/core";
+import { AlertController } from "ionic-angular";
+import { ILogger, LoggerService } from "../../core/logger.service";
 
 @Component({
     selector: "comment",
@@ -27,7 +29,7 @@ export class CommentComponent {
     private _review: CommitComment;
     private _isReviewPage: boolean = true;
     private _isReviewNeeded: boolean = false;
-    
+    private log: ILogger;
 
     @Input()
     public set isReviewNeeded(val: boolean){
@@ -69,7 +71,10 @@ export class CommentComponent {
         this.thumbsDown.next();
     }
 
-    constructor(public translateService: TranslateService){
+    constructor(public translateService: TranslateService,
+                private alertCtrl: AlertController,
+                loggerSrv: LoggerService){
+        this.log = loggerSrv.get("CommentComponent");
         translateService.get("app.anonymous").subscribe(
             msg => {
                 this.ANONYMOUS = msg;
@@ -93,6 +98,29 @@ export class CommentComponent {
         }
     }
 
+    public setComplain(){
+        let alert = this.alertCtrl.create({
+            title: this.obtainTransaltion("alerts.claim"),
+            message: this.obtainTransaltion("alerts.claimMsg"),
+            buttons: [
+              {
+                text: this.obtainTransaltion("alerts.cancel"),
+                role: "cancel",
+                handler: () => {
+                      this.log.d("Complain cancelled");
+                }
+              },
+              {
+                text: this.obtainTransaltion("alerts.accept"),
+                handler: () => {
+                    this.log.d("Complain accepted");
+                }
+              }
+            ]
+        });
+        alert.present();
+    } 
+
     private obtainTranslatedError(translation: string){
         this.translateService.get(translation).subscribe(
             msg => {
@@ -100,6 +128,12 @@ export class CommentComponent {
             });
     }
 
-
-
+    private obtainTransaltion(translation: string): string{
+        let translatedText = "";
+        this.translateService.get(translation).subscribe(
+            msg => {
+                translatedText = msg;
+            });
+        return translatedText;
+    }    
 }

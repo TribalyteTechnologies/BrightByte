@@ -51,15 +51,15 @@ export class MigrationService {
 
     public buttonMigrate(pass: string, text) {
         let alert = this.alertCtrl.create({
-            title: "Migration",
-            subTitle: "The migration has been successful",
-            buttons: ["Accept"]
+            title: this.obtainTransaltion("migration.migrationTitle"),
+            subTitle: this.obtainTransaltion("migration.migrationSuc"),
+            buttons: [this.obtainTransaltion("alerts.accept")]
         });
 
         let alertError = this.alertCtrl.create({
-            title: "Error",
-            subTitle: "The migration has failed",
-            buttons: ["Accept"]
+            title: this.obtainTransaltion("alerts.error"),
+            subTitle: this.obtainTransaltion("migration.migrationErr"),
+            buttons: [this.obtainTransaltion("alerts.accept")]
         });
 
         let loader = this.loadingCtrl.create();
@@ -659,43 +659,14 @@ export class MigrationService {
 
     }
 
-    /*
-    private sendTxOwner(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
-        const NODE_PUBLIC_ADDR = "0x";
-        const NODE_PRIVATE_ADDR = "0x";
-        return this.web3.eth.getTransactionCount(NODE_PUBLIC_ADDR, "pending")    //Change the address to the public address of the deployer
-            .then(nonceValue => {
-                let nonce = "0x" + (nonceValue).toString(16);
-                this.log.d("Value NONCE", nonce);
-                let rawtx = {
-                    nonce: nonce,
-                    // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasLimit),
-                    to: contractAddress,
-                    data: bytecodeData
-                };
-                const tx = new Tx(rawtx);
-                let priv = NODE_PRIVATE_ADDR;    //Change the address to the private address of the deployer
-                let privateKey = new Buffer(priv, "hex");
-                tx.sign(privateKey);
-
-                let raw = "0x" + tx.serialize().toString("hex");
-                this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv is 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
-                this.log.d("Raw: ", raw);
-                this.log.d("tx unsign: ", tx);
-                return this.web3.eth.sendSignedTransaction(raw);
-            }).then(transactionHash => {
-                this.log.d("Hash transaction", transactionHash);
-                return transactionHash;
-            }).catch(e => {
-                this.log.e("Error in transaction (sendTx function): ", e);
-                throw e;
+    private obtainTransaltion(translation: string): string{
+        let translatedText = "";
+        this.translateService.get(translation).subscribe(
+            msg => {
+                translatedText = msg;
             });
-    }
-    */
+        return translatedText;
+    } 
 }
 
 class User{

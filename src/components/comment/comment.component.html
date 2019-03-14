@@ -30,9 +30,9 @@
                         <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
                         <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="0" (value)="points[i]=$event" [setstars]="true" [small]="true"></custom-rating>
                         <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="0" (value)="points[i]=$event" [max]="3" [setstars]="true" [starPadding]="true" [small]="true"></custom-rating>  
-                        <ion-row justify-content-center><p>  What is this?</p>       </ion-row>   
+                        <ion-row justify-content-center><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>  
                 </ion-col>
-                <ion-col col-3 class="criterial-border">
+                <ion-col col-3 class="criterial-border center-button">
                     <button class="btn btn--full btn__blue" (click)="validateAndSetReview(textComment)">
                         {{ "commitReview.review" | translate }}
                     </button>
@@ -57,16 +57,16 @@
     </ion-col>
     <ion-col col-12 *ngIf="!isReviewPage && !isReviewNeeded">
         <ion-row padding *ngIf="review.vote==0">
-            <ion-col>
+            <ion-col col-5>
                 <button class="btn btn--full btn__blue" (click)="setThumbsUp()">{{ "commits.agree" | translate }}</button>
             </ion-col>
-            <ion-col>
+            <ion-col col-5>
                 <button class="btn btn--full btn__red" (click)="setThumbsDown()">{{ "commits.disagree" | translate }}</button>
             </ion-col>
-            <ion-col>
-                <button class="btn btn--full btn__yellow">
-                            <ion-icon name="warning"></ion-icon>
-                        </button>
+            <ion-col col-2>
+                <button class="btn btn--full btn__yellow" (click)="setComplain()">
+                    <ion-icon name="warning"></ion-icon>
+                </button>
             </ion-col>
         </ion-row>
         <ion-row padding *ngIf="review.vote==1">
