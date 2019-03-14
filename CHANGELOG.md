@@ -6,8 +6,10 @@
 - New contract for reputation calculations.
 - Contracts optimizations (variable sizes).
 - Global ranking now is based on participation ("Engagement index").
+- Pull request and multirepository validation.
 - Mayor visual changes.
 - Mayor code refactor.
+- Most pending minor issues solved.
 
 ####  v 0.3.0
 

@@ -68,7 +68,10 @@
         "updated": "Updated",
         "currentReview": "Current Reviews",
         "newTab": "New tab",
-        "nobodyReviewed": "Nobody reviewed this commit"
+        "nobodyReviewed": "Nobody reviewed this commit",
+        "cleanCodeDescription": "<h6>Clean Code</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
+        "difficultyDescription": "<h6>Difficulty</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
+        "reviewerExperienceDescription": "<h6>Reviewer confidence</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi"
 
     },
     "home": {

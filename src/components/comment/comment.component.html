@@ -19,11 +19,11 @@
                         <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
                         <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="review[critName]" [setstars]="false" [small]="true"></custom-rating>
                         <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="review[critName]" [max]="3" [setstars]="false" [starPadding]="true" [small]="true"></custom-rating>  
-                        <ion-row justify-content-center><p>  What is this?</p>       </ion-row>   
+                        <ion-row class="tooltip-text-open" justify-content-center tooltip [tooltipHtml]="('commits.' + critName + 'Description') | translate" positionV="bottom" arrow hideOthers="true"><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>   
                 </ion-col>
         </ion-row>
         <ion-row *ngIf="isReviewNeeded">
-                <ion-textarea placeholder="{{ 'commitReview.description' | translate }}" (ionChange)="textComment = $event.value"></ion-textarea>
+                <ion-textarea placeholder="{{ ('commits.' + critName + 'Description') | translate }}" (ionChange)="textComment = $event.value"></ion-textarea>
         </ion-row>
         <ion-row *ngIf="isReviewNeeded" justify-content-center [ngClass]="{'card-criterial-border': !isReviewNeeded}" class="card-criterial-padding-top">
                 <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'cleanCode', 'difficulty', 'reviewerExperience'], let i = index" no-padding>
@@ -31,6 +31,7 @@
                         <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="0" (value)="points[i]=$event" [setstars]="true" [small]="true"></custom-rating>
                         <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="0" (value)="points[i]=$event" [max]="3" [setstars]="true" [starPadding]="true" [small]="true"></custom-rating>  
                         <ion-row justify-content-center><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>  
+                        <ion-row class="tooltip-text-open" justify-content-center tooltip [tooltipHtml]="('commits.' + critName + 'Description') | translate" positionV="bottom" arrow hideOthers="true"><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>   
                 </ion-col>
                 <ion-col col-3 class="criterial-border center-button">
                     <button class="btn btn--full btn__blue" (click)="validateAndSetReview(textComment)">

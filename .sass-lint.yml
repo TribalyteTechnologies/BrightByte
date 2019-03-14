@@ -58,7 +58,7 @@ rules:
   nesting-depth:
     - 1
     - max-depth: 3
-  no-attribute-selectors: 1
+  no-attribute-selectors: 0
   no-color-hex: 0
   no-color-keywords: 0
   no-color-literals: 0
