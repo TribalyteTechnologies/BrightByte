@@ -51,7 +51,6 @@ export class CommentComponent {
 
     @Input()
     public set review(val: CommitComment){
-        val.name = (val.name === "") ? this.ANONYMOUS : val.name;
         this._review = val;
     }
 

@@ -46,7 +46,7 @@
                 </ion-row>
                 
                 <div *ngIf="needReview">
-                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="needReview" [isReviewPage]="true" [review]="comment" (submitReview)=setReview(currentCommit.url,$event.txt,$event.points)></comment>
+                    <comment [isReviewNeeded]="true" [isReviewPage]="true" (submitReview)=setReview(currentCommit.url,$event.txt,$event.points)></comment>
                 </div>
                 <ion-row padding *ngIf="userCommitComment[0]" class="text-details text-details--bold">
                     {{ "review.youReview" | translate }}
@@ -56,7 +56,7 @@
                     {{ "review.otherReview" | translate }}
                 </ion-row>
                 <ion-col no padding *ngIf="!needReview">
-                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="needReview" [isReviewPage]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
+                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="false" [isReviewPage]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
                     <ion-row padding></ion-row>
                 </ion-col>
             </div>

@@ -185,7 +185,8 @@
         "description": "Enter the explanation of your review",
         "showAllCommits": "Showing all your commits",
         "details": "Details",
-        "setReview": "Set Review"
+        "setReview": "Set Review",
+        "setYourReview": "Set your review"
     },
     "migration": {
         "migrationTitle": "Migration",
