@@ -1,26 +1,28 @@
 <ion-grid padding class="main-style">
     <ion-col col-12>
-        <ion-row *ngIf="!isReviewNeeded">
-            <ion-col padding col-auto>
-                <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ review.name }}">
-            </ion-col>
-            <ion-col padding align-items-center>
-                <ion-row no-padding class="criterial-border">
-                    <ion-col col-auto class="text-title">{{ review.name }}</ion-col>
-                    <ion-col class="text-details">{{ review.lastModificationDateMs | dateFormat }}</ion-col>
+        <ion-row *ngIf="!isReviewNeeded" class="card-criterial-border card-criterial-padding-top">
+            <ion-col col-3 class="criterial-border">
+                <ion-row>
+                    <ion-col>
+                        <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ review.name }}">
+                    </ion-col>
+                    <ion-col>
+                        <ion-row no-padding class="criterial-border">
+                            <ion-row class="text-user-review">{{ review.name }}</ion-row>
+                            <ion-row class="text-details">{{ review.lastModificationDateMs | dateFormat }}</ion-row>
+                        </ion-row>
+                    </ion-col>
                 </ion-row>
+            </ion-col>
+            <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'cleanCode', 'difficulty', 'reviewerExperience']" no-padding>
+                    <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
+                    <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="review[critName]" [setstars]="false" [small]="true"></custom-rating>
+                    <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="review[critName]" [max]="3" [setstars]="false" [starPadding]="true" [small]="true"></custom-rating>  
+                    <ion-row class="tooltip-text-open" justify-content-center tooltip [tooltipHtml]="('commits.' + critName + 'Description') | translate" positionV="bottom" arrow hideOthers="true"><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>   
             </ion-col>
         </ion-row>
         <ion-row *ngIf="!isReviewNeeded" padding class="text-description card">
             {{ review.text }}
-        </ion-row>
-        <ion-row *ngIf="!isReviewNeeded" class="card-criterial-border card-criterial-padding-top">
-                <ion-col col-4 class="criterial-border" *ngFor="let critName of [ 'cleanCode', 'difficulty', 'reviewerExperience']" no-padding>
-                        <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
-                        <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="review[critName]" [setstars]="false" [small]="true"></custom-rating>
-                        <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="review[critName]" [max]="3" [setstars]="false" [starPadding]="true" [small]="true"></custom-rating>  
-                        <ion-row class="tooltip-text-open" justify-content-center tooltip [tooltipHtml]="('commits.' + critName + 'Description') | translate" positionV="bottom" arrow hideOthers="true"><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>   
-                </ion-col>
         </ion-row>
         <ion-col *ngIf="isReviewNeeded">
             <ion-row class="text-title">{{ "commitReview.setYourReview" | translate }}</ion-row>
@@ -59,17 +61,19 @@
         </ion-row>
     </ion-col>
     <ion-col col-12 *ngIf="!isReviewPage && !isReviewNeeded">
-        <ion-row padding *ngIf="review.vote==0">
-            <ion-col col-5>
+        <ion-row *ngIf="review.vote==0">
+            <ion-col col-4>
                 <button class="btn btn--full btn__blue" (click)="setThumbsUp()">{{ "commits.agree" | translate }}</button>
             </ion-col>
-            <ion-col col-5>
+            <ion-col col-4 offset-4>
                 <button class="btn btn--full btn__red" (click)="setThumbsDown()">{{ "commits.disagree" | translate }}</button>
             </ion-col>
-            <ion-col col-2>
-                <button class="btn btn--full btn__yellow" (click)="setComplain()">
-                    <ion-icon name="warning"></ion-icon>
-                </button>
+        </ion-row>
+        <ion-row no-padding>
+            <ion-col text-right>
+                <a class="complaint-text" (click)="setComplain()">
+                    Report abuse
+                </a>
             </ion-col>
         </ion-row>
         <ion-row padding *ngIf="review.vote==1">
