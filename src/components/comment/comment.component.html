@@ -18,7 +18,12 @@
                     <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
                     <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="review[critName]" [setstars]="false" [small]="true"></custom-rating>
                     <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="review[critName]" [max]="3" [setstars]="false" [starPadding]="true" [small]="true"></custom-rating>  
-                    <ion-row class="tooltip-text-open" justify-content-center tooltip [tooltipHtml]="('commits.' + critName + 'Description') | translate" positionV="bottom" arrow hideOthers="true"><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>   
+                    <ion-row>
+                        <ion-col class="tooltip">
+                            <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
+                            <div  class="tooltip-text" [innerHTML]="('commits.' + critName + 'Description') | translate"></div>
+                        </ion-col>
+                    </ion-row>
             </ion-col>
         </ion-row>
         <ion-row *ngIf="!isReviewNeeded" padding class="text-description card">
@@ -35,7 +40,12 @@
                         <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
                         <custom-rating *ngIf="critName === 'cleanCode'" class="right" [rate]="0" (value)="points[i]=$event" [setstars]="true" [small]="true"></custom-rating>
                         <custom-rating *ngIf="critName !== 'cleanCode'" class="right" [rate]="0" (value)="points[i]=$event" [max]="3" [setstars]="true" [starPadding]="true" [small]="true"></custom-rating>  
-                        <ion-row class="tooltip-text-open" justify-content-center tooltip [tooltipHtml]="('commits.' + critName + 'Description') | translate" positionV="bottom" arrow hideOthers="true"><p>{{ "commitDetails.whatIs" | translate }}</p></ion-row>   
+                        <ion-row>
+                            <ion-col class="tooltip">
+                                <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
+                                <div  class="tooltip-text" [innerHTML]="('commits.' + critName + 'Description') | translate"></div>
+                            </ion-col>
+                        </ion-row>
                 </ion-col>
                 <ion-col col-3 class="criterial-border center-button">
                     <button class="btn btn--full btn__blue" (click)="validateAndSetReview(textComment)">

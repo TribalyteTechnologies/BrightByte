@@ -195,7 +195,7 @@
     },
     "alerts": {
         "claim": "Claim",
-        "claimMsg": "Do you want to make a complain?",
+        "claimMsg": "Do you want to make a complaint?",
         "error": "Error",
         "accept": "Accept",
         "cancel": "Cancel"

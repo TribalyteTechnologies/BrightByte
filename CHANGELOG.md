@@ -2,24 +2,24 @@
 
 #### v 0.4.0
 
-- New multicriteria reputation system. Three criteria "Code quality", "Difficulty" and "Reviewer confidence".
-- New contract for reputation calculations.
+- Added new multicriteria reputation system. Three criteria "Code quality", "Complexity" and "Reviewer confidence".
+- Moved reputation calculations to a separate contract.
 - Contracts optimizations (variable sizes).
 - Global ranking now is based on participation ("Engagement index").
 - Pull request and multirepository validation.
-- Mayor visual changes.
+- Visual redesign.
 - Mayor code refactor.
 - Most pending minor issues solved.
 
 ####  v 0.3.0
 
 - Added seasons to the blockchain contracts.
-- Implemented season rankings.
+- Implemented seasonal ranking feature.
 - Minor issues solved.
 
 ####  v 0.2.1
 
-- Vusial improvements.
+- Visual improvements.
 - Code refactor.
 - Minor issues solved.
 

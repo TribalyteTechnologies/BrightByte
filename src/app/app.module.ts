@@ -38,7 +38,6 @@ import { BitbucketService } from "../domain/bitbucket.service";
 
 //Modules
 import { IonicRatingModule } from "ionic-rating";
-import { TooltipsModule } from "ionic-tooltips";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 
@@ -85,7 +84,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         HttpClientModule,
         IonicRatingModule,
         BrowserAnimationsModule,
-        TooltipsModule.forRoot(),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

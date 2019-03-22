@@ -42,11 +42,9 @@ export class CustomRating {
 
     public setReputation(value: number) {
         for(let i = 0; i < this.max; i++){
-            this.stars[i] = "star-outline";
+            this.stars[i] = i <= value ? "star" : "star-outline";
         }
-        for (let i = 0; i <= value; ++i) {
-            this.stars[i] = "star";
-        }
+        
         this.rate = value;
         this.value.next((this.rate + 1) * 100);
     }

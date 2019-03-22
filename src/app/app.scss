@@ -525,33 +525,6 @@
     overflow-y: hidden;
 }
 
-.tooltip-text-open {
-    color: rgba(0, 0, 0, 0.6);
-    font-size: 11px;
-}
-
-[_nghost-c7] {
-    font-size: 12px !important;
-    width: 180px;
-    text-align: center;
-    padding: 10px !important;
-    background-color: rgba(255, 255, 255, 1) !important;
-    color: black !important;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
-    h6 {
-        margin-top: 0;
-    }
-}
-
-.has-arrow.arrow-top[_nghost-c7]::before {
-    border-bottom: 5px solid rgba(0, 0, 0, 0.2) !important;
-    top: -10px;
-    left: 80px;
-}
-
 textarea {
     resize: none;
 }
