@@ -3,8 +3,8 @@
         <div class="container-left">
             <div class="text-container">
                 <img class="logo" src="../../assets/imgs/logo_bkg.svg">
-                <div class="title">Welcome to Brightbyte</div>
-                <div class="subtitle">Enter your credentials to sign in</div>
+                <div class="title">{{ "app.welcome" | translate }}</div>
+                <div class="subtitle">{{ "app.enterCredentials" | translate }}</div>
             </div>
 
         </div>
@@ -15,12 +15,17 @@
             </div>
 
             <div class="form-container">
-                <div class="mini-title">Upload your credentials</div>
+                <div class="mini-title">{{ "app.uploadCredentials" | translate }}</div>
                 <div class="upload-form">
                     <input type='file' (change)='openFile($event)'>
                 </div>
-                <div class="mini-title">Enter your password</div>
+                <div class="mini-title">{{ "app.enterPass" | translate }}</div>
                 <input class="password-form" type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)">
+                <ion-row *ngIf="msg">
+                    <div class="error-body">
+                        {{ msg }}
+                    </div>
+                </ion-row>
                 <div class="remember">
                     <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
                     <div class="text">{{ "app.remember" | translate }}</div>

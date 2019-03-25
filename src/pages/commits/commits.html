@@ -13,10 +13,10 @@
     <filter-selection [projects]="projects" (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
     <ion-row no-padding>
         <ion-col padding class="text-details text-details--bold">
-            Showing all your commits
+            {{ "commitReview.showAllCommits" | translate }}
         </ion-col>
         <ion-col col-6 padding class="text-details text-details--bold" *ngIf="currentCommit">
-            Details
+            {{ "commitReview.details" | translate }}
         </ion-col>
     </ion-row>
     <ion-row no-padding class="scroll-dimensions">
@@ -39,7 +39,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row padding class="text-details text-details--bold">
-                    Current Reviews
+                    {{ "commits.currentReview" | translate }}
                 </ion-row>
                 <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
                     <div class="text-description">Nobody reviewed this commit</div>
