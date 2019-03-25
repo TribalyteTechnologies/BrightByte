@@ -15,8 +15,6 @@ import { NewuserPage } from "../pages/newuser/newuser";
 import { RankingPage } from "../pages/ranking/ranking";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { SetProfilePage } from "../pages/setprofile/setprofile";
-import { CommitReviewPage } from "../pages/commitreview/commitreview";
-import { CommitDetailsPage } from "../pages/commitdetails/commitdetails";
 
 // Providers
 /// core
@@ -64,8 +62,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         RankingPage,
         AddCommitPopover,
         SetProfilePage,
-        CommitReviewPage,
-        CommitDetailsPage,
         DateFormatPipe,
         CommitCard,
         CommentComponent,
@@ -99,8 +95,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         RankingPage,
         AddCommitPopover,
         SetProfilePage,
-        CommitReviewPage,
-        CommitDetailsPage,
         CommitCard,
         CommentComponent,
         ReviewCard,
