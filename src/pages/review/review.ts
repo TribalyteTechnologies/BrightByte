@@ -211,6 +211,7 @@ export class ReviewPage {
 
             this.spinnerService.hideLoader();
             this.textComment  = "";
+            this.refresh();
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();
