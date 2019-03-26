@@ -8,6 +8,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { UserCommit } from "../../models/user-commit.model";
 import { CommitComment } from "../../models/commit-comment.model";
 import { SpinnerService } from "../../core/spinner.service";
+import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
 
 @Component({
@@ -18,8 +19,8 @@ import { AppConfig } from "../../app.config";
 export class CommitPage {
 
     public readonly ALL = "all";
-    public readonly INCOMPLETED = 0;
-    public readonly COMPLETED = 1;
+    public readonly INCOMPLETED = "incompleted";
+    public readonly COMPLETED = "completed";
     public arrayCommits = new Array<UserCommit>();
     public filterArrayCommits = new Array<UserCommit>();
     public currentCommit: UserCommit;
@@ -29,7 +30,7 @@ export class CommitPage {
     public openedComments = false;
     public currentCommitName = "";
     public currentCommitEmail = "";
-    public filterValue = 2;
+    public filterValue = "";
     public filterIsPending = false;
     public msg: string;
     private log: ILogger;
@@ -41,10 +42,13 @@ export class CommitPage {
         public http: HttpClient,
         public translateService: TranslateService,
         public spinnerService: SpinnerService,
+        public storageSrv: SessionStorageService,
         private contractManagerService: ContractManagerService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
+        this.filterValue = this.storageSrv.get(AppConfig.StorageKey.COMMITFILTER);
+        this.filterIsPending = (this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true");
     }
 
     public ionViewWillEnter() {
@@ -136,19 +140,23 @@ export class CommitPage {
     public setFilter(name: string){
         switch (name) {
             case "incompleted":
-                this.filterValue === this.INCOMPLETED ? this.filterValue = 2 : this.filterValue = 0;
+                this.filterValue === this.INCOMPLETED ? this.filterValue = "" : this.filterValue = this.INCOMPLETED;
                 break;
             case "completed":
-                this.filterValue === this.COMPLETED ? this.filterValue = 2 : this.filterValue = 1;
+                this.filterValue === this.COMPLETED ? this.filterValue = "" : this.filterValue = this.COMPLETED;
                 break;
             case "pending":
                 this.filterIsPending = !this.filterIsPending;
                 break;
             default:
-                this.filterValue = 2;
+                this.filterValue = "";
                 break;
         }
-        this.openedComments = false;  
+        this.openedComments = false;
+        if (this.filterValue !== null){
+            this.storageSrv.set(AppConfig.StorageKey.COMMITFILTER, this.filterValue.toString());
+        }
+        this.storageSrv.set(AppConfig.StorageKey.COMMITPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.arrayCommits);
     }
 
@@ -214,11 +222,11 @@ export class CommitPage {
     }
     private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
         switch(this.filterValue){
-            case 0:
+            case "incompleted":
                 return usercommits.filter(commit => {
                     return (commit.numberReviews !== commit.currentNumberReviews);
                 });
-            case 1:
+            case "completed":
                 return usercommits.filter(commit => {
                     return (commit.numberReviews === commit.currentNumberReviews);
                 });

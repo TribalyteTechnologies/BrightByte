@@ -9,7 +9,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { UserDetails } from "../../models/user-details.model";
-import { StorageService } from "../../core/storage.service";
+import { LocalStorageService } from "../../core/local-storage.service";
 import { BitbucketService } from "../../domain/bitbucket.service";
 
 @Component({
@@ -51,7 +51,7 @@ export class AddCommitPopover {
         public translateService: TranslateService,
         private loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
-        private storageSrv: StorageService,
+        private storageSrv: LocalStorageService,
         private loginService: LoginService,
         private bitbucketSrv: BitbucketService
     ) {
