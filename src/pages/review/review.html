@@ -63,10 +63,10 @@
                     Your review
                 </ion-row>
                 <review-comment [review]="userCommitComment[0]" *ngIf="userCommitComment[0]"></review-comment>
-                <ion-row padding *ngIf="commitComments.length > 0" class="text-details text-details--bold">
+                <ion-row padding *ngIf="!needReview" class="text-details text-details--bold">
                     {{ "review.otherReview" | translate }}
                 </ion-row>
-                <ion-col no padding>
+                <ion-col no padding *ngIf="!needReview">
                     <review-comment *ngFor="let comment of commitComments; let j=index " [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></review-comment>
                     <ion-row padding></ion-row>
                 </ion-col>
