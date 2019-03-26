@@ -52,8 +52,13 @@
                             <ion-icon clas="icon-size" name="{{ star[number] }}"></ion-icon>
                         </button>
                         </ion-row>
+                        <ion-row *ngIf="submitError != ''">
+                            <div class="error-body">
+                                {{ submitError | translate }}
+                            </div>
+                        </ion-row>
                         <ion-row>
-                            <button class="btn btn--full btn__blue" (click)="setReview(currentCommit.url, textComment, rate); textComment =''">
+                            <button class="btn btn--full btn__blue" (click)="validateReview(currentCommit.url, textComment, rate);">
                             {{ "commitReview.review" | translate }}
                         </button>
                         </ion-row>

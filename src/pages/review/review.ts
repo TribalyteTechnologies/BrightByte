@@ -44,6 +44,9 @@ export class ReviewPage {
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
     public filterArrayCommits = new Array<UserCommit>();
+    public textComment: any;
+
+    public submitError: string = "";
 
     
     private log: ILogger;
@@ -170,6 +173,25 @@ export class ReviewPage {
         this.rate = (value + 1) * 100;
     }
 
+    public validateReview(url: string, text: string, points: number){
+        this.submitError = "";
+        let pointsEmpty = points === 0;
+
+        if (text === "" || text === undefined){
+            this.translateService.get("review.reviewCommentError").subscribe(
+                msg => {
+                    this.submitError = msg;
+                });
+        } else if(pointsEmpty) {
+            this.translateService.get("review.reviewEmptyRatingError").subscribe(
+                msg => {
+                    this.submitError = msg;
+                });
+        } else{
+            this.setReview(url, text, points);
+        }
+    }
+
     public setReview(url: string, text: string, points: number){
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(url, text, points)
@@ -187,7 +209,8 @@ export class ReviewPage {
             this.userCommitComment[0].lastModificationDateMs = Date.now();
             this.userCommitComment[0].user = userAdress.address;
 
-            this.spinnerService.hideLoader();   
+            this.spinnerService.hideLoader();
+            this.textComment  = "";
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();

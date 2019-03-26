@@ -2,6 +2,18 @@ page-review {
     .error-message {
         color: red;
     }
+
+    .error-body {
+        background-color: color($colors, dangerLight);
+        text-align: center;
+        padding: 10px;
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid color($colors, danger);
+        color: white;
+        margin: 5px;
+    }
+
     .star-style {
         background-color: transparent;
         color: #f39c12;
