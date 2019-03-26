@@ -198,7 +198,11 @@ export class CommitPage {
         
     }
 
-    
+    public openUrl(url: string){
+        let urlToOpen = url;
+        window.open(urlToOpen, "_blank");
+    }
+
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{
         let hash = commit.author;

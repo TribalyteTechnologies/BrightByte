@@ -124,6 +124,11 @@ export class ReviewPage {
             });       
     }
 
+    public openUrl(url: string){
+        let urlToOpen = url;
+        window.open(urlToOpen, "_blank");
+    }
+
     public shouldOpen(commit: UserCommit) {  
         this.spinnerService.showLoader();
         commit.isReadNeeded = false;

@@ -1,7 +1,8 @@
 import { AppConfig } from "../app.config";
 import { UserDetails } from "./user-details.model";
 export class UserCommit { 
-    public url: string; 
+    public url: string;
+    public urlHash: string;
     public title: string;
     public author: string;
     public project: string; 
@@ -20,7 +21,9 @@ export class UserCommit {
 
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
-        commit.url = commitVals[0]; 
+        commit.url = commitVals[0];
+        commit.urlHash = /(commits\/|commit\/|pull-requests\/)(.+$)/.exec(commit.url)[0];
+        commit.urlHash = /\/.+/.exec(commit.urlHash)[0].substr(1); 
         commit.title = commitVals[1];
         commit.author = commitVals[2];
         commit.project = UserCommit.getProjectFromUrl(commit.url);
