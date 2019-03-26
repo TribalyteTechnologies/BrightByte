@@ -10,8 +10,12 @@
             
         </ion-col>
         <ion-col col-4 padding align-self-center>
-            <button (click)="goBackToUser()" class="btn btn--paddings btn__dark">{{ "ranking.retrieve" | translate }}</button>
-            <button (click)="setCurrentSeason()" class="btn btn--paddings btn__dark">{{ "ranking.retrieveToSeason" | translate }}</button>
+            <ion-col>
+                <button (click)="goBackToUser()" class="btn btn--paddings--ranking btn__dark">{{ "ranking.retrieve" | translate }}</button>
+            </ion-col>
+            <ion-col>
+                <button (click)="setCurrentSeason()" class="btn btn--paddings--ranking btn__dark">{{ "ranking.retrieveToSeason" | translate }}</button>
+            </ion-col>
         </ion-col>
     </ion-row>
 </ion-header>
@@ -20,7 +24,7 @@
 <ion-content padding class="main-container">
     <ion-row>
         <ion-col>
-            <select (change)="setSeason($event.target.value)" class="dropdown">
+            <select [value]="seasonSelected" (change)="setSeason($event.target.value)" class="dropdown">
                 <option value="-1">{{ "ranking.global" | translate }}</option>
                 <option *ngFor="let option of seasons" [value]="option">{{ "ranking.season" | translate }} {{ option }}</option>
             </select>
@@ -29,7 +33,8 @@
     <ion-row no-padding></ion-row>
     <ion-row no-padding>
         <ion-col padding class="text-details text-details--bold">
-            User Ranking
+            <div *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</div>
+            <ng-template #elseBlock>{{ "ranking.title" | translate }} {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
         </ion-col>
         <ion-col col-6 padding class="text-details text-details--bold">
             {{ "ranking.details" | translate }}
