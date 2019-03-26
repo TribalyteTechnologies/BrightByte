@@ -1,3 +1,5 @@
+import { AppConfig } from "../app.config";
+
 export class CommitComment { 
     public text: string; 
     public user: string;
@@ -12,7 +14,7 @@ export class CommitComment {
         comment.score = commentVals[1]; 
         comment.vote = commentVals[2];
         comment.creationDateMs = commentVals[3];
-        comment.lastModificationDateMs = commentVals[4] * 1000;
+        comment.lastModificationDateMs = commentVals[4] * AppConfig.SCORE_DIVISION_FACTOR;
         comment.user = commentVals[5];
         comment.name = userName;  
         return comment;
