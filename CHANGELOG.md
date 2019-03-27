@@ -13,6 +13,20 @@
 
     `Migration of contracts: Bright, Commit, Root`
 
+####  v 0.3.1
+
+- Added more transalations.
+- Fixed ranking combobox.
+- Added ssesion storage management.
+- Added error message when review comment or rating is empty.
+- Review page now refresh as soon as you submit a revew.
+- Url hash link now shows up on both columns in review page.
+- Multiple repositories, and pull requests are now admitted.
+- New tab now opens two tabs. The repositori and BrightByte.
+- New login and home page design.
+- Pending filter now shows only the pending commits for you to review.
+- Some icon adjustments.
+
 ####  v 0.3.0
 
 - Added seasons to the blockchain contracts.
