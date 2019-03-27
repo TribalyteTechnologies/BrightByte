@@ -25,6 +25,13 @@ In order to deploy the application to a server:
 5. Upload the directory `platforms/browser/www/` to your web server.
 6. Open the URL pointing to your web server.
 
+Migrations:
+ 
+Each change of version where the smart contracts have been modified will be necessary to do a migration in order to
+keep the data. To do the migration we have to deploy the new version and access to the source src/assets/build.
+Once we are in, we have to copy the smart contracts from the other version adding "Old" to the name, for example,
+BrightOld.json. We will run the app and click in the migrate button.
+
 For more information please visit our [blog post about BrightByte](http://tech.tribalyte.eu/blog-brightbyte) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
 
 Licensed under the conditions of `LICENSE.md`.

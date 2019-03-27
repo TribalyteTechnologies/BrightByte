@@ -11,17 +11,22 @@
 - Mayor code refactor.
 - Most pending minor issues solved.
 
+    `Migration of contracts: Bright, Commit, Root`
+
 ####  v 0.3.0
 
 - Added seasons to the blockchain contracts.
 - Implemented seasonal ranking feature.
 - Minor issues solved.
 
+    `Migration of contracts: Bright`
+
 ####  v 0.2.1
 
 - Visual improvements.
 - Code refactor.
 - Minor issues solved.
+    `Migration of contracts: Bright, Commit, Root`
 
 ####  v 0.2.0
 
