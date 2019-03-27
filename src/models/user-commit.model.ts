@@ -16,6 +16,7 @@ export class UserCommit {
     public numberReviews: number;
     public currentNumberReviews: number;
     public reviewers: UserDetails[][];
+    public reviewsAlreadyDone: string[];
 
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
@@ -32,6 +33,7 @@ export class UserCommit {
         commit.currentNumberReviews = commitVals[7];
         commit.score = commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR ;
         commit.reviewers = [];
+        commit.reviewsAlreadyDone = [];
         return commit;
     } 
 }

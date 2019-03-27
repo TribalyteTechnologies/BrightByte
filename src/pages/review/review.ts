@@ -38,6 +38,7 @@ export class ReviewPage {
     public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
     public rate = 0;
     public name = "";
+    public address = "";
     public currentCommitName = "";
     public currentCommitEmail = "";
     public userCommitComment: CommitComment[];
@@ -92,22 +93,27 @@ export class ReviewPage {
                     return this.contractManagerService.getFeedback(com.url)
                     .then((rsp) => {
                         com.isReadNeeded = rsp;
+                        return this.contractManagerService.getCommentsOfCommit(com.url);
+                    }).then((arrayReviewers) => {
+                        arrayReviewers[1].forEach((user) => {
+                            com.reviewsAlreadyDone.push(user.user);
+                        });
                         return com;
                     });
                 });
                 return Promise.all(commitsPromises);
-            })
-            .then((rsp) => {
+            }).then((rsp) => {
                 commits = rsp;
                 this.log.d("Response received: " + rsp);
                 this.displayCommitsToReview = commits;
                 let projects = commits.map( commit => commit.project );
                 this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
-                this.applyFilters(this.displayCommitsToReview);
                 this.spinnerService.hideLoader();
                 return this.contractManagerService.getUserDetails(userAdress.address);
             }).then((ud) => {
                 this.name = ud.name;
+                this.address = userAdress.address;
+                this.applyFilters(this.displayCommitsToReview);
                 let url = new URLSearchParams(document.location.search);
                 if(url.has(AppConfig.UrlKey.REVIEWID)){
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
@@ -294,11 +300,13 @@ export class ReviewPage {
         switch(this.filterValue){
             case "incompleted":
                 return usercommits.filter(commit => {
-                    return (commit.numberReviews !== commit.currentNumberReviews);
+                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    return (!isReviewed);
                 });
             case "completed":
                 return usercommits.filter(commit => {
-                    return (commit.numberReviews === commit.currentNumberReviews);
+                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    return (isReviewed);
                 });
             default:
                 return usercommits;
@@ -307,7 +315,8 @@ export class ReviewPage {
     private setPendingFilter(usercommits: UserCommit[]): UserCommit[]{
         if(this.filterIsPending){
             return usercommits.filter(commit => {
-                return commit.isReadNeeded;
+                let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                return (!isReviewed);
             });
         } else {
             return usercommits;
