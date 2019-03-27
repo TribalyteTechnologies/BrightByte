@@ -187,9 +187,15 @@ page-login {
         margin-top: 10px;
         margin-bottom: 20px;
     }
+
+    .error-body-no-v-padding {
+        padding: 0px 10px;
+    }
+
     .tribalyte-logo {
-        width: 200px;
+        width: 150px;
         margin-left: 15px;
+        margin-top: 10px;
     }
     .terms-conditions {
         text-align: right;
