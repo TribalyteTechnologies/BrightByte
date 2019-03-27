@@ -13,6 +13,7 @@ import { TabsPage } from "../pages/tabs/tabs";
 import { LoginPage } from "../pages/login/login";
 import { RankingPage } from "../pages/ranking/ranking";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
+import { TermsAndConditions } from "../pages/termsandconditions/termsandconditions";
 
 // Providers
 /// core
@@ -64,6 +65,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginPage,
         RankingPage,
         AddCommitPopover,
+        TermsAndConditions,
         DateFormatPipe,
         CommitCard,
         CommentComponent,
@@ -98,6 +100,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginPage,
         RankingPage,
         AddCommitPopover,
+        TermsAndConditions,
         CommitCard,
         CommentComponent,
         LoginForm,

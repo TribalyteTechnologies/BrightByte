@@ -1,8 +1,9 @@
 import { Component } from "@angular/core";
-import { AlertController } from "ionic-angular";
+import { PopoverController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { AppVersionService } from "../../core/app-version.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
+import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
 
 @Component({
     selector: "page-login",
@@ -17,14 +18,13 @@ export class LoginPage {
     public isDebugMode = false;
     public appVersion = "DEV";
     public migrationDone = false;
-    public isKeepCredentialsOn = false;
     public loginState = "login";
     private log: ILogger;
 
 
     constructor(
+        private popoverCtrl: PopoverController,
         private userLoggerService: UserLoggerService,
-        private alertCtrl: AlertController,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
@@ -37,25 +37,13 @@ export class LoginPage {
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
-    public registerEvent(){
-        this.loginState = "new-user";
-    }
-
-    public goToLoginEvent(){
-        this.loginState = "login";
-    }
-
-    public setProfileEvent(){
-        this.loginState = "set-profile";
+    public manageEvent(e: string){
+        this.loginState = e;
     }
 
     public showTerms(){
-        let terms = this.alertCtrl.create({
-            title: "Terms and Conditions",
-            subTitle: "The migration has been successful The migration has been successfulThe mbeen successful",
-            buttons: ["Accept"]
-        });
-        terms.present();
+        let popover = this.popoverCtrl.create(TermsAndConditions, {},  {cssClass: "terms-popover"});
+        popover.present();
     }
 }
 

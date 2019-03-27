@@ -7,6 +7,7 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { UserReputation } from "../../models/user-reputation.model";
+import { FormatUtils } from "../../core/format-utils";
 
 @Component({
     selector: "set-profile-form",
@@ -28,10 +29,11 @@ export class SetProfileForm {
         public http: HttpClient,
         private contractManagerService: ContractManagerService
     ) {
+        let emailValidator =  FormatUtils.getEmailValidatorPattern();
         this.log = loggerSrv.get("SetProfilePage");
         this.myForm = this.fb.group({
             name: ["", [Validators.required]],
-            email: ["", Validators.compose([Validators.required, Validators.email])]
+            email: ["", [Validators.required, Validators.pattern(emailValidator)]]
         });
     }
 

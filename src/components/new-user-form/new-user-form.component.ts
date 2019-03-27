@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { NavController } from "ionic-angular";
+import { NavController, PopoverController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
+import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
 
 @Component({
     selector: "new-user-form",
@@ -13,15 +14,19 @@ import { ContractManagerService } from "../../domain/contract-manager.service";
 export class NewUserForm {
 
     @Output()
-    public goToLoginEvent = new EventEmitter();
+    public goToLogin = new EventEmitter();
 
     public file: Blob;
     public isUserCreated = false;
     public isTermsAgreed = false;
+
+    private readonly LOGIN = "login";
+
     private log: ILogger;
 
     constructor(
         public navCtrl: NavController,
+        public popoverCtrl: PopoverController,
         public http: HttpClient,
         loggerSrv: LoggerService,
         private contractManager: ContractManagerService
@@ -39,12 +44,17 @@ export class NewUserForm {
             });
     }
 
-    public changeTerms(){
+    public toggleTerms(){
         this.isTermsAgreed = !this.isTermsAgreed;
     }
 
-    public goToLogin(){
-        this.goToLoginEvent.next();
+    public goToLoginForm(){
+        this.goToLogin.next(this.LOGIN);
+    }
+
+    public showTerms(){
+        let popover = this.popoverCtrl.create(TermsAndConditions, {},  {cssClass: "terms-popover"});
+        popover.present();
     }
 
     public saveFileLink(contentinBlob: Blob, filename: string) {

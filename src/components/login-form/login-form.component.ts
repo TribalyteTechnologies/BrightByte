@@ -24,10 +24,10 @@ import { MigrationService } from "../../migration/migration.service";
 export class LoginForm {
 
     @Output() 
-    public registerEvent = new EventEmitter();
+    public goToRegister = new EventEmitter();
 
     @Output() 
-    public setProfileEvent = new EventEmitter();
+    public goToSetProfile = new EventEmitter();
 
     public msg: string;
     public text: any;
@@ -36,6 +36,10 @@ export class LoginForm {
     public appVersion = "DEV";
     public migrationDone = false;
     public isKeepCredentialsOn = false;
+
+    private readonly NEW_USER = "new-user";
+    private readonly SET_PROFILE = "set-profile";
+
     private log: ILogger;
 
     constructor(
@@ -52,7 +56,7 @@ export class LoginForm {
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
-        this.log = loggerSrv.get("LoginPage");
+        this.log = loggerSrv.get("LoginForm");
         appVersionSrv.getAppVersion().subscribe(
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
@@ -61,7 +65,7 @@ export class LoginForm {
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
-    public ionViewWillEnter(){
+    public ngOnInit(){
         let retrievedUser = this.userLoggerService.retrieveAccount();
         this.text = retrievedUser.user;
         let password = retrievedUser.password;
@@ -144,16 +148,7 @@ export class LoginForm {
     }
 
     public register() {
-        this.registerEvent.next();
-    }
-
-    public showTerms(){
-        let terms = this.alertCtrl.create({
-            title: "Terms and Conditions",
-            subTitle: "The migration has been successful The migration has been successfulThe mbeen successful",
-            buttons: ["Accept"]
-        });
-        terms.present();
+        this.goToRegister.next(this.NEW_USER);
     }
 
     public migrate(pass){
@@ -228,7 +223,7 @@ export class LoginForm {
             }).then((detailsUser: UserDetails) => {
                 this.log.d("Email: ", detailsUser.email);
                 if (!detailsUser.email) {
-                    this.setProfileEvent.next();
+                    this.goToSetProfile.next(this.SET_PROFILE);
                 } else {
                     this.navCtrl.push(TabsPage);
                 }

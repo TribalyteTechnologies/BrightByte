@@ -1,0 +1,14 @@
+<ion-header text-right no-border>
+    <a><ion-icon margin-top margin-right name="close" (click)="hideTerms()"></ion-icon></a>
+</ion-header>
+
+<ion-content padding-left padding-right padding-bottom>
+    <ion-row padding class="text-title">
+        <h1>{{ "app.terms" | translate }}</h1>
+        
+    </ion-row>
+    <div class="separator"></div>
+    <ion-row padding >
+        {{ "app.termsDescription" | translate }}
+    </ion-row>
+</ion-content>

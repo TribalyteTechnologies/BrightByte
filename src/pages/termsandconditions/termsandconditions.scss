@@ -1,0 +1,17 @@
+popover-termsandconditions {
+    .separator {
+        height: 1px;
+        background-color: lightgray;
+    }
+    a {
+        color: black;
+    }
+}
+
+
+.terms-popover .popover-content {
+    width: 50%;
+    height: calc(100% - 300px);
+    border-radius: 10px;
+    .scroll-content {}
+}
