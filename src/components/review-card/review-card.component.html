@@ -9,7 +9,7 @@
             <img class="ico ico__margin" src="../../assets/imgs/project-icon.svg">
             <div class="text-details"> {{ project }}</div>
             <img class="ico ico__margin" src="../../assets/imgs/tab-icon.svg">
-            <div class="text-details" (click)="openUrl(urlLink, true)"> New tab</div>
+            <div class="text-details" (click)="openUrl(urlLink, true, $event)">{{ "commits.newTab" | translate }}</div>
         </ion-row>
         <ion-row class="text-title">
             <div class="text-ellipsis">
@@ -18,7 +18,7 @@
             <ion-icon *ngIf="isReadNeeded" class="notifications" name="notifications"></ion-icon>
         </ion-row>
         <ion-row>
-            <div class="text-url text-ellipsis" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
+            <div class="text-url text-ellipsis" (click)="openUrl(urlLink, false)">#{{ urlHash }}</div>
         </ion-row>
     </ion-col>
     <ion-col col-5 padding>

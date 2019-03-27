@@ -44,18 +44,25 @@ export class ReviewCard {
         this.urlLink = val.url;
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
     }
+    
     get commit(){
         return this._commit;
     }
+
     public ngDoCheck() {
         this.commit = this._commit;
     }
-    public openUrl(url: string, isReviewParam: boolean){
+
+    public openUrl(url: string, isReviewParam: boolean, e: Event){
         let urlToOpen = url;
         if(isReviewParam){
+            window.open(urlToOpen, "_blank");
             urlToOpen = "?reviewId=" + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
+        if(e){
+            e.stopPropagation();
+        }
     }
 
     constructor(public translateService: TranslateService){

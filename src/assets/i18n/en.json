@@ -58,7 +58,8 @@
         "reviewed": "Reviewed",
         "getCommitsPending": "Error getting pending commits",
         "updated": "Updated",
-        "currentReview": "Current Reviews"
+        "currentReview": "Current Reviews",
+        "newTab": "New Tab"
 
     },
     "home": {

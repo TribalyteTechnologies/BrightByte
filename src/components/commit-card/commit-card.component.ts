@@ -51,13 +51,16 @@ export class CommitCard {
         this.commit = this._commit;
     }
   
-    public openUrl(url: string, isCommitParam: boolean){
+    public openUrl(url: string, isCommitParam: boolean, e: Event){
         let urlToOpen = url;
         if(isCommitParam){
+            window.open(urlToOpen, "_blank");
             urlToOpen = "?commitId=" + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
-        
+        if(e){
+            e.stopPropagation();
+        }
     }
 
     constructor(public translateService: TranslateService){
