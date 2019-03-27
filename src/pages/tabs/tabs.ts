@@ -24,10 +24,10 @@ export class TabsPage {
     public currentPage: any;
     public tabContent: any;
 
-    public home: MenuItem = new MenuItem("home.svg", HomePage);
-    public commits: MenuItem = new MenuItem("commit.svg", CommitPage);
-    public reviews: MenuItem = new MenuItem("review.svg", ReviewPage);
-    public ranking: MenuItem = new MenuItem("ranking.svg", RankingPage); 
+    public home: MenuItem = new MenuItem("home.svg", HomePage, "Home");
+    public commits: MenuItem = new MenuItem("commits.svg", CommitPage, "Commits");
+    public reviews: MenuItem = new MenuItem("reviews.svg", ReviewPage, "Reviews");
+    public ranking: MenuItem = new MenuItem("ranking.svg", RankingPage, "Ranking"); 
     public menuArray = new Array<MenuItem>();
     public name: string = "";
     private log: ILogger;

@@ -294,15 +294,14 @@
 
 .tab {
     height: 60px;
-    line-height: 60px;
     width: 100%;
     margin-top: 10px;
     background-color: transparent;
 }
 
 .tab img {
-    max-height: 20px;
-    max-width: 20px;
+    max-height: 29px;
+    max-width: 23px;
     vertical-align: middle;
     opacity: 0.25;
 }
@@ -410,4 +409,50 @@
     background-repeat: no-repeat;
     background-position-x: calc(100% - 15px);
     background-position-y: 50%;
+}
+
+.home-logo_bg {
+    background-image: url("../../assets/imgs/bright_bg.svg");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+
+.home-text {
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+.home-button {
+    margin-right: 20px;
+}
+
+.home-go_to {
+    color: #268CFA;
+    font-weight: bolder;
+    margin-bottom: 4px;
+}
+
+.home-logo_container {
+    width: 100%;
+    margin: 60px 0;
+    .home-logo {
+        width: 320px;
+    }
+}
+
+.home-col_margin {
+    padding: 0 90px;
+}
+
+.button-lowercase {
+    text-transform: none;
+}
+
+.button-logo {
+    margin-right: 7px;
+    width: 16%;
+}
+
+.button-logo_commits {
+    width: 10%;
 }
