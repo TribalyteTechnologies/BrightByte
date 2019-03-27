@@ -1,0 +1,28 @@
+<h4>{{ "setProfile.header" | translate }}</h4>
+<form [formGroup]="myForm" (ngSubmit)="updateProfile(myForm.get('name').value,myForm.get('email').value)" novalidate>
+
+    <ion-row class="mini-title">{{ "setProfile.enterName" | translate }}</ion-row>
+    <input formControlName="name" class="password-form" type="text" [placeholder]="'setProfile.name' | translate">
+    <ion-row *ngIf="myForm.get('name').errors && myForm.get('name').dirty">
+        <ion-row class="error-body">
+            <p color="danger" *ngIf="myForm.get('name').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
+        </ion-row>
+    </ion-row>
+    <ion-row class="mini-title">{{ "setProfile.enterEmail" | translate }}</ion-row>
+    <input formControlName="email" class="password-form" type="text" [placeholder]="'setProfile.emailFormat' | translate">
+    <ion-row *ngIf="(myForm.get('email').errors && myForm.get('email').dirty) || msg">
+        <ion-row class="error-body">
+            {{ msg }}
+            <p color="danger" *ngIf="myForm.get('email').hasError('email')">{{ "setProfile.notEmail" | translate }}</p>
+            <p color="danger" *ngIf="myForm.get('email').hasError('required')">{{ "addCommit.fieldRequire" | translate }}</p>
+        </ion-row>
+    </ion-row>
+    <p class="error-message">{{ msg }}</p>
+    <ion-spinner [hidden]="!isButtonPressed"></ion-spinner>
+    <div class="buttons">
+        <button class="btn btn--full btn__blue" type="submit" [disabled]="myForm.invalid">{{ "setProfile.set" | translate }}</button>
+    </div>
+    
+
+</form>
+

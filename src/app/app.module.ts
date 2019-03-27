@@ -11,10 +11,8 @@ import { CommitPage } from "../pages/commits/commits";
 import { ReviewPage } from "../pages/review/review";
 import { TabsPage } from "../pages/tabs/tabs";
 import { LoginPage } from "../pages/login/login";
-import { NewuserPage } from "../pages/newuser/newuser";
 import { RankingPage } from "../pages/ranking/ranking";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
-import { SetProfilePage } from "../pages/setprofile/setprofile";
 
 // Providers
 /// core
@@ -44,10 +42,14 @@ import { IonicRatingModule } from "ionic-rating";
 import { BrightByteApp } from "./app.component";
 import { CommitCard } from "../components/commit-card/commit-card.component";
 import { CommentComponent } from "../components/commit-comment/commit-comment.component";
+import { LoginForm } from "../components/login-form/login-form.component";
+import { NewUserForm } from "../components/new-user-form/new-user-form.component";
+import { SetProfileForm } from "../components/set-profile-form/set-profile-form.component";
 import { ReviewCard } from "../components/review-card/review-card.component";
 import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
+import { MigrationService } from "../migration/migration.service";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -60,13 +62,14 @@ export function HttpLoaderFactory(http: HttpClient) {
         ReviewPage,
         TabsPage,
         LoginPage,
-        NewuserPage,
         RankingPage,
         AddCommitPopover,
-        SetProfilePage,
         DateFormatPipe,
         CommitCard,
         CommentComponent,
+        LoginForm,
+        NewUserForm,
+        SetProfileForm,
         ReviewCard,
         ReviewCommentComponent,
         FilterComponent,
@@ -93,12 +96,13 @@ export function HttpLoaderFactory(http: HttpClient) {
         ReviewPage,
         TabsPage,
         LoginPage,
-        NewuserPage,
         RankingPage,
         AddCommitPopover,
-        SetProfilePage,
         CommitCard,
         CommentComponent,
+        LoginForm,
+        NewUserForm,
+        SetProfileForm,
         ReviewCard,
         ReviewCommentComponent,
         FilterComponent,
@@ -119,7 +123,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
-        AppVersionService
+        AppVersionService,
+        MigrationService
     ]
 })
 

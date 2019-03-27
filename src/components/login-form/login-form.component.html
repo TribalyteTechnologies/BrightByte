@@ -1,0 +1,21 @@
+<ion-row class="mini-title">{{ "app.uploadCredentials" | translate }}</ion-row>
+<ion-row class="upload-form">
+    <input type='file' (change)='openFile($event)'>
+</ion-row>
+<ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
+<input class="password-form" type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)">
+<ion-row *ngIf="msg">
+    <ion-row class="error-body">
+        {{ msg }}
+    </ion-row>
+</ion-row>
+<ion-row class="remember">
+    <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
+    <ion-row class="text">{{ "app.remember" | translate }}</ion-row>
+</ion-row>
+<div class="buttons">
+    <button class="btn btn--full btn__blue" (click)="login(pass)">{{ "app.login" | translate }}</button>
+    <div class="separator"></div>
+    <button class="btn btn--full btn__grey" (click)="register()">{{ "app.register" | translate }}</button>
+</div>
+

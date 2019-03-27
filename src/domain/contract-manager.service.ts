@@ -456,7 +456,17 @@ export class ContractManagerService {
         });
     }
 
-    private sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
+    public getInitProm(){
+        return this.initProm;
+    }
+    
+    public getAddresses(){
+        return this.initProm.then(([bright, commit, root]) => {
+            return ([bright, commit, root]);
+        });
+    }
+
+    public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
         return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
             .then(nonceValue => {
                 let nonce = "0x" + (nonceValue).toString(16);

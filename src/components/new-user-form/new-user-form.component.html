@@ -1,0 +1,20 @@
+<ion-row class="explanation-text">{{ "app.explanationText" | translate }}</ion-row>
+<ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
+<input class="password-form" type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)">
+<ion-row *ngIf="msg">
+    <ion-row class="error-body">
+        {{ msg }}
+    </ion-row>
+</ion-row>
+<ion-row class="remember">
+    <input type="checkbox" (change)="changeTerms()">
+    <ion-row class="text">{{ "app.agreeTerms" | translate }}</ion-row>
+</ion-row>
+<div class="buttons">
+    <button class="btn btn--full btn__blue" *ngIf="isUserCreated" (click)="createUser(pass)">{{ "newUser.download" | translate }}</button>
+    <div class="separator"></div>
+    <button class="btn btn--full btn__grey" *ngIf="isUserCreated" (click)="goToLogin()">{{ "newUser.goToLogin" | translate }}</button>
+    <div class="separator"></div>
+    <button class="btn btn--full btn__grey" *ngIf="!isUserCreated" [disabled]="!pass || !isTermsAgreed" (click)="createUser(pass)">{{ "newUser.newUser" | translate }}</button>
+</div>
+
