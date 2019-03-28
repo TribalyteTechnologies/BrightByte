@@ -12,8 +12,8 @@ export class CommitToReview {
         commit.url = commitVals[0]; 
         commit.title = commitVals[1]; 
         commit.name = commitVals[2];
-        commit.creationDateMs = commitVals[3] * AppConfig.DATE_MULTIPLY_FACTOR;
-        commit.lastModificationDateMs = commitVals[4] * AppConfig.DATE_MULTIPLY_FACTOR;
+        commit.creationDateMs = commitVals[3] * AppConfig.SECS_TO_MS;
+        commit.lastModificationDateMs = commitVals[4] * AppConfig.SECS_TO_MS;
         commit.project = commitVals[5];
         return commit;
     } 

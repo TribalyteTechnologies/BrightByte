@@ -75,7 +75,7 @@ export class LoginForm {
         }
     }
 
-    public openFile = (event: Event) => {
+    public openFile (event: Event) {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;
         let uploadedArray = <FileList>target.files;

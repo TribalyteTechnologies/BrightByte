@@ -26,8 +26,8 @@ export class UserCommit {
         commit.author = commitVals[2];
         commit.project = FormatUtils.getProjectFromUrl(commit.url);
         commit.isPending = isPending;
-        commit.creationDateMs = commitVals[3] * AppConfig.DATE_MULTIPLY_FACTOR;
-        commit.lastModificationDateMs = commitVals[4] * AppConfig.DATE_MULTIPLY_FACTOR;
+        commit.creationDateMs = commitVals[3] * AppConfig.SECS_TO_MS;
+        commit.lastModificationDateMs = commitVals[4] * AppConfig.SECS_TO_MS;
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6];
         commit.currentNumberReviews = commitVals[7];

@@ -19,8 +19,8 @@ import { AppConfig } from "../../app.config";
 export class CommitPage {
 
     public readonly ALL = "all";
-    public readonly INCOMPLETED = "incompleted";
-    public readonly COMPLETED = "completed";
+    public readonly INCOMPLETED = "incomplete";
+    public readonly COMPLETED = "complete";
     public arrayCommits = new Array<UserCommit>();
     public filterArrayCommits = new Array<UserCommit>();
     public currentCommit: UserCommit;
@@ -139,10 +139,10 @@ export class CommitPage {
 
     public setFilter(name: string){
         switch (name) {
-            case "incompleted":
+            case this.INCOMPLETED:
                 this.filterValue === this.INCOMPLETED ? this.filterValue = "" : this.filterValue = this.INCOMPLETED;
                 break;
-            case "completed":
+            case this.COMPLETED:
                 this.filterValue === this.COMPLETED ? this.filterValue = "" : this.filterValue = this.COMPLETED;
                 break;
             case "pending":
@@ -225,11 +225,11 @@ export class CommitPage {
     }
     private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
         switch(this.filterValue){
-            case "incompleted":
+            case this.INCOMPLETED:
                 return usercommits.filter(commit => {
                     return (commit.numberReviews !== commit.currentNumberReviews);
                 });
-            case "completed":
+            case this.COMPLETED:
                 return usercommits.filter(commit => {
                     return (commit.numberReviews === commit.currentNumberReviews);
                 });

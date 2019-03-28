@@ -9,8 +9,8 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 export class FilterComponent {
 
     public readonly ALL = "all";
-    public readonly INCOMPLETED = "incompleted";
-    public readonly COMPLETED = "completed";
+    public readonly INCOMPLETED = "incomplete";
+    public readonly COMPLETED = "complete";
     public projectSelected: string = "";
     public filterValue: string;
     public filterIsPending: boolean;

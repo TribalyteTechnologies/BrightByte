@@ -18,8 +18,8 @@ import { AppConfig } from "../../app.config";
 export class ReviewPage {
     
     public readonly ALL = "all";
-    public readonly INCOMPLETED = "incompleted";
-    public readonly COMPLETED = "completed";
+    public readonly INCOMPLETED = "incomplete";
+    public readonly COMPLETED = "complete";
     public displayCommitsToReview: UserCommit[];
     public arrayCommits: UserCommit[];
     public allCommitsArray: UserCommit[];
@@ -199,10 +199,10 @@ export class ReviewPage {
 
     public setFilter(name: string){
         switch (name) {
-            case "incompleted":
+            case this.INCOMPLETED:
                 this.filterValue === this.INCOMPLETED ? this.filterValue = "" : this.filterValue = this.INCOMPLETED;
                 break;
-            case "completed":
+            case this.COMPLETED:
                 this.filterValue === this.COMPLETED ? this.filterValue = "" : this.filterValue = this.COMPLETED;
                 break;
             case "pending":
@@ -288,12 +288,12 @@ export class ReviewPage {
     }
     private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
         switch(this.filterValue){
-            case "incompleted":
+            case this.INCOMPLETED:
                 return usercommits.filter(commit => {
                     let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
                     return (!isReviewed);
                 });
-            case "completed":
+            case this.COMPLETED:
                 return usercommits.filter(commit => {
                     let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
                     return (isReviewed);
