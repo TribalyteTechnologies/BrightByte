@@ -11,7 +11,7 @@
 - Mayor code refactor.
 - Most pending minor issues solved.
 
-    `Migration of contracts: Bright, Commit, Root`
+    **IMPORTANT NOTE**: It's necessary to deploy the following new contracts and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md): Bright, Commit, Root.
 
 ####  v 0.3.1
 
@@ -36,14 +36,14 @@
 - Implemented seasonal ranking feature.
 - Minor issues solved.
 
-    `Migration of contracts: Bright`
+    **IMPORTANT NOTE**: It's necessary to deploy the following new contracts and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md): Bright.
 
 ####  v 0.2.1
 
 - Visual improvements.
 - Code refactor.
 - Minor issues solved.
-    `Migration of contracts: Bright, Commit, Root`
+    **IMPORTANT NOTE**: It's necessary to deploy the following new contracts and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md): Bright, Commit, Root.
 
 ####  v 0.2.0
 

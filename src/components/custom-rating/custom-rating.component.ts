@@ -19,7 +19,7 @@ export class CustomRating {
     public rate: number = 3;
 
     @Input()
-    public setstars: boolean = false;
+    public setStars: boolean = false;
 
     @Input()
     public small: boolean = false;

@@ -28,11 +28,9 @@ In order to deploy the application to a server:
 Migrations:
  
 Each change of version where the smart contracts have been modified will be necessary to do a migration in order to
-keep the data. To do the migration we have to deploy the new version and access to the source src/assets/build.
-Once we are in, we have to copy the smart contracts from the other version adding "Old" to the name, for example,
-BrightOld.json. We will run the app and click in the migrate button.
+keep the data. For more information about Migrations please see [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
 
-For more information please visit our [blog post about BrightByte](http://tech.tribalyte.eu/blog-brightbyte) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
+For more information about BrightByte please visit our [blog post about BrightByte](https://tech.tribalyte.eu/blog-lanzamiento-de-brightbyte-v0-2) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
 
 Licensed under the conditions of `LICENSE.md`.
 

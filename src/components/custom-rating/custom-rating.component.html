@@ -1,4 +1,4 @@
-<ion-row  justify-content-center *ngIf="setstars; else divStars">
+<ion-row  justify-content-center *ngIf="setStars; else divStars">
     <button class="star-style" *ngFor="let id of starIds" (click)="setReputation(id)">
         <ion-icon [ngClass]="{'icon-small': small,'star-padding': starPadding}" name="{{ stars[id] }}"></ion-icon>
     </button>
