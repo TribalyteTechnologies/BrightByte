@@ -18,8 +18,8 @@ import { AppConfig } from "../../app.config";
 export class ReviewPage {
     
     public readonly ALL = "all";
-    public readonly INCOMPLETED = "incomplete";
-    public readonly COMPLETED = "complete";
+    public readonly INCOMPLETE = "incomplete";
+    public readonly COMPLETE = "complete";
     public displayCommitsToReview: UserCommit[];
     public arrayCommits: UserCommit[];
     public allCommitsArray: UserCommit[];
@@ -199,11 +199,11 @@ export class ReviewPage {
 
     public setFilter(name: string){
         switch (name) {
-            case this.INCOMPLETED:
-                this.filterValue === this.INCOMPLETED ? this.filterValue = "" : this.filterValue = this.INCOMPLETED;
+            case this.INCOMPLETE:
+                this.filterValue === this.INCOMPLETE ? this.filterValue = "" : this.filterValue = this.INCOMPLETE;
                 break;
-            case this.COMPLETED:
-                this.filterValue === this.COMPLETED ? this.filterValue = "" : this.filterValue = this.COMPLETED;
+            case this.COMPLETE:
+                this.filterValue === this.COMPLETE ? this.filterValue = "" : this.filterValue = this.COMPLETE;
                 break;
             case "pending":
                 this.filterIsPending = !this.filterIsPending;
@@ -288,12 +288,12 @@ export class ReviewPage {
     }
     private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
         switch(this.filterValue){
-            case this.INCOMPLETED:
+            case this.INCOMPLETE:
                 return usercommits.filter(commit => {
                     let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
                     return (!isReviewed);
                 });
-            case this.COMPLETED:
+            case this.COMPLETE:
                 return usercommits.filter(commit => {
                     let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
                     return (isReviewed);
