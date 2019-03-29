@@ -69,7 +69,7 @@
         "currentReview": "Current Reviews",
         "newTab": "New tab",
         "nobodyReviewed": "Nobody reviewed this commit",
-        "cleanCodeDescription": "<h6>Clean Code</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
+        "cleanCodeDescription": "<h6>Quality of Code</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
         "difficultyDescription": "<h6>Difficulty</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
         "reviewerExperienceDescription": "<h6>Reviewer confidence</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi"
 
@@ -141,7 +141,7 @@
         "negativeVote": "The author disagrees with this review",
         "positiveVote": "The author agrees with this review",
         "score": "Score",
-        "cleanCode": "Clean Code",
+        "cleanCode": "Quality of Code",
         "difficulty": "Difficulty",
         "reviewerExperience": "Reviewer Confidence",
         "reviewCommentError": "Empty comment",
@@ -174,7 +174,8 @@
         "titleCommit": "Title",
         "stars": "stars",
         "setThumbs": "Can't set the thumbs",
-        "whatIs": "What is this?"
+        "whatIs": "What is this?",
+        "reportAbuse": "Report abuse"
     },
     "commitReview": {
         "review": "Review",

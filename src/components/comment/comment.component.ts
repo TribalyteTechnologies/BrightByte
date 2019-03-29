@@ -18,7 +18,7 @@ export class CommentComponent {
     public textComment: string;
     
     @Output()
-    public submitReview = new EventEmitter<any>();
+    public submitReview = new EventEmitter<Object>();
 
     @Output() 
     public thumbsUp = new EventEmitter();
@@ -97,7 +97,9 @@ export class CommentComponent {
         }
     }
 
-    public setComplain(){
+    public setComplaint(){
+
+        // TODO: connect with Smart contracts and send the complaint
         let alert = this.alertCtrl.create({
             title: this.obtainTransaltion("alerts.claim"),
             message: this.obtainTransaltion("alerts.claimMsg"),
