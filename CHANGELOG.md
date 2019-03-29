@@ -17,7 +17,7 @@
 
 - Added more transalations.
 - Fixed ranking combobox.
-- Added sesion storage management.
+- Added session storage management.
 - Added error message when review comment or rating is empty.
 - Review page now refresh as soon as you submit a revew.
 - Url hash link now shows up on both columns in review page.
