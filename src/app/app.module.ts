@@ -24,7 +24,6 @@ import { AppVersionService } from "../core/app-version.service";
 import { LoginService } from "../core/login.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
 import { SpinnerService } from "../core/spinner.service";
-import { StorageService } from "../core/storage.service";
 import { SessionStorageService } from "../core/session-storage.service";
 import { LocalStorageService } from "../core/local-storage.service";
 
@@ -42,13 +41,12 @@ import { IonicRatingModule } from "ionic-rating";
 // Components
 import { BrightByteApp } from "./app.component";
 import { CommitCard } from "../components/commit-card/commit-card.component";
-import { CommentComponent } from "../components/commit-comment/commit-comment.component";
+import { CommentComponent } from "../components/commit-comment/comment.component";
 import { LoginForm } from "../components/login-form/login-form.component";
 import { NewUserForm } from "../components/new-user-form/new-user-form.component";
 import { SetProfileForm } from "../components/set-profile-form/set-profile-form.component";
-import { ReviewCard } from "../components/review-card/review-card.component";
-import { ReviewCommentComponent } from "../components/review-comment/review-comment.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
+import { CustomRating } from "../components/custom-rating/custom-rating.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
 import { MigrationService } from "../migration/migration.service";
 export function HttpLoaderFactory(http: HttpClient) {
@@ -72,9 +70,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginForm,
         NewUserForm,
         SetProfileForm,
-        ReviewCard,
-        ReviewCommentComponent,
         FilterComponent,
+        CustomRating,
         RankingCard
     ],
     imports: [
@@ -106,10 +103,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginForm,
         NewUserForm,
         SetProfileForm,
-        ReviewCard,
-        ReviewCommentComponent,
-        FilterComponent,
-        RankingCard
+        RankingCard,
+        CustomRating
     ],
     providers: [
         AppConfig,
@@ -120,8 +115,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         SpinnerService,
         SessionStorageService,
         LocalStorageService,
-        {provide: StorageService, useClass: SessionStorageService},
-        {provide: StorageService, useClass: LocalStorageService},
         BitbucketService,
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},

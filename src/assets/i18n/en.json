@@ -19,13 +19,14 @@
         "uploadCredentials": "Upload your credentials",
         "enterPass": "Enter your password",
         "createUser": "Create user",
-        "cancel": "Cancel",
         "terms": "Terms & Conditions",
         "agreeTerms1": "I agree the&nbsp",
         "agreeTerms2": "terms and conditions",
         "termsDescription": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi architecto beatae accusantium doloremque laudantium, totam rem aperiam, eaque aspernatur aut odit aut fugit, sed quia consequuntur magni human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam pleasure, but because those who do not know how to pursue pleasure rationally est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim Enter veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio",
-        "explanationText": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally."
-
+        "explanationText": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally.",
+        "commits": "Commits",
+        "reviews": "Reviews",
+        "ranking": "Ranking"
     },
     "addCommit": {
         "title": "Add commit",
@@ -50,7 +51,6 @@
     "commits": {
         "add": "Add commit",
         "getCommits": "Error getting commits",
-        "title": "Commits",
         "project": "Project",
         "url": "Url",
         "new": "New",
@@ -67,13 +67,15 @@
         "getCommitsPending": "Error getting pending commits",
         "updated": "Updated",
         "currentReview": "Current Reviews",
-        "newTab": "New Tab"
+        "newTab": "New tab",
+        "nobodyReviewed": "Nobody reviewed this commit",
+        "scoreDescription": "<h6>Score</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi"
 
     },
     "home": {
-        "title": "Home",
-        "subTitle": "Home",
-        "info": "Welcome to BrightByte! Choose the available tabs to see your commits, reviews or the ranking. GitHub repo: "
+        "title": "Welcome,",
+        "info": "Choose the available tabs to see your commits, reviews or the ranking. GitHub repo: ",
+        "goTo": "Go to:"
     },
     "newUser": {
         "title": "New user",
@@ -87,7 +89,6 @@
     },
     "ranking": {
         "getUserInfo": "Error getting user information",
-        "title": "Ranking",
         "name": "Name",
         "mail": "Email",
         "nCommitsReviewByMe": "Number of commits reviewed by me",
@@ -97,8 +98,6 @@
         "getReputation": "Error getting reputations",
         "has": "has",
         "reviewsReceived": "reviews received",
-        "reviews": "Reviews",
-        "commits": "Commits",
         "agreed": "Agreed",
         "level": "lvl",
         "tenCommits": "10 Commits",
@@ -121,14 +120,16 @@
         "hours": "hours",
         "minutes": "mins",
         "details": "Details",
-        "userRanking": "User Ranking"
+        "userRanking": "User Ranking",
+        "left": "left",
+        "engagementIndex": "EI"
     },
     "review": {
         "getCommits": "Error getting commits to review",
         "getDetails": "Error getting details of commits to review",
-        "title": "Reviews",
         "subTitle": "Reviews",
         "myReview": "My Review",
+        "youReview": "Your Review",
         "otherReview": "Other Reviews",
         "asked": "You were asked to review a project on",
         "titleList": "List of commits to review",
@@ -137,8 +138,13 @@
         "noVote": "This review has not been voted",
         "negativeVote": "The author disagrees with this review",
         "positiveVote": "The author agrees with this review",
+        "score": "Score",
+        "cleanCode": "Clean Code",
+        "difficulty": "Difficulty",
+        "reviewerExperience": "Reviewer Confidence",
         "reviewCommentError": "Empty comment",
         "reviewEmptyRatingError": "One or more star ratings are empty"
+
     },
     "setProfile": {
         "title": "Welcome",
@@ -146,9 +152,9 @@
         "enterName": "Enter your name",
         "name": "Name",
         "set": "Set profile",
+        "tx": "Transaction error",
         "enterEmail": "Enter an email",
         "emailFormat": "email@example.com",
-        "tx": "Transaction error",
         "emailUsed": "Email already in use",
         "getEmails": "Error getting emails",
         "notEmail": "It is not an email"
@@ -165,7 +171,8 @@
         "gettingComments": "Error getting comments",
         "titleCommit": "Title",
         "stars": "stars",
-        "setThumbs": "Can't set the thumbs"
+        "setThumbs": "Can't set the thumbs",
+        "whatIs": "What is this?"
     },
     "commitReview": {
         "review": "Review",
@@ -176,6 +183,19 @@
         "description": "Enter the explanation of your review",
         "showAllCommits": "Showing all your commits",
         "details": "Details",
-        "setReview": "Set Review"
+        "setReview": "Set Review",
+        "setYourReview": "Set your review"
+    },
+    "migration": {
+        "migrationTitle": "Migration",
+        "migrationSuc": "The migration has been successful",
+        "migrationErr": "The migration has failed"
+    },
+    "alerts": {
+        "claim": "Claim",
+        "claimMsg": "Do you want to make a complaint?",
+        "error": "Error",
+        "accept": "Accept",
+        "cancel": "Cancel"
     }
 }

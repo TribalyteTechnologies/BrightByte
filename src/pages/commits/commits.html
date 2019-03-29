@@ -1,7 +1,7 @@
 <ion-header no-border class="main-header">
     <ion-row no-padding class="header-row">
         <ion-col no-padding align-self-center>
-            <div class="text-main">{{ "commits.title" | translate }}</div>
+            <div class="text-main">{{ "app.commits" | translate }}</div>
         </ion-col>
         <ion-col col-auto padding align-self-center>
             <button (click)="openAddCommitDialog()" class="btn btn--paddings btn__dark">{{ "commits.add" | translate }}</button>
@@ -45,10 +45,10 @@
                     {{ "commits.currentReview" | translate }}
                 </ion-row>
                 <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
-                    <div class="text-description">Nobody reviewed this commit</div>
+                    <div class="text-description">{{ "commit.nobodyReviewed" | translate }}</div>
                 </ion-row>
                 <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
-                    <commit-comment [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></commit-comment>
+                    <comment [isReviewPage]="false" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
                     <ion-row padding></ion-row>
                 </ion-col>
             </div>

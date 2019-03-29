@@ -34,9 +34,8 @@ export class ReviewPage {
     public filterIsReviewed = false;
     public openedComments = false;
     public needReview = false;
-
-    public star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
-    public rate = 0;
+    public numCriteria = 1;
+    public rate = [0, 0, 0];
     public name = "";
     public address = "";
     public currentCommitName = "";
@@ -45,9 +44,9 @@ export class ReviewPage {
     public commitComments: CommitComment[];
     public currentCommit: UserCommit;
     public filterArrayCommits = new Array<UserCommit>();
-    public textComment: any;
+    public textComment = "";
 
-    public submitError: string = "";
+    public submitError = "";
 
     
     private log: ILogger;
@@ -64,6 +63,7 @@ export class ReviewPage {
         this.log = loggerSrv.get("ReviewPage");
         this.filterValue = this.storageSrv.get(AppConfig.StorageKey.REVIEWFILTER);
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === "true";
+        
     }
 
     public ionViewWillEnter(): void {
@@ -176,60 +176,7 @@ export class ReviewPage {
 
     }
 
-    public setReputation(value: number) {
-        this.star = ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"];
-        for (let i = 0; i < value + 1; ++i) {
-            this.star[i] = "star";
-        }
-        this.rate = (value + 1) * 100;
-    }
-
-    public validateReview(url: string, text: string, points: number){
-        this.submitError = "";
-        let pointsEmpty = points === 0;
-
-        if (text === "" || text === undefined){
-            this.translateService.get("review.reviewCommentError").subscribe(
-                msg => {
-                    this.submitError = msg;
-                });
-        } else if(pointsEmpty) {
-            this.translateService.get("review.reviewEmptyRatingError").subscribe(
-                msg => {
-                    this.submitError = msg;
-                });
-        } else{
-            this.setReview(url, text, points);
-        }
-    }
-
-    public setReview(url: string, text: string, points: number){
-        this.spinnerService.showLoader();
-        this.contractManagerService.setReview(url, text, points)
-        .then((response) => {
-            this.log.d("Received response " + response);
-            let userAdress = this.loginService.getAccount();
-            this.setReputation(-1);
-            this.needReview = false;
-            this.userCommitComment[0] = new CommitComment();
-            this.userCommitComment[0].name = this.name;
-            this.userCommitComment[0].creationDateMs = Date.now();
-            this.userCommitComment[0].text = text;
-            this.userCommitComment[0].score = (points / 100);
-            this.userCommitComment[0].vote = 0;
-            this.userCommitComment[0].lastModificationDateMs = Date.now();
-            this.userCommitComment[0].user = userAdress.address;
-
-            this.spinnerService.hideLoader();
-            this.textComment  = "";
-            this.refresh();
-            return;
-        }).catch((error) => {
-            this.spinnerService.hideLoader();
-            this.log.e("Catched error " + error);
-        });
-        
-    }
+    
         
     public applyFilters(usercommits: UserCommit[]) {
         let projectFilter = this.setProjectFilter(usercommits);
@@ -245,7 +192,7 @@ export class ReviewPage {
             case "incompleted":
                 this.filterValue === this.INCOMPLETED ? this.filterValue = "" : this.filterValue = this.INCOMPLETED;
                 break;
-                case "completed":
+            case "completed":
                 this.filterValue === this.COMPLETED ? this.filterValue = "" : this.filterValue = this.COMPLETED;
                 break;
             case "pending":
@@ -256,7 +203,7 @@ export class ReviewPage {
                 break;
         }
         this.openedComments = false;
-        if (this.filterValue !== null){  
+        if (this.filterValue !== null){
             this.storageSrv.set(AppConfig.StorageKey.REVIEWFILTER, this.filterValue.toString());
         }
         this.storageSrv.set(AppConfig.StorageKey.REVIEWPENDINGFILTER, this.filterIsPending.toString());
@@ -274,6 +221,34 @@ export class ReviewPage {
         } else {
             return "card-list-item";
         }
+    }
+
+    public setReview(url: string, text: string, points: number){
+        let point = points;
+        this.spinnerService.showLoader();
+        this.contractManagerService.setReview(url, text, points)
+        .then((response) => {
+            this.log.d("Received response " + point);
+            this.log.d("Received response " + response);
+            let userAdress = this.loginService.getAccount();
+            this.needReview = false;
+            let commitComment = new CommitComment();
+            commitComment.name = this.name;
+            commitComment.creationDateMs = Date.now();
+            commitComment.text = text;
+            commitComment.score = point / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.vote = 0;
+            commitComment.lastModificationDateMs = Date.now();
+            commitComment.user = userAdress.address;
+            this.userCommitComment[0] = commitComment;
+            this.spinnerService.hideLoader();
+            this.textComment  = "";
+            this.refresh();
+            return;
+        }).catch((error) => {
+            this.spinnerService.hideLoader();
+            this.log.e("Catched error " + error);
+        });
     }
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>>{
@@ -315,8 +290,7 @@ export class ReviewPage {
     private setPendingFilter(usercommits: UserCommit[]): UserCommit[]{
         if(this.filterIsPending){
             return usercommits.filter(commit => {
-                let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
-                return (!isReviewed);
+                return commit.isReadNeeded;
             });
         } else {
             return usercommits;
