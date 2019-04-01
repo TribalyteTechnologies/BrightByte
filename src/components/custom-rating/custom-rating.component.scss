@@ -1,15 +1,26 @@
 custom-rating {
-    .star-style {
+    .icon-style {
         background-color: transparent;
-        color: #f39c12;
         font-size: 25px;
+    }
+
+    .stars-color {
+        color: #f39c12;
+    }
+
+    .gears-color {
+        color: gray;
+    }
+
+    .confidence-color {
+        color: darkblue;
     }
 
     .icon-small {
         font-size: 25px;
     }
 
-    .star-padding {
+    .custom-icon-padding {
         padding: 0px 5px;
     }
 

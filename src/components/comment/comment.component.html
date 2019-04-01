@@ -16,7 +16,7 @@
             </ion-col>
             <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'codeQuality', 'difficulty', 'reviewerExperience']" no-padding>
                 <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
-                <custom-rating class="right" [rate]="review[critName]" [max]="critName !== 'codeQuality' ? 3 : undefined" [setStars]="false" [starPadding]="critName !== 'codeQuality'" [small]="true"></custom-rating>
+                <custom-rating class="right" [ratingType]="critName" [rate]="review[critName]" [max]="critName !== 'codeQuality' ? 3 : 5" [setStars]="false" [iconPadding]="critName !== 'codeQuality'" [small]="true"></custom-rating>
                 <ion-row>
                     <ion-col class="tooltip">
                         <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
@@ -37,7 +37,7 @@
         <ion-row *ngIf="isReviewNeeded" justify-content-center [ngClass]="{'card-criterial-border': !isReviewNeeded}" class="card-criterial-padding-top">
             <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'codeQuality', 'difficulty', 'reviewerExperience'], let i = index" no-padding>
                 <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
-                <custom-rating class="right" [rate]="0" (value)="points[i]=$event" [max]="critName !== 'codeQuality' ? 3 : undefined" [setStars]="true" [starPadding]="critName !== 'codeQuality'" [small]="true"></custom-rating>  
+                <custom-rating class="right" [ratingType]="critName" [rate]="0" (value)="points[i]=$event" [max]="critName !== 'codeQuality' ? 3 : 5" [setStars]="true" [iconPadding]="critName !== 'codeQuality'" [small]="true"></custom-rating>  
                 <ion-row>
                     <ion-col class="tooltip">
                         <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>

@@ -1,12 +1,12 @@
 <ion-row  justify-content-center *ngIf="setStars; else divStars">
-    <button class="star-style" *ngFor="let id of starIds" (click)="setReputation(id)">
-        <ion-icon [ngClass]="{'icon-small': small,'star-padding': starPadding}" name="{{ stars[id] }}"></ion-icon>
+    <button class="icon-style" *ngFor="let id of iconIds" (click)="setReputation(id)">
+        <ion-icon [ngClass]="{'icon-small': small,'custom-icon-padding': iconPadding, iconColor: true}" name="{{ icons[id] }}"></ion-icon>
     </button>
 </ion-row>
 <ng-template #divStars>
     <ion-row  justify-content-center>
-        <div class="star-style" *ngFor="let id of starIds">
-            <ion-icon [ngClass]="{'icon-small': small,'star-padding': starPadding}" name="{{ stars[id] }}"></ion-icon>
+        <div class="icon-style" *ngFor="let id of iconIds">
+            <ion-icon [ngClass]="{'icon-small': small,'custom-icon-padding': iconPadding, iconColor: true}" name="{{ icons[id] }}"></ion-icon>
         </div>
     </ion-row>
 </ng-template>
