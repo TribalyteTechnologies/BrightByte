@@ -45,7 +45,7 @@
                     {{ "commits.currentReview" | translate }}
                 </ion-row>
                 <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
-                    <div class="text-description">{{ "commit.nobodyReviewed" | translate }}</div>
+                    <div class="text-description">{{ "commits.nobodyReviewed" | translate }}</div>
                 </ion-row>
                 <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
                     <comment [isReviewPage]="false" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>

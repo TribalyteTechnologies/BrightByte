@@ -18,7 +18,7 @@ export class CommentComponent {
     public textComment: string;
     
     @Output()
-    public submitReview = new EventEmitter<any>();
+    public submitReview = new EventEmitter<object>();
 
     @Output() 
     public thumbsUp = new EventEmitter();

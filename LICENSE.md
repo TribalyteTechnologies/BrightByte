@@ -1,4 +1,4 @@
-Copyright 2018 Tribalyte Technolgies S.L. (http://tribalyte.com)
+Copyright 2019 Tribalyte Technolgies S.L. (http://tribalyte.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

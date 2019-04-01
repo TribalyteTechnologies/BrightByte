@@ -22,8 +22,8 @@
         "terms": "Terms & Conditions",
         "agreeTerms1": "I agree the&nbsp",
         "agreeTerms2": "terms and conditions",
-        "termsDescription": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi architecto beatae accusantium doloremque laudantium, totam rem aperiam, eaque aspernatur aut odit aut fugit, sed quia consequuntur magni human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam pleasure, but because those who do not know how to pursue pleasure rationally est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim Enter veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio",
-        "explanationText": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally.",
+        "termsDescription": "BrightByte is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. Contact your BrightByte provider for more information.",
+        "explanationText": "In order to sign up for BrightByte you need to create and identity file. This identity file contains your public and private keys, being the private key protected with the password introduced below. Please enter the password to protect your identity file, read and agree the terms and conditions and click on the button to generate and download your identity file. IMPORTANT: do not lose your identity file, your user account fully depends on it and cannot be recovered in case of loss.",
         "commits": "Commits",
         "reviews": "Reviews",
         "ranking": "Ranking"
@@ -31,7 +31,7 @@
     "addCommit": {
         "title": "Add commit",
         "add": "Add your commit",
-        "description": "Make sure you uploaded your commit to bitbucket and paste here the URL of the commit",
+        "description": "Make sure you pushed your commit the remote repository and paste here the URL of the commit or pull reuest",
         "project": "Project",
         "date": "Date",
         "users": "Users",
@@ -69,7 +69,7 @@
         "currentReview": "Current Reviews",
         "newTab": "New tab",
         "nobodyReviewed": "Nobody reviewed this commit",
-        "scoreDescription": "<h6>Score</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi"
+        "codeQualityDescription": "<h6>Score</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi"
 
     },
     "home": {
@@ -139,7 +139,7 @@
         "negativeVote": "The author disagrees with this review",
         "positiveVote": "The author agrees with this review",
         "score": "Score",
-        "cleanCode": "Clean Code",
+        "codeQuality": "Code Quality",
         "difficulty": "Difficulty",
         "reviewerExperience": "Reviewer Confidence",
         "reviewCommentError": "Empty comment",
