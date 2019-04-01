@@ -7,7 +7,7 @@ export class CommitComment {
     public vote: number;
     public creationDateMs: number;
     public lastModificationDateMs: number;
-    public cleanCode: number;
+    public codeQuality: number;
     public difficulty: number;
     public reviewerExperience: number;
     
@@ -20,7 +20,7 @@ export class CommitComment {
         comment.lastModificationDateMs = commentVals[3] * AppConfig.SECS_TO_MS;
         comment.user = commentVals[4];
         comment.name = userName;
-        comment.cleanCode = commentVals[5][0] / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.codeQuality = commentVals[5][0] / AppConfig.SCORE_DIVISION_FACTOR;
         comment.difficulty = commentVals[5][1] / AppConfig.SCORE_DIVISION_FACTOR;
         comment.reviewerExperience = commentVals[5][2] / AppConfig.SCORE_DIVISION_FACTOR;
         return comment;

@@ -246,7 +246,7 @@ export class ReviewPage {
             commitComment.name = this.name;
             commitComment.creationDateMs = Date.now();
             commitComment.text = text;
-            commitComment.cleanCode = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.codeQuality = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
             commitComment.difficulty = point[1] / AppConfig.SCORE_DIVISION_FACTOR;
             commitComment.reviewerExperience = point[2] / AppConfig.SCORE_DIVISION_FACTOR;
             commitComment.vote = 0;
