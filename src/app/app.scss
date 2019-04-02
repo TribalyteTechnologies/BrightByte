@@ -196,6 +196,7 @@
 .box-avatar {
     width: 40px;
     height: 40px;
+    min-width: 40px;
     border-radius: 50%;
     background-color: #fff;
 }
@@ -203,6 +204,7 @@
 .box-avatar__big {
     width: 60px;
     height: 60px;
+    min-width: 60px;
 }
 
 .checkbox {
@@ -344,6 +346,11 @@
     padding-right: 40px;
 }
 
+.btn--paddings--ranking {
+    padding: 0px 30px;
+    margin: 2px;
+}
+
 .btn--full {
     width: 100%;
 }
@@ -423,7 +430,7 @@
 }
 
 .home-button {
-    margin-right: 20px;
+    margin-right: 7px;
 }
 
 .home-go_to {
@@ -457,9 +464,40 @@
     width: 10%;
 }
 
-.notifications-icon {
-    color: #f39c12;
-    margin-left: 10px;
+.col-button {
+    min-width: 480px;
+}
+
+.dropdown--ranking {
+    float: right;
+    width: 40%;
+}
+
+.ranking-top {
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
+    background-color: #5eaeda;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 5px 17px;
+    margin-top: 0px;
+}
+
+.ranking-left {
+    text-align: right;
+}
+
+.ranking-drop {
+    float: right;
+    width: 40%;
+}
+
+.ranking-a {
+    a {
+        color: rgba(0, 0, 0, 0.7);
+    }
+    text-align: right;
 }
 
 .criterial-border:not(:last-child)  {
@@ -490,5 +528,6 @@
 }
 
 textarea {
-    resize: none;
+    resize: vertical;
 }
+

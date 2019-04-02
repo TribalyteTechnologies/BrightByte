@@ -56,7 +56,7 @@
                     {{ "review.otherReview" | translate }}
                 </ion-row>
                 <ion-col no padding *ngIf="!needReview">
-                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="false" [isReviewPage]="false" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
+                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="false" [isReviewPage]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
                     <ion-row padding></ion-row>
                 </ion-col>
             </div>

@@ -14,13 +14,13 @@
                     </ion-col>
                 </ion-row>
             </ion-col>
-            <ion-col col-6 class="criterial-border" no-padding>
+            <ion-col col-9 class="criterial-border" no-padding>
                 <ion-row  justify-content-center  class="criterial-text">{{ ("review.codeQuality") | translate }}</ion-row>
                 <custom-rating class="right" [rate]="review.score" [setstars]="false" [small]="false" [starPadding]="true"></custom-rating>  
                 <ion-row>
                     <ion-col class="tooltip">
                         <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
-                        <div  class="tooltip-text" [innerHTML]="('commits.scoreDescription') | translate"></div>
+                        <div  class="tooltip-text" [innerHTML]="('commits.qualityDescription') | translate"></div>
                     </ion-col>
                 </ion-row>
             </ion-col>
@@ -41,7 +41,7 @@
                     <ion-row>
                         <ion-col class="tooltip">
                             <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
-                            <div  class="tooltip-text" [innerHTML]="('commits.codeQualityDescription') | translate"></div>
+                            <div  class="tooltip-text" [innerHTML]="('commits.qualityDescription') | translate"></div>
                         </ion-col>
                     </ion-row>
                 </ion-col>
