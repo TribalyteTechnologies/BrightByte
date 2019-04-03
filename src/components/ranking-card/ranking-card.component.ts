@@ -25,6 +25,10 @@ export class RankingCard {
     public stateFinished = false;
     public userHash = "";
     public accountHash = "";
+    public engagementIndex = 0;
+    public globalSelected = true;
+    public reputationString = "";
+    public engagementIndexString = "";
     
     @Input()
     public set ranking(val: UserReputation) {
@@ -39,6 +43,14 @@ export class RankingCard {
         this.agreed = val.agreedPercentage;
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
+        this.engagementIndex = val.engagementIndex;
+        this.engagementIndexString = this.engagementIndex.toFixed(2);
+        this.reputationString = this.reputation.toFixed(2);
+    }
+
+    @Input()
+    public set globalSelection(global: boolean) {
+        this.globalSelected = global;
     }
 
     constructor(loginService: LoginService, public translateService: TranslateService){

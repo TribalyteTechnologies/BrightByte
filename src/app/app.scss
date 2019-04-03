@@ -135,6 +135,9 @@
     text-overflow: ellipsis;
 }
 
+.no-wrap {
+    white-space: nowrap;
+}
 
 /*------------------------------------*\
   #OBJECTS
@@ -331,9 +334,7 @@
 }
 
 .btn--img {
-    display: inline-block;
-    width: 15px;
-    vertical-align: middle;
+    width: 35px;
 }
 
 .btn--label {
@@ -469,8 +470,9 @@
 }
 
 .dropdown--ranking {
-    float: right;
+    line-height: 30px;
     width: 40%;
+    margin-left: 10px;
 }
 
 .ranking-top {
@@ -489,8 +491,22 @@
 }
 
 .ranking-drop {
-    float: right;
     width: 40%;
+}
+
+.ranking-details {
+    padding-bottom: 10px;
+}
+
+.ranking-details--star {
+    color: #f39c18;
+    font-size: 45px;
+}
+
+.ranking-score {
+    font-size: 22px;
+    padding-left: 10px;
+    min-width: 60px;
 }
 
 .ranking-a {
@@ -530,4 +546,3 @@
 textarea {
     resize: vertical;
 }
-

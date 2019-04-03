@@ -108,13 +108,13 @@
         "hundredReviews": "100 Reviews",
         "stars": "stars",
         "you": "you",
-        "retrieve": "Back to user",
+        "retrieve": "Find me",
         "rating": "Rating",
         "getSeasonNumbers": "Error getting season numbers",
         "global": "Ranking Global",
         "season": "Season",
         "current": "Current",
-        "retrieveToSeason": "Current season",
+        "retrieveToSeason": "Show Current season",
         "day": "days",
         "endIn": "Ends in",
         "hours": "hours",
@@ -122,7 +122,8 @@
         "details": "Details",
         "userRanking": "User Ranking",
         "left": "left",
-        "engagementIndex": "EI"
+        "engagementIndex": "Engagement Index",
+        "selectSeason": "Select Season"
     },
     "review": {
         "getCommits": "Error getting commits to review",

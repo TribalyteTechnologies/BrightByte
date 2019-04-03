@@ -11,12 +11,14 @@
     <ion-row class="text-description no-wrap"> {{ email }} </ion-row>
 </td>
 <td>
-    <ion-row align-items-center>
-        <ion-col class="text-title text-title--yellow"> {{ reputation }} </ion-col>
-        <ion-col>
-            <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
-        </ion-col>
+    <ion-row *ngIf="globalSelected; else elseBlock">
+        <img class="ico ico__big" src="../../assets/imgs/chains.svg">
+        <span class="text-title ranking-score">{{ engagementIndexString }}</span>
     </ion-row>
+    <ng-template #elseBlock>
+        <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
+        <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+    </ng-template>
 
 </td>
 <td>
