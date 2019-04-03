@@ -24,7 +24,6 @@ export class AppConfig {
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly DATE_MULTIPLY_FACTOR = 1000;
     public static readonly N_USER_RANKING_LIST = 5;
-    public static readonly LOCAL_STORAGE_VERSION = "brightLocalStorageVerison";
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",
@@ -35,6 +34,7 @@ export class AppConfig {
         REVIEWFILTER: "reviewFilter",
         REVIEWPENDINGFILTER: "reviewPendingFilter",
         COMMITFILTER: "commitFilter",
+        LOCALSTORAGEVERSION: "brightLocalStorageVerison",
         COMMITPENDINGFILTER: "commitPendingFilter"
     };
 

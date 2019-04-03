@@ -33,13 +33,13 @@ export class LoginPage {
         storageSrv: LocalStorageService
     ) {
         this.log = loggerSrv.get("LoginPage");
-        this.currentVersion = storageSrv.get(AppConfig.LOCAL_STORAGE_VERSION);
+        this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
         appVersionSrv.getAppVersion().subscribe(
             ver => {
                 this.appVersion = ver;
                 if (this.appVersion && this.appVersion !== this.currentVersion){
                     window.alert("Your BrightBight version is outdated. The page is going to refresh.");
-                    storageSrv.set(AppConfig.LOCAL_STORAGE_VERSION, this.appVersion);
+                    storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
                     window.location.reload(true);
                 }
             },
