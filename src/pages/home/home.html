@@ -10,7 +10,7 @@
                 <h1 no-margin>{{ "home.title" | translate }} {{ userName }}</h1>
             </ion-row>
             <ion-row class="home-text">
-                <p no-margin>{{ "home.info" | translate }}</p>
+                <p no-margin [innerHTML]="'home.info' | translate" ></p>
             </ion-row>
         </ion-col>
     </ion-row>

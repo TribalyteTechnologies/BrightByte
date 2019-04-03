@@ -5,7 +5,6 @@ import { AlertController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
-import { AppVersionService } from "../../core/app-version.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { UserDetails } from "../../models/user-details.model";
@@ -33,7 +32,6 @@ export class LoginForm {
     public text: any;
     public debuggingText: string;
     public isDebugMode = false;
-    public appVersion = "DEV";
     public migrationDone = false;
     public isKeepCredentialsOn = false;
 
@@ -53,15 +51,9 @@ export class LoginForm {
         private alertCtrl: AlertController,
         private loadingCtrl: LoadingController,
         private migrationService: MigrationService,
-        loggerSrv: LoggerService,
-        appVersionSrv: AppVersionService
+        loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("LoginForm");
-        appVersionSrv.getAppVersion().subscribe(
-            ver => this.appVersion = ver,
-            err => this.log.w("No app version could be detected")
-        );
-        
         this.migrationDone = this.userLoggerService.getMigration();
     }
 

@@ -74,7 +74,7 @@
     },
     "home": {
         "title": "Welcome,",
-        "info": "Choose the available tabs to see your commits, reviews or the ranking. GitHub repo: ",
+        "info": "Choose the available tabs to see your commits, reviews or the ranking. GitHub repo:&nbsp<a href='https://github.com/TribalyteTechnologies/BrightByte'> https://github.com/TribalyteTechnologies/BrightByte</a>",
         "goTo": "Go to:"
     },
     "newUser": {
@@ -144,7 +144,7 @@
         "difficulty": "Difficulty",
         "reviewerExperience": "Reviewer Confidence",
         "reviewCommentError": "Empty comment",
-        "reviewEmptyRatingError": "One or more star ratings are empty"
+        "reviewEmptyRatingError": "Star rating is empty"
 
     },
     "setProfile": {
