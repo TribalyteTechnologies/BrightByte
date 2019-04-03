@@ -33,7 +33,7 @@ export class UserCommit {
         commit.currentNumberReviews = commitVals[7];
         commit.score = Math.round(commitVals[8] / AppConfig.SCORE_DIVISION_FACTOR) ;
         commit.reviewers = [];
-        commit.reviewsAlreadyDone = [];
+        commit.reviewsAlreadyDone =  new Array<string>();
         return commit;
     }
 }

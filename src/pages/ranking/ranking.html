@@ -1,7 +1,15 @@
 <ion-header no-border class="main-header">
     <ion-row no-padding class="header-row">
         <ion-col no-padding align-self-center col-4>
-            <div class="text-main">{{ "ranking.title" | translate }}</div>
+            <ion-row>
+                <span class="text-main">{{ "app.ranking" | translate }}</span>
+                <select [(ngModel)]="comboSelected" (ngModelChange)="setSeason($event)" class="dropdown dropdown--ranking">
+                    <option hidden value="" disabled selected>{{ "ranking.selectSeason" | translate }}</option>
+                    <option *ngFor="let option of seasons" [ngValue]="option">
+                        {{ option }}
+                    </option>
+                </select>
+            </ion-row>
         </ion-col>
         <ion-col col-4 no-padding class="text-ranking">
             <div class="ranking-top">
@@ -12,80 +20,76 @@
                 </ion-row>
             </div>
         </ion-col>
-        <ion-col col-4 padding>
-            <select [value]="seasonSelected" (change)="setSeason($event.target.value)" class="dropdown dropdown--ranking">
-                <option value="-1">{{ "ranking.global" | translate }}</option>
-                <option *ngFor="let option of seasons" [value]="option">{{ "ranking.season" | translate }} {{ option }}</option>
-            </select>
-        </ion-col>
     </ion-row>
 </ion-header>
 
 
-<ion-content padding class="main-container">
-    <ion-row no-padding></ion-row>
-    <ion-row no-padding>
-        <ion-col padding class="text-details text-details--bold">
-            <ion-row>
-                <ion-col col-10>
-                    <div *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</div>
-                    <ng-template #elseBlock>{{ "app.ranking" | translate }} {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+<ion-content center padding class="main-container">
+    <ion-row>
+        <ion-col>
+            <ion-row no-padding>
+                <ion-col col-10 no-padding>
+                    <span *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</span>
+                    <ng-template #elseBlock>{{ "app.ranking" | translate }} · {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+                    <span class="text-details ranking-a"><a no-padding (click)="setCurrentSeason()"> | {{ "ranking.retrieveToSeason" | translate }}</a></span>
                 </ion-col>
-                <ion-col class="text-details ranking-a" col-2>
-                    <a no-padding (click)="goBackToUser()">Find me</a>
+                <ion-col col-2 no-padding class="ranking-left">
+                    <a class="text-details ranking-a" no-padding (click)="goBackToUser()">{{ "ranking.retrieve" | translate }}</a>
                 </ion-col>
             </ion-row>
+            <ion-row>
+                <table class="table">
+                    <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user"></tr>
+                </table>
+            </ion-row>
         </ion-col>
-        <ion-col col-6 padding class="text-details text-details--bold">        
-            {{ "ranking.details" | translate }}
-        </ion-col>
-    </ion-row>
-    <ion-row no-padding>
         <ion-col>
-            <table class="table">
-                <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user"></tr>
-            </table>
-        </ion-col>
-        <ion-col col-6 class="profile-details-container">
-            <ion-row padding justify-content-center class="main-style">
-                <ion-col>
-                    <ion-row padding justify-content-center>
-                        <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ userRankDetails.name }}">
-                    </ion-row>
-                    <ion-row justify-content-center class="text-title">
+            <ion-row no-padding>
+                <span class="text-details text-details--bold">{{ "ranking.details" | translate }}:</span>
+            </ion-row>
+            <ion-row padding class="profile-details-container">
+                <ion-col col-auto justify-content-center>
+                    <img class="box-avatar box-avatar__big" src="http://identicon.org?t={{ userRankDetails.name }}">
+                </ion-col>
+                <ion-col col-3 padding justify-content-center center class="vert-separator">
+                    <ion-row class="text-title">
                         {{ userRankDetails.name }}
                     </ion-row>
-                    <ion-row justify-content-center class="text-description">
+                    <ion-row class="text-description">
                         {{ userRankDetails.email }}
                     </ion-row>
-                    <ion-row padding justify-content-center class="hor-separator">
-                        <ion-col col-auto>
-                            <button class="btn btn--label btn__grey"> {{ "ranking.level" | translate }} {{ userRankDetails.level }} </button>
+                </ion-col>
+                <ion-col class="vert-separator">
+                    <ion-row justify-content-center>
+                        <ion-col no-padding>
+                            <ion-row justify-content-center class="text-title ranking-details">{{ "app.reviews" | translate }}</ion-row>
+                            <ion-row justify-content-center class="text-title">{{ userRankDetails.reviews }}</ion-row>
                         </ion-col>
-                        <ion-col col-auto>
-                            <button class="btn btn--label btn__grey"> {{ userRankDetails.rank }} </button>
+                        <ion-col no-padding>
+                            <ion-row justify-content-center class="text-title ranking-details">{{ "app.commits" | translate }}</ion-row>
+                            <ion-row justify-content-center class="text-title">{{ userRankDetails.commits }}</ion-row>
                         </ion-col>
-                        <ion-col col-auto>
-                            <button class="btn btn--label btn__grey" *ngIf="globalSelected">{{ userRankDetails.engagementIndex }} {{ "ranking.engagementIndex" | translate }}</button>
-                            <button class="btn btn--label btn__grey" *ngIf="!globalSelected"> 
-                                {{ userRankDetails.score }}
-                                <img class="btn--img" src="../../assets/imgs/star-icon.svg">
-                            </button>
+                        <ion-col no-padding>
+                            <ion-row justify-content-center class="text-title ranking-details">{{ "ranking.agreed" | translate }}</ion-row>
+                            <ion-row justify-content-center class="text-title"> {{ userRankDetails.agreed }}%</ion-row>
                         </ion-col>
                     </ion-row>
-                    <ion-row padding justify-content-center>
-                        <ion-col class="vert-separator">
-                            <ion-row justify-content-center class="text-title">{{ userRankDetails.reviews }}</ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
+                </ion-col>
+                <ion-col col-3 no-padding>
+                    <ion-row *ngIf="globalSelected">
+                        <ion-col class="text-title">
+                            <ion-row justify-content-center class="ranking-details no-wrap">{{ "ranking.engagementIndex" | translate }}</ion-row>
+                            <ion-row justify-content-center>
+                                <img src="../../assets/imgs/chains.svg">
+                                <span class="ranking-score">{{ userRankDetails.engagementIndexString }}</span>
+                            </ion-row>
                         </ion-col>
-                        <ion-col class="vert-separator">
-                            <ion-row justify-content-center class="text-title">{{ userRankDetails.commits }}</ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "app.commits" | translate }}</ion-row>
-                        </ion-col>
-                        <ion-col>
-                            <ion-row justify-content-center class="text-title"> {{ userRankDetails.agreed }}%</ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }}</ion-row>
-                        </ion-col>
+                    </ion-row>
+                    <ion-row justify-content-center padding *ngIf="!globalSelected">
+                        <ion-col no-padding class="no-wrap">
+                                <span class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
+                                <img class="btn--img" src="../../assets/imgs/star-icon.svg">
+                        </ion-col> 
                     </ion-row>
                 </ion-col>
             </ion-row>
@@ -124,7 +128,5 @@
             </ion-row>
         </ion-col>
     </ion-row>
-
-
 
 </ion-content>

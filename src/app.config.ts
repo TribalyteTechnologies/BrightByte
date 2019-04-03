@@ -24,8 +24,8 @@ export class AppConfig {
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly SECS_TO_MS = 1000;
     public static readonly N_USER_RANKING_LIST = 5;
-    public static readonly COMMIT_WEIGH = 0.6;
-    public static readonly REVIEW_WEIGH = 0.4;
+    public static readonly COMMIT_WEIGHT = 0.6;
+    public static readonly REVIEW_WEIGHT = 0.4;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",

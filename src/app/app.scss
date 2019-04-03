@@ -135,6 +135,9 @@
     text-overflow: ellipsis;
 }
 
+.no-wrap {
+    white-space: nowrap;
+}
 
 /*------------------------------------*\
   #OBJECTS
@@ -196,6 +199,7 @@
 .box-avatar {
     width: 40px;
     height: 40px;
+    min-width: 40px;
     border-radius: 50%;
     background-color: #fff;
 }
@@ -203,6 +207,7 @@
 .box-avatar__big {
     width: 60px;
     height: 60px;
+    min-width: 60px;
 }
 
 .checkbox {
@@ -329,9 +334,7 @@
 }
 
 .btn--img {
-    display: inline-block;
-    width: 15px;
-    vertical-align: middle;
+    width: 35px;
 }
 
 .btn--label {
@@ -467,8 +470,9 @@
 }
 
 .dropdown--ranking {
-    float: right;
+    line-height: 30px;
     width: 40%;
+    margin-left: 10px;
 }
 
 .ranking-top {
@@ -487,7 +491,6 @@
 }
 
 .ranking-drop {
-    float: right;
     width: 40%;
 }
 
@@ -496,6 +499,25 @@
         color: rgba(0, 0, 0, 0.7);
     }
     text-align: right;
+}
+
+.ranking-prueba {
+    float: right;
+}
+
+.ranking-details {
+    padding-bottom: 10px;
+}
+
+.ranking-details--star {
+    color: #f39c18;
+    font-size: 45px;
+}
+
+.ranking-score {
+    font-size: 22px;
+    padding-left: 10px;
+    min-width: 60px;
 }
 
 .criterial-border:not(:last-child)  {

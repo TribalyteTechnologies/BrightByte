@@ -19,6 +19,8 @@ class UserRankDetails {
     public commits = 0;
     public agreed = 0;
     public engagementIndex = 0;
+    public scoreString = "";
+    public engagementIndexString = "";
 }  
 
 @Component({
@@ -40,8 +42,9 @@ export class RankingPage {
     public userTrophyList = new Array<string>();
     public numberOfSeasons = 0;
     public seasonSelected = 0;
+    public comboSelected = "";
     public seasonFinale = 0;
-    public seasons = new Array<number>();
+    public seasons = new Array<string>();
     public days: number;
     public hours: number;
     public minutes: number;
@@ -72,8 +75,9 @@ export class RankingPage {
                 this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
             },          1000);
+            this.seasons.push("Ranking Global");
             for(let i = this.numberOfSeasons; i >= 0; i--) {
-                this.seasons.push(i); 
+                this.seasons.push("Season " + i); 
             }
         });
     }
@@ -85,11 +89,8 @@ export class RankingPage {
     public refresh() {
         this.contractManagerService.getAllUserReputationSeason(this.seasonSelected, this.globalSelected)
         .then((usersRep: UserReputation[]) => {
-            if(this.globalSelected) {
-                this.usersRep = usersRep.sort((a, b) => { return b.engagementIndex - a.engagementIndex; });
-            } else {
-                this.usersRep = usersRep.sort((a, b) => { return b.reputation - a.reputation; });
-            }
+            this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => 
+                this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
             this.usersRep.forEach(user => {
                 user.userPosition = this.usersRep.indexOf(user) + 1;
             });
@@ -117,6 +118,8 @@ export class RankingPage {
         this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
         this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
         this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
+        this.userRankDetails.scoreString = this.userRankDetails.score.toFixed(2);
+        this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
         this.setUpTrophys();
     }
 
@@ -125,7 +128,10 @@ export class RankingPage {
     }
 
     public setCurrentSeason() {
-        this.setSeason(this.numberOfSeasons);
+        this.globalSelected = false;
+        this.seasonSelected = this.numberOfSeasons;
+        this.comboSelected = this.seasons[1];
+        this.refresh();
     }
 
     public getNumbersOfSeason(){
@@ -144,17 +150,18 @@ export class RankingPage {
         });
     }
 
-    public setSeason(ind: number){
+    public setSeason(ind: string){
         this.log.d("Change in the ranking");
         this.getNumbersOfSeason();
-        if(ind >= 0) {
-            this.log.d("The user has chosen the season " + ind);
-            this.globalSelected = false;
-            this.seasonSelected = ind;
-        } else {
-            this.log.d("The user has chosen the global ranking");
+        this.log.d("The user has chosen the " + ind);
+        if(ind === this.seasons[0]) {            
             this.globalSelected = true;
+        } else {
+            let season = +ind.match(/\d+/)[0];
+            this.globalSelected = false;
+            this.seasonSelected = season;
         }
+        this.comboSelected = ind;
         this.refresh();
     }
 
