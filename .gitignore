@@ -30,8 +30,8 @@ plugins/ios.json
 www/
 $RECYCLE.BIN/
 package-lock.json
-src/app.config.custom.ts
 truffle-config.custom.js
+app.config.custom.ts
 
 .DS_Store
 Thumbs.db

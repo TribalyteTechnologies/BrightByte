@@ -37,10 +37,12 @@ export class LoginPage {
         appVersionSrv.getAppVersion().subscribe(
             ver => {
                 this.appVersion = ver;
-                if (this.appVersion && this.appVersion !== this.currentVersion){
+                if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
                     window.alert("Your BrightBight version is outdated. The page is going to refresh.");
                     storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
                     window.location.reload(true);
+                }else if (!this.currentVersion) {
+                    storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
                 }
             },
             err => this.log.w("No app version could be detected")
