@@ -6,6 +6,7 @@ import { UserLoggerService } from "../../domain/user-logger.service";
 import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { AppConfig } from "../../app.config";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: "page-login",
@@ -23,6 +24,8 @@ export class LoginPage {
     public loginState = "login";
     private log: ILogger;
     private currentVersion: string;
+    private VERSION_OUTDATED: string;
+    
 
 
     constructor(
@@ -30,15 +33,20 @@ export class LoginPage {
         private userLoggerService: UserLoggerService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService,
-        storageSrv: LocalStorageService
+        storageSrv: LocalStorageService,
+        public translateService: TranslateService
     ) {
+        translateService.get("app.versionOutdated").subscribe(
+            msg => {
+                this.VERSION_OUTDATED = msg;
+            });
         this.log = loggerSrv.get("LoginPage");
         this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
         appVersionSrv.getAppVersion().subscribe(
             ver => {
                 this.appVersion = ver;
                 if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
-                    window.alert("Your BrightBight version is outdated. The page is going to refresh.");
+                    window.alert(this.VERSION_OUTDATED);
                     storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
                     window.location.reload(true);
                 }else if (!this.currentVersion) {
