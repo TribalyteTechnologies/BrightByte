@@ -36,25 +36,26 @@ export class LoginPage {
         storageSrv: LocalStorageService,
         public translateService: TranslateService
     ) {
+        
+        this.log = loggerSrv.get("LoginPage");
+        this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
         translateService.get("app.versionOutdated").subscribe(
             msg => {
                 this.VERSION_OUTDATED = msg;
+                appVersionSrv.getAppVersion().subscribe(
+                    ver => {
+                        this.appVersion = ver;
+                        if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
+                            window.alert(this.VERSION_OUTDATED);
+                            storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
+                            window.location.reload(true);
+                        }else if (!this.currentVersion) {
+                            storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
+                        }
+                    },
+                    err => this.log.w("No app version could be detected")
+                );
             });
-        this.log = loggerSrv.get("LoginPage");
-        this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
-        appVersionSrv.getAppVersion().subscribe(
-            ver => {
-                this.appVersion = ver;
-                if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
-                    window.alert(this.VERSION_OUTDATED);
-                    storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                    window.location.reload(true);
-                }else if (!this.currentVersion) {
-                    storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                }
-            },
-            err => this.log.w("No app version could be detected")
-        );
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
