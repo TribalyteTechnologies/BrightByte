@@ -154,10 +154,9 @@ export class RankingPage {
         this.log.d("Change in the ranking");
         this.getNumbersOfSeason();
         this.log.d("The user has chosen the " + ind);
-        if(ind === this.seasons[0]) {            
-            this.globalSelected = true;
-        } else {
-            let season = +ind.match(/\d+/)[0];
+        this.globalSelected = (ind === this.seasons[0]);
+        if(!this.globalSelected) {
+            let season = this.parseInt(ind);
             this.globalSelected = false;
             this.seasonSelected = season;
         }
@@ -188,6 +187,10 @@ export class RankingPage {
             this.userTrophyList[5] = "t06-on.png";
         }
 
+    }
+
+    private parseInt (ind: string): number {
+        return +ind.match(/\d+/)[0];
     }
 }
 
