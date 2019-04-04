@@ -50,6 +50,7 @@ export class ReviewPage {
 
     
     private log: ILogger;
+    private readonly ANONYMOUS_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     constructor(
         public navCtrl: NavController,
@@ -275,7 +276,8 @@ export class ReviewPage {
         switch(this.filterValue){
             case "incompleted":
                 return usercommits.filter(commit => {
-                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address || 
+                        element === this.ANONYMOUS_ADDRESS);
                     return (!isReviewed);
                 });
             case "completed":
