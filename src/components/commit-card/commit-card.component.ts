@@ -25,7 +25,12 @@ export class CommitCard {
     public reviewers = new Array<string>();
     public pendingReviewers = new Array<string>();
 
+    @Input()
+    public isReviewPage: boolean;
 
+    private readonly REVIEW_QUERY = "?reviewId=";
+    private readonly COMMIT_QUERY = "?commitId=";
+    private currentPage: string;
     private _commit: UserCommit;
 
     @Input()
@@ -52,10 +57,11 @@ export class CommitCard {
     }
   
     public openUrl(url: string, isCommitParam: boolean, e: Event){
+        this.currentPage = (this.isReviewPage) ? this.REVIEW_QUERY : this.COMMIT_QUERY;
         let urlToOpen = url;
         if(isCommitParam){
             window.open(urlToOpen, "_blank");
-            urlToOpen = "?commitId=" + encodeURIComponent(url);
+            urlToOpen = this.currentPage + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
         if(e){
@@ -68,6 +74,7 @@ export class CommitCard {
             msg => {
                 this.ANONYMOUS = msg;
             });
+        
     }
 
 }
