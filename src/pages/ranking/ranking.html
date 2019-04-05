@@ -29,8 +29,8 @@
         <ion-col>
             <ion-row no-padding>
                 <ion-col col-10 no-padding>
-                    <span *ngIf="globalSelected; else elseBlock"> {{ "ranking.global" | translate }}</span>
-                    <ng-template #elseBlock>{{ "app.ranking" | translate }} · {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+                    <span *ngIf="globalSelected; else globalNotSelectedBlock"> {{ "ranking.global" | translate }}</span>
+                    <ng-template #globalNotSelectedBlock>{{ "app.ranking" | translate }} · {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
                     <span class="text-details ranking-a"><a no-padding (click)="setCurrentSeason()"> | {{ "ranking.retrieveToSeason" | translate }}</a></span>
                 </ion-col>
                 <ion-col col-2 no-padding class="ranking-left">
@@ -55,7 +55,7 @@
                     <ion-row class="text-title">
                         {{ userRankDetails.name }}
                     </ion-row>
-                    <ion-row class="text-description">
+                    <ion-row class="text-description text-ellipsis">
                         {{ userRankDetails.email }}
                     </ion-row>
                 </ion-col>
@@ -76,7 +76,7 @@
                     </ion-row>
                 </ion-col>
                 <ion-col col-3 no-padding>
-                    <ion-row *ngIf="globalSelected">
+                    <ion-row *ngIf="globalSelected; else globalNotSelectedBlockTwo">
                         <ion-col class="text-title">
                             <ion-row justify-content-center class="ranking-details no-wrap">{{ "ranking.engagementIndex" | translate }}</ion-row>
                             <ion-row justify-content-center>
@@ -85,12 +85,14 @@
                             </ion-row>
                         </ion-col>
                     </ion-row>
-                    <ion-row justify-content-center padding *ngIf="!globalSelected">
-                        <ion-col no-padding class="no-wrap">
-                                <span class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
-                                <img class="btn--img" src="../../assets/imgs/star-icon.svg">
-                        </ion-col> 
-                    </ion-row>
+                    <ng-template #globalNotSelectedBlockTwo>
+                        <ion-row justify-content-center padding>
+                            <ion-col no-padding class="no-wrap">
+                                    <span class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
+                                    <img class="btn--img" src="../../assets/imgs/star-icon.svg">
+                            </ion-col> 
+                        </ion-row>
+                    </ng-template>
                 </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
