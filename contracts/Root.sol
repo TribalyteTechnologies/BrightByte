@@ -109,7 +109,7 @@ contract Root{
         return remoteReputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
-    function calculateUserReputation(bytes32 commitsUrl, uint32 reputation, uint32 cumulativeComplexity) public returns (uint32, uint32) {
+    function calculateUserReputation(bytes32 commitsUrl, uint32 reputation, uint32 cumulativeComplexity) public view returns (uint32, uint32) {
         uint32 commitScore;
         uint32 commitPonderation;
         uint32 previousScore;

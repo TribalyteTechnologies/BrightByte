@@ -10,7 +10,7 @@ module.exports = function(deployer) {
         console.log("Deploying Commits contract");
         return deployer.deploy(Commits);
     }).then(function() {
-        console.log("Deploying Commits contract");
+        console.log("Deploying Reputation contract");
         return deployer.deploy(Reputation);
     }).then(function() {
         console.log("Deploying Root contract. Addresses: ", [Bright.address, Commits.address, Reputation.address]);
