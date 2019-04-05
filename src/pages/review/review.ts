@@ -10,6 +10,7 @@ import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
 
+
 @Component({
     selector: "page-review",
     templateUrl: "review.html"
@@ -48,9 +49,9 @@ export class ReviewPage {
 
     public submitError = "";
 
-    
-    private log: ILogger;
     private readonly ANONYMOUS_ADDRESS = "0x0000000000000000000000000000000000000000";
+    private log: ILogger;
+    
 
     constructor(
         public navCtrl: NavController,
@@ -97,7 +98,7 @@ export class ReviewPage {
                         return this.contractManagerService.getCommentsOfCommit(com.url);
                     }).then((arrayReviewers) => {
                         arrayReviewers[1].forEach((user) => {
-                            com.reviewsAlreadyDone.push(user.user);
+                                com.reviewsAlreadyDone.push(user.user);
                         });
                         return com;
                     });

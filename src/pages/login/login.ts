@@ -24,7 +24,6 @@ export class LoginPage {
     public loginState = "login";
     private log: ILogger;
     private currentVersion: string;
-    private VERSION_OUTDATED: string;
     
 
 
@@ -39,23 +38,22 @@ export class LoginPage {
         
         this.log = loggerSrv.get("LoginPage");
         this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
-        translateService.get("app.versionOutdated").subscribe(
-            msg => {
-                this.VERSION_OUTDATED = msg;
-                appVersionSrv.getAppVersion().subscribe(
-                    ver => {
-                        this.appVersion = ver;
-                        if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
-                            window.alert(this.VERSION_OUTDATED);
+        appVersionSrv.getAppVersion().subscribe(
+            ver => {
+                this.appVersion = ver;
+                if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
+                    translateService.get("app.versionOutdated").subscribe(
+                        msg => {
+                            window.alert(msg);
                             storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
                             window.location.reload(true);
-                        }else if (!this.currentVersion) {
-                            storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                        }
-                    },
-                    err => this.log.w("No app version could be detected")
-                );
-            });
+                        });   
+                }else if (!this.currentVersion) {
+                    storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
+                }
+            },
+            err => this.log.w("No app version could be detected")
+        );
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
