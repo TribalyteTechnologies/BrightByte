@@ -13,7 +13,7 @@ import { CommitComment } from "../models/commit-comment.model";
 import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
 
-interface ItrbSmartContractJson {
+interface ItrbSmartContractJson  {
     abi: Array<any>;
 }
 
@@ -52,7 +52,7 @@ export class ContractManagerService {
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ItrbSmartContact>>();
         let promBright = this.http.get("../assets/build/Bright.json").toPromise()
-            .then((jsonContractData: ItrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson ) => {
                 let truffleContractBright = TruffleContract(jsonContractData);
                 this.contractAddressBright = truffleContractBright.networks[configNet.netId].address;
                 let contractBright = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBright, {
@@ -67,7 +67,7 @@ export class ContractManagerService {
             });
         contractPromises.push(promBright);
         let promCommits = this.http.get("../assets/build/Commits.json").toPromise()
-            .then((jsonContractData: ItrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson ) => {
                 let truffleContractCommits = TruffleContract(jsonContractData);
                 this.contractAddressCommits = truffleContractCommits.networks[configNet.netId].address;
                 let contractCommits = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressCommits, {
@@ -82,7 +82,7 @@ export class ContractManagerService {
             });
         contractPromises.push(promCommits);
         let promRoot = this.http.get("../assets/build/Root.json").toPromise()
-            .then((jsonContractData: ItrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson ) => {
                 let truffleContractRoot = TruffleContract(jsonContractData);
                 this.contractAddressRoot = truffleContractRoot.networks[configNet.netId].address;
                 let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRoot, {

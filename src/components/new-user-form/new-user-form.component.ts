@@ -4,6 +4,8 @@ import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
+import { LocalStorageService } from "../../core/local-storage.service";
+import { AppConfig } from "../../app.config";
 
 @Component({
     selector: "new-user-form",
@@ -28,10 +30,13 @@ export class NewUserForm {
         public navCtrl: NavController,
         public popoverCtrl: PopoverController,
         public http: HttpClient,
+        public storageSrv: LocalStorageService,
         loggerSrv: LoggerService,
         private contractManager: ContractManagerService
+        
     ) {
         this.log = loggerSrv.get("NewUserPage");
+        
     }
 
     public createUser(pass: string) {
@@ -49,6 +54,7 @@ export class NewUserForm {
     }
 
     public goToLoginForm(){
+        this.storageSrv.remove(AppConfig.StorageKey.PASSWORD);
         this.goToLogin.next(this.LOGIN);
     }
 

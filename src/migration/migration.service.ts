@@ -13,7 +13,7 @@ interface ItrbSmartContact { //Web3.Eth.Contract
     [key: string]: any;
 }
 
-interface ItrbSmartContractJson {
+interface ItrbSmartContractJson    {
     abi: Array<any>;
 }
 
@@ -50,7 +50,7 @@ export class MigrationService {
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ItrbSmartContact>>();
         let promBright = this.http.get("../assets/build/BrightOld.json").toPromise()
-            .then((jsonContractData: ItrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson   ) => {
                 let truffleContractBright = TruffleContract(jsonContractData);
                 this.contractAddressBrightV030 = truffleContractBright.networks[configNet.netId].address;
                 let contractBright = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBrightV030, {
@@ -65,7 +65,7 @@ export class MigrationService {
             });
         contractPromises.push(promBright);
         let promCommits = this.http.get("../assets/build/CommitsOld.json").toPromise()
-            .then((jsonContractData: ItrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson   ) => {
                 let truffleContractCommits = TruffleContract(jsonContractData);
                 this.contractAddressCommitsV030 = truffleContractCommits.networks[configNet.netId].address;
                 let contractCommits = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressCommitsV030, {
@@ -80,7 +80,7 @@ export class MigrationService {
             });
         contractPromises.push(promCommits);
         let promRoot = this.http.get("../assets/build/RootOld.json").toPromise()
-            .then((jsonContractData: ItrbSmartContractJson) => {
+            .then((jsonContractData: ItrbSmartContractJson   ) => {
                 let truffleContractRoot = TruffleContract(jsonContractData);
                 this.contractAddressRootV030 = truffleContractRoot.networks[configNet.netId].address;
                 let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRootV030, {
