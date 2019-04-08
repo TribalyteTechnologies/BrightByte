@@ -25,10 +25,10 @@ export class CustomRating {
     public small: boolean = false;
 
     @Input()
-    public iconPadding: boolean = false;
+    public iconMargin: boolean = false;
 
     @Input()
-    public ratingType = "codeQuality";
+    public ratingType = "quality";
 
     public iconColor = "stars-color";
 
@@ -36,8 +36,15 @@ export class CustomRating {
     public icons: string[];
     public ghosted: boolean;
 
-    private difficultyIcons = ["bb-boy", "bb-graduation", "bb-crown"];
-    private confidenceIcons = ["bb-gears-1", "bb-gears-2", "bb-gears-3"];
+    private readonly CONFIDENCE_ICONS = ["bb-boy", "bb-graduation", "bb-crown"];
+    private readonly DIFFYCULTY_ICONS = ["bb-gears-1", "bb-gears-2", "bb-gears-3"];
+    private readonly QUALITY = "quality";
+    private readonly DIFFICULTY = "difficulty";
+    private readonly CONFIDENCE = "confidence";
+    private readonly GEARS_COLOR = "gears-color ";
+    private readonly CONFIDENCE_COLOR = "confidence-color ";
+    private readonly STAR = "bb-star";
+    private readonly STAR_OUTLINE = "bb-star-outline";
     private currentIcons = [""];
 
     public ngOnInit(){
@@ -45,19 +52,19 @@ export class CustomRating {
         this.icons = new Array<string>(this.max);
         
         switch (this.ratingType) {
-            case "codeQuality":
+            case this.QUALITY:
                 for(let i = 0; i < this.max; i++){
                     this.iconIds[i] = i;
-                    this.icons[i] = "star-outline";
+                    this.icons[i] = this.STAR_OUTLINE;
                 }
                 break;
-            case "difficulty":
-                this.iconColor = "gears-color";
-                this.currentIcons = this.difficultyIcons;
+            case this.DIFFICULTY:
+                this.iconColor = this.GEARS_COLOR;
+                this.currentIcons = this.DIFFYCULTY_ICONS;
                 break;
-            case "reviewerExperience":
-                this.iconColor = "confidence-color";
-                this.currentIcons = this.confidenceIcons;
+            case this.CONFIDENCE:
+                this.iconColor = this.CONFIDENCE_COLOR;
+                this.currentIcons = this.CONFIDENCE_ICONS;
                 break;
             default:
                 break;
@@ -73,13 +80,13 @@ export class CustomRating {
 
     public setReputation(value: number) {
 
-        if (this.ratingType === "codeQuality"){
+        if (this.ratingType === this.QUALITY){
             for(let i = 0; i < this.max; i++){
-                this.icons[i] = i <= value ? "star" : "star-outline";
+                this.icons[i] = i <= value ? this.STAR : this.STAR_OUTLINE;
             }
         }else{
             for(let i = 0; i < this.max; i++){
-                this.icons[i] = i === value ? this.currentIcons[i] : this.currentIcons[i] + "-ghosted";
+                this.icons[i] = i === value ? this.currentIcons[i] : this.currentIcons[i] + " ghosted";
             }
         }
    

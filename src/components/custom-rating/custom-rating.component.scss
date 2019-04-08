@@ -1,4 +1,5 @@
 custom-rating {
+
     .icon-style {
         background-color: transparent;
         font-size: 25px;
@@ -20,11 +21,59 @@ custom-rating {
         font-size: 25px;
     }
 
-    .custom-icon-padding {
-        padding: 0px 5px;
+    .custom-icon-margin {
+        margin: 0px 3px;
     }
 
     button {
         padding: 0;
+    }
+
+    div {
+        .rating-icon {
+          mask-size: contain;
+          mask-position: 50% 50%;
+          mask-repeat: no-repeat;
+          background: currentColor;
+          width: 1em;
+          height: 1em;
+        }
+
+        &.ghosted {
+            opacity: 0.2;
+        }
+
+        &.bb-boy {
+            mask-image: url("../assets/icon/boy.svg");
+        }
+
+        &.bb-graduation {
+            mask-image: url("../assets/icon/graduation-cap.svg");
+        }
+
+        &.bb-crown {
+            mask-image: url("../assets/icon/crown.svg");
+        }
+
+        &.bb-gears-1 {
+            mask-image: url("../assets/icon/gears_1.svg");
+            font-size: 18px;
+        }
+
+        &.bb-gears-2 {
+            mask-image: url("../assets/icon/gears_2.svg");
+        }
+
+        &.bb-gears-3 {
+            mask-image: url("../assets/icon/gears_3.svg");
+        }
+
+        &.bb-star {
+            mask-image: url("../assets/icon/star.svg");
+        }
+
+        &.bb-star-outline {
+            mask-image: url("../assets/icon/star_outline.svg");
+        }
     }
 }
