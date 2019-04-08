@@ -1,7 +1,7 @@
 # BrightByte
 This is the BrightByte developer reputation project.
 
-The following commands are available:
+ #### The following commands are available:
 
 - Install the dependencies by running npm install.
 - Comment line 27 of ./node_modules/truffle-contract/contract.js.
@@ -16,7 +16,7 @@ The following commands are available:
 - Send funds from the former to the latter with "sendTransaction", like for example: web3.eth.sendTransaction({from: "0x627306090abab3a6e1400e9345bc60c78a8bef57", to: "0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a", value: web3.toWei("5", "ether")})
 - See `package.json` for more npm scripts.
 
-In order to deploy the application to a server:
+ #### In order to deploy the application to a server:
 
 1. Configure "app.config.custom.ts" and "truffle-config.custom.js" with your Ethereum/Quorum node information.
 2. Set `IS_CUSTOM_NET` to `true` in "app.config.ts".
@@ -25,10 +25,15 @@ In order to deploy the application to a server:
 5. Upload the directory `platforms/browser/www/` to your web server.
 6. Open the URL pointing to your web server.
 
-Migrations:
+ #### Migrations:
  
 Each change of version where the smart contracts have been modified will be necessary to do a migration in order to
 keep the data. For more information about Migrations please see [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
+
+ #### Terms and conditions
+This project come with a default terms and conditions text. This text can be modified by adding HTML in the file `src/pages/termsandconditions/termsandconditions.html` or in `src/assets/i18n/[lenguage].json` to the variable `app.termsDescrition`.
+
+ #### More information
 
 For more information about BrightByte please visit our [blog post about BrightByte](https://tech.tribalyte.eu/blog-lanzamiento-de-brightbyte-v0-2) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
 

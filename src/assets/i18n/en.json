@@ -69,9 +69,9 @@
         "currentReview": "Current Reviews",
         "newTab": "New tab",
         "nobodyReviewed": "Nobody reviewed this commit",
-        "codeQualityDescription": "<h6>Quality of Code</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
-        "difficultyDescription": "<h6>Difficulty</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi",
-        "reviewerExperienceDescription": "<h6>Reviewer confidence</h6>Sed ut perspiciatis unde omnis iste natus error sit voluptatem ipsa quae ab illo inventore veritatis et quasi"
+        "qualityDescription": "<h6>Quality of Code</h6> How much efficient, simple and well-written is the code.",
+        "difficultyDescription": "<h6>Difficulty</h6>How much complex is the problem which this code solves.",
+        "confidenceDescription": "<h6>Reviewer confidence</h6>How much experience do you have with this technology."
 
     },
     "home": {
@@ -142,9 +142,9 @@
         "negativeVote": "The author disagrees with this review",
         "positiveVote": "The author agrees with this review",
         "score": "Score",
-        "codeQuality": "Quality of Code",
+        "quality": "Quality",
         "difficulty": "Difficulty",
-        "reviewerExperience": "Reviewer Confidence",
+        "confidence": "Confidence",
         "reviewCommentError": "Empty comment",
         "reviewEmptyRatingError": "One or more star ratings are empty"
 

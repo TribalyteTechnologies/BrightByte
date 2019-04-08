@@ -7,9 +7,9 @@ export class CommitComment {
     public vote: number;
     public creationDateMs: number;
     public lastModificationDateMs: number;
-    public codeQuality: number;
+    public quality: number;
     public difficulty: number;
-    public reviewerExperience: number;
+    public confidence: number;
     
     public static fromSmartContract(commentVals: Array<any>, userName: string): CommitComment{ 
         let comment = new CommitComment(); 
@@ -20,9 +20,9 @@ export class CommitComment {
         comment.lastModificationDateMs = commentVals[3] * AppConfig.SECS_TO_MS;
         comment.user = commentVals[4];
         comment.name = userName;
-        comment.codeQuality = commentVals[5][0] / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.quality = commentVals[5][0] / AppConfig.SCORE_DIVISION_FACTOR;
         comment.difficulty = commentVals[5][1] / AppConfig.SCORE_DIVISION_FACTOR;
-        comment.reviewerExperience = commentVals[5][2] / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.confidence = commentVals[5][2] / AppConfig.SCORE_DIVISION_FACTOR;
         return comment;
     } 
 }

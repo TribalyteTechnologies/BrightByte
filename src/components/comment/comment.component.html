@@ -14,9 +14,9 @@
                     </ion-col>
                 </ion-row>
             </ion-col>
-            <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'codeQuality', 'difficulty', 'reviewerExperience']" no-padding>
+            <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'quality', 'difficulty', 'confidence']" no-padding>
                 <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
-                <custom-rating class="right" [ratingType]="critName" [rate]="review[critName]" [max]="critName !== 'codeQuality' ? 3 : 5" [setStars]="false" [iconPadding]="critName !== 'codeQuality'" [small]="true"></custom-rating>
+                <custom-rating class="right" [ratingType]="critName" [rate]="review[critName]" [max]="critName !== 'quality' ? 3 : 5" [setStars]="false" [iconMargin]="critName !== 'quality'" [small]="true"></custom-rating>
                 <ion-row>
                     <ion-col class="tooltip">
                         <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
@@ -35,9 +35,9 @@
             </ion-row>
         </ion-col>
         <ion-row *ngIf="isReviewNeeded" justify-content-center [ngClass]="{'card-criterial-border': !isReviewNeeded}" class="card-criterial-padding-top">
-            <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'codeQuality', 'difficulty', 'reviewerExperience'], let i = index" no-padding>
+            <ion-col col-3 class="criterial-border" *ngFor="let critName of [ 'quality', 'difficulty', 'confidence'], let i = index" no-padding>
                 <ion-row  justify-content-center  class="criterial-text">{{ ("review." + critName) | translate }}</ion-row>
-                <custom-rating class="right" [ratingType]="critName" [rate]="0" (value)="points[i]=$event" [max]="critName !== 'codeQuality' ? 3 : 5" [setStars]="true" [iconPadding]="critName !== 'codeQuality'" [small]="true"></custom-rating>  
+                <custom-rating class="right" [ratingType]="critName" [rate]="0" (value)="points[i]=$event" [max]="critName !== 'quality' ? 3 : 5" [setStars]="true" [iconMargin]="critName !== 'quality'" [small]="true"></custom-rating>  
                 <ion-row>
                     <ion-col class="tooltip">
                         <p class="tooltip-text-open">{{ "commitDetails.whatIs" | translate }}</p>
@@ -77,7 +77,7 @@
                 <button class="btn btn--full btn__red" (click)="setThumbsDown()">{{ "commits.disagree" | translate }}</button>
             </ion-col>
         </ion-row>
-        <ion-row no-padding>
+        <ion-row *ngIf="review.vote==0" no-padding>
             <ion-col text-right>
                 <a class="complaint-text" (click)="setComplaint()">
                     {{ "commitDetails.reportAbuse" | translate }}
