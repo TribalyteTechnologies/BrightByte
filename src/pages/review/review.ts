@@ -98,7 +98,7 @@ export class ReviewPage {
                         return this.contractManagerService.getCommentsOfCommit(com.url);
                     }).then((arrayReviewers) => {
                         arrayReviewers[1].forEach((user) => {
-                                com.reviewsAlreadyDone.push(user.user);
+                            com.reviewsAlreadyDone.push(user.user);
                         });
                         return com;
                     });

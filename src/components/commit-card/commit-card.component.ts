@@ -30,7 +30,6 @@ export class CommitCard {
 
     private readonly REVIEW_QUERY = "?reviewId=";
     private readonly COMMIT_QUERY = "?commitId=";
-    private currentPage: string;
     private _commit: UserCommit;
 
     @Input()
@@ -57,11 +56,11 @@ export class CommitCard {
     }
   
     public openUrl(url: string, isCommitParam: boolean, e: Event){
-        this.currentPage = (this.isReviewPage) ? this.REVIEW_QUERY : this.COMMIT_QUERY;
+        let currentPage = this.isReviewPage ? this.REVIEW_QUERY : this.COMMIT_QUERY;
         let urlToOpen = url;
         if(isCommitParam){
             window.open(urlToOpen, "_blank");
-            urlToOpen = this.currentPage + encodeURIComponent(url);
+            urlToOpen = currentPage + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
         if(e){
