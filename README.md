@@ -31,7 +31,7 @@ Each change of version where the smart contracts have been modified will be nece
 keep the data. For more information about Migrations please see [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
 
  #### Terms and conditions
-This project come with a default terms and conditions text. This text can be modified by adding HTML in the file `src/pages/termsandconditions/termsandconditions.html` or in `src/assets/i18n/[lenguage].json` to the variable `app.termsDescrition`.
+This project come with a default terms and conditions text. This text can be modified by adding HTML in the file `src/pages/termsandconditions/termsandconditions.html` or in `src/assets/i18n/[language].json` to the variable `app.termsDescrition`.
 
  #### More information
 

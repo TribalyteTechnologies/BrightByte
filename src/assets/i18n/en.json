@@ -69,9 +69,9 @@
         "currentReview": "Current Reviews",
         "newTab": "New tab",
         "nobodyReviewed": "Nobody reviewed this commit",
-        "qualityDescription": "<h6>Quality of Code</h6> How much efficient, simple and well-written is the code.",
-        "difficultyDescription": "<h6>Difficulty</h6>How much complex is the problem which this code solves.",
-        "confidenceDescription": "<h6>Reviewer confidence</h6>How much experience do you have with this technology."
+        "qualityDescription": "<h6>Quality of Code</h6> This criterion measures how much the code complies with the software development principles and best practices (e.g. simplicity, cleanliness, readability, maintainability)",
+        "difficultyDescription": "<h6>Difficulty</h6>How much complex is the problem which this code solves?",
+        "confidenceDescription": "<h6>Reviewer confidence</h6>How much expertise do you consider to have in the technologies used in this commit?"
 
     },
     "home": {
