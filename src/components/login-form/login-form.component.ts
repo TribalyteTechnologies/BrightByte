@@ -75,6 +75,10 @@ export class LoginForm {
         }
     }
 
+    public toggleKeepCredentials (){
+        this.isKeepCredentialsOn = !this.isKeepCredentialsOn;
+    }
+
     public openFile (event: Event) {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;

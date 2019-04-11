@@ -11,7 +11,7 @@
 </ion-row>
 <ion-row class="remember">
     <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
-    <ion-row class="text">{{ "app.remember" | translate }}</ion-row>
+    <ion-row class="text" (click)= "toggleKeepCredentials()">{{ "app.remember" | translate }}</ion-row>
 </ion-row>
 <div class="buttons">
     <button class="btn btn--full btn__blue" (click)="login(pass)">{{ "app.login" | translate }}</button>
