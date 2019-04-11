@@ -48,6 +48,7 @@ import { LoginForm } from "../components/login-form/login-form.component";
 import { NewUserForm } from "../components/new-user-form/new-user-form.component";
 import { SetProfileForm } from "../components/set-profile-form/set-profile-form.component";
 import { CommentComponent } from "../components/comment/comment.component";
+import { Achievement } from "../components/achievement/achievement.component";
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { CustomRating } from "../components/custom-rating/custom-rating.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
@@ -70,6 +71,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         DateFormatPipe,
         CommitCard,
         CommentComponent,
+        Achievement,
         LoginForm,
         NewUserForm,
         SetProfileForm,
@@ -104,6 +106,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         TermsAndConditions,
         CommitCard,
         CommentComponent,
+        Achievement,
         LoginForm,
         NewUserForm,
         SetProfileForm,

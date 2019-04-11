@@ -96,39 +96,15 @@
                 </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
-            <ion-row *ngIf="globalSelected" padding class="main-style">
-                <ion-col>
-                    <ion-row class="hor-separator">
-                        <ion-col class="vert-separator">
-                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[0]}}"></ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.tenCommits" | translate }}</ion-row>
-                        </ion-col>
-                        <ion-col class="vert-separator">
-                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[1]}}"></ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.fiftyCommits" | translate }}</ion-row>
-                        </ion-col>
-                        <ion-col>
-                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[2]}}"></ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.hundredCommits" | translate }}</ion-row>
-                        </ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <ion-col class="vert-separator">
-                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[3]}}"></ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.tenReviews" | translate }}</ion-row>
-                        </ion-col>
-                        <ion-col class="vert-separator">
-                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[4]}}"></ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.fiftyReviews" | translate }}</ion-row>
-                        </ion-col>
-                        <ion-col>
-                            <ion-row justify-content-center><img class="ico-trophy" src="../../assets/imgs/trophys/{{userTrophyList[5]}}"></ion-row>
-                            <ion-row justify-content-center class="text-description">{{ "ranking.hundredReviews" | translate }}</ion-row>
+            <ion-row *ngIf="globalSelected && pageLoaded" padding class="achievement-box-style">
+                <ion-col class="box-height">
+                    <ion-row *ngFor="let items of [0,1,2,3]" padding>
+                        <ion-col *ngFor="let i of [(items*4),(items*4)+1,(items*4)+2,(items*4)+3]">
+                            <achievement [empty]="achievementsUnlocked[i].empty" [achievementInfo]="achievementsUnlocked[i]" ></achievement>
                         </ion-col>
                     </ion-row>
                 </ion-col>
             </ion-row>
         </ion-col>
     </ion-row>
-
 </ion-content>

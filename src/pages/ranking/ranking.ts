@@ -8,6 +8,7 @@ import { Account } from "web3/types";
 import { UserDetails } from "../../models/user-details.model";
 import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
+import { Achievement } from "../../models/achievement.model";
 
 class UserRankDetails {
     public name = "";
@@ -50,6 +51,8 @@ export class RankingPage {
     public minutes: number;
     public seconds: number;
     public globalSelected = true;
+    public achievementsUnlocked: Achievement[] = [];
+    public pageLoaded = false;
     private log: ILogger;
     private account: Account;
 
@@ -165,28 +168,54 @@ export class RankingPage {
     }
 
     private setUpTrophys(){
+        this.achievementsUnlocked = [];
         let commits = this.userRankDetails.commits;
         let reviews = this.userRankDetails.reviews;
-        this.userTrophyList = ["t01-off.png", "t02-off.png", "t03-off.png", "t04-off.png", "t05-off.png", "t06-off.png"];
-        if (commits >= 10){
-            this.userTrophyList[0] = "t01-on.png";
-        }
-        if (commits >= 50){
-            this.userTrophyList[1] = "t02-on.png";
-        }
-        if (commits >= 100){
-            this.userTrophyList[2] = "t03-on.png";
-        }
-        if (reviews >= 10){
-            this.userTrophyList[3] = "t04-on.png";
-        }
-        if (reviews >= 50){
-            this.userTrophyList[4] = "t05-on.png";
-        }
-        if (reviews >= 100){
-            this.userTrophyList[5] = "t06-on.png";
-        }
+        let eIndex = this.userRankDetails.engagementIndex;
 
+        let achievements = [new Achievement(false, "First commit", 1, "Commit", "../../assets/imgs/trophys/achievement1.svg"),
+            new Achievement(false, "Newbie", 10, "Commits", "../../assets/imgs/trophys/achievement2.svg"),
+            new Achievement(false, "Beginner", 50, "Commits", "../../assets/imgs/trophys/achievement3.svg"),
+            new Achievement(false, "Intermediate", 100, "Commits", "../../assets/imgs/trophys/achievement4.svg"),
+            new Achievement(false, "Pro", 250, "Commits", "../../assets/imgs/trophys/achievement5.svg"),
+            new Achievement(false, "Master", 1000, "Commits", "../../assets/imgs/trophys/achievement6.svg"),
+            new Achievement(false, "First review", 1, "Reviews", "../../assets/imgs/trophys/achievement1.svg"),
+            new Achievement(false, "Newbie", 10, "Reviews", "../../assets/imgs/trophys/achievement2.svg"),
+            new Achievement(false, "Beginner", 50, "Reviews", "../../assets/imgs/trophys/achievement3.svg"),
+            new Achievement(false, "Intermediate", 100, "Reviews", "../../assets/imgs/trophys/achievement4.svg"),
+            new Achievement(false, "Pro", 250, "Reviews", "../../assets/imgs/trophys/achievement5.svg"),
+            new Achievement(false, "Master", 1000, "Reviews", "../../assets/imgs/trophys/achievement6.svg"),
+            new Achievement(false, "First peak", 5, "EIndex", "../../assets/imgs/trophys/achievement1.svg"),
+            new Achievement(false, "Newbie", 25, "EIndex", "../../assets/imgs/trophys/achievement2.svg"),
+            new Achievement(false, "Beginner", 100, "EIndex", "../../assets/imgs/trophys/achievement3.svg"),
+            new Achievement(false, "Intermediate", 250, "EIndex", "../../assets/imgs/trophys/achievement4.svg"),
+            new Achievement(false, "Pro", 500, "EIndex", "../../assets/imgs/trophys/achievement5.svg"),
+            new Achievement(false, "Master", 1000, "EIndex", "../../assets/imgs/trophys/achievement6.svg")];
+
+        
+
+        let evaluateCond = (init: number, end: number, paramVal: number, ranges: number[]) => {
+            let stop = false;
+            for(let i = ranges.length - 1; i >= 0; i--){
+                if (paramVal >= ranges[i] && !stop){
+                    for(let z = init; z <= init + (end - ( end - i )); z++){
+                        this.achievementsUnlocked.push(achievements[z]);
+                    }
+                    stop = true;
+                }
+            }
+        };
+
+        evaluateCond(0, 5, commits, [1, 10, 50, 100, 250, 1000]);
+        evaluateCond(6, 11, reviews, [1, 10, 50, 100, 250, 1000]);
+        evaluateCond(12, 17, eIndex, [5, 25, 100, 250, 500, 1000]);
+
+        
+        for(let i = this.achievementsUnlocked.length; i < 16; i++){
+            this.achievementsUnlocked.push(new Achievement);
+        }
+        this.log.w(this.achievementsUnlocked);
+        this.pageLoaded = true;
     }
 
     private parseInt (ind: string): number {
