@@ -1,9 +1,9 @@
-<ion-grid *ngIf="!empty; else unknown" no-padding no-margin>
+<ion-grid *ngIf="!isEmpty; else unknownAchievement" no-padding no-margin>
     <ion-row class="text-details text-details--bold" justify-content-center>
         {{ achievementInfo.tittle }}
     </ion-row>
     <ion-row justify-content-center>
-        <img class="ico-trophy" src="{{ achievementInfo.iconPath }}">
+        <img class="ico-trophy" [src]="achievementInfo.iconPath">
     </ion-row>
     <ion-row justify-content-center>
         <ion-col class="centered">
@@ -16,7 +16,7 @@
         </ion-col>
     </ion-row>
 </ion-grid>
-<ng-template #unknown>
+<ng-template #unknownAchievement>
     <ion-grid class="ico-trophy" no-padding no-margin>
         <ion-row class="mega-interrogation" justify-content-center>?</ion-row>
     </ion-grid>

@@ -51,8 +51,8 @@ export class RankingPage {
     public minutes: number;
     public seconds: number;
     public globalSelected = true;
-    public achievementsUnlocked: Achievement[] = [];
-    public pageLoaded = false;
+    public achievementsUnlocked = new Array<Achievement>();
+    public isPageLoaded = false;
     private log: ILogger;
     private account: Account;
 
@@ -168,10 +168,25 @@ export class RankingPage {
     }
 
     private setUpTrophys(){
-        this.achievementsUnlocked = [];
+        this.achievementsUnlocked = new Array<Achievement>();
         let commits = this.userRankDetails.commits;
         let reviews = this.userRankDetails.reviews;
         let eIndex = this.userRankDetails.engagementIndex;
+
+        this.achievementsUnlocked = this.achievementsUnlocked.concat(
+            this.getCurrentUnlockedAchievements(0, commits, [1, 10, 50, 100, 250, 1000]));
+        this.achievementsUnlocked = this.achievementsUnlocked.concat(
+            this.getCurrentUnlockedAchievements(6, reviews, [1, 10, 50, 100, 250, 1000]));
+        this.achievementsUnlocked = this.achievementsUnlocked.concat(
+            this.getCurrentUnlockedAchievements(12, eIndex, [5, 25, 100, 250, 500, 1000]));
+
+        for(let i = this.achievementsUnlocked.length; i < 16; i++){
+            this.achievementsUnlocked.push(new Achievement);
+        }
+        this.isPageLoaded = true;
+    }
+
+    private getCurrentUnlockedAchievements(init: number, paramVal: number, ranges: number[]): Array<Achievement>{
 
         let achievements = [new Achievement(false, "First commit", 1, "Commit", "../../assets/imgs/trophys/achievement1.svg"),
             new Achievement(false, "Newbie", 10, "Commits", "../../assets/imgs/trophys/achievement2.svg"),
@@ -192,30 +207,19 @@ export class RankingPage {
             new Achievement(false, "Pro", 500, "EIndex", "../../assets/imgs/trophys/achievement5.svg"),
             new Achievement(false, "Master", 1000, "EIndex", "../../assets/imgs/trophys/achievement6.svg")];
 
-        
+        let achievementOfParam = new Array<Achievement>();
 
-        let evaluateCond = (init: number, end: number, paramVal: number, ranges: number[]) => {
-            let stop = false;
-            for(let i = ranges.length - 1; i >= 0; i--){
-                if (paramVal >= ranges[i] && !stop){
-                    for(let z = init; z <= init + (end - ( end - i )); z++){
-                        this.achievementsUnlocked.push(achievements[z]);
-                    }
-                    stop = true;
+        let stop = false;
+        for(let i = ranges.length - 1; i >= 0; i--){
+            if (paramVal >= ranges[i] && !stop){
+                for(let z = init; z <= init + i; z++){
+                    achievementOfParam.push(achievements[z]);
                 }
+                stop = true;
             }
-        };
-
-        evaluateCond(0, 5, commits, [1, 10, 50, 100, 250, 1000]);
-        evaluateCond(6, 11, reviews, [1, 10, 50, 100, 250, 1000]);
-        evaluateCond(12, 17, eIndex, [5, 25, 100, 250, 500, 1000]);
-
-        
-        for(let i = this.achievementsUnlocked.length; i < 16; i++){
-            this.achievementsUnlocked.push(new Achievement);
         }
-        this.log.w(this.achievementsUnlocked);
-        this.pageLoaded = true;
+
+        return achievementOfParam;
     }
 
     private parseInt (ind: string): number {

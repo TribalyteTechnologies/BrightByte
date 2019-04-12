@@ -96,11 +96,11 @@
                 </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
-            <ion-row *ngIf="globalSelected && pageLoaded" padding class="achievement-box-style">
+            <ion-row *ngIf="globalSelected && isPageLoaded" padding class="achievement-box-style">
                 <ion-col class="box-height">
-                    <ion-row *ngFor="let items of [0,1,2,3]" padding>
-                        <ion-col *ngFor="let i of [(items*4),(items*4)+1,(items*4)+2,(items*4)+3]">
-                            <achievement [empty]="achievementsUnlocked[i].empty" [achievementInfo]="achievementsUnlocked[i]" ></achievement>
+                    <ion-row *ngFor="let rowIndex of [0,1,2,3]" padding>
+                        <ion-col *ngFor="let i of [(rowIndex*4),(rowIndex*4)+1,(rowIndex*4)+2,(rowIndex*4)+3]">
+                            <achievement [isEmpty]="achievementsUnlocked[i].isEmpty" [achievementInfo]="achievementsUnlocked[i]" ></achievement>
                         </ion-col>
                     </ion-row>
                 </ion-col>

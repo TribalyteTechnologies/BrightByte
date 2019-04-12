@@ -3,13 +3,13 @@ export class Achievement {
     public quantity: number; 
     public parameter: string; 
     public iconPath: string;
-    public empty: boolean;
+    public isEmpty: boolean;
 
-    public constructor(empty = true, tittle?: string, quantity?: number, parameter?: string, iconPath?: string){
+    public constructor(isEmpty = true, tittle?: string, quantity?: number, parameter?: string, iconPath?: string){
         this.tittle = tittle;
         this.quantity = quantity;
         this.parameter = parameter;
         this.iconPath = iconPath;
-        this.empty = empty;
+        this.isEmpty = isEmpty;
     }
 }

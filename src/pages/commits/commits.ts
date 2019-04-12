@@ -104,6 +104,14 @@ export class CommitPage {
         });
     }
 
+    public openAchievementDialog() {
+        let popover = this.popoverCtrl.create(AddCommitPopover, {},  {cssClass: "add-commit-popover"});
+        popover.present();
+        popover.onDidDismiss(() => {
+            this.refresh();
+        });
+    }
+
     public setThumbs(url: string, index: number, value: number) {
         this.spinnerService.showLoader();
         this.contractManagerService.setThumbReviewForComment(url, index, value)

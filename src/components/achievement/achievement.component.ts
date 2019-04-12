@@ -7,13 +7,13 @@ import { Component, Input } from "@angular/core";
     styles: ["achievement.component.scss"]
  })
 
-export class Achievement {
+export class AchievementComponent {
 
     @Input()
-    public empty = false;
+    public isEmpty = false;
 
     @Input()
-    public achievementInfo: Achievement;
+    public achievementInfo: AchievementComponent;
 
     
 }
