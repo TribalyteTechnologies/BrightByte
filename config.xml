@@ -2,7 +2,7 @@
 <widget id="com.tribalyte.brightbyteapp" version="0.4.0" xmlns="http://tech.tribalyte.eu/" xmlns:cdv="">
     <name>BrightByte</name>
     <description>BrightByte</description>
-    <author email="info@tribalyte.com" href="http://tech.tribalyte.eu/">The Tribalyte team. Alonso Rodriguez Rodriguez</author>
+    <author email="info@tribalyte.com" href="http://tech.tribalyte.eu/">Tribalyte Technologies S.L.</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
