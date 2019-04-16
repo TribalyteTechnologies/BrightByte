@@ -201,5 +201,10 @@
         "error": "Error",
         "accept": "Accept",
         "cancel": "Cancel"
+    },
+    "achievements": {
+        "continue": "Continue",
+        "unlockedAchievement": "You have unlocked a new achievement",
+        "congratulations": "Congratulations!"
     }
 }

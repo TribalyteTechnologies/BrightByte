@@ -14,7 +14,7 @@ import { LoginPage } from "../pages/login/login";
 import { RankingPage } from "../pages/ranking/ranking";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { TermsAndConditions } from "../pages/termsandconditions/termsandconditions";
-
+import { AchievementPopOver } from "../pages/achievementpopover/achievementpopover";
 
 
 // Providers
@@ -28,6 +28,7 @@ import { DateFormatPipe } from "../core/date-format.pipe";
 import { SpinnerService } from "../core/spinner.service";
 import { SessionStorageService } from "../core/session-storage.service";
 import { LocalStorageService } from "../core/local-storage.service";
+import { AchievementService } from "../core/achievement.service";
 
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
@@ -69,6 +70,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         RankingPage,
         AddCommitPopover,
         TermsAndConditions,
+        AchievementPopOver,
         DateFormatPipe,
         CommitCard,
         CommentComponent,
@@ -105,6 +107,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         RankingPage,
         AddCommitPopover,
         TermsAndConditions,
+        AchievementPopOver,
         CommitCard,
         CommentComponent,
         AchievementComponent,
@@ -125,6 +128,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         LocalStorageService,
         SessionStorageService,
         BitbucketService,
+        AchievementService,
         UserLoggerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,

@@ -15,5 +15,8 @@ export class AchievementComponent {
     @Input()
     public achievementInfo: AchievementComponent;
 
+    @Input()
+    public big = false;
+
     
 }

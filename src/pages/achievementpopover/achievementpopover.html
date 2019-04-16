@@ -1,0 +1,20 @@
+<ion-content class="header-space">
+    <ion-col col-12 margin>
+        <ion-row justify-content-center>
+            <h1  no-margin class="header-text">{{ "achievements.congratulations" | translate }}</h1>
+        </ion-row>
+        <ion-row class="header-space" justify-content-center>
+            <h6 no-margin class="header-text">{{ "achievements.unlockedAchievement" | translate }}</h6>
+        </ion-row>
+    </ion-col>
+    <ion-col>
+        <achievement [big]="true" [achievementInfo]="achievement" ></achievement>
+    </ion-col>
+    <ion-col>
+        <ion-row justify-content-center margin class="button-space">
+            <button ion-button round class="home-button button-lowercase" (click)="hidePopover()">
+                {{ "achievements.continue" | translate }}
+            </button>  
+        </ion-row>  
+    </ion-col> 
+</ion-content>

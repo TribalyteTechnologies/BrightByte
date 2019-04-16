@@ -293,6 +293,32 @@
 
 /*----------- TAB BUTTONS ----------*/
 
+.achievement-popover {
+
+    .popover-md {
+        top: 60px;
+        width: 400px;
+    }
+
+    .popover-content {
+        top: 60px;
+        width: 400px;
+        background: transparent;
+        background-color: transparent;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+
+        ion-content {
+            background: transparent;
+            background-color: transparent;
+
+            .scroll-content {
+                overflow: hidden;
+            }
+        }
+    }
+}
+
 .tab {
     height: 60px;
     width: 100%;

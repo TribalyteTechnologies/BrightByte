@@ -3,6 +3,7 @@ import { NavController, PopoverController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { HttpClient } from "@angular/common/http";
 import { AddCommitPopover } from "../../pages/addcommit/addcommit";
+import { AchievementPopOver } from "../../pages/achievementpopover/achievementpopover";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { UserCommit } from "../../models/user-commit.model";
@@ -10,6 +11,8 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
+import { Achievement } from "../../models/achievement.model";
+import { AchievementService } from "../../core/achievement.service";
 
 @Component({
     selector: "page-commits",
@@ -34,6 +37,8 @@ export class CommitPage {
     public filterIsPending = false;
     public msg: string;
     private log: ILogger;
+    private numberOfCommits = -1;
+    private newCommit =  false;
 
 
     constructor(
@@ -44,6 +49,7 @@ export class CommitPage {
         public spinnerService: SpinnerService,
         public storageSrv: SessionStorageService,
         private contractManagerService: ContractManagerService,
+        private achievementSrv: AchievementService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
@@ -63,6 +69,12 @@ export class CommitPage {
             .then((commitConcat: UserCommit[]) => {
                 this.log.d("User Commits received");
                 commits = commitConcat;
+                if (this.numberOfCommits !== commits.length){
+                    if (this.numberOfCommits !== -1){
+                        this.newCommit = true;
+                    }
+                    this.numberOfCommits = commits.length;
+                }
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
@@ -85,6 +97,13 @@ export class CommitPage {
                     let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
+                if (this.newCommit){
+                    this.newCommit = false;
+                    let achievement = this.achievementSrv.checkForNewAchievementAndReturn(this.numberOfCommits, "commits");
+                    if (achievement){
+                        this.openAchievementDialog(achievement);
+                    }
+                }
                 
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
@@ -104,8 +123,8 @@ export class CommitPage {
         });
     }
 
-    public openAchievementDialog() {
-        let popover = this.popoverCtrl.create(AddCommitPopover, {},  {cssClass: "add-commit-popover"});
+    public openAchievementDialog(achievement: Achievement) {
+        let popover = this.popoverCtrl.create(AchievementPopOver, {achievement},  {cssClass: "achievement-popover"});
         popover.present();
         popover.onDidDismiss(() => {
             this.refresh();

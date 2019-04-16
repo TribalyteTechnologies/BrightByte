@@ -4,6 +4,10 @@ achievement {
         height: 100px;
     }
 
+    .ico-trophy-big {
+        height: 220px;
+    }
+
     .mega-interrogation {
         font-size: 120px;
         font-weight: bold;
@@ -17,8 +21,20 @@ achievement {
         transform: translate(-51%, -49%);
     }
 
+    .centered-big {
+        position: absolute;
+        top: 56%;
+        transform: translate(-51%, -49%);
+    }
+
     .achievement-tittle {
         font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .achievement-tittle-big {
+        font-size: 25px;
         font-weight: bold;
         margin-bottom: 5px;
     }
@@ -30,10 +46,31 @@ achievement {
         font-weight: bold;
     }
 
+    .achievement-number-big {
+        font-size: 75px;
+        color: white;
+        letter-spacing: -5px;
+        font-weight: bold;
+    }
+
     .achievement-text {
         font-size: 9px;
         font-weight: bold;
         color: white;
         padding-left: 7px;
+    }
+
+    .achievement-text-big {
+        font-size: 15px;
+        font-weight: bold;
+        color: white;
+        padding-left: 7px;
+    }
+
+    .text-details-big {
+        line-height: 25px;
+        font-size: 25px;
+        color: white;
+        margin-bottom: 10px;
     }
 }

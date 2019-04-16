@@ -9,6 +9,8 @@ import { UserDetails } from "../../models/user-details.model";
 import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
 import { Achievement } from "../../models/achievement.model";
+import { AchievementService } from "../../core/achievement.service";
+
 
 class UserRankDetails {
     public name = "";
@@ -61,7 +63,8 @@ export class RankingPage {
         private translateService: TranslateService,
         public loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
-        private loginService: LoginService
+        private loginService: LoginService,
+        private achievementSrv: AchievementService
     ) {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
@@ -173,53 +176,8 @@ export class RankingPage {
         let reviews = this.userRankDetails.reviews;
         let eIndex = this.userRankDetails.engagementIndex;
 
-        this.achievementsUnlocked = this.achievementsUnlocked.concat(
-            this.getCurrentUnlockedAchievements(0, commits, [1, 10, 50, 100, 250, 1000]));
-        this.achievementsUnlocked = this.achievementsUnlocked.concat(
-            this.getCurrentUnlockedAchievements(6, reviews, [1, 10, 50, 100, 250, 1000]));
-        this.achievementsUnlocked = this.achievementsUnlocked.concat(
-            this.getCurrentUnlockedAchievements(12, eIndex, [5, 25, 100, 250, 500, 1000]));
-
-        for(let i = this.achievementsUnlocked.length; i < 16; i++){
-            this.achievementsUnlocked.push(new Achievement);
-        }
+        this.achievementsUnlocked = this.achievementSrv.getCurrentUnlockedAchievements(commits, reviews, eIndex);
         this.isPageLoaded = true;
-    }
-
-    private getCurrentUnlockedAchievements(init: number, paramVal: number, ranges: number[]): Array<Achievement>{
-
-        let achievements = [new Achievement(false, "First commit", 1, "Commit", "../../assets/imgs/trophys/achievement1.svg"),
-            new Achievement(false, "Newbie", 10, "Commits", "../../assets/imgs/trophys/achievement2.svg"),
-            new Achievement(false, "Beginner", 50, "Commits", "../../assets/imgs/trophys/achievement3.svg"),
-            new Achievement(false, "Intermediate", 100, "Commits", "../../assets/imgs/trophys/achievement4.svg"),
-            new Achievement(false, "Pro", 250, "Commits", "../../assets/imgs/trophys/achievement5.svg"),
-            new Achievement(false, "Master", 1000, "Commits", "../../assets/imgs/trophys/achievement6.svg"),
-            new Achievement(false, "First review", 1, "Reviews", "../../assets/imgs/trophys/achievement1.svg"),
-            new Achievement(false, "Newbie", 10, "Reviews", "../../assets/imgs/trophys/achievement2.svg"),
-            new Achievement(false, "Beginner", 50, "Reviews", "../../assets/imgs/trophys/achievement3.svg"),
-            new Achievement(false, "Intermediate", 100, "Reviews", "../../assets/imgs/trophys/achievement4.svg"),
-            new Achievement(false, "Pro", 250, "Reviews", "../../assets/imgs/trophys/achievement5.svg"),
-            new Achievement(false, "Master", 1000, "Reviews", "../../assets/imgs/trophys/achievement6.svg"),
-            new Achievement(false, "First peak", 5, "EIndex", "../../assets/imgs/trophys/achievement1.svg"),
-            new Achievement(false, "Newbie", 25, "EIndex", "../../assets/imgs/trophys/achievement2.svg"),
-            new Achievement(false, "Beginner", 100, "EIndex", "../../assets/imgs/trophys/achievement3.svg"),
-            new Achievement(false, "Intermediate", 250, "EIndex", "../../assets/imgs/trophys/achievement4.svg"),
-            new Achievement(false, "Pro", 500, "EIndex", "../../assets/imgs/trophys/achievement5.svg"),
-            new Achievement(false, "Master", 1000, "EIndex", "../../assets/imgs/trophys/achievement6.svg")];
-
-        let achievementOfParam = new Array<Achievement>();
-
-        let stop = false;
-        for(let i = ranges.length - 1; i >= 0; i--){
-            if (paramVal >= ranges[i] && !stop){
-                for(let z = init; z <= init + i; z++){
-                    achievementOfParam.push(achievements[z]);
-                }
-                stop = true;
-            }
-        }
-
-        return achievementOfParam;
     }
 
     private parseInt (ind: string): number {
