@@ -1,10 +1,14 @@
 import { ILogger, LoggerService } from "./logger.service";
+import { PopoverController } from "ionic-angular";
 import { Injectable } from "@angular/core";
 import { Achievement } from "../models/achievement.model";
+import { AchievementPopOver } from "../pages/achievementpopover/achievementpopover";
 
 @Injectable()
 export class AchievementService {
 
+    public readonly COMMIT_ID = 0;
+    public readonly REVIEW_ID = 1;
     private readonly ACHIEVEMENTS = [new Achievement(false, "First commit", 1, "Commit", "../../assets/imgs/trophys/achievement1.svg"),
         new Achievement(false, "Newbie", 10, "Commits", "../../assets/imgs/trophys/achievement2.svg"),
         new Achievement(false, "Beginner", 50, "Commits", "../../assets/imgs/trophys/achievement3.svg"),
@@ -27,24 +31,21 @@ export class AchievementService {
     private readonly INIT_INDEXES = [0, 6, 12];
     private log: ILogger;
             
-    constructor(loggerSrv: LoggerService) {
+    constructor(
+        private loggerSrv: LoggerService,
+        private popoverCtrl: PopoverController){
 
-        this.log = loggerSrv.get("AchievementService");
+        this.log = this.loggerSrv.get("AchievementService");
     }
 
     public getCurrentUnlockedAchievements(numCommits: number, numReviews: number, numEIndex: number): Array<Achievement>{
-
         let params = [numCommits, numReviews, numEIndex];
         let currentAchievements = new Array<Achievement>();
-        
         let stop = false;
-        
 
         for(let w = 0; w < params.length; w++){
             let paramVal = params[w];
             stop = false;
-            
-            
             for(let i = this.RANGES[w].length; i >= 0; i--){
                 if (paramVal >= this.RANGES[w][i] && !stop){
                     for(let z = this.INIT_INDEXES[w]; z <= this.INIT_INDEXES[w] + i; z++){
@@ -62,25 +63,27 @@ export class AchievementService {
         return currentAchievements;
     }
 
-    public checkForNewAchievementAndReturn(paramVal: number, paramName: string): Achievement{
-        let idParam = -1;
+    public checkForNewAchievement(paramVal: number, idParam: number){
+        let achievement = null;
 
-        if (paramName === "commits"){
-            idParam = 0;
-        }else if (paramName === "reviews"){
-            idParam = 1;
-        }else{
-            this.log.e("Wrong param name");
-            return null;
-        }
-
-        for(let i = this.RANGES[idParam].length; i >= 0; i--){
-            if (paramVal === this.RANGES[idParam][i]){
-                    return this.ACHIEVEMENTS[this.INIT_INDEXES[idParam] + i];
+        if (idParam === 0 || idParam === 1){
+            for(let i = this.RANGES[idParam].length; i >= 0; i--){
+                if (paramVal === this.RANGES[idParam][i]){
+                        achievement = this.ACHIEVEMENTS[this.INIT_INDEXES[idParam] + i];
+                }
             }
         }
 
-        return null;
+        if (achievement){
+            this.openAchievementDialog(achievement);
+        }
     }
+
+    private openAchievementDialog(achievement: Achievement) {
+        let popover = this.popoverCtrl.create(AchievementPopOver, {achievement},  {cssClass: "achievement-popover"});
+        popover.present();
+    }
+
+    
 
 }

@@ -9,9 +9,7 @@ import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
-import { Achievement } from "../../models/achievement.model";
 import { AchievementService } from "../../core/achievement.service";
-import { AchievementPopOver } from "../achievementpopover/achievementpopover";
 
 @Component({
     selector: "page-review",
@@ -57,7 +55,7 @@ export class ReviewPage {
     
     private log: ILogger;
     private numberOfReviews = -1;
-    private newReview = false;
+    private isNewReview = false;
 
     constructor(
         public popoverCtrl: PopoverController,
@@ -90,7 +88,7 @@ export class ReviewPage {
                 commits = commitConcat[0].concat(commitConcat[1]);
                 if (this.numberOfReviews !== commitConcat[1].length){
                     if (this.numberOfReviews !== -1){
-                        this.newReview = true;
+                        this.isNewReview = true;
                     }
                     this.numberOfReviews = commitConcat[1].length;
                 }
@@ -136,12 +134,9 @@ export class ReviewPage {
                     let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
-                if (this.newReview){
-                    this.newReview = false;
-                    let achievement = this.achievementSrv.checkForNewAchievementAndReturn(this.numberOfReviews, "reviews");
-                    if (achievement){
-                        this.openAchievementDialog(achievement);
-                    }
+                if (this.isNewReview){
+                    this.isNewReview = false;
+                    this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
                 }
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
@@ -151,14 +146,6 @@ export class ReviewPage {
                     });
                 this.spinnerService.hideLoader();
             });       
-    }
-
-    public openAchievementDialog(achievement: Achievement) {
-        let popover = this.popoverCtrl.create(AchievementPopOver, {achievement},  {cssClass: "achievement-popover"});
-        popover.present();
-        popover.onDidDismiss(() => {
-            this.refresh();
-        });
     }
 
     public openUrl(url: string){

@@ -2,10 +2,10 @@ achievement {
 
     .ico-trophy {
         height: 100px;
-    }
 
-    .ico-trophy-big {
-        height: 220px;
+        &.big {
+            height: 220px;
+        }
     }
 
     .mega-interrogation {
@@ -19,24 +19,25 @@ achievement {
         top: 56%;
         left: 49%;
         transform: translate(-51%, -49%);
-    }
 
-    .centered-big {
-        position: absolute;
-        top: 56%;
-        transform: translate(-51%, -49%);
+        &.big {
+            position: absolute;
+            top: 56%;
+            left: auto;
+            transform: translate(-51%, -49%);
+        }
     }
 
     .achievement-tittle {
         font-size: 13px;
         font-weight: bold;
         margin-bottom: 5px;
-    }
 
-    .achievement-tittle-big {
-        font-size: 25px;
-        font-weight: bold;
-        margin-bottom: 5px;
+        &.big {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
     }
 
     .achievement-number {
@@ -44,13 +45,13 @@ achievement {
         color: white;
         letter-spacing: -5px;
         font-weight: bold;
-    }
 
-    .achievement-number-big {
-        font-size: 75px;
-        color: white;
-        letter-spacing: -5px;
-        font-weight: bold;
+        &.big {
+            font-size: 75px;
+            color: white;
+            letter-spacing: -5px;
+            font-weight: bold;
+        }
     }
 
     .achievement-text {
@@ -58,13 +59,13 @@ achievement {
         font-weight: bold;
         color: white;
         padding-left: 7px;
-    }
 
-    .achievement-text-big {
-        font-size: 15px;
-        font-weight: bold;
-        color: white;
-        padding-left: 7px;
+        &.big {
+            font-size: 15px;
+            font-weight: bold;
+            color: white;
+            padding-left: 7px;
+        }
     }
 
     .text-details-big {

@@ -1,16 +1,16 @@
 <ion-grid *ngIf="!isEmpty; else unknownAchievement" no-padding no-margin>
-    <ion-row [ngClass]="(big ? 'text-details-big ' : 'text-details ') + 'text-details--bold'" justify-content-center>
+    <ion-row [ngClass]="(isBig ? 'text-details-big ' : 'text-details ') + 'text-details--bold'" justify-content-center>
         {{ achievementInfo.tittle }}
     </ion-row>
     <ion-row justify-content-center>
-        <img [ngClass]="big ? 'ico-trophy-big' : 'ico-trophy'" [src]="achievementInfo.iconPath">
+        <img class="ico-trophy" [ngClass]="{ 'big' : isBig }" [src]="achievementInfo.iconPath">
     </ion-row>
     <ion-row justify-content-center>
-        <ion-col [ngClass]="big ? 'centered-big' : 'centered'">
-            <ion-row [ngClass]="big ? 'achievement-number-big' : 'achievement-number'" justify-content-center>
+        <ion-col class="centered" [ngClass]="{ 'big' : isBig }">
+            <ion-row class="achievement-number" [ngClass]="{ 'big' : isBig }" justify-content-center>
                 {{ achievementInfo.quantity }}
             </ion-row>
-            <ion-row [ngClass]="big ? 'achievement-text-big' : 'achievement-text'" justify-content-center>
+            <ion-row class="achievement-text" [ngClass]="{ 'big' : isBig }" justify-content-center>
                 {{ achievementInfo.parameter }}
             </ion-row>
         </ion-col>
