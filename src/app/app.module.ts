@@ -35,6 +35,7 @@ import { ContractManagerService } from "../domain/contract-manager.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
 import { UserLoggerService } from "../domain/user-logger.service";
 import { BitbucketService } from "../domain/bitbucket.service";
+import { UserCacheService } from "../domain/user-cache.service";
 
 
 //Modules
@@ -126,6 +127,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         BitbucketService,
         AchievementService,
         UserLoggerService,
+        UserCacheService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         AppVersionService,
