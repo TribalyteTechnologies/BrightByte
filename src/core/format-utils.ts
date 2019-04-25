@@ -15,13 +15,17 @@ export class FormatUtils {
     }
 
     public static getProjectFromUrl(url: string){
-        let project: string = this.PROJECT_FROM_URL_1.exec(url)[0];
-        project = this.PROJECT_FROM_URL_2.exec(project)[0];
-        return project;
+        let project: string;
+        if (url){
+            project = this.PROJECT_FROM_URL_1.exec(url)[0];
+            project = this.PROJECT_FROM_URL_2.exec(project)[0];
+        }
+        return project ? project : null;
     }
 
     public static getHashFromUrl(url: string){
-        return this.HASH_FROM_URL.exec(url)[0];
+
+        return url ? this.HASH_FROM_URL.exec(url)[0] : null;
     }
 }
 
