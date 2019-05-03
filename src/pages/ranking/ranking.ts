@@ -139,7 +139,7 @@ export class RankingPage {
         .then((season: number[]) => {
             this.numberOfSeasons = season[0];
             this.seasonFinale = season[1] * 1000;
-            let date = new Date(this.seasonFinale * 1000);
+            let date = new Date(this.seasonFinale);
             this.log.d("The current season is the number: " + this.numberOfSeasons + ", that ends the" + date);
         }).catch((e) => {
             this.translateService.get("ranking.getSeasonNumbers").subscribe(
