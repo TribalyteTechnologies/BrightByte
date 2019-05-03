@@ -10,6 +10,6 @@ module.exports = function(deployer) {
         return deployer.deploy(Commits);
     }).then(function() {
         console.log("Deploying Root contract. Addresses: ", [Bright.address, Commits.address]);
-        return deployer.deploy(Root, Bright.address, Commits.address);
+        return deployer.deploy(Root, Bright.address, Commits.address, 1, 1550047598);
       });
 };
