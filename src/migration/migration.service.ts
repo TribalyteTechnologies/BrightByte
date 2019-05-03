@@ -7,7 +7,9 @@ import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import { Account } from "web3/types";
 import { ContractManagerService } from "../domain/contract-manager.service";
-
+import { AlertController, LoadingController } from "ionic-angular";
+import { TranslateService } from "@ngx-translate/core";
+import { LoginService } from "../core/login.service";
 
 interface ITrbSmartContact { //Web3.Eth.Contract
     [key: string]: any;
@@ -19,32 +21,102 @@ interface ITrbSmartContractJson    {
 
 @Injectable()
 export class MigrationService {
+    
+    public msg: string;
+    public text: any;
     private contractAddressRootV030: string;
     private contractAddressBrightV030: string;
     private contractAddressCommitsV030: string;
     private initPromV030: Promise<Array<ITrbSmartContact>>;
     private log: ILogger;
     private web3: Web3;
+    private web3Source: Web3;
     private currentUser;
 
     constructor(
         private http: HttpClient,
         private web3Service: Web3Service,
         private loggerSrv: LoggerService,
-        private contractManagerService: ContractManagerService
+        private contractManagerService: ContractManagerService,
+        private alertCtrl: AlertController,
+        private loadingCtrl: LoadingController,
+        private translateService: TranslateService,
+        private loginService: LoginService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
+        this.web3Source = web3Service.getWeb3Source();
         this.web3Service = web3Service;
+    }
+
+
+    public buttonMigrate(pass: string, text) {
+        let alert = this.alertCtrl.create({
+            title: this.obtainTransaltion("migration.migrationTitle"),
+            subTitle: this.obtainTransaltion("migration.migrationSuc"),
+            buttons: [this.obtainTransaltion("alerts.accept")]
+        });
+
+        let alertError = this.alertCtrl.create({
+            title: this.obtainTransaltion("alerts.error"),
+            subTitle: this.obtainTransaltion("migration.migrationErr"),
+            buttons: [this.obtainTransaltion("alerts.accept")]
+        });
+
+        let loader = this.loadingCtrl.create();
+        loader.present();
+        try {
+            this.log.d("File imported: ", text);
+            if (text === undefined) {
+                this.log.e("File not loaded");
+                this.translateService.get("app.fileNotLoaded").subscribe(
+                    msg => {
+                        loader.dismiss();
+                        this.msg = msg;
+                    });
+            } else {
+                let account = this.web3Service.getWeb3().eth.accounts.decrypt(text, pass);
+                this.log.d("Imported account from the login file: ", account);
+                this.loginService.setAccount(account);
+                this.contractManagerService.init(account, 0)
+                    .then(() => {
+                        return this.initOld(account, 0);
+                    }).then((result) => {
+                        return this.getUserMigration();
+                    }).then((result) => {
+                        loader.dismiss();
+                        alert.present();
+                    })
+                    .catch((e) => {
+                        window.alert(e);
+                        this.translateService.get("app.noRpc").subscribe(
+                            msg => {
+                                loader.dismiss();
+                                this.msg = msg;
+                            });
+                        this.log.e("ERROR getting user or checking if this user has already set his profile: ", e);
+                        loader.dismiss();
+                        alertError.present();
+                    });
+
+            }
+        } catch (e) {
+            this.translateService.get("app.wrongPassword").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                    loader.dismiss();
+                });
+        }
     }
 
     /////////////////MIGRATION FROM v0.3.0 to v0.4.0/////////////////////////
 
     public initOld(user: Account, cont: number): Promise<any> {
         AppConfig.CURRENT_NODE_INDEX = cont;
-        let configNet = AppConfig.NETWORK_CONFIG[cont];
+        let configNet = AppConfig.NETWORK_CONFIG_SOURCE[cont];
         this.web3Service = new Web3Service(this.loggerSrv);
-        this.web3 = this.web3Service.getWeb3();
+        this.web3Source = this.web3Service.getWeb3Source();
         this.log.d("Initializing with URL: " + configNet.urlNode);
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
@@ -53,7 +125,7 @@ export class MigrationService {
             .then((jsonContractData: ITrbSmartContractJson   ) => {
                 let truffleContractBright = TruffleContract(jsonContractData);
                 this.contractAddressBrightV030 = truffleContractBright.networks[configNet.netId].address;
-                let contractBright = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBrightV030, {
+                let contractBright = new this.web3Source.eth.Contract(jsonContractData.abi, this.contractAddressBrightV030, {
                     from: this.currentUser.address,
                     gas: configNet.gasLimit,
                     gasPrice: configNet.gasPrice,
@@ -68,7 +140,7 @@ export class MigrationService {
             .then((jsonContractData: ITrbSmartContractJson   ) => {
                 let truffleContractCommits = TruffleContract(jsonContractData);
                 this.contractAddressCommitsV030 = truffleContractCommits.networks[configNet.netId].address;
-                let contractCommits = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressCommitsV030, {
+                let contractCommits = new this.web3Source.eth.Contract(jsonContractData.abi, this.contractAddressCommitsV030, {
                     from: this.currentUser.address,
                     gas: configNet.gasLimit,
                     gasPrice: configNet.gasPrice,
@@ -83,7 +155,7 @@ export class MigrationService {
             .then((jsonContractData: ITrbSmartContractJson   ) => {
                 let truffleContractRoot = TruffleContract(jsonContractData);
                 this.contractAddressRootV030 = truffleContractRoot.networks[configNet.netId].address;
-                let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRootV030, {
+                let contractRoot = new this.web3Source.eth.Contract(jsonContractData.abi, this.contractAddressRootV030, {
                     from: this.currentUser.address,
                     gas: configNet.gasLimit,
                     gasPrice: configNet.gasPrice,
@@ -152,7 +224,7 @@ export class MigrationService {
             let promises = new Array<Promise<any>>();
 
             for(let i = 0; i < emails.length; i++){
-                let promise = brightV030.methods.getAddressByEmail(this.web3.utils.keccak256(emails[i])).call();
+                let promise = brightV030.methods.getAddressByEmail(this.web3Source.utils.keccak256(emails[i])).call();
                 promises.push(promise);
             }
             return Promise.all(promises);
@@ -232,8 +304,10 @@ export class MigrationService {
             for(let i = 0; i < usersHash.length; i++){
                 for(let j = 0; j < reputation.length; j++){
                     if(usersHash[i] === reputation[j][8]){
-                        users[i].globalStats.numberOfTimesReview = reputation[i][2];
+                        users[i].globalStats.numberOfTimesReview = reputation[j][2];
+                        users[i].globalStats.numberOfPoints = reputation[j][3];
                     }
+
                 }
             }
 
@@ -261,6 +335,7 @@ export class MigrationService {
                     let userSeason =  new UserSeason();
                     userSeason.seasonStats.reputation = seasonReputation[counter][1];
                     userSeason.seasonStats.numberOfTimesReview = seasonReputation[counter][2];
+                    userSeason.seasonStats.numberOfPoints = seasonReputation[counter][3];
                     userSeason.seasonStats.agreedPercentage = seasonReputation[counter][5];
                     userSeason.seasonStats.reviewsMade = seasonReputation[counter][7];
                     users[i].seasonData.push(userSeason);
@@ -305,8 +380,10 @@ export class MigrationService {
             commitsUrls = commitsUrl;
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrl.length; i++){
-                let promise = commitV030.methods.getDetailsCommits(commitsUrl[i]).call();
-                promisesAddress.push(promise);
+                if(commitsUrl[i] !== "") {
+                    let promise = commitV030.methods.getDetailsCommits(commitsUrl[i]).call();
+                    promisesAddress.push(promise);
+                }
             }
             return Promise.all(promisesAddress);
 
@@ -316,7 +393,7 @@ export class MigrationService {
             for(let i = 0; i < commitsDetails.length; i++){
                 let commit = new CommitDataMigraton();
                 commit.url = commitsDetails[i][0];
-                let urlKeccak = this.web3.utils.keccak256(commit.url);
+                let urlKeccak = this.web3Source.utils.keccak256(commit.url);
                 commit.title = commitsDetails[i][1];
                 commit.author = commitsDetails[i][2];
                 commit.creationDate = commitsDetails[i][3];
@@ -340,6 +417,17 @@ export class MigrationService {
                         found = true;
                     }
                 }
+            }
+
+            let promisesAddress = new Array<Promise<any>>();
+            for(let i = 0; i < commitsUrls.length; i++){
+                let promise = commitV030.methods.getCommitScore(commitsUrls[i]).call();
+                promisesAddress.push(promise);
+            }
+            return Promise.all(promisesAddress);
+        }).then((commitScores) => {
+            for(let i = 0; i < commitScores.length; i++) {
+                commits[i].points = commitScores[i][1];
             }
            
             let promisesAddress = new Array<Promise<any>>();
@@ -381,9 +469,7 @@ export class MigrationService {
                     let comment = new CommentDataMigration();
                     comment.text = comments[counter][0];
                     comment.user = comments[counter][5];
-                    comment.points.push(comments[counter][1] * 100);
-                    comment.points.push(0);
-                    comment.points.push(0);
+                    comment.points = comments[counter][1];
                     comment.vote = comments[counter][2];
                     comment.creationDateComment = comments[counter][3];
                     comment.lastModificationDateComment = comments[counter][4];                                 
@@ -391,9 +477,20 @@ export class MigrationService {
                     counter ++; 
                 } 
             }
+            
+            users = users.filter(user => {
+                let rightUser = true;
+                AppConfig.formerUsersHash.forEach(hash => {
+                    if(hash === user.hash) {
+                        rightUser = false;
+                    }
+                });
+                return rightUser;
+            });
 
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
+            this.log.d("Setting Comments" + comments);
         
             this.log.d(comments);
             return users.reduce(
@@ -408,7 +505,7 @@ export class MigrationService {
                             user.globalStats.agreedPercentage, 
                             user.globalStats.numberOfTimesReview, user.globalStats.positiveVotes, 
                             user.globalStats.negativeVotes, user.globalStats.reputation,
-                            user.globalStats.reviewsMade).encodeABI(); // Reviews made
+                            user.globalStats.reviewsMade, user.globalStats.numberOfPoints).encodeABI();
                         return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
                     });
                 }, 
@@ -430,7 +527,7 @@ export class MigrationService {
                                         data.seasonStats.agreedPercentage, 
                                         data.seasonStats.numberOfTimesReview, data.seasonStats.positiveVotes, 
                                         data.seasonStats.negativeVotes, data.seasonStats.reputation,
-                                        data.seasonStats.reviewsMade).encodeABI(); // Reviews made
+                                        data.seasonStats.reviewsMade, data.seasonStats.numberOfPoints).encodeABI();
                                     return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
                                 });
                             }, 
@@ -441,7 +538,7 @@ export class MigrationService {
                 Promise.resolve()
             );
 
-        }).then(trxResponse => { 
+        }).then(trxResponse => {
             return users.reduce(
                 (prevVal, user) => {
                     return prevVal.then(() => { 
@@ -470,8 +567,7 @@ export class MigrationService {
                 }, 
                 Promise.resolve()
             );
-        }).then(trxResponse => { 
-
+        }).then(trxResponse => {
             return users.reduce(
                     (prevVal, user) => {
                         return prevVal.then(() => {
@@ -505,7 +601,7 @@ export class MigrationService {
                                         let byteCodeData = brightNew
                                         .methods
                                         .setAllUserDataTwo(
-                                            user.hash,  
+                                            user.hash,
                                             comS, 
                                             finS,
                                             pendS, 
@@ -521,7 +617,6 @@ export class MigrationService {
                 );
 
         }).then(trx => {
-            
             this.log.d("Setting commits");
             return commits.reduce(
                 (prevVal, commit) => {
@@ -534,7 +629,9 @@ export class MigrationService {
                             commit.isReadNeeded, 
                             commit.lastModificationDate,
                             commit.numberReviews,
-                            commit.currentNumberReviews, commit.score).encodeABI();
+                            commit.currentNumberReviews, 
+                            commit.score,
+                            commit.points).encodeABI();
                         return this.contractManagerService.sendTx(byteCodeData, commitNewAddress);
                     });
                 },
@@ -588,43 +685,14 @@ export class MigrationService {
 
     }
 
-    /*
-    private sendTxOwner(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
-        const NODE_PUBLIC_ADDR = "0x";
-        const NODE_PRIVATE_ADDR = "0x";
-        return this.web3.eth.getTransactionCount(NODE_PUBLIC_ADDR, "pending")    //Change the address to the public address of the deployer
-            .then(nonceValue => {
-                let nonce = "0x" + (nonceValue).toString(16);
-                this.log.d("Value NONCE", nonce);
-                let rawtx = {
-                    nonce: nonce,
-                    // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasLimit),
-                    to: contractAddress,
-                    data: bytecodeData
-                };
-                const tx = new Tx(rawtx);
-                let priv = NODE_PRIVATE_ADDR;    //Change the address to the private address of the deployer
-                let privateKey = new Buffer(priv, "hex");
-                tx.sign(privateKey);
-
-                let raw = "0x" + tx.serialize().toString("hex");
-                this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv is 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
-                this.log.d("Raw: ", raw);
-                this.log.d("tx unsign: ", tx);
-                return this.web3.eth.sendSignedTransaction(raw);
-            }).then(transactionHash => {
-                this.log.d("Hash transaction", transactionHash);
-                return transactionHash;
-            }).catch(e => {
-                this.log.e("Error in transaction (sendTx function): ", e);
-                throw e;
+    private obtainTransaltion(translation: string): string{
+        let translatedText = "";
+        this.translateService.get(translation).subscribe(
+            msg => {
+                translatedText = msg;
             });
+        return translatedText;
     }
-    */
 }
 
 class User{
@@ -647,6 +715,7 @@ class UserStats {
     public positiveVotes: number;
     public negativeVotes: number;
     public reviewsMade: number;
+    public numberOfPoints: number;
 }
 
 class UserSeason {
@@ -675,7 +744,7 @@ class CommitDataMigraton{
 class CommentDataMigration{
     public text: string;
     public user;
-    public points = [];
+    public points: number;
     public vote: number; 
     public creationDateComment: number;
     public lastModificationDateComment: number;

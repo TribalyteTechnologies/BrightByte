@@ -459,15 +459,17 @@ export class ContractManagerService {
     public getInitProm(){
         return this.initProm;
     }
+
+    public getContracts(): Promise<Array<ITrbSmartContact>>{
+        return this.initProm;
+    }
     
     public getAddresses(){
-        return this.initProm.then(([bright, commit, root]) => {
-            return ([bright, commit, root]);
-        });
+        return ([this.contractAddressRoot, this.contractAddressBright, this.contractAddressCommits]);
     }
 
     public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
-        return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
+        return this.web3.eth.getTransactionCount(this.currentUser.address)
             .then(nonceValue => {
                 let nonce = "0x" + (nonceValue).toString(16);
                 this.log.d("Value NONCE", nonce);

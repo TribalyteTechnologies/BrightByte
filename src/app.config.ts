@@ -18,7 +18,8 @@ export class AppConfig {
     }];
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
-    AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
+    AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.postingNetwork) : AppConfig.NETWORK_CONFIG_LOCALHOST;
+    public static readonly NETWORK_CONFIG_SOURCE = AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.sourceNetwork);
     public static CURRENT_NODE_INDEX = 0;
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly SCORE_DIVISION_FACTOR = 100;
@@ -45,6 +46,8 @@ export class AppConfig {
         REVIEWID: "reviewId",
         COMMITID: "commitId"
     };
+
+    public static readonly formerUsersHash = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
     
     private static shuffle(array: Array<any>): Array<any> {
         let currentIndex = array.length;
