@@ -293,12 +293,8 @@ export class ContractManagerService {
     }
 
     public getUserDetails(hash: string): Promise<UserDetails> {
-
-        let userDetails = this.userCacheSrv.hasAndReturn(hash);
-        let prom =  Promise.resolve(userDetails);
-        if(!userDetails){
-
-            prom =  this.initProm.then(([bright, commit, root]) => {
+        return this.userCacheSrv.getUser(hash).catch(() => {
+            return this.initProm.then(([bright, commit, root]) => {
                 this.log.d("Public Address: ", this.currentUser.address);
                 this.log.d("Contract artifact", bright);
                 return bright.methods.getUser(hash).call();
@@ -310,8 +306,7 @@ export class ContractManagerService {
                 this.log.e("Error calling BrightByte smart contract :", err);
                 throw err;
             });
-        }
-        return prom;
+        });
     }
 
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
