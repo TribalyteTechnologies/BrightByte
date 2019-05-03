@@ -12,6 +12,7 @@ import { UserDetails } from "../models/user-details.model";
 import { CommitComment } from "../models/commit-comment.model";
 import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
+import { UserCacheService } from "../domain/user-cache.service";
 
 interface ITrbSmartContractJson  {
     abi: Array<any>;
@@ -35,7 +36,8 @@ export class ContractManagerService {
     constructor(
         private http: HttpClient,
         private web3Service: Web3Service,
-        private loggerSrv: LoggerService
+        private loggerSrv: LoggerService,
+        private userCacheSrv: UserCacheService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
@@ -297,15 +299,19 @@ export class ContractManagerService {
     }
 
     public getUserDetails(hash: string): Promise<UserDetails> {
-        return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", bright);
-            return bright.methods.getUser(hash).call();
-        }).then((userVals: Array<any>) => {
-            return UserDetails.fromSmartContract(userVals);
-        }).catch(err => {
-            this.log.e("Error calling BrightByte smart contract :", err);
-            throw err;
+        return this.userCacheSrv.getUser(hash).catch(() => {
+            return this.initProm.then(([bright, commit, root]) => {
+                this.log.d("Public Address: ", this.currentUser.address);
+                this.log.d("Contract artifact", bright);
+                return bright.methods.getUser(hash).call();
+            }).then((userVals: Array<any>) => {
+                let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
+                this.userCacheSrv.set(hash, userValsToUSerDetails);
+                return userValsToUSerDetails;
+            }).catch(err => {
+                this.log.e("Error calling BrightByte smart contract :", err);
+                throw err;
+            });
         });
     }
 
