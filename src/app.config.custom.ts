@@ -1,5 +1,5 @@
 export default {
-  postingNetwork: [
+  postingNetworkList: [
     {
       gasLimit: 2000000,
       gasPrice: 0,
@@ -9,13 +9,12 @@ export default {
       type: "quorum"
     }
   ],
-  sourceNetwork : [
+  sourceNetworkList : [
     {
       gasLimit: 2000000,
       gasPrice: 0,
       netId: 82584648528,
-      urlNode: "http://:22000",
-      type: "quorum"
+      urlNode: "http://:22000"
     }
   ]
 };
