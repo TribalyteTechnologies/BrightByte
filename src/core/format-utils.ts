@@ -4,7 +4,9 @@ export class FormatUtils {
     private static readonly EMAIL_VALIDATOR = /.*@.*\..+$/;
     private static readonly PROJECT_FROM_URL_1 = /([a-zA-Z0-9]+\/(pull-requests|pull-request|commits|commit)\/.+)/;
     private static readonly PROJECT_FROM_URL_2 = /^.[^/]+/;
-    private static readonly HASH_FROM_URL = /[^/]+$/;
+    private static readonly HASH_FROM_URL_1 = /\/(pull-requests|pull-request|commits|commit)\/[^/]+/;
+    private static readonly HASH_FROM_URL_2 = /[^/a-z-].+$/;
+
 
     public static getUrlValidatorPattern(): RegExp{
         return this.URL_VALIDATOR;
@@ -21,7 +23,8 @@ export class FormatUtils {
     }
 
     public static getHashFromUrl(url: string){
-        return this.HASH_FROM_URL.exec(url)[0];
+        let hash = this.HASH_FROM_URL_1.exec(url)[0];
+        return this.HASH_FROM_URL_2.exec(hash)[0];
     }
 }
 
