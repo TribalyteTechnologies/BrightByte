@@ -462,10 +462,6 @@ export class ContractManagerService {
         });
     }
 
-    public getInitProm(){
-        return this.initProm;
-    }
-
     public getContracts(): Promise<Array<ITrbSmartContact>>{
         return this.initProm;
     }

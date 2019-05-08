@@ -23,7 +23,7 @@ interface ITrbSmartContractJson    {
 export class MigrationService {
     
     public msg: string;
-    public text: any;
+    public text: string;
     private contractAddressRootV030: string;
     private contractAddressBrightV030: string;
     private contractAddressCommitsV030: string;
@@ -50,17 +50,17 @@ export class MigrationService {
     }
 
 
-    public buttonMigrate(pass: string, text) {
+    public startMigration(pass: string, text) {
         let alert = this.alertCtrl.create({
-            title: this.obtainTransaltion("migration.migrationTitle"),
-            subTitle: this.obtainTransaltion("migration.migrationSuc"),
-            buttons: [this.obtainTransaltion("alerts.accept")]
+            title: this.obtainTranslation("migration.migrationTitle"),
+            subTitle: this.obtainTranslation("migration.migrationSuc"),
+            buttons: [this.obtainTranslation("alerts.accept")]
         });
 
         let alertError = this.alertCtrl.create({
-            title: this.obtainTransaltion("alerts.error"),
-            subTitle: this.obtainTransaltion("migration.migrationErr"),
-            buttons: [this.obtainTransaltion("alerts.accept")]
+            title: this.obtainTranslation("alerts.error"),
+            subTitle: this.obtainTranslation("migration.migrationErr"),
+            buttons: [this.obtainTranslation("alerts.accept")]
         });
 
         let loader = this.loadingCtrl.create();
@@ -183,6 +183,7 @@ export class MigrationService {
 
         let usersHash = [];
         let users = [];
+        let excludedUserAddress = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
 
         let commitsUrls = [];
         let commits = [];
@@ -196,15 +197,14 @@ export class MigrationService {
 
         let addresses = this.contractManagerService.getAddresses();
         let brightNewAddress = addresses[1];
-        let commitNewAddress = addresses[2];
-        
+        let commitNewAddress = addresses[2];        
 
         return this.initPromV030
         .then(([bright, commit, root]) => {
             brightV030 = bright;
             commitV030 = commit;
             rootV030 = root;
-            return this.contractManagerService.getInitProm();
+            return this.contractManagerService.getContracts();
         }).then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
@@ -479,13 +479,7 @@ export class MigrationService {
             }
             
             users = users.filter(user => {
-                let rightUser = true;
-                AppConfig.formerUsersHash.forEach(hash => {
-                    if(hash === user.hash) {
-                        rightUser = false;
-                    }
-                });
-                return rightUser;
+                return excludedUserAddress.indexOf(user) === -1;
             });
 
             this.log.d("Setting Users" + users);
@@ -685,7 +679,7 @@ export class MigrationService {
 
     }
 
-    private obtainTransaltion(translation: string): string{
+    private obtainTranslation(translation: string): string{
         let translatedText = "";
         this.translateService.get(translation).subscribe(
             msg => {
