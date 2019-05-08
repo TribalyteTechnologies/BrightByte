@@ -141,7 +141,7 @@ export class LoginForm {
     }
 
     public migrate(pass: string){
-        this.migrationService.buttonMigrate(pass, this.text);
+        this.migrationService.startMigration(pass, this.text);
     }
 
     private checkNodesAndOpenHomePage (account: Account, currentNodeIndex: number): Promise<boolean> {
