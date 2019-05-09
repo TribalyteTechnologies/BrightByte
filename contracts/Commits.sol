@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
-    uint32 private constant MIGRATION_END_TIMESTAMP = 1553558400;
+    uint32 private constant MIGRATION_END_TIMESTAMP = 1557824126;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;

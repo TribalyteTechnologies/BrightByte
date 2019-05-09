@@ -4,7 +4,7 @@ import "./Root.sol";
 contract Bright {
     uint8 private constant FEEDBACK_MULTIPLER = 100;
     uint24 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint32 private constant MIGRATION_END_TIMESTAMP = 1553558400;
+    uint32 private constant MIGRATION_END_TIMESTAMP = 1557824126;
     Root private root;
     uint16 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -63,12 +63,12 @@ contract Bright {
         _;
     }
 
-    function init(address _root) public {
+    function init(address _root, uint16 seasonIndex, uint256 initialTimestamp) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        currentSeasonIndex = 1;
-        initialSeasonTimestamp = block.timestamp;
+        currentSeasonIndex = seasonIndex;
+        initialSeasonTimestamp = initialTimestamp;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -304,9 +304,9 @@ contract Bright {
         return (currentSeasonIndex, (initialSeasonTimestamp + (currentSeasonIndex * SEASON_LENGTH_SECS)));
     }
 
-    function getSeasonCommits(uint ind, uint16 sea) public onlyDapp view returns(bytes32[]){
-        UserSeason memory season = hashUserMap[allUsersArray[ind]].seasonData[sea];
-        return(season.urlSeasonCommits);
+    function getAllUserSeasonUrls(uint16 seasonIndex, address userAddr) public onlyDapp view returns (bytes32[]) {
+        UserSeason memory season = hashUserMap[userAddr].seasonData[seasonIndex];
+        return season.urlSeasonCommits;
     }
 
     function checkSeason() private {
@@ -344,13 +344,6 @@ contract Bright {
         season.seasonStats.reviewsMade = rev;
     }
 
-    function setAllUserSeasonUrl(uint16 sea, address userAddr, bytes32 url) public onlyDapp {
-        UserProfile storage user = hashUserMap[userAddr];
-        UserSeason storage season = user.seasonData[sea];
-        season.seasonCommits[url] = true;
-        season.urlSeasonCommits.push(url);
-    }
-
     function setAllUserDataTwo(address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
         require (block.timestamp < MIGRATION_END_TIMESTAMP);
         UserProfile storage user = hashUserMap[h];
@@ -368,9 +361,14 @@ contract Bright {
         }
     }
 
-    function setSeasonData(uint256 initialSeasonTime, uint16 currentSeasonInd) public onlyRoot {
-        initialSeasonTimestamp = initialSeasonTime;
-        currentSeasonIndex = currentSeasonInd;
+    function setUrlsSeason(uint16 seasonIndex, address userAddr, bytes32[] urls) public onlyDapp {
+        require (block.timestamp < MIGRATION_END_TIMESTAMP);
+        UserProfile storage user = hashUserMap[userAddr];
+        UserSeason storage season = user.seasonData[seasonIndex];
+        for(uint16 i = 0; i < urls.length; i++) {
+            season.seasonCommits[urls[i]] = true;
+            season.urlSeasonCommits.push(urls[i]);
+        }
     }
 
     function checkCommitSeason(bytes32 url,address author) public onlyRoot view returns (bool) {

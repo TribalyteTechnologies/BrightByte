@@ -32,7 +32,7 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    function Root (address bright, address commits, address reputation) public {
+    function Root (address bright, address commits, address reputation, uint16 seasonIndex, uint256 initialTimestamp) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -41,7 +41,7 @@ contract Root{
         remoteReputation = Reputation(reputation);
         reputationAddress = reputation;
         remoteCommits.init(address(this));
-        remoteBright.init(address(this));
+        remoteBright.init(address(this), seasonIndex, initialTimestamp);
         remoteReputation.init(address(this));
     }
     function getHelperAddress() public view returns(address, address, address){
