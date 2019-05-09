@@ -36,8 +36,6 @@ import { UserCacheService } from "../domain/user-cache.service";
 
 
 //Modules
-import { IonicRatingModule } from "ionic-rating";
-
 
 // Components
 import { BrightByteApp } from "./app.component";
@@ -79,7 +77,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         BrowserModule,
         IonicModule.forRoot(BrightByteApp),
         HttpClientModule,
-        IonicRatingModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
