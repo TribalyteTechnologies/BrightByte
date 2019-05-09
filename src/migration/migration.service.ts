@@ -24,7 +24,7 @@ interface ITrbSmartContractJson {
 export class MigrationService {
     
     public msg: string;
-    public text: any;
+    public text: string;
     private contractAddressRootV030: string;
     private contractAddressBrightV030: string;
     private contractAddressCommitsV030: string;
@@ -49,17 +49,17 @@ export class MigrationService {
         this.web3Service = web3Service;
     }
 
-    public buttonMigrate(pass: string, text) {
+    public startMigration(pass: string, text) {
         let alert = this.alertCtrl.create({
-            title: this.obtainTransaltion("migration.migrationTitle"),
-            subTitle: this.obtainTransaltion("migration.migrationSuc"),
-            buttons: [this.obtainTransaltion("alerts.accept")]
+            title: this.obtainTranslation("migration.migrationTitle"),
+            subTitle: this.obtainTranslation("migration.migrationSuc"),
+            buttons: [this.obtainTranslation("alerts.accept")]
         });
 
         let alertError = this.alertCtrl.create({
-            title: this.obtainTransaltion("alerts.error"),
-            subTitle: this.obtainTransaltion("migration.migrationErr"),
-            buttons: [this.obtainTransaltion("alerts.accept")]
+            title: this.obtainTranslation("alerts.error"),
+            subTitle: this.obtainTranslation("migration.migrationErr"),
+            buttons: [this.obtainTranslation("alerts.accept")]
         });
 
         let loader = this.loadingCtrl.create();
@@ -184,6 +184,7 @@ export class MigrationService {
 
         let usersHash = [];
         let users = [];
+        let excludedUserAddress = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
 
         let commitsUrls = [];
         let commits = [];
@@ -464,6 +465,10 @@ export class MigrationService {
                 } 
             }
 
+            users = users.filter(user => {
+                return excludedUserAddress.indexOf(user) === -1;
+            });
+
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
             this.log.d("Setting Comments" + comments);
@@ -519,20 +524,13 @@ export class MigrationService {
                         return user.seasonData.reduce(
                             (prevVal2, data, index) => {
                                 return prevVal2.then(() => {
-                                    return data.urlSeasonCommits.reduce(
-                                        (prevVal3, url) => {
-                                            return prevVal3.then(() => {
-                                                let byteCodeData = brightNew
-                                                .methods
-                                                .setAllUserSeasonUrl(
-                                                    index, 
-                                                    user.hash,
-                                                    url).encodeABI(); // Reviews made
-                                                return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
-                                            });
-                                        },
-                                        Promise.resolve()
-                                    );
+                                    let byteCodeData = brightNew
+                                    .methods
+                                    .setUrlsSeason(
+                                        index,
+                                        user.hash,
+                                        data.urlSeasonCommits).encodeABI();
+                                    return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
                                 });
                             }, 
                             Promise.resolve()
@@ -659,7 +657,7 @@ export class MigrationService {
 
     }
 
-    private obtainTransaltion(translation: string): string{
+    private obtainTranslation(translation: string): string{
         let translatedText = "";
         this.translateService.get(translation).subscribe(
             msg => {
