@@ -288,7 +288,7 @@ export class ContractManagerService {
                             .then((data) => {
                                 return CommitComment.fromSmartContract(data[0], data[1]);
                             });
-                        promisesFinished.push(promiseFinished);
+                        promisesFinished.push(promiseFinished);                        
                     }
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                 });
@@ -305,6 +305,7 @@ export class ContractManagerService {
                 this.log.d("Contract artifact", bright);
                 return bright.methods.getUser(hash).call();
             }).then((userVals: Array<any>) => {
+                userVals[8] = hash;
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
                 return userValsToUSerDetails;
