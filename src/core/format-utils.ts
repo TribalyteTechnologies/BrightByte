@@ -17,14 +17,21 @@ export class FormatUtils {
     }
 
     public static getProjectFromUrl(url: string){
-        let project: string = this.PROJECT_FROM_URL_1.exec(url)[0];
-        project = this.PROJECT_FROM_URL_2.exec(project)[0];
-        return project;
+        let project: string;
+        if (url){
+            project = this.PROJECT_FROM_URL_1.exec(url)[0];
+            project = this.PROJECT_FROM_URL_2.exec(project)[0];
+        }
+        return project ? project : null;
     }
 
     public static getHashFromUrl(url: string){
-        let hash = this.HASH_FROM_URL_1.exec(url)[0];
-        return this.HASH_FROM_URL_2.exec(hash)[0];
+        let hash: string;
+        if (url !== ""){
+            hash = this.HASH_FROM_URL_1.exec(url)[0];
+            hash = this.HASH_FROM_URL_2.exec(hash)[0];
+        }
+        return hash ? hash : null;
     }
 }
 
