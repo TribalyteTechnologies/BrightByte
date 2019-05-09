@@ -299,6 +299,7 @@ export class ContractManagerService {
                 this.log.d("Contract artifact", bright);
                 return bright.methods.getUser(hash).call();
             }).then((userVals: Array<any>) => {
+                userVals[8] = hash;
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
                 return userValsToUSerDetails;

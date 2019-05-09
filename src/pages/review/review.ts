@@ -107,11 +107,6 @@ export class ReviewPage {
                     return this.contractManagerService.getFeedback(com.url)
                     .then((rsp) => {
                         com.isReadNeeded = rsp;
-                        return this.contractManagerService.getCommentsOfCommit(com.url);
-                    }).then((arrayReviewers) => {
-                        arrayReviewers[1].forEach((user) => {
-                            com.reviewsAlreadyDone.push(user.user);
-                        });
                         return com;
                     });
                 });
@@ -305,12 +300,12 @@ export class ReviewPage {
         switch(this.filterValue){
             case this.INCOMPLETE:
                 return usercommits.filter(commit => {
-                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address);
                     return (!isReviewed);
                 });
             case this.COMPLETE:
                 return usercommits.filter(commit => {
-                    let isReviewed = commit.reviewsAlreadyDone.some(element => element === this.address);
+                    let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address);
                     return (isReviewed);
                 });
             default:
