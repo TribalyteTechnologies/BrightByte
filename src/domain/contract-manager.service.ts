@@ -466,7 +466,7 @@ export class ContractManagerService {
     }
 
     public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
-        return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
+        return this.web3.eth.getTransactionCount(this.currentUser.address)
             .then(nonceValue => {
                 let nonce = "0x" + (nonceValue).toString(16);
                 this.log.d("Value NONCE", nonce);
