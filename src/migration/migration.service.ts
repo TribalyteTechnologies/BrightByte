@@ -468,7 +468,7 @@ export class MigrationService {
             }
 
             users = users.filter(user => {
-                return excludedUserAddress.indexOf(user) < 0;
+                return EXCLUDED_USERS_ADDRESS.indexOf(user) < 0;
             });
 
             this.log.d("Setting Users" + users);
@@ -526,29 +526,29 @@ export class MigrationService {
                         return user.seasonData.reduce(
                             (prevVal2, data, index) => {
                                 return prevVal2.then(() => {
-                                    let num = data.urlSeasonCommits.length / NUMBER_SET_SEASON_COMMITS;
-                                    let arr = [];
-                                    for(let t = 0; t < num; t++) {
-                                        arr.push(t);
+                                    let totalCycles = data.urlSeasonCommits.length / NUMBER_SET_SEASON_COMMITS;
+                                    let auxArray = [];
+                                    for(let t = 0; t < totalCycles; t++) {
+                                        auxArray.push(t);
                                     }
                                     let i = 0;
-                                    return arr.reduce(
-                                        (prevVal2, actual) => {
-                                            return prevVal2.then(() => {
+                                    return auxArray.reduce(
+                                        (prevVal3, actual) => {
+                                            return prevVal3.then(() => {
                                                 let sum = i + NUMBER_SET_SEASON_COMMITS;
-                                                let sli = data.urlSeasonCommits.slice(i, sum);
+                                                let seasonCommitsSliced = data.urlSeasonCommits.slice(i, sum);
                                                 i = sum;
                                                 let byteCodeData = brightNew
                                                 .methods
                                                 .setUrlsSeason(
                                                     index,
                                                     user.hash,
-                                                    sli).encodeABI();
+                                                    seasonCommitsSliced).encodeABI();
                                                 return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
                                             });
                                         },
                                         Promise.resolve()
-                                    )
+                                    );
                                 });
                             }, 
                             Promise.resolve()

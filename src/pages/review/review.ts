@@ -52,7 +52,7 @@ export class ReviewPage {
 
     public submitError = "";
 
-    
+    private readonly ANONYMOUS_ADDRESS = "0x0000000000000000000000000000000000000000";
     private log: ILogger;
     private numberOfReviews = -1;
     private isNewReview = false;
@@ -243,10 +243,10 @@ export class ReviewPage {
         }
     }
 
-    public setReview(url: string, text: string, points: number[]){
+    public setReview(urlCom: string, text: string, points: number[]){
         let point: number[] = points;
         this.spinnerService.showLoader();
-        this.contractManagerService.setReview(url, text, points)
+        this.contractManagerService.setReview(urlCom, text, points)
         .then((response) => {
             this.log.d("Received response " + point);
             this.log.d("Received response " + response);
@@ -268,7 +268,6 @@ export class ReviewPage {
             }
             this.spinnerService.hideLoader();  
             this.textComment  = "";
-            this.refresh();
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();
@@ -300,7 +299,8 @@ export class ReviewPage {
         switch(this.filterValue){
             case this.INCOMPLETE:
                 return usercommits.filter(commit => {
-                    let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address);
+                    let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address || 
+                        element.userHash === this.ANONYMOUS_ADDRESS);
                     return (!isReviewed);
                 });
             case this.COMPLETE:
