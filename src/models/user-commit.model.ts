@@ -3,7 +3,7 @@ import { UserDetails } from "./user-details.model";
 import { FormatUtils } from "../core/format-utils";
 
 export class UserCommit { 
-    public url: string; 
+    public url = ""; 
     public urlHash: string;
     public title: string;
     public author: string;

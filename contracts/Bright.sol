@@ -4,7 +4,7 @@ import "./Root.sol";
 contract Bright {
     uint8 private constant FEEDBACK_MULTIPLER = 100;
     uint24 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint32 private constant MIGRATION_END_TIMESTAMP = 1557824126;
+    uint32 private constant MIGRATION_END_TIMESTAMP = 1557857697;
     Root private root;
     uint16 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;

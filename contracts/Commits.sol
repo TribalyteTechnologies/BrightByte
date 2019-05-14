@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
-    uint32 private constant MIGRATION_END_TIMESTAMP = 1557824126;
+    uint32 private constant MIGRATION_END_TIMESTAMP = 1557857697;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
@@ -229,6 +229,7 @@ contract Commits {
     }
 
     function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint8 numberReview, uint8 currentReviews, uint32 score) public onlyDapp {
+        require (block.timestamp < MIGRATION_END_TIMESTAMP);
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
@@ -237,6 +238,7 @@ contract Commits {
     }
 
     function setAllCommitDataTwo(bytes32 url, address[] pendingComments, address[] finishedComments) public onlyDapp {
+        require (block.timestamp < MIGRATION_END_TIMESTAMP);
         Commit storage data = storedData[url];
         for(uint i = 0; i < pendingComments.length; i++) {
             data.pendingComments.push(pendingComments[i]);
@@ -247,6 +249,7 @@ contract Commits {
     }
 
     function setAllCommentData(bytes32 url, address user, string txt, address author, uint16[] points, uint8 vote, uint creationDate, uint lastMod) public onlyDapp {
+        require (block.timestamp < MIGRATION_END_TIMESTAMP);
         Comment storage data = storedData[url].commitComments[user];
         data.text = txt;
         data.author = author;
@@ -259,6 +262,7 @@ contract Commits {
     }
 
     function setPendingCommentsData(bytes32 url, address hash)  public onlyDapp {
+        require (block.timestamp < MIGRATION_END_TIMESTAMP);
         bool found = false;
         for (uint i = 0; i < storedData[url].pendingComments.length; i++){
             if(storedData[url].pendingComments[i] == hash){

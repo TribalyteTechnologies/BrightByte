@@ -173,6 +173,8 @@ export class MigrationService {
 
     public getUserMigration() {
         const NUMBER_SET_COMMITS = 5;
+        const EXCLUDED_USERS_ADDRESS = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
+        const NUMBER_SET_SEASON_COMMITS = 25;
 
         let brightV030;
         let commitV030;
@@ -184,7 +186,7 @@ export class MigrationService {
 
         let usersHash = [];
         let users = [];
-        let excludedUserAddress = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
+        
 
         let commitsUrls = [];
         let commits = [];
@@ -466,7 +468,7 @@ export class MigrationService {
             }
 
             users = users.filter(user => {
-                return excludedUserAddress.indexOf(user) === -1;
+                return excludedUserAddress.indexOf(user) < 0;
             });
 
             this.log.d("Setting Users" + users);
@@ -524,13 +526,29 @@ export class MigrationService {
                         return user.seasonData.reduce(
                             (prevVal2, data, index) => {
                                 return prevVal2.then(() => {
-                                    let byteCodeData = brightNew
-                                    .methods
-                                    .setUrlsSeason(
-                                        index,
-                                        user.hash,
-                                        data.urlSeasonCommits).encodeABI();
-                                    return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
+                                    let num = data.urlSeasonCommits.length / NUMBER_SET_SEASON_COMMITS;
+                                    let arr = [];
+                                    for(let t = 0; t < num; t++) {
+                                        arr.push(t);
+                                    }
+                                    let i = 0;
+                                    return arr.reduce(
+                                        (prevVal2, actual) => {
+                                            return prevVal2.then(() => {
+                                                let sum = i + NUMBER_SET_SEASON_COMMITS;
+                                                let sli = data.urlSeasonCommits.slice(i, sum);
+                                                i = sum;
+                                                let byteCodeData = brightNew
+                                                .methods
+                                                .setUrlsSeason(
+                                                    index,
+                                                    user.hash,
+                                                    sli).encodeABI();
+                                                return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
+                                            });
+                                        },
+                                        Promise.resolve()
+                                    )
                                 });
                             }, 
                             Promise.resolve()
