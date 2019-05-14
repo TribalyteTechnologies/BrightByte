@@ -22,6 +22,7 @@ export class UserLoggerService {
     }
 
     public retrieveAccount(): any {
+        this.storageSrv.clear();
         let user = JSON.parse(this.storageSrv.get(this.STORAGE_KEY_USERNAME));
         let pass = this.storageSrv.get(this.STORAGE_KEY_PASSWORD);
         return {user: user, password: pass};
