@@ -13,6 +13,41 @@
 
     **IMPORTANT NOTE**: It's necessary to deploy the following new contracts and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md): Bright, Commit, Root.
 
+####  v 0.3.6 (Migration warning screen)
+
+- Solved remember login bug on warning screen.
+
+    `No migration needed from 0.3.5 to 0.3.6`
+
+####  v 0.3.5 (Migration warning screen)
+
+- Change login screen to migration warning (maintenance static web).
+
+    `No migration needed from 0.3.4 to 0.3.5`
+
+####  v 0.3.4
+
+- Reduced review page network requests 60%.
+- Added regex null check functionality.
+
+    `No migration needed from 0.3.3 to 0.3.4`
+
+####  v 0.3.3
+
+- Added more transalations.
+- Added service for migration between quorum networks.
+- Added optimization with cache service.
+- Solved regex minor issue.
+
+    `No migration needed from 0.3.2 to 0.3.3`
+
+####  v 0.3.2
+
+- Added more transalations.
+- Added more assets.
+
+    `No migration needed from 0.3.1 to 0.3.2`
+
 ####  v 0.3.1
 
 - Added more transalations.
