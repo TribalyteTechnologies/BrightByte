@@ -1,5 +1,12 @@
 # Change Log
 
+####  v 0.4.1
+
+- Added optimistic refresh to reviews page.
+- Solved regex pattern for github Pull Request.
+
+    `No migration needed from 0.4.0 to 0.4.1`
+
 #### v 0.4.0
 
 - Added new multicriteria reputation system. Three criteria "Code quality", "Complexity" and "Reviewer confidence".
