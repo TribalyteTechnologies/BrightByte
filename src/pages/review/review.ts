@@ -268,6 +268,36 @@ export class ReviewPage {
             }
             this.spinnerService.hideLoader();  
             this.textComment  = "";
+
+            this.contractManagerService.getCommitDetails(urlCom)
+            .then((commitUpdated) => {
+                let commit = this.displayCommitsToReview.find(comm => {
+                    return comm.url === urlCom;
+                });
+                let commitIndex = this.displayCommitsToReview.indexOf(commit);
+                this.displayCommitsToReview[commitIndex].score = commitUpdated.score - 1;
+                this.displayCommitsToReview[commitIndex].lastModificationDateMs = commitUpdated.lastModificationDateMs;
+                this.displayCommitsToReview[commitIndex].isReadNeeded = commitUpdated.isReadNeeded;
+                this.displayCommitsToReview[commitIndex].numberReviews = commitUpdated.numberReviews;
+                let userDetails = this.displayCommitsToReview[commitIndex].reviewers[0].find((user) => {
+                    return user.userHash === this.address;
+                });
+                this.displayCommitsToReview[commitIndex].reviewers[0].splice
+                (this.displayCommitsToReview[commitIndex].reviewers[0].indexOf(userDetails), 1);
+                this.displayCommitsToReview[commitIndex].reviewers[1].push(userDetails);
+
+                this.applyFilters(this.displayCommitsToReview);
+                let url = new URLSearchParams(document.location.search);
+                if(url.has(AppConfig.UrlKey.REVIEWID)){
+                    let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
+                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
+                    this.shouldOpen(filteredCommit[0]);
+                }
+                if (this.isNewReview){
+                    this.isNewReview = false;
+                    this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
+                }
+            });
             return;
         }).catch((error) => {
             this.spinnerService.hideLoader();

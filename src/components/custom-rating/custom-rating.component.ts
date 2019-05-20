@@ -16,7 +16,9 @@ export class CustomRating {
     public max: number = 5;
 
     @Input()
-    public rate: number = 3;
+    public set rate(rate: number) {
+        this._rate = rate;
+    }
 
     @Input()
     public setStars: boolean = false;
@@ -30,8 +32,9 @@ export class CustomRating {
     @Input()
     public ratingType = "quality";
 
+    
     public iconColor = "stars-color";
-
+    public _rate: number;
     public iconIds: number[];
     public icons: string[];
     public ghosted: boolean;
@@ -46,6 +49,11 @@ export class CustomRating {
     private readonly STAR = "bb-star";
     private readonly STAR_OUTLINE = "bb-star-outline";
     private currentIcons = [""];
+
+    public ngDoCheck() {
+        this.rate = this._rate;
+        this.setReputation(this._rate);
+    }
 
     public ngOnInit(){
         this.iconIds = new Array<number>(this.max);
@@ -75,7 +83,7 @@ export class CustomRating {
             this.icons[i] = this.currentIcons[i];
         }
         
-        this.setReputation(this.rate - 1);
+        this.setReputation(this._rate - 1);
     }
 
     public setReputation(value: number) {
@@ -90,8 +98,8 @@ export class CustomRating {
             }
         }
    
-        this.rate = value;
-        this.value.next((this.rate + 1) * 100);
+        this._rate = value;
+        this.value.next((this._rate + 1) * 100);
     }
    
 }

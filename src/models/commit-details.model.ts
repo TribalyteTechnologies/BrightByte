@@ -7,6 +7,7 @@ export class CommitDetails {
     public isReadNeeded: boolean;
     public numberReviews: number;
     public currentNumberReviews: number; 
+    public score: number;
     public static fromSmartContract(commitVals: Array<any>): CommitDetails{ 
         let commit = new CommitDetails();
         commit.url = commitVals[0]; 
@@ -16,7 +17,8 @@ export class CommitDetails {
         commit.lastModDate = commitVals[4];
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6]; 
-        commit.currentNumberReviews = commitVals[7]; 
+        commit.currentNumberReviews = commitVals[7];
+        commit.score = commitVals [8];
         return commit; 
     } 
 } 

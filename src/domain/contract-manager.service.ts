@@ -238,6 +238,18 @@ export class ContractManagerService {
         });
     }
 
+    public getCommitDetails(url: string): Promise<UserCommit> {
+        return this.initProm.then(([bright, commit, root]) => {
+            return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
+                .then((commitVals: any) => {                
+                    return UserCommit.fromSmartContract(commitVals, false);
+                });
+        }).catch(err => {
+            this.log.e("Error calling BrightByte smart contract :", err);
+            throw err;
+        });
+    }
+
     public setReview(url: string, text: string, points: number[]): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
             let contractArtifact = commit;
