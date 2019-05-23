@@ -20,6 +20,10 @@ export class CustomRating {
         this._rate = rate;
     }
 
+    public get rate(): number {
+        return this._rate;
+    }
+
     @Input()
     public setStars: boolean = false;
 
@@ -52,10 +56,9 @@ export class CustomRating {
 
     public ngDoCheck() {
         this.rate = this._rate;
-        this.setReputation(this._rate);
     }
 
-    public ngOnInit(){
+    public ngOnChanges(){
         this.iconIds = new Array<number>(this.max);
         this.icons = new Array<string>(this.max);
         

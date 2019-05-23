@@ -275,7 +275,7 @@ export class ReviewPage {
                     return comm.url === urlCom;
                 });
                 let commitIndex = this.displayCommitsToReview.indexOf(commit);
-                this.displayCommitsToReview[commitIndex].score = commitUpdated.score - 1;
+                this.displayCommitsToReview[commitIndex].score = commitUpdated.score;
                 this.displayCommitsToReview[commitIndex].lastModificationDateMs = commitUpdated.lastModificationDateMs;
                 this.displayCommitsToReview[commitIndex].isReadNeeded = commitUpdated.isReadNeeded;
                 this.displayCommitsToReview[commitIndex].numberReviews = commitUpdated.numberReviews;
@@ -293,10 +293,8 @@ export class ReviewPage {
                     let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
-                if (this.isNewReview){
-                    this.isNewReview = false;
-                    this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
-                }
+                this.numberOfReviews++;
+                this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
             });
             return;
         }).catch((error) => {
