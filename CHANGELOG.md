@@ -1,5 +1,11 @@
 # Change Log
 
+####  v 0.4.2
+
+- Solved review component refresh bug.
+
+    `No migration needed from 0.4.1 to 0.4.2`
+
 ####  v 0.4.1
 
 - Added optimistic refresh to reviews page.
