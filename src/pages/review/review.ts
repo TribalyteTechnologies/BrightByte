@@ -296,7 +296,6 @@ export class ReviewPage {
                 this.numberOfReviews++;
                 this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
             });
-            return;
         }).catch((error) => {
             this.spinnerService.hideLoader();
             this.log.e("Catched error " + error);

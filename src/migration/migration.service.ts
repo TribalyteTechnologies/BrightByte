@@ -467,9 +467,7 @@ export class MigrationService {
                 } 
             }
 
-            users = users.filter(user => {
-                return EXCLUDED_USERS_ADDRESS.indexOf(user) < 0;
-            });
+            users = users.filter(user => EXCLUDED_USERS_ADDRESS.indexOf(user) < 0);
 
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
@@ -527,7 +525,7 @@ export class MigrationService {
                             (prevVal2, data, index) => {
                                 return prevVal2.then(() => {
                                     let totalCycles = data.urlSeasonCommits.length / NUMBER_SET_SEASON_COMMITS;
-                                    let auxArray = [];
+                                    let auxArray = new Array<number>();
                                     for(let t = 0; t < totalCycles; t++) {
                                         auxArray.push(t);
                                     }

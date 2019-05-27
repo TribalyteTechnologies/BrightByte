@@ -26,7 +26,7 @@ export class FormatUtils {
 
     public static getHashFromUrl(url: string){
         let hash: string;
-        if (url !== ""){
+        if (url){
             hash = this.HASH_FROM_URL_1.exec(url)[0];
             hash = this.HASH_FROM_URL_2.exec(hash)[0];
         }

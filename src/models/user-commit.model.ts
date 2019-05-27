@@ -19,7 +19,7 @@ export class UserCommit {
 
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
-        if(commitVals[0] !== "") {
+        if(commitVals[0]) {
             commit.url = commitVals[0]; 
             commit.urlHash = FormatUtils.getHashFromUrl(commit.url);
             commit.title = commitVals[1];
