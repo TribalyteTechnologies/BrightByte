@@ -1,7 +1,8 @@
 # Migrations Procedures
 
-#### From v 0.3.6 to v 0.4.0
+#### From v 0.3.4 to v 0.4.x
 
+(REMEMBER: While migrating deploy v0.3.6 which is a warning screen web for people to be informed about the migration process. This version won't let users login).
 One user can do the migration of all the data.
 Now the variables related to a season, in what season we want to start and the initial Timestamp of our own Brightbyte, are not hard coded. They are initializedwhen the new contracts are deployed, changing the varibles `INITIAL_SEASON_INDEX` and `INITIAL_SEASON_TIMESTAMP` on `migrations/2_deploy_contracts.js`.
 
