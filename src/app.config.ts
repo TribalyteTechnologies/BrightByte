@@ -36,14 +36,15 @@ export class AppConfig {
         REVIEWFILTER: "brightReviewFilter",
         REVIEWPENDINGFILTER: "brightReviewPendingFilter",
         COMMITFILTER: "brightCommitFilter",
-        COMMITPENDINGFILTER: "brightCommitPendingFilter"
+        COMMITPENDINGFILTER: "brightCommitPendingFilter",
+        LOCALSTORAGEVERSION: "brightLocalStorageVerison"
     };
 
     public static readonly UrlKey = {
         REVIEWID: "reviewId",
         COMMITID: "commitId"
     };
-    
+
     private static shuffle(array: Array<any>): Array<any> {
         let currentIndex = array.length;
         while (0 !== currentIndex) {

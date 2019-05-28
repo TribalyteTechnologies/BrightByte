@@ -26,7 +26,9 @@ export class CommitCard {
     public reviewers = new Array<string>();
     public pendingReviewers = new Array<string>();
 
-
+    @Input()
+    public isReviewPage: boolean;
+    
     private _commit: UserCommit;
 
     @Input()
@@ -70,6 +72,7 @@ export class CommitCard {
             msg => {
                 this.ANONYMOUS = msg;
             });
+        
     }
 
 }

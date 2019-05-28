@@ -18,7 +18,7 @@
             <ion-icon *ngIf="isPending" class="notifications-icon" name="notifications"></ion-icon>
         </ion-row>
         <ion-row>
-            <div class="text-url text-ellipsis" (click)="openUrl(urlLink)">#{{ urlHash }}</div>
+            <div class="text-url text-ellipsis" (click)="openUrl(urlLink, false)">#{{ urlHash }}</div>
         </ion-row>
     </ion-col>
     <ion-col col-5>

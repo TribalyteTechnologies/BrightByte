@@ -11,6 +11,7 @@ import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
 import { AchievementService } from "../../core/achievement.service";
 
+
 @Component({
     selector: "page-review",
     templateUrl: "review.html"

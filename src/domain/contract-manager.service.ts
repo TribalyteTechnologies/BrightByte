@@ -294,7 +294,7 @@ export class ContractManagerService {
                             .then((data) => {
                                 return CommitComment.fromSmartContract(data[0], data[1]);
                             });
-                        promisesFinished.push(promiseFinished);
+                        promisesFinished.push(promiseFinished);                        
                     }
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                 });

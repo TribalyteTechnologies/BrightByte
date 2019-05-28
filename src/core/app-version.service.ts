@@ -4,6 +4,7 @@ import { Observable } from "rxjs/Rx";
 import { HttpClient } from "@angular/common/http";
 import { LocalStorageService } from "./local-storage.service";
 import { StorageService } from "./storage.service";
+import { AppConfig } from "../app.config";
 
 @Injectable()
 export class AppVersionService {
@@ -11,8 +12,7 @@ export class AppVersionService {
     private strg: StorageService;
     
     private readonly VERSION_FILE_PATH = "config.xml";
-    private readonly VERSION_EXTRACT_REGEX = /widget.*?version=[\"\'](.*?)[\"\']/mg;
-    private readonly LOCAL_STORAGE_VERSION = "brightLocalStorageVerison";
+    private readonly VERSION_EXTRACT_REGEX = /widget.*?version=[\"\'](.*?)[\"\']/;
     private currentVersion: string;
 
     constructor(
@@ -22,17 +22,17 @@ export class AppVersionService {
     ) {
         this.log = loggerSrv.get("AppVersionService");
         this.strg = storageSrv;
-        this.currentVersion = storageSrv.get(this.LOCAL_STORAGE_VERSION);
+        this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
     }
 
     public getAppVersion(): Observable<string> {
-        let randomQuery = this.VERSION_FILE_PATH + "?r=" + (Math.random() * (1000000 - 0) + 0);
+        let randomQuery = this.VERSION_FILE_PATH + "?t=" + Date.now();
         return this.http.get(randomQuery, {responseType: "text"})
         .map(xmlConfig => {
             let ver = this.VERSION_EXTRACT_REGEX.exec(xmlConfig)[1];
             if (ver !== this.currentVersion){
                 window.alert("Your BrightBight version is outdated. The page is going to refresh.");
-                this.strg.set(this.LOCAL_STORAGE_VERSION, ver);
+                this.strg.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, ver);
                 window.location.reload(true);
             }
             this.log.d("Application version extracted: ", ver);

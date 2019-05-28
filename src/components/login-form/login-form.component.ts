@@ -57,10 +57,6 @@ export class LoginForm {
         appVersionSrv: AppVersionService
     ) {
         this.log = loggerSrv.get("LoginForm");
-        appVersionSrv.getAppVersion().subscribe(
-            ver => this.appVersion = ver,
-            err => this.log.w("No app version could be detected")
-        );
         
         this.migrationDone = this.userLoggerService.getMigration();
     }
