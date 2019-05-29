@@ -4,7 +4,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { FormatUtils } from "../../core/format-utils";
 
 
-
 @Component({
     selector: "commit-card",
     templateUrl: "commit-card.component.html",
@@ -28,7 +27,9 @@ export class CommitCard {
 
     @Input()
     public isReviewPage: boolean;
-    
+
+    private readonly REVIEW_QUERY = "?reviewId=";
+    private readonly COMMIT_QUERY = "?commitId=";
     private _commit: UserCommit;
 
     @Input()
@@ -53,13 +54,13 @@ export class CommitCard {
     public ngDoCheck() {
         this.commit = this._commit;
     }
-    
-    public openUrl(url: string, isCommitParam = false, e?: Event){
-        
+  
+    public openUrl(url: string, isCommitParam: boolean, e: Event){
+        let currentPage = this.isReviewPage ? this.REVIEW_QUERY : this.COMMIT_QUERY;
         let urlToOpen = url;
         if(isCommitParam){
             window.open(urlToOpen, "_blank");
-            urlToOpen = "?commitId=" + encodeURIComponent(url);
+            urlToOpen = currentPage + encodeURIComponent(url);
         }
         window.open(urlToOpen, "_blank");
         if(e){
