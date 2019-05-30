@@ -129,13 +129,20 @@ export class AddCommitPopover {
             }
             return ret;
         }).then(txResponse => {
-            this.log.d("Contract manager response: ", txResponse);
-            if (txResponse) {
-                this.isTxOngoing = false;
-                this.viewCtrl.dismiss();
+            let ret;
+            if(txResponse) {
+                this.log.d("Contract manager response: ", txResponse);
+                ret = this.contractManagerService.getCommitDetails(url);
             } else {
-                throw "Error: addcommit response is undefined";
+                ret = Promise.reject({msg: "addCommit.errorResponse"});
             }
+            return ret;
+        }).then(newCommit => {
+            this.contractManagerService.getReviewersName(url).then(reviewers => {
+                newCommit.reviewers = reviewers;
+                this.isTxOngoing = false;
+                this.viewCtrl.dismiss(newCommit);
+            });
         }).catch(e => {
             this.showGuiMessage(e.msg, e.err);
             this.isTxOngoing = false;

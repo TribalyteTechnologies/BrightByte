@@ -46,7 +46,8 @@
         "inputTitle": "Write the title",
         "ownEmail": "You can't review your own commit",
         "emptyInput": "You must choose at least one reviewer",
-        "unknownEmail": "You have introduced an unknown email. Please, select a valid one."
+        "unknownEmail": "You have introduced an unknown email. Please, select a valid one.",
+        "errorResponse": "Error: addcommit response is undefined"
     },
     "commits": {
         "add": "Add commit",
