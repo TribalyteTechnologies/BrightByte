@@ -278,7 +278,8 @@ export class ReviewPage {
                 let commitIndex = this.displayCommitsToReview.indexOf(commit);
                 this.displayCommitsToReview[commitIndex].score = commitUpdated.score;
                 this.displayCommitsToReview[commitIndex].lastModificationDateMs = commitUpdated.lastModificationDateMs;
-                this.displayCommitsToReview[commitIndex].isReadNeeded = commitUpdated.isReadNeeded;
+                this.displayCommitsToReview[commitIndex].isReadNeeded = false;
+                this.displayCommitsToReview[commitIndex].isPending = false;
                 this.displayCommitsToReview[commitIndex].numberReviews = commitUpdated.numberReviews;
                 let userDetails = this.displayCommitsToReview[commitIndex].reviewers[0].find((user) => {
                     return user.userHash === this.address;
