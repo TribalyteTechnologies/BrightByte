@@ -2,6 +2,7 @@ import { Component, Input } from "@angular/core";
 import { UserCommit } from "../../models/user-commit.model";
 import { TranslateService } from "@ngx-translate/core";
 import { FormatUtils } from "../../core/format-utils";
+import { AppConfig } from "../../app.config";
 
 
 @Component({
@@ -28,8 +29,8 @@ export class CommitCard {
     @Input()
     public isReviewPage: boolean;
 
-    private readonly REVIEW_QUERY = "?reviewId=";
-    private readonly COMMIT_QUERY = "?commitId=";
+    private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
+    private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
     private _commit: UserCommit;
 
     @Input()
@@ -55,7 +56,7 @@ export class CommitCard {
         this.commit = this._commit;
     }
   
-    public openUrl(url: string, isCommitParam: boolean, e: Event){
+    public openUrl(url: string, isCommitParam: boolean, e?: Event){
         let currentPage = this.isReviewPage ? this.REVIEW_QUERY : this.COMMIT_QUERY;
         let urlToOpen = url;
         if(isCommitParam){
