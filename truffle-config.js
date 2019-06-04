@@ -11,5 +11,13 @@ module.exports = {
 				websockets: true    
 			},
 			custom: truffleCustomConfig,
-    	}
+		},
+		compilers: 
+		{
+			solc: 
+			{
+			version: "0.4.21", // A version or constraint - Ex. "^0.5.0"
+								// Can also be set to "native" to use a native solc
+			}
+		}
 };
