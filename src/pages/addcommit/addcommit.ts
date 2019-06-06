@@ -12,6 +12,7 @@ import { UserDetails } from "../../models/user-details.model";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { BitbucketService } from "../../domain/bitbucket.service";
 import { FormatUtils } from "../../core/format-utils";
+import { UserCommit } from "../../models/user-commit.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -92,6 +93,7 @@ export class AddCommitPopover {
         this.isTxOngoing = true;
         this.clearGuiMessage();
         let errMsgId = null;
+        let newCommit: UserCommit;
         this.userDetailsProm.then(userDetails => {
             for (let userEmail of this.userAdded) {
                 if (this.userAdded.indexOf(userEmail) < 0) {
@@ -137,12 +139,13 @@ export class AddCommitPopover {
                 ret = Promise.reject({msg: "addCommit.errorResponse"});
             }
             return ret;
-        }).then(newCommit => {
-            this.contractManagerService.getReviewersName(url).then(reviewers => {
+        }).then(commit => {
+            newCommit = commit;
+            return this.contractManagerService.getReviewersName(url);
+        }).then((reviewers) => {
                 newCommit.reviewers = reviewers;
                 this.isTxOngoing = false;
                 this.viewCtrl.dismiss(newCommit);
-            });
         }).catch(e => {
             this.showGuiMessage(e.msg, e.err);
             this.isTxOngoing = false;

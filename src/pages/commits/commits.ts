@@ -114,8 +114,10 @@ export class CommitPage {
         let popover = this.popoverCtrl.create(AddCommitPopover, {},  {cssClass: "add-commit-popover"});
         popover.present();
         popover.onDidDismiss((newCommit) => {
-            this.arrayCommits.push(newCommit);
-            this.applyFilters(this.arrayCommits);
+            if(newCommit) {
+                this.arrayCommits.push(newCommit);
+                this.applyFilters(this.arrayCommits);
+            }
         });
     }
 
