@@ -51,7 +51,7 @@
         "errorResponse": "Error: addcommit response is undefined"
     },
     "commits": {
-        "add": "Add commit",
+        "add": "Add commit/PR",
         "getCommits": "Error getting commits",
         "project": "Project",
         "url": "Url",
