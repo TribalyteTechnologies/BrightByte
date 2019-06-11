@@ -35,7 +35,7 @@ This project come with a default terms and conditions text. This text can be mod
 
  #### More information
 
-For more information about BrightByte please visit our [blog post about BrightByte](https://tech.tribalyte.eu/blog-lanzamiento-de-brightbyte-v0-2) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
+For more information about BrightByte please visit our [blog post about BrightByte](https://tech.tribalyte.eu/blog-lanzamiento-brightbyte-v0-4) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
 
 Licensed under the conditions of `LICENSE.md`.
 
