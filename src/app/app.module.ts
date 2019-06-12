@@ -29,6 +29,7 @@ import { SpinnerService } from "../core/spinner.service";
 import { SessionStorageService } from "../core/session-storage.service";
 import { LocalStorageService } from "../core/local-storage.service";
 import { AchievementService } from "../core/achievement.service";
+import { UpdateCheckService } from "../core/update-check.service";
 
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
@@ -131,7 +132,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         AppVersionService,
-        MigrationService
+        MigrationService,
+        UpdateCheckService
     ]
 })
 

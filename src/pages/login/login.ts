@@ -4,9 +4,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { AppVersionService } from "../../core/app-version.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
-import { LocalStorageService } from "../../core/local-storage.service";
-import { AppConfig } from "../../app.config";
-import { TranslateService } from "@ngx-translate/core";
+import { UpdateCheckService } from "../../core/update-check.service";
 
 @Component({
     selector: "page-login",
@@ -23,38 +21,23 @@ export class LoginPage {
     public migrationDone = false;
     public loginState = "login";
     private log: ILogger;
-    private currentVersion: string;
     
-
-
     constructor(
         private popoverCtrl: PopoverController,
         private userLoggerService: UserLoggerService,
-        loggerSrv: LoggerService,
-        appVersionSrv: AppVersionService,
-        storageSrv: LocalStorageService,
-        public translateService: TranslateService
+        private appVersionSrv: AppVersionService,
+        private versionCheckSrv: UpdateCheckService,
+        loggerSrv: LoggerService
+        
     ) {
         
         this.log = loggerSrv.get("LoginPage");
-        this.currentVersion = storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
-        appVersionSrv.getAppVersion().subscribe(
-            ver => {
-                this.appVersion = ver;
-                if (this.appVersion && this.currentVersion && this.appVersion !== this.currentVersion){
-                    translateService.get("app.versionOutdated").subscribe(
-                        msg => {
-                            window.alert(msg);
-                            storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                            window.location.reload(true);
-                        });   
-                }else if (!this.currentVersion) {
-                    storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                }
-            },
-            err => this.log.w("No app version could be detected")
-        );
         this.migrationDone = this.userLoggerService.getMigration();
+        this.versionCheckSrv.startVersionCheckThread();
+        this.appVersionSrv.getAppVersion().subscribe(
+            ver => this.appVersion = ver,
+            err => this.log.w("No app version could be detected")
+            );
     }
 
     public manageEvent(e: string){
