@@ -1,28 +1,21 @@
-
-
 <ion-content padding class="main-container home-logo_bg">
-    <ion-row justify-content-center no-padding>
-        <div class="home-logo_container" text-center>
-            <img class="home-logo" src="../../assets/imgs/bright_logo.svg">
-        </div>
-    </ion-row>
-    <ion-row>
-        <ion-col col-6 offset-3 class="home-col_margin">
+    <ion-row justify-content-center>
+        <div>
+            <ion-row no-padding>
+                <div class="home-logo_container" text-center>
+                    <img class="home-logo" src="../../assets/imgs/bright_logo.svg">
+                </div>
+            </ion-row>
             <ion-row >
                 <h1 no-margin>{{ "home.title" | translate }} {{ userName }}</h1>
             </ion-row>
             <ion-row class="home-text">
-            <p no-margin>{{ "home.info" | translate }}</p>
+                <p no-margin>{{ "home.info" | translate }}</p>
             </ion-row>
-        </ion-col>
-    </ion-row>
-    <ion-row >
-        
-        <ion-col col-6 offset-3 class="home-col_margin">
-            <ion-row>
+            <ion-row class="home-text">
                 <p class="home-go_to">{{ "home.goTo" | translate }}</p>
             </ion-row>
-            <ion-row no-margin class="col-button">
+            <ion-row>
                 <button ion-button round class="home-button button-lowercase" (click)="goPage('CommitPage')">
                     <img class="button-logo button-logo_commits" src="../../assets/imgs/menu/commits.svg">{{ "app.commits" | translate }}
                 </button>
@@ -35,6 +28,6 @@
                     <img class="button-logo" src="../../assets/imgs/menu/ranking.svg">{{ "app.ranking" | translate }}
                 </button> 
             </ion-row>
-        </ion-col>
+        </div>
     </ion-row>
 </ion-content>
