@@ -35,8 +35,6 @@ export class CommitPage {
     public filterIsPending = false;
     public msg: string;
     private log: ILogger;
-    private numberOfCommits = -1;
-    private isNewCommit =  false;
 
 
     constructor(
@@ -67,12 +65,7 @@ export class CommitPage {
             .then((commitConcat: UserCommit[]) => {
                 this.log.d("User Commits received");
                 commits = commitConcat;
-                if (this.numberOfCommits !== commits.length){
-                    if (this.numberOfCommits !== -1){
-                        this.isNewCommit = true;
-                    }
-                    this.numberOfCommits = commits.length;
-                }
+                
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
@@ -95,10 +88,6 @@ export class CommitPage {
                     let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
-                if (this.isNewCommit){
-                    this.isNewCommit = false;
-                    this.achievementSrv.checkForNewAchievement(this.numberOfCommits, this.achievementSrv.COMMIT_ID);
-                }
                 
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
@@ -116,6 +105,7 @@ export class CommitPage {
         popover.onDidDismiss((newCommit) => {
             if(newCommit) {
                 this.arrayCommits.push(newCommit);
+                this.achievementSrv.checkForNewAchievement(this.arrayCommits.length, this.achievementSrv.COMMIT_ID);
                 this.applyFilters(this.arrayCommits);
             }
         });
