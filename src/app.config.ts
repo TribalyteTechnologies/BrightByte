@@ -9,6 +9,7 @@ export class AppConfig {
     public static readonly DEFAULT_DATE_FORMAT = "en-EU";
     public static readonly USER_LANG_STORAGE_KEY = "brightbyteUserLang";
     public static readonly AVAILABLE_LANGUAGE_KEYS = ["en", "es"];
+    public static readonly UPDATE_CHECK_INTERVAL_MINS = 10;
 
     public static readonly NETWORK_CONFIG_LOCALHOST = [{
         gasLimit: 2000000,
