@@ -43,3 +43,6 @@ truffle-config.custom.js
 script2\.sh
 
 Boot-script\.sh
+
+backend/node_modules
+backend/db.json
