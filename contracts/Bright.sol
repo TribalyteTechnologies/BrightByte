@@ -43,6 +43,10 @@ contract Bright {
     }
    
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event SetUserProfile (string name, address hash);
+    event NewCommit (address userHash, bytes32 urlCommit, uint256 numberOfCommits);
+    event NewReview (address userHash, bytes32 urlCommit, uint256 numberOfReviews);
+    event SeasonEnd (uint256 currentSeason);
 
     function Bright() public {
         owner = msg.sender;
@@ -101,7 +105,7 @@ contract Bright {
             }
             hashUserMap[user].name = name;
         }
-        emit UserProfileSetEvent(name, user);
+        emit SetUserProfile(name, user);
     }
 
     function getUser (address userHash) public onlyDapp view returns (string, string, uint, uint, uint, uint32, uint16) {
@@ -136,7 +140,7 @@ contract Bright {
             checkSeason();
             user.seasonData[currentSeasonIndex].urlSeasonCommits.push(url);
             user.seasonData[currentSeasonIndex].seasonCommits[url] = true;
-            
+            emit NewCommit(sender, url, user.pendingCommits.length);
         }
     }
 
@@ -217,6 +221,7 @@ contract Bright {
             (userSeason.seasonStats.reputation, userSeason.seasonStats.cumulativeComplexity) = root.calculateUserReputation(url, userSeason.seasonStats.reputation, userSeason.seasonStats.cumulativeComplexity);
             reviewer.seasonData[currentSeasonIndex].seasonStats.reviewsMade++;
         }
+        emit NewReview(sender, url, reviewer.finishedReviews.length);
     }
 
     function getUserName(address userHash) public onlyDapp view returns (string) {
@@ -313,6 +318,7 @@ contract Bright {
         uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * SEASON_LENGTH_SECS);
         if(block.timestamp > seasonFinale) {
             currentSeasonIndex++;
+            emit SeasonEnd(currentSeasonIndex);
         }
     }
 
