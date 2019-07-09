@@ -52,7 +52,7 @@ export class RankingPage {
     public hours: number;
     public minutes: number;
     public seconds: number;
-    public globalSelected = true;
+    public globalSelected = false;
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
     private log: ILogger;
@@ -69,10 +69,14 @@ export class RankingPage {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
         this.log.d("Imported account: ", this.account);
+    }
+
+    public ionViewWillEnter(){
         this.contractManagerService.getCurrentSeason()
         .then((season: number[]) => {
             this.numberOfSeasons = season[0];
             this.seasonFinale = season[1] * 1000;
+            this.seasonSelected = season[0];
             setInterval(() => {
                 let now = new Date().getTime();
                 let distance = this.seasonFinale - now;
@@ -85,11 +89,8 @@ export class RankingPage {
             for(let i = this.numberOfSeasons; i >= 0; i--) {
                 this.seasons.push("Season " + i); 
             }
+            this.refresh();
         });
-    }
-
-    public ionViewWillEnter(){
-        this.refresh();
     }
 
     public refresh() {
