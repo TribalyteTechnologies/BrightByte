@@ -3,13 +3,13 @@ import "./Bright.sol";
 import "./Commits.sol";
 import "./Reputation.sol";
 
+import { Reputation } from "./Reputation.sol";
+
 contract Root{
     Bright remoteBright;
     address brightAddress;
     Commits remoteCommits;
     address commitsAddress;
-    Reputation remoteReputation;
-    address reputationAddress;
     address owner;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -32,23 +32,20 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    function Root (address bright, address commits, address reputation, uint16 seasonIndex, uint256 initialTimestamp) public {
+    function Root (address bright, address commits, uint16 seasonIndex, uint256 initialTimestamp) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
         remoteCommits = Commits(commits);
         commitsAddress = commits;
-        remoteReputation = Reputation(reputation);
-        reputationAddress = reputation;
         remoteCommits.init(address(this));
         remoteBright.init(address(this), seasonIndex, initialTimestamp);
-        remoteReputation.init(address(this));
     }
-    function getHelperAddress() public view returns(address, address, address){
-        return(brightAddress,commitsAddress, reputationAddress);
+    function getHelperAddress() public view returns(address, address){
+        return(brightAddress,commitsAddress);
     }
 
-    function changeContractAddress(address bright, address commits, address reputation) public onlyOwner {
+    function changeContractAddress(address bright, address commits) public onlyOwner {
         if(bright != address(0)) {
             remoteBright = Bright(bright);
             brightAddress = bright;
@@ -56,10 +53,6 @@ contract Root{
         if(commits != address(0)) {
             remoteCommits = Commits(commits);
             commitsAddress = commits;
-        }
-        if(reputation != address(0)) {
-            remoteReputation = Reputation(reputation);
-            reputationAddress = reputation;
         }
     }
     function getUserAddressByEmail(string email) public onlyUser view returns(address){
@@ -106,7 +99,7 @@ contract Root{
     }
 
     function calculatePonderation(uint16[] cleanliness, uint16[] complexity, uint16[] revKnowledge) public onlyCommit view returns(uint32, uint32) {
-        return remoteReputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
+        return Reputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
     function calculateUserReputation(bytes32 commitsUrl, uint32 reputation, uint32 cumulativeComplexity) public view returns (uint32, uint32) {
@@ -115,7 +108,7 @@ contract Root{
         uint32 previousScore;
         uint32 previousPonderation;
         (commitScore, commitPonderation, previousScore, previousPonderation) = remoteCommits.getCommitScores(commitsUrl);
-        return  remoteReputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
+        return  Reputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }
 
     function checkCommitSeason(bytes32 url,address author) public onlyCommit view returns (bool) {

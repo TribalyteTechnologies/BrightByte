@@ -17,6 +17,7 @@ module.exports = function(deployer) {
         return deployer.deploy(Reputation);
     }).then(function() {
         console.log("Deploying Root contract. Addresses: ", [Bright.address, Commits.address, Reputation.address]);
-        return deployer.deploy(Root, Bright.address, Commits.address, Reputation.address, INITIAL_SEASON_INDEX, INITIAL_SEASON_TIMESTAMP);
+        deployer.link(Reputation, Root);
+        return deployer.deploy(Root, Bright.address, Commits.address, INITIAL_SEASON_INDEX, INITIAL_SEASON_TIMESTAMP);
     });
 };
