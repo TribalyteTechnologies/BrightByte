@@ -1,5 +1,4 @@
 pragma solidity 0.4.21;
-import "./Root.sol";
 
 library Reputation {
     uint16 private constant WEIGHT_FACTOR = 1000;

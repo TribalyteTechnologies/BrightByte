@@ -1,7 +1,6 @@
 pragma solidity 0.4.21;
 import "./Bright.sol";
 import "./Commits.sol";
-import "./Reputation.sol";
 
 import { Reputation } from "./Reputation.sol";
 
