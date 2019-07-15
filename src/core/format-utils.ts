@@ -2,10 +2,11 @@ export class FormatUtils {
 
     private static readonly URL_VALIDATOR = /(^https\:\/\/(.+)\/(.+)\/)(.+(pull-requests|pull-request|commits|commit|pull)\/.+)/;
     private static readonly EMAIL_VALIDATOR = /.*@.*\..+$/;
-    private static readonly PROJECT_FROM_URL_1 = /([a-zA-Z0-9]+\/(pull-requests|pull-request|commits|commit|pull)\/.+)/;
+    private static readonly PROJECT_FROM_URL_1 = /([a-zA-Z0-9-_]+\/(pull-requests|pull-request|commits|commit|pull)\/.+)/;
     private static readonly PROJECT_FROM_URL_2 = /^.[^/]+/;
-    private static readonly HASH_FROM_URL_1 = /\/(pull-requests|pull-request|commits|commit|pull)\/[^/]+/;
-    private static readonly HASH_FROM_URL_2 = /[^/a-z-].*$/;
+    private static readonly HASH_FROM_URL_1 = /(pull-requests|pull-request|commits|commit|pull)\/[^/]+/;
+    private static readonly HASH_FROM_URL_2 = /\/.*$/;
+    private static readonly HASH_FROM_URL_3 = /[^/].*/;
 
     public static getUrlValidatorPattern(): RegExp{
         return this.URL_VALIDATOR;
@@ -29,6 +30,7 @@ export class FormatUtils {
         if (url){
             hash = this.HASH_FROM_URL_1.exec(url)[0];
             hash = this.HASH_FROM_URL_2.exec(hash)[0];
+            hash = this.HASH_FROM_URL_3.exec(hash)[0];
         }
         return hash ? hash : null;
     }
