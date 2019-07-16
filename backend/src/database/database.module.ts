@@ -5,8 +5,8 @@ import { BackendConfig } from 'src/backend.config';
 import * as Loki from 'lokijs';
 
 @Module({
-  imports: [Loki, BackendConfig],
-  controllers: [DatabaseController],
-  providers: [DatabaseService],
+	imports: [Loki, BackendConfig],
+	controllers: [DatabaseController],
+	providers: [DatabaseService],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

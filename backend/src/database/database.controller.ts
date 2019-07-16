@@ -1,73 +1,34 @@
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
-import { DatabaseService } from './database.service';
-import { Request, Response } from 'express';
+import { Controller, Get, Post, Param } from "@nestjs/common";
+import { Observable } from "rxjs";
+import { DatabaseService } from "./database.service";
 
-@Controller('database')
+@Controller("database")
 export class DatabaseController {
-  constructor(private readonly databaseService: DatabaseService) { }
+	public constructor(private databaseService: DatabaseService) { }
 
-  @Get('commits/:id')
-  getCommitNumber(@Req() req: Request, @Res() res: Response) {
-    this.databaseService.getCommitNumber(req.params.id)
-      .then(response => {
-        if (response != null) {
-          res.status(200).send(response.toString());
-        }
-        else {
-          res.sendStatus(404);
-        }
-      });
-  }
+	@Get("commits/:id")
+	public getCommitNumber(@Param("id") id: string): Observable<number> {
+		return this.databaseService.getCommitNumber(id);
+	}
 
-  @Get('reviews/:id')
-  getReviewNumber(@Req() req: Request, @Res() res: Response) {
-    this.databaseService.getReviewNumber(req.params.id)
-      .then(response => {
-        if (response != null) {
-          res.status(200).send(response.toString());
-        }
-        else {
-          res.sendStatus(404);
-        }
-      });
-  }
+	@Get("reviews/:id")
+	public getReviewNumber(@Param("id") id: string): Observable<number> {
+		return this.databaseService.getReviewNumber(id);
+	}
 
-  @Post('users/:id')
-  createUser(@Req() req: Request, @Res() res: Response) {
-    this.databaseService.createUser(req.params.id)
-      .then(response => {
-        if (response) {
-          res.sendStatus(200);
-        }
-        else {
-          res.sendStatus(404);
-        }
-      });
-  }
+	@Post("users/:id")
+	public createUser(@Param("id") id: string): Observable<string> {
+		return this.databaseService.createUser(id);
+	}
 
-  @Post('commits/:id/:commitNumber')
-  setCommitNumber(@Req() req: Request, @Res() res: Response) {
-    this.databaseService.setCommitNumber(req.params.id, req.params.commitNumber)
-      .then(response => {
-        if (response) {
-          res.sendStatus(200);
-        }
-        else {
-          res.sendStatus(404);
-        }
-      });
-  }
+	@Post("commits/:id/:commitNumber")
+	public setCommitNumber(@Param("id") id: string, @Param("commitNumber") commitNumber: number): Observable<string> {
+		return this.databaseService.setCommitNumber(id, commitNumber);
+	}
 
-  @Post('reviews/:id/:commitNumber')
-  setReviewNumber(@Req() req: Request, @Res() res: Response) {
-    this.databaseService.setReviewNumber(req.params.id, req.params.commitNumber)
-      .then(response => {
-        if (response) {
-          res.sendStatus(200);
-        }
-        else {
-          res.sendStatus(404);
-        }
-      });
-  }
+	@Post("reviews/:id/:reviewNumber")
+	public setReviewNumber(@Param("id") id: string, @Param("reviewNumber") reviewNumber: number): Observable<string> {
+		return this.databaseService.setReviewNumber(id, reviewNumber);
+
+	}
 }
