@@ -14,6 +14,8 @@ This is the BrightByte developer reputation project.
 - Get the address of an automatically generated truffle-develop wallet (e.g. 0x627306090abab3a6e1400e9345bc60c78a8bef57)
 - Get the address of the generated BrightByte account ("address" field in "Identity.json") (e.g. 0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a)
 - Send funds from the former to the latter with "sendTransaction", like for example: web3.eth.sendTransaction({from: "0x627306090abab3a6e1400e9345bc60c78a8bef57", to: "0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a", value: web3.toWei("5", "ether")})
+- In order to initialize the backend, it's necessary to run "npm install" in "/backend".
+- To run the backend locally, use "npm run start" in "/backend". 
 - See `package.json` for more npm scripts.
 
  #### In order to deploy the application to a server:
