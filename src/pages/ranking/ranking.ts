@@ -102,7 +102,7 @@ export class RankingPage {
             this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => 
                 this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
             if(!this.globalSelected) {
-                this.usersRep = this.usersRep.filter(user => user.numReviews > 0 || user.numberOfCommits > 0);
+                this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
             }
             this.usersRep.map((user, i) => {
                 user.userPosition = ++i;
