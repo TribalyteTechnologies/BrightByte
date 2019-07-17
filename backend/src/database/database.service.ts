@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "src/backend.config";
 import * as Loki from "lokijs";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
+import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class DatabaseService {
@@ -15,28 +16,22 @@ export class DatabaseService {
 
 	public createUser(userIdentifier: string): Observable<string> {
 		return new Observable(observer => {
-			let user = this.collection.findOne({
-				name: userIdentifier
-			});
+			let user = this.collection.findOne({ id: userIdentifier });
 			if (!user) {
-				user = this.collection.insert({
-					name: userIdentifier,
-					commitNumber: 0,
-					reviewNumber: 0
-				});
+				user = this.collection.insert(new UserDto(userIdentifier, 0, 0));
 				this.updateCollection(user).subscribe(
 					updated => {
 						this.saveDb().subscribe(
-							saved => {
+							null,
+							error => observer.error(BackendConfig.statusFailure),
+							() => {
 								observer.next(BackendConfig.statusSuccess);
 								observer.complete();
-							},
-							error => observer.error(BackendConfig.statusFailure)
+							}
 						);
 					},
 					error => observer.error(BackendConfig.statusFailure)
 				)
-
 			} else {
 				observer.error(BackendConfig.statusFailure)
 			}
@@ -45,11 +40,9 @@ export class DatabaseService {
 
 	public getCommitNumber(userIdentifier: string): Observable<number> {
 		return new Observable(observer => {
-			let user = this.collection.findOne({
-				name: userIdentifier
-			});
+			let user = this.collection.findOne({ id: userIdentifier });
 			if (user) {
-				observer.next(user.commitNumber);
+				observer.next(user.commitCount);
 				observer.complete();
 			} else {
 				observer.error(BackendConfig.statusFailure);
@@ -59,11 +52,9 @@ export class DatabaseService {
 
 	public getReviewNumber(userIdentifier: string): Observable<number> {
 		return new Observable(observer => {
-			let user = this.collection.findOne({
-				name: userIdentifier
-			});
+			let user = this.collection.findOne({ id: userIdentifier });
 			if (user) {
-				observer.next(user.reviewNumber);
+				observer.next(user.reviewCount);
 				observer.complete();
 			} else {
 				observer.error(BackendConfig.statusFailure);
@@ -73,31 +64,28 @@ export class DatabaseService {
 
 	public setCommitNumber(userIdentifier: string, num: number): Observable<string> {
 		return new Observable(observer => {
-			let user = this.collection.findOne({
-				name: userIdentifier
-			});
+			let user = this.collection.findOne({ id: userIdentifier });
 			if (user) {
-				user.commitNumber = num;
+				user.commitCount = num;
 			} else {
-				user = this.collection.insert({
-					name: userIdentifier,
-					commitNumber: num,
-					reviewNumber: 0
-				});
+				user = this.collection.insert(new UserDto(userIdentifier, num, 0));
 			}
 			if (user) {
 				this.updateCollection(user).subscribe(
 					updated => {
 						this.saveDb().subscribe(
-							saved => {
+							null,
+							error => observer.error(BackendConfig.statusFailure),
+							() => {
 								observer.next(BackendConfig.statusSuccess);
 								observer.complete();
-							},
-							error => observer.error(BackendConfig.statusFailure),
+							}
 						);
-					}, 
+					},
 					error => observer.error(BackendConfig.statusFailure)
 				)
+			} else {
+				observer.error(BackendConfig.statusFailure);
 			}
 		});
 	}
@@ -105,30 +93,29 @@ export class DatabaseService {
 	public setReviewNumber(userIdentifier: string, num: number): Observable<string> {
 		return new Observable(observer => {
 			let user = this.collection.findOne({
-				name: userIdentifier
+				id: userIdentifier
 			});
 			if (user) {
-				user.commitNumber = num;
+				user.reviewCount = num;
 			} else {
-				user = this.collection.insert({
-					name: userIdentifier,
-					commitNumber: 0,
-					reviewNumber: num
-				});
+				user = this.collection.insert(new UserDto(userIdentifier, 0, num));
 			}
 			if (user) {
 				this.updateCollection(user).subscribe(
 					updated => {
 						this.saveDb().subscribe(
-							saved => {
+							null,
+							error => observer.error(BackendConfig.statusFailure),
+							() => {
 								observer.next(BackendConfig.statusSuccess);
 								observer.complete();
-							},
-							error => observer.error(BackendConfig.statusFailure),
+							}
 						);
-					}, 
+					},
 					error => observer.error(BackendConfig.statusFailure)
 				)
+			} else {
+				observer.error(BackendConfig.statusFailure);
 			}
 		});
 	}
@@ -145,8 +132,9 @@ export class DatabaseService {
 					console.log("Collection not found.");
 					self.collection = self.database.addCollection(BackendConfig.USER_COLLECTION);
 					self.saveDb().subscribe(
-						saved => console.log("Created new Collection"),
-						error => console.log("Can't create new Collection.")
+						null,
+						error => console.log("Can't create new Collection."),
+						() => console.log("Created new Collection")
 					);
 				} else {
 					console.log("Collection found.");
@@ -158,12 +146,7 @@ export class DatabaseService {
 	private saveDb(): Observable<any> {
 		return new Observable<any>(observer => {
 			this.database.saveDatabase(function (err) {
-				if (err) {
-					observer.error();
-				} else {
-					observer.next();
-					observer.complete();
-				}
+				err ? observer.error() : observer.complete();
 			});
 		})
 	}
