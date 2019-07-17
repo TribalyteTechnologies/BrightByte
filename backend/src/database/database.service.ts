@@ -3,14 +3,19 @@ import { BackendConfig } from "src/backend.config";
 import * as Loki from "lokijs";
 import { Observable } from "rxjs";
 import { UserDto } from "./dto/user.dto";
+import { ILogger, LoggerService } from "../logger/logger.service";
 
 @Injectable()
 export class DatabaseService {
 
 	private database: Loki;
 	private collection: Loki.Collection;
+	private log: ILogger;
 
-	public constructor() {
+	public constructor(
+		loggerSrv: LoggerService
+	) {
+		this.log = loggerSrv.get("DatabaseService");
 		this.initDatabase();
 	}
 
@@ -123,21 +128,22 @@ export class DatabaseService {
 	private async initDatabase() {
 		this.database = new Loki(BackendConfig.BRIGHTBYTE_DB_JSON);
 		let self = this;
-		this.database.loadDatabase({}, function (err) {
+		this.database.loadDatabase({}, (err) => {
 			if (err) {
-				console.log("Couldn't load the database.")
+				this.log.d("Couldn't load the database.")
 			} else {
-				self.collection = self.database.getCollection(BackendConfig.USER_COLLECTION);
-				if (!self.collection) {
-					console.log("Collection not found.");
-					self.collection = self.database.addCollection(BackendConfig.USER_COLLECTION);
-					self.saveDb().subscribe(
+				this.collection = this.database.getCollection(BackendConfig.USER_COLLECTION);
+				if (!this.collection) {
+					this.log.d("Collection not found.");
+					this.collection = this.database.addCollection(BackendConfig.USER_COLLECTION);
+					this.saveDb().subscribe(
 						null,
-						error => console.log("Can't create new Collection."),
-						() => console.log("Created new Collection")
+						error => this.log.d("Can't create new Collection."),
+						() => this.log.d("Created new Collection")
 					);
 				} else {
-					console.log("Collection found.");
+					this.log.d("Collection found.");
+
 				}
 			}
 		});
