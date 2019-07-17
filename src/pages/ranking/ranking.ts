@@ -75,16 +75,19 @@ export class RankingPage {
         this.contractManagerService.getCurrentSeason()
         .then((season: number[]) => {
             this.numberOfSeasons = season[0];
-            this.seasonFinale = season[1] * 1000;
+            this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
             this.seasonSelected = season[0];
             setInterval(() => {
                 let now = new Date().getTime();
                 let distance = this.seasonFinale - now;
-                this.days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            },          1000);
+                this.days = Math.floor(distance / (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS));
+                this.hours = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS))
+                    / (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS));
+                this.minutes = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS))
+                    / (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS));
+                this.seconds = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS))
+                    / AppConfig.SECS_TO_MS);
+            },          AppConfig.SECS_TO_MS);
             this.seasons.push("Ranking Global");
             for(let i = this.numberOfSeasons; i >= 0; i--) {
                 this.seasons.push("Season " + i); 
@@ -98,11 +101,12 @@ export class RankingPage {
         .then((usersRep: UserReputation[]) => {
             this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => 
                 this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
-            this.usersRep.forEach(user => {
-                user.userPosition = this.usersRep.indexOf(user) + 1;
+            if(!this.globalSelected) {
+                this.usersRep = this.usersRep.filter(user => user.numReviews > 0 || user.numberOfCommits > 0);
+            }
+            this.usersRep.map((user, i) => {
+                user.userPosition = ++i;
             });
-            return;
-        }).then(() => {
             this.userHash = this.account.address;
             this.setUser(this.account.address);
         }).catch((e) => {
@@ -145,7 +149,7 @@ export class RankingPage {
         this.contractManagerService.getCurrentSeason()
         .then((season: number[]) => {
             this.numberOfSeasons = season[0];
-            this.seasonFinale = season[1] * 1000;
+            this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
             let date = new Date(this.seasonFinale);
             this.log.d("The current season is the number: " + this.numberOfSeasons + ", that ends the" + date);
         }).catch((e) => {
