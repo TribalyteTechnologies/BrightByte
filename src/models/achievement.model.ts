@@ -1,12 +1,12 @@
 export class Achievement { 
-    public tittle: string;
+    public title: string;
     public quantity: number; 
     public parameter: string; 
     public iconPath: string;
     public isEmpty: boolean;
 
-    public constructor(isEmpty = true, tittle?: string, quantity?: number, parameter?: string, iconPath?: string){
-        this.tittle = tittle;
+    public constructor(isEmpty = true, title?: string, quantity?: number, parameter?: string, iconPath?: string){
+        this.title = title;
         this.quantity = quantity;
         this.parameter = parameter;
         this.iconPath = iconPath;
