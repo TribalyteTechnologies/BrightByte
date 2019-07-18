@@ -1,5 +1,5 @@
 export class AchievementDto { 
-    public id: string
+    public id: string;
     public title: string;
     public quantity: number; 
     public parameter: string; 
