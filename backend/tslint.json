@@ -60,7 +60,6 @@
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": false,
     "no-unused-expression": true,
-    "no-unused-variable": true,
     "no-use-before-declare": false,
     "no-var-keyword": true,
     "no-var-requires": true,
@@ -109,14 +108,6 @@
       "check-separator",
       "check-type"
     ],
-    "angular-whitespace": [
-      true,
-      "check-interpolation",
-      "check-pipe",
-      "check-semicolon"
-    ],
-    "banana-in-box": true,
-    "templates-no-negated-async": true,
     "directive-selector": [
       false,
       "attribute",
@@ -129,11 +120,6 @@
       "ym",
       "kebab-case"
     ],
-    "use-input-property-decorator": true,
-    "use-output-property-decorator": true,
-    "use-host-property-decorator": true,
-    "use-view-encapsulation": true,
-    "no-attribute-parameter-decorator": true,
     "no-input-rename": true,
     "no-output-rename": true,
     "no-forward-ref": true,

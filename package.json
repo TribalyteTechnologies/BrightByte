@@ -20,7 +20,8 @@
         "scss-lint": "sass-lint -v --max-warnings 0",
         "linters-ci": "npm run html-lint && npm run scss-lint && npm run lint",
         "linters-ci-backend": "cd backend; npm run linters-ci",
-        "prepush": "npm run linters-ci"
+        "prepush": "npm run linters-ci",
+        "install backend": "cd backend; npm install --unsafe-perm"
     },
     "dependencies": {
         "@angular/common": "5.2.11",
