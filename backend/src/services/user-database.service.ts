@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "src/backend.config";
-import * as Loki from "lokijs";
 import { Observable } from "rxjs";
 import { UserDto } from "../dto/user.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
+import Loki from "lokijs";
 
 @Injectable()
 export class UserDatabaseService {
