@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Param } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserDatabaseService } from "./user-database.service";
+import { UserDatabaseService } from "../services/user-database.service";
 
 @Controller("database")
 export class UserDatabaseController {

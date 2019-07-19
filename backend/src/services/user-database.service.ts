@@ -28,17 +28,17 @@ export class UserDatabaseService {
                     updated => {
                         this.saveDb().subscribe(
                             null,
-                            error => observer.error(BackendConfig.statusFailure),
+                            error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
-                                observer.next(BackendConfig.statusSuccess);
+                                observer.next(BackendConfig.STATUS_SUCCESS);
                                 observer.complete();
                             }
                         );
                     },
-                    error => observer.error(BackendConfig.statusFailure)
+                    error => observer.error(BackendConfig.STATUS_FAILURE)
                 );
             } else {
-                observer.error(BackendConfig.statusFailure);
+                observer.error(BackendConfig.STATUS_FAILURE);
             }
         });
     }
@@ -50,7 +50,7 @@ export class UserDatabaseService {
                 observer.next(user.commitCount);
                 observer.complete();
             } else {
-                observer.error(BackendConfig.statusFailure);
+                observer.error(BackendConfig.STATUS_FAILURE);
             }
         });
     }
@@ -62,7 +62,7 @@ export class UserDatabaseService {
                 observer.next(user.reviewCount);
                 observer.complete();
             } else {
-                observer.error(BackendConfig.statusFailure);
+                observer.error(BackendConfig.STATUS_FAILURE);
             }
         });
     }
@@ -80,17 +80,17 @@ export class UserDatabaseService {
                     updated => {
                         this.saveDb().subscribe(
                             null,
-                            error => observer.error(BackendConfig.statusFailure),
+                            error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
-                                observer.next(BackendConfig.statusSuccess);
+                                observer.next(BackendConfig.STATUS_SUCCESS);
                                 observer.complete();
                             }
                         );
                     },
-                    error => observer.error(BackendConfig.statusFailure)
+                    error => observer.error(BackendConfig.STATUS_FAILURE)
                 );
             } else {
-                observer.error(BackendConfig.statusFailure);
+                observer.error(BackendConfig.STATUS_FAILURE);
             }
         });
     }
@@ -110,38 +110,38 @@ export class UserDatabaseService {
                     updated => {
                         this.saveDb().subscribe(
                             null,
-                            error => observer.error(BackendConfig.statusFailure),
+                            error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
-                                observer.next(BackendConfig.statusSuccess);
+                                observer.next(BackendConfig.STATUS_SUCCESS);
                                 observer.complete();
                             }
                         );
                     },
-                    error => observer.error(BackendConfig.statusFailure)
+                    error => observer.error(BackendConfig.STATUS_FAILURE)
                 );
             } else {
-                observer.error(BackendConfig.statusFailure);
+                observer.error(BackendConfig.STATUS_FAILURE);
             }
         });
     }
 
-    private async initDatabase() {
-        this.database = new Loki(BackendConfig.BRIGHTBYTE_DB_JSON);
+    private initDatabase() {
+        this.database = new Loki(BackendConfig.USER_DB_JSON);
         this.database.loadDatabase({}, (err) => {
             if (err) {
-                this.log.d("Couldn't load the database.");
+                this.log.d(BackendConfig.DATABASE_LOADING_ERROR);
             } else {
                 this.collection = this.database.getCollection(BackendConfig.USER_COLLECTION);
                 if (!this.collection) {
-                    this.log.d("Collection not found.");
+                    this.log.d(BackendConfig.COLLECTION_NOT_FOUND);
                     this.collection = this.database.addCollection(BackendConfig.USER_COLLECTION);
                     this.saveDb().subscribe(
                         null,
-                        error => this.log.d("Can't create new Collection."),
-                        () => this.log.d("Created new Collection")
+                        error => this.log.d(BackendConfig.COLLECTION_NOT_CREATED),
+                        () => this.log.d(BackendConfig.COLLECTION_CREATED)
                     );
                 } else {
-                    this.log.d("Collection found.");
+                    this.log.d(BackendConfig.COLLECTION_LOADED);
 
                 }
             }

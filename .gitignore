@@ -45,4 +45,4 @@ script2\.sh
 Boot-script\.sh
 
 backend/node_modules
-backend/brightbyte-db.json
+backend/brightbyte-user-db.json
