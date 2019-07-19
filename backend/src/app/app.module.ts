@@ -5,6 +5,7 @@ import { UserDatabaseService } from "../services/user-database.service";
 import { AchievementDatabaseService } from "../services/achievement-database.service";
 import { LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
+import { EventHandlerService } from "../services/eventHandler.service";
 
 
 @Module({
@@ -13,6 +14,7 @@ import { Web3Service } from "../services/web3.service";
     providers: [UserDatabaseService,
         AchievementDatabaseService,
         Web3Service,
+        EventHandlerService,
         { provide: LoggerService, useFactory: () => new LoggerService(BackendConfig.LOG_DEBUG) }
         ] 
 })
