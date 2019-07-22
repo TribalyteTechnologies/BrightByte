@@ -188,6 +188,7 @@
         "txError": "Transaction error",
         "description": "Enter the explanation of your review",
         "showAllCommits": "Showing all your commits",
+        "showAllAssignedCommits": "Showing all your assigned commits",
         "details": "Details",
         "setReview": "Set Review",
         "setYourReview": "Set your review"
