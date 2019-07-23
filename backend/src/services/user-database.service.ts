@@ -5,6 +5,7 @@ import { UserDto } from "../dto/user.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { AchievementDto } from "src/dto/achievement.dto";
+import { CoreDatabaseService } from "./core-database.service";
 
 @Injectable()
 export class UserDatabaseService {
@@ -12,23 +13,25 @@ export class UserDatabaseService {
     private database: Loki;
     private collection: Loki.Collection;
     private log: ILogger;
+    private databaseService: CoreDatabaseService;
 
     public constructor(
         loggerSrv: LoggerService,
         private httpService: HttpService
     ) {
         this.log = loggerSrv.get("UserDatabaseService");
-        this.initDatabase();
+        this.databaseService = new CoreDatabaseService(loggerSrv);
+        this.init();
     }
 
     public createUser(userIdentifier: string): Observable<string> {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });
             if (!user) {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, [1, 2]));
-                this.updateCollection(user).subscribe(
+                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, []));
+                this.databaseService .updateCollection(user, this.collection).subscribe(
                     updated => {
-                        this.saveDb().subscribe(
+                        this.databaseService .saveDb(this.database).subscribe(
                             null,
                             error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
@@ -98,9 +101,9 @@ export class UserDatabaseService {
                 user = this.collection.insert(new UserDto(userIdentifier, num, 0));
             }
             if (user) {
-                this.updateCollection(user).subscribe(
+                this.databaseService.updateCollection(user, this.collection).subscribe(
                     updated => {
-                        this.saveDb().subscribe(
+                        this.databaseService.saveDb(this.database).subscribe(
                             null,
                             error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
@@ -128,9 +131,9 @@ export class UserDatabaseService {
                 user = this.collection.insert(new UserDto(userIdentifier, 0, num));
             }
             if (user) {
-                this.updateCollection(user).subscribe(
+                this.databaseService.updateCollection(user, this.collection).subscribe(
                     updated => {
-                        this.saveDb().subscribe(
+                        this.databaseService.saveDb(this.database).subscribe(
                             null,
                             error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
@@ -147,46 +150,17 @@ export class UserDatabaseService {
         });
     }
 
-    private initDatabase() {
-        this.database = new Loki(BackendConfig.USER_DB_JSON);
-        this.database.loadDatabase({}, (err) => {
-            if (err) {
-                this.log.d(BackendConfig.DATABASE_LOADING_ERROR);
-            } else {
-                this.collection = this.database.getCollection(BackendConfig.USER_COLLECTION);
-                if (!this.collection) {
-                    this.log.d(BackendConfig.COLLECTION_NOT_FOUND);
-                    this.collection = this.database.addCollection(BackendConfig.USER_COLLECTION);
-                    this.saveDb().subscribe(
-                        null,
-                        error => this.log.d(BackendConfig.COLLECTION_NOT_CREATED),
-                        () => this.log.d(BackendConfig.COLLECTION_CREATED)
-                    );
-                } else {
-                    this.log.d(BackendConfig.COLLECTION_LOADED);
-
-                }
+    private init() {
+        this.databaseService.initDatabase(BackendConfig.USER_DB_JSON).subscribe(
+            database => {
+                this.database = database;
+                this.databaseService.initCollection(database, BackendConfig.USER_COLLECTION).subscribe(
+                    collection => {
+                        this.collection = collection;
+                    }
+                );
             }
-        });
-    }
 
-    private saveDb(): Observable<any> {
-        return new Observable<any>(observer => {
-            this.database.saveDatabase(function (err) {
-                err ? observer.error() : observer.complete();
-            });
-        });
-    }
-
-    private updateCollection(user: Loki.KeyValueStore): Observable<any> {
-        return new Observable<any>(observer => {
-            try {
-                this.collection.update(user);
-                observer.next();
-                observer.complete();
-            } catch {
-                observer.error();
-            }
-        });
+        );
     }
 }

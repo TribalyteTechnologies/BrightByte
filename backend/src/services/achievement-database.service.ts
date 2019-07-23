@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { AchievementDto } from "src/dto/achievement.dto";
+import { CoreDatabaseService } from "./core-database.service";
 
 @Injectable()
 export class AchievementDatabaseService {
@@ -11,13 +12,16 @@ export class AchievementDatabaseService {
     private database: Loki;
     private collection: Loki.Collection;
     private log: ILogger;
+    private databaseService: CoreDatabaseService;
 
     public constructor(
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("AchievementDatabaseService");
-        this.initDatabase();
+        this.databaseService = new CoreDatabaseService(loggerSrv);
+        this.init();
     }
+
     public createAchievement(): Observable<any> {
         return new Observable(observer => {
             let achievement = this.collection.insert(
@@ -28,7 +32,7 @@ export class AchievementDatabaseService {
                 new AchievementDto("Newbie", 1, "Commit", "../../assets/imgs/trophys/achievement2.svg", 2)
             );
             this.collection.update(achievement2);
-            this.saveDb().subscribe(
+            this.databaseService.saveDb(this.database).subscribe(
                 null,
                 error => observer.error(BackendConfig.STATUS_FAILURE),
                 () => {
@@ -61,33 +65,17 @@ export class AchievementDatabaseService {
         });
     }
 
-    private initDatabase() {
-        this.database = new Loki(BackendConfig.ACHIEVEMENT_DB_JSON);
-        this.database.loadDatabase({}, (err) => {
-            if (err) {
-                this.log.d(BackendConfig.DATABASE_LOADING_ERROR);
-            } else {
-                this.collection = this.database.getCollection(BackendConfig.ACHIEVEMENT_COLLECTION);
-                if (!this.collection) {
-                    this.log.d(BackendConfig.COLLECTION_NOT_FOUND);
-                    this.collection = this.database.addCollection(BackendConfig.ACHIEVEMENT_COLLECTION);
-                    this.saveDb().subscribe(
-                        null,
-                        error => this.log.d(BackendConfig.COLLECTION_NOT_CREATED),
-                        () => this.log.d(BackendConfig.COLLECTION_CREATED)
-                    );
-                } else {
-                    this.log.d(BackendConfig.COLLECTION_LOADED);
-                }
+    private init() {
+        this.databaseService.initDatabase(BackendConfig.ACHIEVEMENT_DB_JSON).subscribe(
+            database => {
+                this.database = database;
+                this.databaseService.initCollection(database, BackendConfig.ACHIEVEMENT_COLLECTION).subscribe(
+                    collection => {
+                        this.collection = collection;
+                    }
+                );
             }
-        });
-    }
 
-    private saveDb(): Observable<any> {
-        return new Observable<any>(observer => {
-            this.database.saveDatabase(function (err) {
-                err ? observer.error() : observer.complete();
-            });
-        });
+        );
     }
 }

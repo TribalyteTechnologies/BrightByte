@@ -3,16 +3,11 @@ export class BackendConfig {
 
     public static readonly USER_COLLECTION = "users";
     public static readonly ACHIEVEMENT_COLLECTION = "achievements";
-    public static readonly ACHIEVEMENT_DB_JSON = " brightbyte-achievement-db.json";
+    public static readonly ACHIEVEMENT_DB_JSON = "brightbyte-achievement-db.json";
     public static readonly USER_DB_JSON = "brightbyte-user-db.json";
     public static readonly BRIGHTBYTE_DB_PORT = 3000;
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_FAILURE = "Error";
-    public static readonly DATABASE_LOADING_ERROR = "Database couldn't be loaded.";
-    public static readonly COLLECTION_NOT_FOUND = "Collection couldn't be lodaded.";
-    public static readonly COLLECTION_NOT_CREATED = "Collection couldn't be created.";
-    public static readonly COLLECTION_CREATED = "New collection created.";
-    public static readonly COLLECTION_LOADED = "Collection loaded.";
     public static readonly web3Provider_ws = "ws://0.0.0.0/ws";
     public static readonly originHeader = "test.com";
     public static readonly netId = "83584648538";
