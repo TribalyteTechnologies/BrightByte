@@ -29,9 +29,9 @@ export class UserDatabaseService {
             let user = this.collection.findOne({ id: userIdentifier });
             if (!user) {
                 user = this.collection.insert(new UserDto(userIdentifier, 0, 0, []));
-                this.databaseService .updateCollection(user, this.collection).subscribe(
+                this.databaseService.updateCollection(user, this.collection).subscribe(
                     updated => {
-                        this.databaseService .saveDb(this.database).subscribe(
+                        this.databaseService.saveDb(this.database).subscribe(
                             null,
                             error => observer.error(BackendConfig.STATUS_FAILURE),
                             () => {
@@ -92,13 +92,26 @@ export class UserDatabaseService {
             }
         });
     }
+    public hasAchievement(userIdentifier: string, achievementIdentifier: number): Observable<boolean> {
+        return new Observable(observer => {
+            let user = this.collection.findOne({ id: userIdentifier });
+            if (user) {
+                let achievements = user.obtainedAchievements;
+                observer.next(achievements.some( id => id === achievementIdentifier));
+                observer.complete();
+            } else {
+                observer.next(false);
+                observer.complete();
+            }
+        });
+    }
     public setCommitNumber(userIdentifier: string, num: number): Observable<string> {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });
             if (user) {
                 user.commitCount = num;
             } else {
-                user = this.collection.insert(new UserDto(userIdentifier, num, 0));
+                user = this.collection.insert(new UserDto(userIdentifier, num, 0, []));
             }
             if (user) {
                 this.databaseService.updateCollection(user, this.collection).subscribe(
@@ -128,7 +141,40 @@ export class UserDatabaseService {
             if (user) {
                 user.reviewCount = num;
             } else {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, num));
+                user = this.collection.insert(new UserDto(userIdentifier, 0, num, []));
+            }
+            if (user) {
+                this.databaseService.updateCollection(user, this.collection).subscribe(
+                    updated => {
+                        this.databaseService.saveDb(this.database).subscribe(
+                            null,
+                            error => observer.error(BackendConfig.STATUS_FAILURE),
+                            () => {
+                                observer.next(BackendConfig.STATUS_SUCCESS);
+                                observer.complete();
+                            }
+                        );
+                    },
+                    error => observer.error(BackendConfig.STATUS_FAILURE)
+                );
+            } else {
+                observer.error(BackendConfig.STATUS_FAILURE);
+            }
+        });
+    }
+    public setObtainedAchievement(userIdentifier: string, achievementIdentifiers: string): Observable<string> {
+        return new Observable(observer => {
+            let user = this.collection.findOne({
+                id: userIdentifier
+            });
+            let achievements = JSON.parse("[" + user.obtainedAchievements + "]");
+            if (user) {
+                for (let id of achievementIdentifiers) {
+                    achievements.push(id);
+                }
+                user.obtainedAchievements = achievements;
+            } else {
+                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, achievements));
             }
             if (user) {
                 this.databaseService.updateCollection(user, this.collection).subscribe(

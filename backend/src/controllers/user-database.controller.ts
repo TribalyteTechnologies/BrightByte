@@ -22,6 +22,11 @@ export class UserDatabaseController {
         return this.userDatabaseService.getObtainedAchievements(id);
     }
 
+    @Get("hasAchievement/:userId/:achievementId")
+    public hasAchievement(@Param("userId") userId: string, @Param("achievementId") achievementId: number): Observable<boolean> {
+        return this.userDatabaseService.hasAchievement(userId, achievementId);
+    }
+
     @Post("users/:id")
     public createUser(@Param("id") id: string): Observable<string> {
         return this.userDatabaseService.createUser(id);
@@ -35,6 +40,9 @@ export class UserDatabaseController {
     @Post("reviews/:id/:reviewNumber")
     public setReviewNumber(@Param("id") id: string, @Param("reviewNumber") reviewNumber: number): Observable<string> {
         return this.userDatabaseService.setReviewNumber(id, reviewNumber);
-
+    }
+    @Post("achievements/:userId/:achievementIds")
+    public setObtainedAchievement(@Param("userId") id: string, @Param("achievementIds") achievementIds: string): Observable<string> {
+        return this.userDatabaseService.setObtainedAchievement(id, achievementIds);
     }
 }
