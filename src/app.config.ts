@@ -28,7 +28,7 @@ export class AppConfig {
     public static readonly COMMIT_WEIGHT = 0.6;
     public static readonly REVIEW_WEIGHT = 0.4;
     public static readonly DAY_TO_SECS = 60 * 60 * 24;
-    public static readonly HOUR_TO_SECS = 60 * 60 * 24;
+    public static readonly HOUR_TO_SECS = 60 * 60;
     public static readonly MIN_TO_SECS = 60;
 
     public static readonly StorageKey = {
