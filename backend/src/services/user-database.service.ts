@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpService } from "@nestjs/common";
 import { BackendConfig } from "src/backend.config";
 import { Observable } from "rxjs";
 import { UserDto } from "../dto/user.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
+import { AchievementDto } from "src/dto/achievement.dto";
 
 @Injectable()
 export class UserDatabaseService {
@@ -13,7 +14,8 @@ export class UserDatabaseService {
     private log: ILogger;
 
     public constructor(
-        loggerSrv: LoggerService
+        loggerSrv: LoggerService,
+        private httpService: HttpService
     ) {
         this.log = loggerSrv.get("UserDatabaseService");
         this.initDatabase();
@@ -23,7 +25,7 @@ export class UserDatabaseService {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });
             if (!user) {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, 0));
+                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, [1, 2]));
                 this.updateCollection(user).subscribe(
                     updated => {
                         this.saveDb().subscribe(
@@ -66,7 +68,27 @@ export class UserDatabaseService {
             }
         });
     }
-
+    public getObtainedAchievements(userIdentifier: string): Observable<AchievementDto[]> {
+        return new Observable(observer => {
+            let user = this.collection.findOne({ id: userIdentifier });
+            if (user) {
+                let achievements: AchievementDto[];
+                this.httpService.get("http://localhost:" + BackendConfig.BRIGHTBYTE_DB_PORT + "/achievements/" + user.obtainedAchievements)
+                    .subscribe(
+                        axiosResponse => {
+                            achievements = axiosResponse.data;
+                            observer.next(achievements);
+                            observer.complete();
+                        },
+                        error => {
+                            observer.error(BackendConfig.STATUS_FAILURE);
+                        }
+                    );
+            } else {
+                observer.error(BackendConfig.STATUS_FAILURE);
+            }
+        });
+    }
     public setCommitNumber(userIdentifier: string, num: number): Observable<string> {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });

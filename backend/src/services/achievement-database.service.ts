@@ -3,6 +3,7 @@ import { BackendConfig } from "src/backend.config";
 import { Observable } from "rxjs";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
+import { AchievementDto } from "src/dto/achievement.dto";
 
 @Injectable()
 export class AchievementDatabaseService {
@@ -16,6 +17,48 @@ export class AchievementDatabaseService {
     ) {
         this.log = loggerSrv.get("AchievementDatabaseService");
         this.initDatabase();
+    }
+    public createAchievement(): Observable<any> {
+        return new Observable(observer => {
+            let achievement = this.collection.insert(
+                new AchievementDto("First commit", 1, "Commit", "../../assets/imgs/trophys/achievement1.svg", 1)
+            );
+            this.collection.update(achievement);
+            let achievement2 = this.collection.insert(
+                new AchievementDto("Newbie", 1, "Commit", "../../assets/imgs/trophys/achievement2.svg", 2)
+            );
+            this.collection.update(achievement2);
+            this.saveDb().subscribe(
+                null,
+                error => observer.error(BackendConfig.STATUS_FAILURE),
+                () => {
+                    observer.next(BackendConfig.STATUS_SUCCESS);
+                    observer.complete();
+                }
+            );
+        });
+    }
+
+    public getAchievements(ids: string): Observable<AchievementDto[]> {
+        return new Observable(observer => {
+            let achievementIdentifiers = JSON.parse("[" + ids + "]");
+            let achievements = [];
+            //TODO: Change to foreach
+            for (let id of achievementIdentifiers) {
+                let achievement = this.collection.findOne({ id: id });
+                if (achievement) {
+                    achievements.push(
+                        new AchievementDto(achievement.title, achievement.quantity, achievement.parameter, achievement.iconPath)
+                    );
+                }
+            }
+            if (achievements) {
+                observer.next(achievements);
+                observer.complete();
+            } else {
+                observer.error(BackendConfig.STATUS_FAILURE);
+            }
+        });
     }
 
     private initDatabase() {
