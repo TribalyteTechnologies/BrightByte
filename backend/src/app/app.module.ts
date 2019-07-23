@@ -9,13 +9,16 @@ import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
 
 @Module({
-    imports: [BackendConfig,
+    imports: [
+        BackendConfig,
         HttpModule
     ],
-    controllers: [UserDatabaseController,
+    controllers: [
+        UserDatabaseController,
         AchievementDatabaseController
     ],
-    providers: [UserDatabaseService,
+    providers: [
+        UserDatabaseService,
         AchievementDatabaseService,
         Web3Service,
         EventHandlerService,
