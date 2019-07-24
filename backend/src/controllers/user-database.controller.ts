@@ -23,7 +23,7 @@ export class UserDatabaseController {
     }
 
     @Get("hasAchievement/:userId/:achievementId")
-    public hasAchievement(@Param("userId") userId: string, @Param("achievementId") achievementId: number): Observable<boolean> {
+    public hasAchievement(@Param("userId") userId: string, @Param("achievementId") achievementId: string): Observable<boolean> {
         return this.userDatabaseService.hasAchievement(userId, achievementId);
     }
 

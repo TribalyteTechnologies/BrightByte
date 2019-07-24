@@ -48,28 +48,28 @@ export class UserDatabaseService {
         });
     }
 
-    public getCommitNumber(userIdentifier: string): Observable<number> {
-        return new Observable(observer => {
-            let user = this.collection.findOne({ id: userIdentifier });
-            if (user) {
+    public getCommitNumber(userIdentifier: string): Observable<any> {
+        let ret = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let user = this.collection.findOne({ id: userIdentifier });
+        if (user) {
+            ret = new Observable(observer => {
                 observer.next(user.commitCount);
                 observer.complete();
-            } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
-            }
-        });
+            });
+        }
+        return ret;
     }
 
-    public getReviewNumber(userIdentifier: string): Observable<number> {
-        return new Observable(observer => {
-            let user = this.collection.findOne({ id: userIdentifier });
-            if (user) {
+    public getReviewNumber(userIdentifier: string): Observable<any> {
+        let ret = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let user = this.collection.findOne({ id: userIdentifier });
+        if (user) {
+            ret = new Observable(observer => {
                 observer.next(user.reviewCount);
                 observer.complete();
-            } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
-            }
-        });
+            });
+        }
+        return ret;
     }
     public getObtainedAchievements(userIdentifier: string): Observable<AchievementDto[]> {
         return new Observable(observer => {
@@ -92,12 +92,12 @@ export class UserDatabaseService {
             }
         });
     }
-    public hasAchievement(userIdentifier: string, achievementIdentifier: number): Observable<boolean> {
+    public hasAchievement(userIdentifier: string, achievementIdentifier: string): Observable<boolean> {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });
             if (user) {
                 let achievements = user.obtainedAchievements;
-                observer.next(achievements.some( id => id === achievementIdentifier));
+                observer.next(achievements.includes(parseInt(achievementIdentifier)));
                 observer.complete();
             } else {
                 observer.next(false);
@@ -163,18 +163,19 @@ export class UserDatabaseService {
         });
     }
     public setObtainedAchievement(userIdentifier: string, achievementIdentifiers: string): Observable<string> {
+        let achievementIds: number[] = Array.from(JSON.parse("[" + achievementIdentifiers + "]"));
         return new Observable(observer => {
             let user = this.collection.findOne({
                 id: userIdentifier
             });
-            let achievements = JSON.parse("[" + user.obtainedAchievements + "]");
             if (user) {
-                for (let id of achievementIdentifiers) {
-                    achievements.push(id);
+                let obtainedAchievements: number[] = Array.from(JSON.parse("[" + user.obtainedAchievements + "]"));
+                for (let id of achievementIds) {
+                    obtainedAchievements.push(id);
                 }
-                user.obtainedAchievements = achievements;
+                user.obtainedAchievements = obtainedAchievements;
             } else {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, achievements));
+                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, achievementIds));
             }
             if (user) {
                 this.databaseService.updateCollection(user, this.collection).subscribe(
