@@ -6,7 +6,6 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { AchievementDto } from "src/dto/achievement.dto";
 import { CoreDatabaseService } from "./core-database.service";
-import { map, flatMap } from "rxjs/operators";
 
 @Injectable()
 export class UserDatabaseService {
