@@ -51,7 +51,10 @@ export class UserDatabaseService {
     }
 
     public hasAchievement(userIdentifier: string, achievementIdentifier: string): Observable<boolean> {
-        let ret: Observable<boolean> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let ret: Observable<boolean> = new Observable(observer => {
+            observer.next(false);
+            observer.complete();
+        });
         let user = this.collection.findOne({ id: userIdentifier });
         if (user) {
             let achievements = user.obtainedAchievements;
