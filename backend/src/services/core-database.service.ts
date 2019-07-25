@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
+import { BackendConfig } from "../backend.config";
 
 @Injectable()
 export class CoreDatabaseService {
@@ -51,6 +52,24 @@ export class CoreDatabaseService {
                 this.log.d(nameCollection + " collection loaded.");
                 observer.next(collection);
             }
+        });
+    }
+
+    public save(database, collection, document): Observable<any> {
+        return new Observable(observer => {
+            this.updateCollection(document, collection).subscribe(
+                updated => {
+                    this.saveDb(database).subscribe(
+                        null,
+                        error => observer.error(BackendConfig.STATUS_FAILURE),
+                        () => {
+                            observer.next(BackendConfig.STATUS_SUCCESS);
+                            observer.complete();
+                        }
+                    );
+                },
+                error => observer.error(BackendConfig.STATUS_FAILURE)
+            );
         });
     }
 
