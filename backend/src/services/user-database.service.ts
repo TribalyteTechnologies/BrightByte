@@ -6,6 +6,7 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { AchievementDto } from "src/dto/achievement.dto";
 import { CoreDatabaseService } from "./core-database.service";
+import { map, flatMap } from "rxjs/operators";
 
 @Injectable()
 export class UserDatabaseService {
@@ -24,32 +25,8 @@ export class UserDatabaseService {
         this.init();
     }
 
-    public createUser(userIdentifier: string): Observable<string> {
-        return new Observable(observer => {
-            let user = this.collection.findOne({ id: userIdentifier });
-            if (!user) {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, []));
-                this.databaseService.updateCollection(user, this.collection).subscribe(
-                    updated => {
-                        this.databaseService.saveDb(this.database).subscribe(
-                            null,
-                            error => observer.error(BackendConfig.STATUS_FAILURE),
-                            () => {
-                                observer.next(BackendConfig.STATUS_SUCCESS);
-                                observer.complete();
-                            }
-                        );
-                    },
-                    error => observer.error(BackendConfig.STATUS_FAILURE)
-                );
-            } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
-            }
-        });
-    }
-
-    public getCommitNumber(userIdentifier: string): Observable<any> {
-        let ret = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+    public getCommitNumber(userIdentifier: string): Observable<number> {
+        let ret: Observable<number> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
         let user = this.collection.findOne({ id: userIdentifier });
         if (user) {
             ret = new Observable(observer => {
@@ -60,8 +37,8 @@ export class UserDatabaseService {
         return ret;
     }
 
-    public getReviewNumber(userIdentifier: string): Observable<any> {
-        let ret = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+    public getReviewNumber(userIdentifier: string): Observable<number> {
+        let ret: Observable<number> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
         let user = this.collection.findOne({ id: userIdentifier });
         if (user) {
             ret = new Observable(observer => {
@@ -71,6 +48,20 @@ export class UserDatabaseService {
         }
         return ret;
     }
+
+    public hasAchievement(userIdentifier: string, achievementIdentifier: string): Observable<boolean> {
+        let ret: Observable<boolean> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let user = this.collection.findOne({ id: userIdentifier });
+        if (user) {
+            let achievements = user.obtainedAchievements;
+            ret = new Observable(observer => {
+                observer.next(achievements.includes(parseInt(achievementIdentifier)));
+                observer.complete();
+            });
+        }
+        return ret;
+    }
+
     public getObtainedAchievements(userIdentifier: string): Observable<AchievementDto[]> {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });
@@ -92,109 +83,64 @@ export class UserDatabaseService {
             }
         });
     }
-    public hasAchievement(userIdentifier: string, achievementIdentifier: string): Observable<boolean> {
-        return new Observable(observer => {
-            let user = this.collection.findOne({ id: userIdentifier });
-            if (user) {
-                let achievements = user.obtainedAchievements;
-                observer.next(achievements.includes(parseInt(achievementIdentifier)));
-                observer.complete();
-            } else {
-                observer.next(false);
-                observer.complete();
-            }
-        });
+    
+    public createUser(userIdentifier: string): Observable<string> {
+        let ret: Observable<string> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let user = this.collection.findOne({ id: userIdentifier });
+        if (!user) {
+            user = this.collection.insert(new UserDto(userIdentifier, 0, 0, []));
+            ret = this.databaseService.save(this.database, this.collection, user);
+        }
+        return ret;
     }
-    public setCommitNumber(userIdentifier: string, num: number): Observable<string> {
-        return new Observable(observer => {
-            let user = this.collection.findOne({ id: userIdentifier });
-            if (user) {
-                user.commitCount = num;
-            } else {
-                user = this.collection.insert(new UserDto(userIdentifier, num, 0, []));
-            }
-            if (user) {
-                this.databaseService.updateCollection(user, this.collection).subscribe(
-                    updated => {
-                        this.databaseService.saveDb(this.database).subscribe(
-                            null,
-                            error => observer.error(BackendConfig.STATUS_FAILURE),
-                            () => {
-                                observer.next(BackendConfig.STATUS_SUCCESS);
-                                observer.complete();
-                            }
-                        );
-                    },
-                    error => observer.error(BackendConfig.STATUS_FAILURE)
-                );
-            } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
-            }
-        });
+
+    public setCommitNumber(userIdentifier: string, num: number): Observable<string>{
+        let ret: Observable<string> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let user = this.collection.findOne({ id: userIdentifier });
+        if (user) {
+            user.commitCount = num;
+        } else {
+            user = this.collection.insert(new UserDto(userIdentifier, num, 0, []));
+        }
+        if (user) {
+            ret = this.databaseService.save(this.database, this.collection, user);
+        }
+        return ret;
     }
 
     public setReviewNumber(userIdentifier: string, num: number): Observable<string> {
-        return new Observable(observer => {
-            let user = this.collection.findOne({
-                id: userIdentifier
-            });
-            if (user) {
-                user.reviewCount = num;
-            } else {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, num, []));
-            }
-            if (user) {
-                this.databaseService.updateCollection(user, this.collection).subscribe(
-                    updated => {
-                        this.databaseService.saveDb(this.database).subscribe(
-                            null,
-                            error => observer.error(BackendConfig.STATUS_FAILURE),
-                            () => {
-                                observer.next(BackendConfig.STATUS_SUCCESS);
-                                observer.complete();
-                            }
-                        );
-                    },
-                    error => observer.error(BackendConfig.STATUS_FAILURE)
-                );
-            } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
-            }
-        });
+        let ret: Observable<string> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
+        let user = this.collection.findOne({ id: userIdentifier });
+        if (user) {
+            user.reviewCount = num;
+        } else {
+            user = this.collection.insert(new UserDto(userIdentifier, num, 0, []));
+        }
+        if (user) {
+            ret = this.databaseService.save(this.database, this.collection, user);
+        }
+        return ret;
     }
+
     public setObtainedAchievement(userIdentifier: string, achievementIdentifiers: string): Observable<string> {
+        let ret: Observable<string> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
         let achievementIds: number[] = Array.from(JSON.parse("[" + achievementIdentifiers + "]"));
-        return new Observable(observer => {
-            let user = this.collection.findOne({
-                id: userIdentifier
-            });
-            if (user) {
-                let obtainedAchievements: number[] = Array.from(JSON.parse("[" + user.obtainedAchievements + "]"));
-                for (let id of achievementIds) {
-                    obtainedAchievements.push(id);
-                }
-                user.obtainedAchievements = obtainedAchievements;
-            } else {
-                user = this.collection.insert(new UserDto(userIdentifier, 0, 0, achievementIds));
-            }
-            if (user) {
-                this.databaseService.updateCollection(user, this.collection).subscribe(
-                    updated => {
-                        this.databaseService.saveDb(this.database).subscribe(
-                            null,
-                            error => observer.error(BackendConfig.STATUS_FAILURE),
-                            () => {
-                                observer.next(BackendConfig.STATUS_SUCCESS);
-                                observer.complete();
-                            }
-                        );
-                    },
-                    error => observer.error(BackendConfig.STATUS_FAILURE)
-                );
-            } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
-            }
+        let user = this.collection.findOne({
+            id: userIdentifier
         });
+        if (user) {
+            let obtainedAchievements: number[] = Array.from(JSON.parse("[" + user.obtainedAchievements + "]"));
+            for (let id of achievementIds) {
+                obtainedAchievements.push(id);
+            }
+            user.obtainedAchievements = obtainedAchievements;
+        } else {
+            user = this.collection.insert(new UserDto(userIdentifier, 0, 0, achievementIds));
+        }
+        if (user) {
+            ret = this.databaseService.save(this.database, this.collection, user);
+        }
+        return ret;
     }
 
     private init() {

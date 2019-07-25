@@ -11,32 +11,26 @@ export class UserDatabaseController {
     public getCommitNumber(@Param("id") id: string): Observable<number> {
         return this.userDatabaseService.getCommitNumber(id);
     }
-
     @Get("reviews/:id")
     public getReviewNumber(@Param("id") id: string): Observable<number> {
         return this.userDatabaseService.getReviewNumber(id);
     }
-
-    @Get("achievements/:id")
-    public getObtainedAchievements(@Param("id") id: string): Observable<AchievementDto[]> {
-        return this.userDatabaseService.getObtainedAchievements(id);
-    }
-
     @Get("hasAchievement/:userId/:achievementId")
     public hasAchievement(@Param("userId") userId: string, @Param("achievementId") achievementId: string): Observable<boolean> {
         return this.userDatabaseService.hasAchievement(userId, achievementId);
     }
-
+    @Get("achievements/:id")
+    public getObtainedAchievements(@Param("id") id: string): Observable<AchievementDto[]> {
+        return this.userDatabaseService.getObtainedAchievements(id);
+    }
     @Post("users/:id")
     public createUser(@Param("id") id: string): Observable<string> {
         return this.userDatabaseService.createUser(id);
     }
-
     @Post("commits/:id/:commitNumber")
     public setCommitNumber(@Param("id") id: string, @Param("commitNumber") commitNumber: number): Observable<string> {
         return this.userDatabaseService.setCommitNumber(id, commitNumber);
     }
-
     @Post("reviews/:id/:reviewNumber")
     public setReviewNumber(@Param("id") id: string, @Param("reviewNumber") reviewNumber: number): Observable<string> {
         return this.userDatabaseService.setReviewNumber(id, reviewNumber);
