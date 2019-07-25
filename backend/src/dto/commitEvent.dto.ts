@@ -1,13 +1,12 @@
 import { AchievementEventDto } from "./achievementEvent.dto";
 
-export class CommitEventDto extends AchievementEventDto{
-    public userHash: string;    
-    public numberOfCommit: number;
+export class CommitEventDto extends AchievementEventDto {
 
-    public constructor(userHash: string, numberOfCommit: number){
+    public constructor(userHash: string, numberOfCommit: number) {
         super();
         this.userHash = userHash;
-        this.numberOfCommit = numberOfCommit;
+        this.count = numberOfCommit;
+        this.timestamp = Date.now();
     }
 }
 

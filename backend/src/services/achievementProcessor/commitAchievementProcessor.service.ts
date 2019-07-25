@@ -18,7 +18,7 @@ export class CommitAchievementProcessorService extends AchievementProcessorServi
     public process(event: CommitEventDto): Observable<number> {
         return this.isObtained(event.userHash).pipe(map(response => {
             let obtainedAchievement = null;
-            if (!response.data && event.numberOfCommit >= this.countGoal) {
+            if (!response.data && event.count >= this.countGoal) {
                 obtainedAchievement = this.achievementId;
             }
             return obtainedAchievement;
