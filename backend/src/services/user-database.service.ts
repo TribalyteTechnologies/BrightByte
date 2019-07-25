@@ -6,6 +6,7 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { AchievementDto } from "src/dto/achievement.dto";
 import { CoreDatabaseService } from "./core-database.service";
+import { AchievementDatabaseService } from "./achievement-database.service";
 
 @Injectable()
 export class UserDatabaseService {
@@ -17,6 +18,7 @@ export class UserDatabaseService {
 
     public constructor(
         loggerSrv: LoggerService,
+        private achievementDatabaseSrv: AchievementDatabaseService,
         private httpService: HttpService
     ) {
         this.log = loggerSrv.get("UserDatabaseService");
@@ -61,28 +63,29 @@ export class UserDatabaseService {
         return ret;
     }
 
-    public getObtainedAchievements(userIdentifier: string): Observable<AchievementDto[]> {
+    public getObtainedAchievements(userIdentifier: string): Observable<number | AchievementDto[]> {
         return new Observable(observer => {
             let user = this.collection.findOne({ id: userIdentifier });
             if (user) {
                 let achievements: AchievementDto[];
-                this.httpService.get("http://localhost:" + BackendConfig.BRIGHTBYTE_DB_PORT + "/achievements/" + user.obtainedAchievements)
+                this.achievementDatabaseSrv.getAchievements(user.obtainedAchievements)
                     .subscribe(
-                        axiosResponse => {
-                            achievements = axiosResponse.data;
+                        response => {
+                            achievements = response;
                             observer.next(achievements);
                             observer.complete();
                         },
                         error => {
-                            observer.error(BackendConfig.STATUS_FAILURE);
+                            observer.error();
                         }
                     );
             } else {
-                observer.error(BackendConfig.STATUS_FAILURE);
+                observer.next(BackendConfig.STATUS_NOT_FOUND);
+                observer.complete();
             }
         });
     }
-    
+
     public createUser(userIdentifier: string): Observable<string> {
         let ret: Observable<string> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
         let user = this.collection.findOne({ id: userIdentifier });
@@ -93,7 +96,7 @@ export class UserDatabaseService {
         return ret;
     }
 
-    public setCommitNumber(userIdentifier: string, num: number): Observable<string>{
+    public setCommitNumber(userIdentifier: string, num: number): Observable<string> {
         let ret: Observable<string> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
         let user = this.collection.findOne({ id: userIdentifier });
         if (user) {

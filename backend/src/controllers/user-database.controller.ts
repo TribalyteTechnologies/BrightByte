@@ -20,7 +20,7 @@ export class UserDatabaseController {
         return this.userDatabaseService.hasAchievement(userId, achievementId);
     }
     @Get("achievements/:id")
-    public getObtainedAchievements(@Param("id") id: string): Observable<AchievementDto[]> {
+    public getObtainedAchievements(@Param("id") id: string): Observable<number | AchievementDto[]> {
         return this.userDatabaseService.getObtainedAchievements(id);
     }
     @Post("users/:id")
