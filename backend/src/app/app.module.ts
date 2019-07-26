@@ -8,6 +8,7 @@ import { LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
 import { DispatcherService } from "src/dispatcher/dispatcher.service";
+import { EventDatabaseService } from "src/services/event-database.service";
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { DispatcherService } from "src/dispatcher/dispatcher.service";
     providers: [
         UserDatabaseService,
         AchievementDatabaseService,
+        EventDatabaseService,
         Web3Service,
         DispatcherService,
         EventHandlerService,

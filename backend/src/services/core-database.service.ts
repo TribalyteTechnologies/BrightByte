@@ -24,7 +24,7 @@ export class CoreDatabaseService {
                     observer.next(database);
                     observer.complete();
                 } else {
-                    this.log.d("Can't load database.");
+                    this.log.d(nameDatabase + " database can't be loaded.");
                     observer.error();
                 }
             });
@@ -35,16 +35,16 @@ export class CoreDatabaseService {
         return new Observable<Loki.Collection>(observer => {
             let collection = database.getCollection(nameCollection);
             if (!collection) {
-                this.log.d("Collection not found.");
+                this.log.d(nameCollection + " collection not found.");
                 collection = database.addCollection(nameCollection);
                 this.saveDb(database).subscribe(
                     null,
                     error => {
-                        this.log.d("Collection creation failed.");
+                        this.log.d(nameCollection + " collection creation failed.");
                         observer.error();
                     },
                     () => {
-                        this.log.d("Collection created.");
+                        this.log.d(nameCollection + " collection created.");
                         observer.next(collection);
                     }
                 );
@@ -55,7 +55,7 @@ export class CoreDatabaseService {
         });
     }
 
-    public save(database, collection, document): Observable<any> {
+    public save(database: Loki, collection: Loki.Collection, document: Loki.KeyValueStore): Observable<string> {
         return new Observable(observer => {
             this.updateCollection(document, collection).subscribe(
                 updated => {
@@ -81,7 +81,7 @@ export class CoreDatabaseService {
         });
     }
 
-    public updateCollection(user: Loki.KeyValueStore, collection: Loki.Collection): Observable<any> {
+    public updateCollection(user: Loki.KeyValueStore, collection: Loki.Collection): Observable<string> {
         return new Observable<any>(observer => {
             try {
                 collection.update(user);
