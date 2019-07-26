@@ -1,4 +1,5 @@
 import { AchievementEventDto } from "./achievementEvent.dto";
+import { BackendConfig } from "src/backend.config";
 
 export class ReviewEventDto extends AchievementEventDto {
 
@@ -7,5 +8,6 @@ export class ReviewEventDto extends AchievementEventDto {
         this.userHash = userHash;
         this.count = numberOfReviewMade;
         this.timestamp = Date.now();
+        this.eventType = BackendConfig.EventTypeEnum.Review;
     }
 }

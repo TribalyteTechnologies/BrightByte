@@ -1,4 +1,5 @@
 import { AchievementEventDto } from "./achievementEvent.dto";
+import { BackendConfig } from "src/backend.config";
 
 export class CommitEventDto extends AchievementEventDto {
 
@@ -7,6 +8,7 @@ export class CommitEventDto extends AchievementEventDto {
         this.userHash = userHash;
         this.count = numberOfCommit;
         this.timestamp = Date.now();
+        this.eventType = BackendConfig.EventTypeEnum.Commit;
     }
 }
 
