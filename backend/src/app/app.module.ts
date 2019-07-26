@@ -7,7 +7,7 @@ import { AchievementDatabaseController } from "../controllers/achievement-databa
 import { LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
-import { DispatcherService } from "src/dispatcher/dispatcher.service";
+import { DispatcherService } from "../services/dispatcher.service";
 import { EventDatabaseService } from "src/services/event-database.service";
 
 @Module({

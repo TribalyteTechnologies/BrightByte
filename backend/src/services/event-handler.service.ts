@@ -4,7 +4,7 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import ContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
-import { DispatcherService } from "src/dispatcher/dispatcher.service";
+import { DispatcherService } from "./dispatcher.service";
 import { CommitEventDto } from "src/dto/commitEvent.dto";
 import { ReviewEventDto } from "src/dto/reviewEvent.dto";
 import { SeasonEventDto } from "src/dto/seasonEvent.dto";

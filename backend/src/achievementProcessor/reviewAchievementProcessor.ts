@@ -1,25 +1,26 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewEventDto } from "../../dto/reviewEvent.dto";
-import { AchievementProcessorService } from "./achievementProcessor.service";
+import { ReviewEventDto } from "../dto/reviewEvent.dto";
+import { AchievementProcessor } from "./achievementProcessor";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { BackendConfig } from "src/backend.config";
+import { UserDatabaseService } from "../services/user-database.service";
 
 @Injectable()
-export class ReviewAchievementProcessorService extends AchievementProcessorService {
+export class ReviewAchievementProcessor extends AchievementProcessor {
 
     private countGoal: number;
 
 
-    public constructor(achievementId: number, countGoal: number) {
-        super(achievementId);
+    public constructor(achievementId: number, countGoal: number, userDBSrv: UserDatabaseService) {
+        super(achievementId, userDBSrv);
         this.countGoal = countGoal;
     }
 
     public process(event: ReviewEventDto): Observable<number> {
         return this.isObtained(event.userHash).pipe(map(response => {
             let obtainedAchievement = null;
-            if (!response.data && event.count >= this.countGoal && event.eventType === BackendConfig.EventTypeEnum.Review) {
+            if (!response && event.count >= this.countGoal && event.eventType === BackendConfig.EventTypeEnum.Review) {
                 obtainedAchievement = this.achievementId;
             }
             return obtainedAchievement;
