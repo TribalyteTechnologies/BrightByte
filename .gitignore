@@ -46,3 +46,5 @@ Boot-script\.sh
 
 backend/node_modules
 backend/brightbyte-user-db.json
+backend/brightbyte-achievement-db.json
+backend/brightbyte-event-db.json

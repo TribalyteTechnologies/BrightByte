@@ -23,7 +23,6 @@ export class AchievementDatabaseService {
     }
 
     public getAchievements(ids: string): Observable<AchievementDto[]> {
-        //let ret: Observable<AchievementDto[]> = new Observable(observer => observer.error(BackendConfig.STATUS_FAILURE));
         let achievementIdentifiers = JSON.parse("[" + ids + "]");
         let achievements = [];
         for (let id of achievementIdentifiers) {
