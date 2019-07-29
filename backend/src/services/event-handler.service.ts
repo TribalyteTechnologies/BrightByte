@@ -5,9 +5,9 @@ import { Web3Service } from "../services/web3.service";
 import ContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
 import { DispatcherService } from "./dispatcher.service";
-import { CommitEventDto } from "src/dto/commitEvent.dto";
-import { ReviewEventDto } from "src/dto/reviewEvent.dto";
-import { SeasonEventDto } from "src/dto/seasonEvent.dto";
+import { CommitEventDto } from "../dto/commitEvent.dto";
+import { ReviewEventDto } from "../dto/reviewEvent.dto";
+import { SeasonEventDto } from "../dto/seasonEvent.dto";
 
 
 interface ITrbSmartContractJson {
@@ -43,7 +43,7 @@ export class EventHandlerService {
             .then((res) => {
                 this.init();
             }).catch(e => {
-                this.log.d("Not able to open a connection " + e);
+                this.log.e("Not able to open a connection " + e);
             });
         this.web3Service = web3Service;
         this.jsonContractData = ContractAbi;
