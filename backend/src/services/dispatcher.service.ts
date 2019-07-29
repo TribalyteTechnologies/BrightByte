@@ -10,7 +10,7 @@ import { UserDatabaseService } from "src/services/user-database.service";
 @Injectable()
 export class DispatcherService {
 
-    private achievementStack = Array<AchievementProcessor>();
+    private achievementStack = new Array<AchievementProcessor>();
     private log: ILogger;
 
     public constructor(
@@ -20,15 +20,6 @@ export class DispatcherService {
     ) {
         this.log = loggerSrv.get("DispatcherService");
         this.init();
-    }
-
-    public init() {
-        this.achievementStack = [new CommitAchievementProcessor(1, 1, this.userDBSrv),
-        new CommitAchievementProcessor(2, 10, this.userDBSrv), new CommitAchievementProcessor(3, 50, this.userDBSrv),
-        new CommitAchievementProcessor(4, 100, this.userDBSrv), new CommitAchievementProcessor(5, 250, this.userDBSrv),
-        new ReviewAchievementProcessor(6, 1, this.userDBSrv), new ReviewAchievementProcessor(7, 9, this.userDBSrv),
-        new ReviewAchievementProcessor(8, 50, this.userDBSrv), new ReviewAchievementProcessor(9, 100, this.userDBSrv),
-        new ReviewAchievementProcessor(10, 250, this.userDBSrv)];
     }
 
     public dispatch(event: AchievementEventDto) {
@@ -45,5 +36,14 @@ export class DispatcherService {
 
         //TODO: NotifyFrontService stack new achievements notifications.
         //TODO: ClientMsgHandler send new achievements to client.
+    }
+
+    private init() {
+        this.achievementStack = [new CommitAchievementProcessor(1, 1, this.userDBSrv),
+        new CommitAchievementProcessor(2, 10, this.userDBSrv), new CommitAchievementProcessor(3, 50, this.userDBSrv),
+        new CommitAchievementProcessor(4, 78, this.userDBSrv), new CommitAchievementProcessor(5, 250, this.userDBSrv),
+        new ReviewAchievementProcessor(6, 1, this.userDBSrv), new ReviewAchievementProcessor(7, 9, this.userDBSrv),
+        new ReviewAchievementProcessor(8, 50, this.userDBSrv), new ReviewAchievementProcessor(9, 100, this.userDBSrv),
+        new ReviewAchievementProcessor(10, 250, this.userDBSrv)];
     }
 }
