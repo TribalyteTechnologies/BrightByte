@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewEventDto } from "../dto/reviewEvent.dto";
+import { ReviewEventDto } from "../dto/review-event.dto";
 import { AchievementProcessor } from "./achievementProcessor";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";

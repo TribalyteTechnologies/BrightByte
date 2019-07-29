@@ -1,4 +1,4 @@
-import { AchievementEventDto } from "./achievementEvent.dto";
+import { AchievementEventDto } from "./achievement-event.dto";
 import { BackendConfig } from "../backend.config";
 
 export class ReviewEventDto extends AchievementEventDto {

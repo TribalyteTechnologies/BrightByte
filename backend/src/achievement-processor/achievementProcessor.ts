@@ -1,4 +1,4 @@
-import { AchievementEventDto } from "../dto/achievementEvent.dto";
+import { AchievementEventDto } from "../dto/achievement-event.dto";
 import { Observable } from "rxjs";
 import { UserDatabaseService } from "../services/user-database.service";
 

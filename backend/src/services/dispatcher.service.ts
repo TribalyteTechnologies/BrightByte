@@ -3,7 +3,7 @@ import { CommitAchievementProcessor } from "../achievement-processor/commitAchie
 import { ReviewAchievementProcessor } from "../achievement-processor/reviewAchievementProcessor";
 import { AchievementProcessor } from "../achievement-processor/achievementProcessor";
 import { ILogger, LoggerService } from "../logger/logger.service";
-import { AchievementEventDto } from "../dto/achievementEvent.dto";
+import { AchievementEventDto } from "../dto/achievement-event.dto";
 import { EventDatabaseService } from "./event-database.service";
 import { UserDatabaseService } from "../services/user-database.service";
 

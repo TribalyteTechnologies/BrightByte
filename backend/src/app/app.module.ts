@@ -17,8 +17,7 @@ import { EventDatabaseService } from "../services/event-database.service";
     ],
     controllers: [
         UserDatabaseController,
-        AchievementDatabaseController,
-        EventDatabaseController
+        AchievementDatabaseController
     ],
     providers: [
         UserDatabaseService,

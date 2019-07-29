@@ -1,4 +1,4 @@
-import { CommitEventDto } from "../dto/commitEvent.dto";
+import { CommitEventDto } from "../dto/commit-event.dto";
 import { AchievementProcessor } from "./achievementProcessor";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";

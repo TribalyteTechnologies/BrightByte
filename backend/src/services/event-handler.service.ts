@@ -5,9 +5,9 @@ import { Web3Service } from "../services/web3.service";
 import ContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
 import { DispatcherService } from "./dispatcher.service";
-import { CommitEventDto } from "../dto/commitEvent.dto";
-import { ReviewEventDto } from "../dto/reviewEvent.dto";
-import { SeasonEventDto } from "../dto/seasonEvent.dto";
+import { CommitEventDto } from "../dto/commit-event.dto";
+import { ReviewEventDto } from "../dto/review-event.dto";
+import { SeasonEventDto } from "../dto/season-event.dto";
 
 
 interface ITrbSmartContractJson {

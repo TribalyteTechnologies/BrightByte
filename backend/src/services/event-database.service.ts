@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
-import { AchievementEventDto } from "src/dto/achievementEvent.dto";
+import { AchievementEventDto } from "src/dto/achievement-event.dto";
 
 @Injectable()
 export class EventDatabaseService {
