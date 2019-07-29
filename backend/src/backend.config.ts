@@ -1,3 +1,5 @@
+import { default as NODE_CONFIG } from "./backend.config.custom";
+
 export class BackendConfig {
     public static readonly LOG_DEBUG = true;
 
@@ -12,15 +14,10 @@ export class BackendConfig {
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = 404;
     public static readonly STATUS_FAILURE = "Error";
-    public static readonly web3Provider_ws = "ws://5.56.60.217/ws";
+    public static readonly NODE_CONFIG_URL = NODE_CONFIG.NODE_WEBSOCKET_URL;
     public static readonly originHeader = "test.com";
     public static readonly netId = "83584648538";
 
-    //Requests
-    public static readonly REQUEST_BASE = "http://" + BackendConfig.BACKEND_IP + ":" + BackendConfig.BRIGHTBYTE_DB_PORT;
-
-    public static readonly SET_OBTAINED_ACHIEVEMENTS = BackendConfig.REQUEST_BASE + "/database/achievements/";
-    public static readonly IS_OBTAINED_REQ = BackendConfig.REQUEST_BASE + "/database/hasAchievement/";
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {

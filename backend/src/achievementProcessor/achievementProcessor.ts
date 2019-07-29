@@ -4,7 +4,7 @@ import { UserDatabaseService } from "../services/user-database.service";
 
 export abstract class AchievementProcessor {
 
-    public achievementId: number;
+    protected achievementId: number;
 
     public constructor(
         achievementId: number,

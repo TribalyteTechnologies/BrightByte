@@ -26,7 +26,7 @@ export class Web3Service {
 
     public openConnection(): Web3 {
         this.log.d("Opening a new Wesocket connection via Web3");
-        let auxWeb3 = new Web3(new Web3.providers.WebsocketProvider(BackendConfig.web3Provider_ws, {
+        let auxWeb3 = new Web3(new Web3.providers.WebsocketProvider(BackendConfig.NODE_CONFIG_URL, {
             headers: {
                 Origin: BackendConfig.originHeader
             }
