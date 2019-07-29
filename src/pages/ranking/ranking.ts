@@ -104,7 +104,7 @@ export class RankingPage {
             if(!this.globalSelected) {
                 this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
             }
-            this.usersRep.map((user, i) => {
+            this.usersRep.forEach((user, i) => {
                 user.userPosition = ++i;
             });
             this.userHash = this.account.address;
