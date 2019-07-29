@@ -12,44 +12,44 @@ export class CoreDatabaseService {
     public constructor(
         loggerSrv: LoggerService
     ) {
-        this.log = loggerSrv.get("DatabaseService");
+        this.log = loggerSrv.get("CoreDatabaseService");
     }
 
-    public initDatabase(nameDatabase: string): Observable<Loki> {
+    public initDatabase(databaseName: string): Observable<Loki> {
         return new Observable<Loki>(observer => {
-            let database = new Loki(nameDatabase);
+            let database = new Loki(databaseName);
             database.loadDatabase({}, (err) => {
                 if (!err) {
-                    this.log.d(nameDatabase + " database loaded.");
+                    this.log.d(databaseName + " database loaded.");
                     observer.next(database);
                     observer.complete();
                 } else {
-                    this.log.d(nameDatabase + " database can't be loaded.");
+                    this.log.d(databaseName + " database can't be loaded.");
                     observer.error();
                 }
             });
         });
     }
 
-    public initCollection(database: Loki, nameCollection: string): Observable<Loki.Collection> {
+    public initCollection(database: Loki, collectionName: string): Observable<Loki.Collection> {
         return new Observable<Loki.Collection>(observer => {
-            let collection = database.getCollection(nameCollection);
+            let collection = database.getCollection(collectionName);
             if (!collection) {
-                this.log.d(nameCollection + " collection not found.");
-                collection = database.addCollection(nameCollection);
+                this.log.d(collectionName + " collection not found.");
+                collection = database.addCollection(collectionName);
                 this.saveDb(database).subscribe(
                     null,
                     error => {
-                        this.log.d(nameCollection + " collection creation failed.");
+                        this.log.d(collectionName + " collection creation failed.");
                         observer.error();
                     },
                     () => {
-                        this.log.d(nameCollection + " collection created.");
+                        this.log.d(collectionName + " collection created.");
                         observer.next(collection);
                     }
                 );
             } else {
-                this.log.d(nameCollection + " collection loaded.");
+                this.log.d(collectionName + " collection loaded.");
                 observer.next(collection);
             }
         });
