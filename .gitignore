@@ -48,3 +48,4 @@ backend/node_modules
 backend/brightbyte-user-db.json
 backend/brightbyte-achievement-db.json
 backend/brightbyte-event-db.json
+backend/src/backend.config.custom.ts
