@@ -15,10 +15,6 @@ export class Web3Service {
         this.log = loggerSrv.get("Web3Service");
         this.web3 = this.openConnection();
     }
-    
-    public newConnection() {
-        this.web3 = this.openConnection();
-    }
 
     public getWeb3(): Web3 {
         return this.web3;
@@ -35,7 +31,7 @@ export class Web3Service {
             .then((res) => {
                 this.log.d("Open connection ");
             }).catch(e => {
-                this.log.d("Not able to open a connection " + e);
+                this.log.w("Not able to open a connection " + e);
             });
         return auxWeb3;
     }
