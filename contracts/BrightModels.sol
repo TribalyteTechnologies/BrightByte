@@ -31,10 +31,10 @@ library BrightModels {
     }
     
     struct HashUserMap {
-        mapping (address => UserProfile) hashMap;
+        mapping (address => UserProfile) map;
     }
     
     struct EmailUserMap {
-        mapping (bytes32 => address) emailMap;
+        mapping (bytes32 => address) map;
     }
 }
