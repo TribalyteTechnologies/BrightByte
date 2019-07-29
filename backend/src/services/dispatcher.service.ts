@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CommitAchievementProcessor } from "../achievementProcessor/commitAchievementProcessor";
-import { ReviewAchievementProcessor } from "../achievementProcessor/reviewAchievementProcessor";
-import { AchievementProcessor } from "../achievementProcessor/achievementProcessor";
+import { CommitAchievementProcessor } from "../achievement-processor/commitAchievementProcessor";
+import { ReviewAchievementProcessor } from "../achievement-processor/reviewAchievementProcessor";
+import { AchievementProcessor } from "../achievement-processor/achievementProcessor";
 import { ILogger, LoggerService } from "../logger/logger.service";
-import { AchievementEventDto } from "src/dto/achievementEvent.dto";
+import { AchievementEventDto } from "../dto/achievementEvent.dto";
 import { EventDatabaseService } from "./event-database.service";
-import { UserDatabaseService } from "src/services/user-database.service";
+import { UserDatabaseService } from "../services/user-database.service";
 
 @Injectable()
 export class DispatcherService {

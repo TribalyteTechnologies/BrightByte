@@ -2,16 +2,15 @@ import { CommitEventDto } from "../dto/commitEvent.dto";
 import { AchievementProcessor } from "./achievementProcessor";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
 
 export class CommitAchievementProcessor extends AchievementProcessor {
 
     private countGoal: number;
 
-
-    public constructor(achievementId: number, countGoal: number, userDBSrv: UserDatabaseService) {
-        super(achievementId, userDBSrv);
+    public constructor(achievementId: number, countGoal: number, userDbSrv: UserDatabaseService) {
+        super(achievementId, userDbSrv);
         this.countGoal = countGoal;
     }
 
