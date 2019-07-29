@@ -131,7 +131,7 @@ export class RankingPage {
         this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
         this.userRankDetails.scoreString = this.userRankDetails.score.toFixed(2);
         this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
-        this.setUpTrophys();
+        this.setUpTrophys(hash);
     }
 
     public goBackToUser(){
@@ -175,14 +175,14 @@ export class RankingPage {
         this.refresh();
     }
 
-    private setUpTrophys(){
+    private setUpTrophys(userHash: string){
         this.achievementsUnlocked = new Array<Achievement>();
-        let commits = this.userRankDetails.commits;
-        let reviews = this.userRankDetails.reviews;
-        let eIndex = this.userRankDetails.engagementIndex;
-
-        this.achievementsUnlocked = this.achievementSrv.getCurrentUnlockedAchievements(commits, reviews, eIndex);
-        this.isPageLoaded = true;
+        this.log.d(userHash);
+        this.isPageLoaded = false;
+        this.achievementSrv.getCurrentUnlockedAchievements(userHash).subscribe(response => {
+            this.achievementsUnlocked = response;
+            this.isPageLoaded = true;
+        });
     }
 
     private parseInt (ind: string): number {

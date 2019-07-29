@@ -17,6 +17,7 @@ export class AppConfig {
         netId: 4447,
         urlNode: "HTTP://127.0.0.1:9545"
     }];
+    public static readonly BACKEND_NETWORK = "http://localhost:3000";
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
     AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
