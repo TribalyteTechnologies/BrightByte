@@ -77,6 +77,7 @@ export class EventHandlerService {
                             event.returnValues["currentSeason"]);
                         break;
                     default:
+                        this.log.e("The parameter 'type' is not valid");
                 }
                 this.dispatcher.dispatch(newEvent);
             } else if (error) {
@@ -99,6 +100,7 @@ export class EventHandlerService {
                 this.contract.events.SeasonEnds({ fromBlock: "latest" }, callback);
                 break;
             default:
+                this.log.e("The parameter 'type' is not valid");
         }
     }
 }
