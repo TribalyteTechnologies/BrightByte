@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { CommitAchievementProcessor } from "../achievement-processor/commitAchievementProcessor";
-import { ReviewAchievementProcessor } from "../achievement-processor/reviewAchievementProcessor";
-import { AchievementProcessor } from "../achievement-processor/achievementProcessor";
+import { CommitAchievementProcessor } from "../achievement-processor/commit-achievement-processor";
+import { ReviewAchievementProcessor } from "../achievement-processor/review-achievement-processor";
+import { AchievementProcessor } from "../achievement-processor/achievement-processor";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { AchievementEventDto } from "../dto/achievement-event.dto";
 import { EventDatabaseService } from "./event-database.service";

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ReviewEventDto } from "../dto/review-event.dto";
-import { AchievementProcessor } from "./achievementProcessor";
+import { AchievementProcessor } from "./achievement-processor";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { BackendConfig } from "../backend.config";
