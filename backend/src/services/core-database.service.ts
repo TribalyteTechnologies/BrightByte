@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { BackendConfig } from "../backend.config";
+import { flatMap } from "rxjs/operators";
 
 @Injectable()
 export class CoreDatabaseService {
@@ -13,6 +14,15 @@ export class CoreDatabaseService {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CoreDatabaseService");
+    }
+
+    public save(database: Loki, collection: Loki.Collection, document: Loki.KeyValueStore): Observable<string> {
+        let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+        ret = this.updateCollection(document, collection).pipe(
+            flatMap(() => {
+                return this.saveDb(database);
+            }));
+        return ret;
     }
 
     public initDatabase(databaseName: string): Observable<Loki> {
@@ -32,17 +42,13 @@ export class CoreDatabaseService {
     }
 
     public initCollection(database: Loki, collectionName: string): Observable<Loki.Collection> {
-        return new Observable<Loki.Collection>(observer => {
+        let ret: Observable<Loki.Collection> = throwError(BackendConfig.STATUS_FAILURE);
+        ret = new Observable<Loki.Collection>(observer => {
             let collection = database.getCollection(collectionName);
             if (!collection) {
                 this.log.d(collectionName + " collection not found.");
                 collection = database.addCollection(collectionName);
                 this.saveDb(database).subscribe(
-                    null,
-                    error => {
-                        this.log.d(collectionName + " collection creation failed.");
-                        observer.error();
-                    },
                     () => {
                         this.log.d(collectionName + " collection created.");
                         observer.next(collection);
@@ -53,42 +59,30 @@ export class CoreDatabaseService {
                 observer.next(collection);
             }
         });
+        return ret;
     }
 
-    public save(database: Loki, collection: Loki.Collection, document: Loki.KeyValueStore): Observable<string> {
-        return new Observable(observer => {
-            this.updateCollection(document, collection).subscribe(
-                updated => {
-                    this.saveDb(database).subscribe(
-                        null,
-                        error => observer.error(BackendConfig.STATUS_FAILURE),
-                        () => {
-                            observer.next(BackendConfig.STATUS_SUCCESS);
-                            observer.complete();
-                        }
-                    );
-                },
-                error => observer.error(BackendConfig.STATUS_FAILURE)
-            );
-        });
-    }
-
-    public saveDb(database: Loki): Observable<any> {
+    private saveDb(database: Loki): Observable<string> {
         return new Observable<any>(observer => {
             database.saveDatabase(function (err) {
-                err ? observer.error() : observer.complete();
+                if (!err) {
+                    observer.next(BackendConfig.STATUS_SUCCESS);
+                    observer.complete();
+                } else {
+                    observer.error(BackendConfig.STATUS_FAILURE);
+                }
             });
         });
     }
 
-    public updateCollection(user: Loki.KeyValueStore, collection: Loki.Collection): Observable<string> {
+    private updateCollection(user: Loki.KeyValueStore, collection: Loki.Collection): Observable<string> {
         return new Observable<any>(observer => {
             try {
                 collection.update(user);
-                observer.next();
+                observer.next(BackendConfig.STATUS_SUCCESS);
                 observer.complete();
             } catch {
-                observer.error();
+                observer.error(BackendConfig.STATUS_FAILURE);
             }
         });
     }
