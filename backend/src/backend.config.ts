@@ -17,6 +17,7 @@ export class BackendConfig {
     public static readonly NODE_CONFIG_URL = NODE_CONFIG.NODE_WEBSOCKET_URL;
     public static readonly originHeader = "test.com";
     public static readonly netId = "83584648538";
+    public static readonly SCORE_DIVISION_FACTOR = 100;
 
 }
 export namespace BackendConfig {

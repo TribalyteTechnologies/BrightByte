@@ -9,6 +9,8 @@ import { EventHandlerService } from "../services/event-handler.service";
 import { DispatcherService } from "../services/dispatcher.service";
 import { EventDatabaseService } from "src/services/event-database.service";
 import { CoreDatabaseService } from "src/services/core-database.service";
+import { ContractManagerService } from "src/services/contract-manager.service";
+
 
 @Module({
     imports: [
@@ -25,6 +27,7 @@ import { CoreDatabaseService } from "src/services/core-database.service";
         Web3Service,
         DispatcherService,
         EventHandlerService,
+        ContractManagerService,
         { provide: LoggerService, useFactory: () => new LoggerService(BackendConfig.LOG_DEBUG) }
     ]
 })
