@@ -7,7 +7,9 @@ import { LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
 import { DispatcherService } from "../services/dispatcher.service";
-import { EventDatabaseService } from "src/services/event-database.service";
+import { EventDatabaseService } from "../services/event-database.service";
+import { ClientGateway } from "../gateways/client-gateway";
+import { ClientNotificationService } from "../services/client-notfication.service";
 import { CoreDatabaseService } from "src/services/core-database.service";
 import { ContractManagerService } from "src/services/contract-manager.service";
 
@@ -28,6 +30,8 @@ import { ContractManagerService } from "src/services/contract-manager.service";
         DispatcherService,
         EventHandlerService,
         ContractManagerService,
+        ClientGateway,
+        ClientNotificationService,
         { provide: LoggerService, useFactory: () => new LoggerService(BackendConfig.LOG_DEBUG) }
     ]
 })
