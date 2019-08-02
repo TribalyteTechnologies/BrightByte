@@ -9,7 +9,6 @@ import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
-import { AchievementService } from "../../core/achievement.service";
 
 
 @Component({
@@ -66,7 +65,6 @@ export class ReviewPage {
         public storageSrv: SessionStorageService,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
-        private achievementSrv: AchievementService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
@@ -129,10 +127,6 @@ export class ReviewPage {
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
                     let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
-                }
-                if (this.isNewReview){
-                    this.isNewReview = false;
-                    this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
                 }
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
@@ -291,7 +285,6 @@ export class ReviewPage {
                 this.shouldOpen(filteredCommit[0]);
             }
             this.numberOfReviews++;
-            this.achievementSrv.checkForNewAchievement(this.numberOfReviews, this.achievementSrv.REVIEW_ID);
         }).catch((error) => {
             this.spinnerService.hideLoader();
             this.log.e("Catched error " + error);

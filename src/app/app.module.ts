@@ -30,6 +30,8 @@ import { SessionStorageService } from "../core/session-storage.service";
 import { LocalStorageService } from "../core/local-storage.service";
 import { AchievementService } from "../core/achievement.service";
 import { UpdateCheckService } from "../core/update-check.service";
+import { SocketIoModule } from "ng-socket-io";
+
 
 /// domain
 import { ContractManagerService } from "../domain/contract-manager.service";
@@ -55,6 +57,8 @@ import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { CustomRating } from "../components/custom-rating/custom-rating.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
 import { MigrationService } from "../migration/migration.service";
+import { BackendAPIService } from "../domain/backend-api.service";
+import { WebSocketService } from "../core/websocket.service";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -85,6 +89,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     imports: [
         BrowserModule,
         IonicModule.forRoot(BrightByteApp),
+        SocketIoModule.forRoot(AppConfig.SERVER_NETWORK_CONFIG),
         HttpClientModule,
         TranslateModule.forRoot({
             loader: {
@@ -125,6 +130,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         SpinnerService,
         LocalStorageService,
         SessionStorageService,
+        BackendAPIService,
+        WebSocketService,
         BitbucketService,
         AchievementService,
         UserLoggerService,

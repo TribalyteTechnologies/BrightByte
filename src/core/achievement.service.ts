@@ -15,75 +15,54 @@ export class AchievementService {
 
     private readonly NOT_FOUND = 404;
 
-    private readonly ACHIEVEMENTS = [new Achievement(false, "First commit", 1, "Commit", "../../assets/imgs/trophys/achievement1.svg"),
-    new Achievement(false, "Newbie", 10, "Commits", "../../assets/imgs/trophys/achievement2.svg"),
-    new Achievement(false, "Beginner", 50, "Commits", "../../assets/imgs/trophys/achievement3.svg"),
-    new Achievement(false, "Intermediate", 100, "Commits", "../../assets/imgs/trophys/achievement4.svg"),
-    new Achievement(false, "Pro", 250, "Commits", "../../assets/imgs/trophys/achievement5.svg"),
-    new Achievement(false, "Master", 1000, "Commits", "../../assets/imgs/trophys/achievement6.svg"),
-    new Achievement(false, "First review", 1, "Reviews", "../../assets/imgs/trophys/achievement1.svg"),
-    new Achievement(false, "Newbie", 10, "Reviews", "../../assets/imgs/trophys/achievement2.svg"),
-    new Achievement(false, "Beginner", 50, "Reviews", "../../assets/imgs/trophys/achievement3.svg"),
-    new Achievement(false, "Intermediate", 100, "Reviews", "../../assets/imgs/trophys/achievement4.svg"),
-    new Achievement(false, "Pro", 250, "Reviews", "../../assets/imgs/trophys/achievement5.svg"),
-    new Achievement(false, "Master", 1000, "Reviews", "../../assets/imgs/trophys/achievement6.svg"),
-    new Achievement(false, "First peak", 5, "EIndex", "../../assets/imgs/trophys/achievement1.svg"),
-    new Achievement(false, "Newbie", 25, "EIndex", "../../assets/imgs/trophys/achievement2.svg"),
-    new Achievement(false, "Beginner", 100, "EIndex", "../../assets/imgs/trophys/achievement3.svg"),
-    new Achievement(false, "Intermediate", 250, "EIndex", "../../assets/imgs/trophys/achievement4.svg"),
-    new Achievement(false, "Pro", 500, "EIndex", "../../assets/imgs/trophys/achievement5.svg"),
-    new Achievement(false, "Master", 1000, "EIndex", "../../assets/imgs/trophys/achievement6.svg")];
-    private readonly RANGES = [[1, 10, 50, 100, 250, 1000], [1, 10, 50, 100, 250, 1000], [5, 25, 100, 250, 500, 1000]];
-    private readonly INIT_INDEXES = [0, 6, 12];
+    private readonly NUMBER_OF_ACHIEVEMENTS = 18;
+    private readonly REQ_ROUTE = "/database/achievements/";
     private log: ILogger;
+    private achievements = new Array<Achievement>();
 
     constructor(
-        private loggerSrv: LoggerService,
+        loggerSrv: LoggerService,
         private popoverCtrl: PopoverController,
         private http: HttpClient
     ) {
-        this.log = this.loggerSrv.get("AchievementService");
+        this.log = loggerSrv.get("AchievementService");
     }
 
     public getCurrentUnlockedAchievements(userHash: string): Observable<Array<Achievement>> {
         let currentAchievements = new Array<Achievement>();
 
-        return this.http.get(AppConfig.BACKEND_NETWORK + "/database/achievements/" + userHash).map((response: any) => {
-            if (response !== this.NOT_FOUND && response !== []) {
+        return this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash).map((response: any) => {
+            if (response && response !== this.NOT_FOUND && response.length > 0) {
                 for (let i = 0; i < response.length; i++) {
                     currentAchievements.push(
                         new Achievement(false, response[i].title, response[i].quantity, response[i].parameter, response[i].iconPath));
                 }
             }
 
-            for (let i = currentAchievements.length; i < this.ACHIEVEMENTS.length; i++) {
+            for (let i = currentAchievements.length; i < this.NUMBER_OF_ACHIEVEMENTS; i++) {
                 currentAchievements.push(new Achievement());
             }
             return currentAchievements;
         });
     }
 
-    public checkForNewAchievement(paramVal: number, idParam: number) {
-        let achievement = null;
+    public addNewAchievement(newAchievement: Achievement){
+        this.achievements.push(newAchievement);
+    }
 
-        if (idParam === 0 || idParam === 1) {
-            for (let i = this.RANGES[idParam].length; i >= 0; i--) {
-                if (paramVal === this.RANGES[idParam][i]) {
-                    achievement = this.ACHIEVEMENTS[this.INIT_INDEXES[idParam] + i];
-                }
-            }
-        }
-
-        if (achievement) {
-            this.openAchievementDialog(achievement);
+    public checkAchievementStack() {
+        if (this.achievements.length > 0) {
+            let newAchievement = this.achievements.pop();
+            this.openAchievementDialog(newAchievement);
         }
     }
 
-    private openAchievementDialog(achievement: Achievement) {
-        let popover = this.popoverCtrl.create(AchievementPopOver, { achievement }, { cssClass: "achievement-popover" });
+    public openAchievementDialog(achievement: Achievement) {
+        let popover = this.popoverCtrl.create(
+            AchievementPopOver,
+            { achievement, achievementSrv: this },
+            { cssClass: "achievement-popover" }
+        );
         popover.present();
     }
-
-
-
 }

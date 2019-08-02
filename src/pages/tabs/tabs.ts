@@ -13,6 +13,7 @@ import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { AppConfig } from "../../app.config";
+import { WebSocketService } from "../../core/websocket.service";
 
 @Component({
     selector: "page-tabs",
@@ -37,7 +38,9 @@ export class TabsPage {
                 private navCtrl: NavController, 
                 private loginService: LoginService, 
                 private contractManagerService: ContractManagerService,
-                private storageSrv: LocalStorageService) {
+                private storageSrv: LocalStorageService,
+                private websocketSrv: WebSocketService
+                ) {
         this.log = loggerSrv.get("TabsPage");
         this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
 
@@ -65,6 +68,7 @@ export class TabsPage {
     }
 
     public logout(){
+        this.websocketSrv.disconnect();
         this.userLoggerService.logout();
         this.navCtrl.setRoot(LoginPage);
     }

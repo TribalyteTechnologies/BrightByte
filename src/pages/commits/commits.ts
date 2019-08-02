@@ -10,7 +10,6 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
-import { AchievementService } from "../../core/achievement.service";
 
 @Component({
     selector: "page-commits",
@@ -45,7 +44,6 @@ export class CommitPage {
         public spinnerService: SpinnerService,
         public storageSrv: SessionStorageService,
         private contractManagerService: ContractManagerService,
-        private achievementSrv: AchievementService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
@@ -105,7 +103,6 @@ export class CommitPage {
         popover.onDidDismiss((newCommit) => {
             if(newCommit) {
                 this.arrayCommits.push(newCommit);
-                this.achievementSrv.checkForNewAchievement(this.arrayCommits.length, this.achievementSrv.COMMIT_ID);
                 this.applyFilters(this.arrayCommits);
             }
         });
