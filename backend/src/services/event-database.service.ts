@@ -1,16 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "src/backend.config";
-import { Observable, throwError } from "rxjs";
+import { Observable, throwError, of } from "rxjs";
+import { flatMap, tap, map, first, catchError } from "rxjs/operators";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
 import { AchievementEventDto } from "src/dto/achievement-event.dto";
+import { ResponseDto } from "src/dto/response/response.dto";
+import { SuccessResponseDto } from "src/dto/response/success-response.dto";
+import { FailureResponseDto } from "src/dto/response/failure-response.dto";
 
 @Injectable()
 export class EventDatabaseService {
 
     private database: Loki;
-    private collection: Loki.Collection;
+    private initObs: Observable<Loki.Collection>;
     private log: ILogger;
 
     public constructor(
@@ -18,29 +22,29 @@ export class EventDatabaseService {
         private databaseSrv: CoreDatabaseService
     ) {
         this.log = loggerSrv.get("EventDatabaseService");
-        this.init();
+        //first() is neccessary so that NestJS controllers can answer Http Requests.
+        this.initObs = this.init().pipe(first());
     }
 
-    public setEvent(eventDto: AchievementEventDto): Observable<string> {
-        let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-        let event = this.collection.insert(eventDto);
-        if (event) {
-            ret = this.databaseSrv.save(this.database, this.collection, event);
-        }
-        return ret;
+    public setEvent(eventDto: AchievementEventDto): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            flatMap(collection => {
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                let event = collection.insert(eventDto);
+                if (event) {
+                    ret = this.databaseSrv.save(this.database, collection, event);
+                }
+                return ret;
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
     }
 
-    private init() {
-        this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).subscribe(
-            database => {
-                this.database = database;
-                this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION).subscribe(
-                    collection => {
-                        this.collection = collection;
-                    }
-                );
-            }
-
+    private init(): Observable<Loki.Collection> {
+        return this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
+            tap(database => this.database = database),
+            flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION))
         );
     }
 }

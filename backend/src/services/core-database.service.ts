@@ -18,10 +18,7 @@ export class CoreDatabaseService {
 
     public save(database: Loki, collection: Loki.Collection, document: Loki.KeyValueStore): Observable<string> {
         let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-        ret = this.updateCollection(document, collection).pipe(
-            flatMap(() => {
-                return this.saveDb(database);
-            }));
+        ret = this.updateCollection(document, collection).pipe(flatMap(() => this.saveDb(database)));
         return ret;
     }
 
@@ -64,7 +61,7 @@ export class CoreDatabaseService {
 
     private saveDb(database: Loki): Observable<string> {
         return new Observable<any>(observer => {
-            database.saveDatabase(function (err) {
+            database.saveDatabase(err => {
                 if (!err) {
                     observer.next(BackendConfig.STATUS_SUCCESS);
                     observer.complete();
@@ -75,10 +72,10 @@ export class CoreDatabaseService {
         });
     }
 
-    private updateCollection(user: Loki.KeyValueStore, collection: Loki.Collection): Observable<string> {
+    private updateCollection(doc: Loki.KeyValueStore, collection: Loki.Collection): Observable<string> {
         return new Observable<any>(observer => {
             try {
-                collection.update(user);
+                collection.update(doc);
                 observer.next(BackendConfig.STATUS_SUCCESS);
                 observer.complete();
             } catch {
