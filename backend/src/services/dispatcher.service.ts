@@ -40,20 +40,25 @@ export class DispatcherService {
                 let achievementsObs;
                 achievementsObs = this.userDbSrv.setObtainedAchievement(
                     event.userHash, obtainedAchievements.toString()).subscribe(response => {
-                    this.log.d("Achievements saved");
-                    this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
-                    this.log.d("Achievements sended to client");
-                });
+                        this.log.d("Achievements saved");
+                        this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
+                        this.log.d("Achievements sended to client");
+                    });
             }));
         //TODO: NotifyFrontService stack new achievements notifications.
     }
 
     private init() {
-        this.achievementStack = [new CommitAchievementProcessor(1, 1, this.userDbSrv),
-        new CommitAchievementProcessor(2, 10, this.userDbSrv), new CommitAchievementProcessor(3, 50, this.userDbSrv),
-        new CommitAchievementProcessor(4, 78, this.userDbSrv), new CommitAchievementProcessor(5, 250, this.userDbSrv),
-        new ReviewAchievementProcessor(6, 1, this.userDbSrv), new ReviewAchievementProcessor(7, 6, this.userDbSrv),
-        new ReviewAchievementProcessor(8, 15, this.userDbSrv), new ReviewAchievementProcessor(9, 100, this.userDbSrv),
-        new ReviewAchievementProcessor(10, 250, this.userDbSrv)];
+        this.achievementStack =
+            [new CommitAchievementProcessor(1, this.userDbSrv),
+            new CommitAchievementProcessor(2, this.userDbSrv),
+            new CommitAchievementProcessor(3, this.userDbSrv),
+            new CommitAchievementProcessor(4, this.userDbSrv),
+            new CommitAchievementProcessor(5, this.userDbSrv),
+            new ReviewAchievementProcessor(6, this.userDbSrv),
+            new ReviewAchievementProcessor(7, this.userDbSrv),
+            new ReviewAchievementProcessor(8, this.userDbSrv),
+            new ReviewAchievementProcessor(9, this.userDbSrv),
+            new ReviewAchievementProcessor(10, this.userDbSrv)];
     }
 }
