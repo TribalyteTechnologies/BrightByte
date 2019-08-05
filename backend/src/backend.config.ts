@@ -12,7 +12,7 @@ export class BackendConfig {
     public static readonly BACKEND_IP = "localhost";
     public static readonly BRIGHTBYTE_DB_PORT = 3000;
     public static readonly STATUS_SUCCESS = "OK";
-    public static readonly STATUS_NOT_FOUND = 404;
+    public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
     public static readonly NODE_CONFIG_URL = NODE_CONFIG.NODE_WEBSOCKET_URL;
     public static readonly originHeader = "test.com";
