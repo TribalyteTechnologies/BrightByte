@@ -4,20 +4,25 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
+import { AchievementConfig } from "src/achievement.config";
 
 export class CommitAchievementProcessor extends AchievementProcessor {
 
     private countGoal: number;
 
-    public constructor(achievementId: number, countGoal: number, userDbSrv: UserDatabaseService) {
+    public constructor(
+        achievementId: number, 
+        userDbSrv: UserDatabaseService
+        ) {
         super(achievementId, userDbSrv);
-        this.countGoal = countGoal;
+        let achievementDto = AchievementConfig.achievements.get(achievementId);
+        this.countGoal = parseInt(achievementDto.parameter);
     }
 
     public process(event: CommitEventDto): Observable<number> {
         return this.isObtained(event.userHash).pipe(map(response => {
             let obtainedAchievement = null;
-            if (!response && event.count >= this.countGoal && event.eventType === BackendConfig.EventTypeEnum.Commit) {
+            if (!response.data && event.count >= this.countGoal && event.eventType === BackendConfig.EventTypeEnum.Commit) {
                 obtainedAchievement = this.achievementId;
             }
             return obtainedAchievement;
