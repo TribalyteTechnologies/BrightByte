@@ -44,7 +44,8 @@ export class EventDatabaseService {
     private init(): Observable<Loki.Collection> {
         return this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
             tap(database => this.database = database),
-            flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION))
+            flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION)),
+            tap(collection => this.initObs = of(collection))
         );
     }
 }

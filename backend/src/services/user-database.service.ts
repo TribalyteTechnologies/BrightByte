@@ -147,7 +147,8 @@ export class UserDatabaseService {
     private init(): Observable<Loki.Collection> {
         return this.databaseSrv.initDatabase(BackendConfig.USER_DB_JSON).pipe(
             tap(database => this.database = database),
-            flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.USER_COLLECTION))
+            flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.USER_COLLECTION)),
+            tap(collection => this.initObs = of(collection))
         );
     }
 }
