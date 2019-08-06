@@ -38,11 +38,12 @@ export class ContractManagerService {
     }
 
     public getAllUserData(): Observable<Array<UserDetailsDto>> {
-        return this.getUserNumber().pipe(flatMap(numberUsers => {
+        return this.getUsersAddress().pipe(flatMap((usersAddress: String[]) => {
+            let numberUsers = usersAddress.length;
             this.log.d("The number of users is " + numberUsers);
             let promises = new Array<Promise<UserDetailsDto>>();
             for(let i = 0; i < numberUsers; i++) {
-                let promise = this.contracts[0].methods.getAllUserReputation(i).call()
+                let promise = this.contracts[0].methods.getAllUserReputation(usersAddress[i]).call()
                     .then(userDetails => {
                         let user = UserDetailsDto.fromSmartContract(userDetails);
                         this.log.d("User Details: " + JSON.stringify(user));
@@ -62,5 +63,9 @@ export class ContractManagerService {
 
     private getUserNumber(): Observable<Number> {
         return from<Number>(this.contracts[0].methods.getNumbers().call());
+    }
+
+    private getUsersAddress(): Observable<String[]> {
+        return from<String[]>(this.contracts[0].methods.getUsersAddress().call());
     }
 }

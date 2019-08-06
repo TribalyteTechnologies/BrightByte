@@ -39,7 +39,7 @@ export class SetProfileForm {
 
     public updateProfile(name: string, mail: string) {
         this.isButtonPressed = true;
-        this.contractManagerService.getAllUserReputation()
+        this.contractManagerService.getAllUserReputation(0, true)
         .then((arrayEmails: UserReputation[]) => {
             let emails = arrayEmails.map(ur => ur.email);
             this.log.d("ARRAY Emails: ", arrayEmails);

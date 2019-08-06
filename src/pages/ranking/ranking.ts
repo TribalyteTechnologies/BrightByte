@@ -97,7 +97,7 @@ export class RankingPage {
     }
 
     public refresh() {
-        this.contractManagerService.getAllUserReputationSeason(this.seasonSelected, this.globalSelected)
+        this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
         .then((usersRep: UserReputation[]) => {
             this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => 
                 this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
@@ -120,18 +120,20 @@ export class RankingPage {
 
     public setUser(hash: string){
         let detailsUser = this.usersRep.find(user => user.userHash === hash);
-        this.userRankDetails.name = detailsUser.name;
-        this.userRankDetails.email = detailsUser.email;
-        this.userRankDetails.reviews = detailsUser.finishedReviews;
-        this.userRankDetails.commits = detailsUser.numberOfCommits;
-        this.userRankDetails.agreed = detailsUser.agreedPercentage;
-        this.userRankDetails.score = detailsUser.reputation;
-        this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
-        this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
-        this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
-        this.userRankDetails.scoreString = this.userRankDetails.score.toFixed(2);
-        this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
-        this.setUpTrophys(hash);
+        if (detailsUser) {
+            this.userRankDetails.name = detailsUser.name;
+            this.userRankDetails.email = detailsUser.email;
+            this.userRankDetails.reviews = detailsUser.finishedReviews;
+            this.userRankDetails.commits = detailsUser.numberOfCommits;
+            this.userRankDetails.agreed = detailsUser.agreedPercentage;
+            this.userRankDetails.score = detailsUser.reputation;
+            this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
+            this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
+            this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
+            this.userRankDetails.scoreString = this.userRankDetails.score.toFixed(2);
+            this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
+            this.setUpTrophys(hash);
+        }
     }
 
     public goBackToUser(){

@@ -71,7 +71,7 @@ export class AddCommitPopover {
             password: ["", [Validators.required]]
         });
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
-        this.contractManagerService.getAllUserReputation()
+        this.contractManagerService.getAllUserReputation(0, true)
         .then(allReputations => {
             this.log.d("All user reputations: ", allReputations);
             this.allEmails = allReputations.map(userRep => userRep.email);

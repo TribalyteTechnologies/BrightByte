@@ -355,47 +355,25 @@ export class ContractManagerService {
         });
     }
 
-    public getAllUserReputation(): Promise<UserReputation[]> {
+    public getAllUserReputation(season: number, global: boolean): Promise<UserReputation[]> {
         let contractArtifact;
         return this.initProm.then(([bright, commit, root]) => {
             contractArtifact = bright;
-            return contractArtifact.methods.getNumbers().call();
-        }).then((numberUsers: number) => {
-            this.log.d("Number of users: ", numberUsers);
-            let promises = new Array<Promise<UserReputation>>();
-            for (let i = 0; i < numberUsers; i++) {
-                let promise = contractArtifact.methods.getAllUserReputation(i).call()
-                    .then((commitsVals: Array<any>) => {
-                        this.log.d("User reputation: ", commitsVals);
-                        return UserReputation.fromSmartContract(commitsVals);
-                    });
-                promises.push(promise);
-            }
-            return Promise.all(promises);
-        }).catch(err => {
-            this.log.e("Error getting ranking :", err);
-            throw err;
-        });
-    }
-
-    public getAllUserReputationSeason(season: number, global: boolean): Promise<UserReputation[]> {
-        let contractArtifact;
-        return this.initProm.then(([bright, commit, root]) => {
-            contractArtifact = bright;
-            return contractArtifact.methods.getNumbers().call();
-        }).then((numberUsers: number) => {
+            return contractArtifact.methods.getUsersAddress().call();
+        }).then((usersAddress: String[]) => {
+            let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = new Array<Promise<UserReputation>>();
             for (let i = 0; i < numberUsers; i++) {
                 let promise: Promise<UserReputation>;
                 if(global) {
-                    promise = contractArtifact.methods.getAllUserReputation(i).call()
+                    promise = contractArtifact.methods.getAllUserReputation(usersAddress[i]).call()
                     .then((commitsVals: Array<any>) => {
                         this.log.d("User reputation: ", commitsVals);
                         return UserReputation.fromSmartContract(commitsVals);
                     });
                 } else {
-                    promise = contractArtifact.methods.getUserReputation(i, season).call()
+                    promise = contractArtifact.methods.getUserReputation(usersAddress[i], season).call()
                     .then((commitsVals: Array<any>) => {
                         this.log.d("Users reputation in season " + season + ": ", commitsVals);
                         return UserReputation.fromSmartContract(commitsVals);

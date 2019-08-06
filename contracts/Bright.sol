@@ -84,6 +84,15 @@ contract Bright {
         emit UserProfileSetEvent(name, user);
     }
 
+    function getUsersAddress() public onlyDapp view returns (address[]) {
+        return allUsersArray;
+    }
+
+    function getAddressByEmail(bytes32 email) public onlyDapp view returns(address){
+        address a = emailUserMap.map[email];
+        return a;
+    }
+
     function getUser (address userHash) public onlyDapp view returns (string, string, uint, uint, uint, uint32, uint16) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.name,
@@ -96,9 +105,31 @@ contract Bright {
         );
     }
 
-    function getAddressByEmail(bytes32 email) public onlyDapp view returns(address){
-        address a = emailUserMap.map[email];
-        return a;
+    function getUserReputation(address userHash, uint16 seasonIndex) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
+        BrightModels.UserProfile memory user = hashUserMap.map[userHash];
+        BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
+        return(user.email,
+            season.seasonStats.reputation,
+            season.seasonStats.numberOfTimesReview,
+            user.name,
+            season.seasonStats.agreedPercentage,
+            season.urlSeasonCommits.length,
+            season.seasonStats.reviewsMade,
+            user.hash
+        );
+    }
+
+    function getAllUserReputation(address userHash) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint, address) {
+        BrightModels.UserProfile memory user = hashUserMap.map[userHash];
+        return (user.email,
+                user.globalStats.reputation,
+                user.globalStats.numberOfTimesReview,
+                user.name,
+                user.globalStats.agreedPercentage,
+                user.pendingCommits.length,
+                user.finishedReviews.length,
+                user.hash
+        );
     }
 
     function setCommit(bytes32 url) public onlyRoot {
@@ -145,28 +176,11 @@ contract Bright {
         }
     }
 
-    function getUserCommits(address add) public onlyDapp view returns(bytes32[], bytes32[], bytes32[]){
-        BrightModels.UserProfile memory user = hashUserMap.map[add];
+    function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[]){
+        BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.pendingReviews,
                 user.finishedReviews,
                 user.pendingCommits
-        );
-    }
-
-    function getAllUserEmail(uint index) public onlyDapp view returns(string){
-        return hashUserMap.map[allUsersArray[index]].email;
-    }
-
-    function getAllUserReputation(uint index) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint, address) {
-        BrightModels.UserProfile memory user = hashUserMap.map[allUsersArray[index]];
-        return (user.email,
-                user.globalStats.reputation,
-                user.globalStats.numberOfTimesReview,
-                user.name,
-                user.globalStats.agreedPercentage,
-                user.pendingCommits.length,
-                user.finishedReviews.length,
-                user.hash
         );
     }
 
@@ -265,20 +279,6 @@ contract Bright {
         } else {
             return (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
         }
-    }
-
-    function getUserReputation(uint ind, uint16 sea) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
-        BrightModels.UserProfile memory user = hashUserMap.map[allUsersArray[ind]];
-        BrightModels.UserSeason memory season = hashUserMap.map[allUsersArray[ind]].seasonData[sea];
-        return(user.email,
-            season.seasonStats.reputation,
-            season.seasonStats.numberOfTimesReview,
-            user.name,
-            season.seasonStats.agreedPercentage,
-            season.urlSeasonCommits.length,
-            season.seasonStats.reviewsMade,
-            user.hash
-        );
     }
 
     function getCurrentSeason() public onlyDapp view returns (uint16, uint256) {
