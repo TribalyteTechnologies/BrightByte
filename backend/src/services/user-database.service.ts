@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "src/backend.config";
-import { Observable, throwError, of } from "rxjs";
+import { Observable, throwError, of, forkJoin} from "rxjs";
 import { flatMap, tap, map, first, catchError } from "rxjs/operators";
 import { UserDto } from "../dto/user.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
@@ -11,6 +11,7 @@ import { AchievementDto } from "src/dto/achievement.dto";
 import { ResponseDto } from "src/dto/response/response.dto";
 import { SuccessResponseDto } from "src/dto/response/success-response.dto";
 import { FailureResponseDto } from "src/dto/response/failure-response.dto";
+import { ContractManagerService } from "src/services/contract-manager.service";
 
 @Injectable()
 export class UserDatabaseService {
@@ -22,11 +23,19 @@ export class UserDatabaseService {
     public constructor(
         loggerSrv: LoggerService,
         private achievementDbSrv: AchievementDatabaseService,
-        private databaseSrv: CoreDatabaseService
+        private databaseSrv: CoreDatabaseService,
+        private contractManagerService: ContractManagerService
     ) {
         this.log = loggerSrv.get("UserDatabaseService");
         //first() is neccessary so that NestJS controllers can answer Http Requests.
         this.initObs = this.init().pipe(first());
+        if(BackendConfig.INITIALIZE_USER_DATABASE) {
+            this.log.d("All the users details are going to be set. Data is coming from Smart Contracts");
+            let obs = this.initializeUsersDatabase();
+            obs.subscribe(result => {
+                this.log.d("The result of the initialization is " + JSON.stringify(result));
+            });
+        }
     }
 
     public getCommitNumber(userIdentifier: string): Observable<ResponseDto> {
@@ -151,5 +160,28 @@ export class UserDatabaseService {
             tap(collection => this.initObs = of(collection))
         );
     }
-}
 
+    private initializeUsersDatabase(): Observable<String[]> {
+        return this.initObs.pipe(
+            flatMap(collection => forkJoin(
+                of(collection),
+                this.contractManagerService.getAllUserData()
+            )),
+            flatMap(([collection, users]) => {
+                this.log.d("The current number of users is: " + users.length);
+                let obs = users.map(user => {
+                    this.log.d("The user is going to be saved: " + user.userHash);
+                    let newUser = collection.findOne({ id: user.userHash });
+                    if(newUser) {
+                        newUser.reviewCount = user.finishedReviews;
+                        newUser.commitCount = user.numberOfCommits;
+                    } else {
+                        newUser = collection.insert(new UserDto(user.userHash, user.finishedReviews, user.numberOfCommits, []));
+                    }
+                    return this.databaseSrv.save(this.database, collection, newUser);
+                });
+                return forkJoin(obs);
+            })
+        );
+    }
+}
