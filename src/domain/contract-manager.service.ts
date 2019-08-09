@@ -155,12 +155,7 @@ export class ContractManagerService {
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressCommits);
         }).then(() => {
-            let emailsArray = [];
-            for (let i = 0; i < usersMail.length; i++) {
-                if (usersMail[i] !== "") {
-                    emailsArray.push(this.web3.utils.keccak256(usersMail[i]));
-                }
-            }
+            let emailsArray = usersMail.filter(email => email !== "").map(email => this.web3.utils.keccak256(email));
             let bytecodeData = rootContract.methods.notifyCommit(
                 url,
                 emailsArray
@@ -183,11 +178,8 @@ export class ContractManagerService {
             allUserCommits = allUserCommitsRes;
             return this.initProm;
         }).then(([brigh, commit, root]) => {
-            for (let i = 0; i < allUserCommits[2].length; i++) {
-                let promisePending: Promise<UserCommit> = commit.methods.getDetailsCommits(allUserCommits[2][i]).call()
-                    .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true));
-                promisesPending.push(promisePending);
-            }
+            promisesPending = allUserCommits[2].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+            .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
             return Promise.all(promisesPending);
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
@@ -202,22 +194,14 @@ export class ContractManagerService {
                 this.log.d("Contract artifact", bright);
                 return bright.methods.getUserCommits(this.currentUser.address).call()
                     .then((allUserCommits: Array<any>) => {
-                        let promisesPending = new Array<Promise<UserCommit>>();
-                        let promisesFinished = new Array<Promise<UserCommit>>();
-                        for (let i = 0; i < allUserCommits[0].length; i++) {
-                            let promisePending = commit.methods.getDetailsCommits(allUserCommits[0][i]).call()
-                                .then((commitVals: any) => {
-                                    return UserCommit.fromSmartContract(commitVals, true);
-                                });
-                            promisesPending.push(promisePending);
-                        }
-                        for (let i = 0; i < allUserCommits[1].length; i++) {
-                            let promiseFinished = commit.methods.getDetailsCommits(allUserCommits[1][i]).call()
-                                .then((commitVals: any) => {
-                                    return UserCommit.fromSmartContract(commitVals, false);
-                                });
-                            promisesFinished.push(promiseFinished);
-                        }
+                        let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, true);
+                        }));
+                        let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, false);
+                        })); 
                         return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                     });
             }).catch(err => {
@@ -277,25 +261,17 @@ export class ContractManagerService {
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommentsOfCommit(urlKeccak).call()
                 .then((allComments: Array<any>) => {
-                    let promisesPending = new Array<Promise<CommitComment>>();
-                    let promisesFinished = new Array<Promise<CommitComment>>();
-                    for (let i = 0; i < allComments[0].length; i++) {
-                        let promisePending = commit.methods.getCommentDetail(urlKeccak, allComments[0][i]).call()
-                            .then((commitVals: any) => {
-                                return CommitComment.fromSmartContract(commitVals, "");
-                            });
-                        promisesPending.push(promisePending);
-                    }
-                    for (let i = 0; i < allComments[1].length; i++) {
-                        let promiseFinished = commit.methods.getCommentDetail(urlKeccak, allComments[1][i]).call()
-                            .then((commitVals: any) => {
-                                return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
-                            })
-                            .then((data) => {
-                                return CommitComment.fromSmartContract(data[0], data[1]);
-                            });
-                        promisesFinished.push(promiseFinished);                        
-                    }
+                    let promisesPending = allComments[0].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
+                    .then((commitVals: any) => {
+                        return CommitComment.fromSmartContract(commitVals, "");
+                    }));
+                    let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
+                    .then((commitVals: any) => {
+                        return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
+                    })
+                    .then((data) => {
+                        return CommitComment.fromSmartContract(data[0], data[1]);
+                    }));
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                 });
         }).catch(err => {
@@ -355,7 +331,7 @@ export class ContractManagerService {
         });
     }
 
-    public getAllUserReputation(season: number, global: boolean): Promise<UserReputation[]> {
+    public getAllUserReputation(season: number, global: boolean): Promise<Array<UserReputation>> {
         let contractArtifact;
         return this.initProm.then(([bright, commit, root]) => {
             contractArtifact = bright;
@@ -363,27 +339,24 @@ export class ContractManagerService {
         }).then((usersAddress: String[]) => {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
-            let promises = new Array<Promise<UserReputation>>();
-            for (let i = 0; i < numberUsers; i++) {
-                let promise: Promise<UserReputation>;
-                if(global) {
-                    promise = contractArtifact.methods.getAllUserReputation(usersAddress[i]).call()
-                    .then((commitsVals: Array<any>) => {
-                        this.log.d("User reputation: ", commitsVals);
-                        return UserReputation.fromSmartContract(commitsVals);
-                    });
-                } else {
-                    promise = contractArtifact.methods.getUserReputation(usersAddress[i], season).call()
+            let promises = usersAddress.map(userAddress => {
+                let promise = contractArtifact.methods.getUserGlobalReputation(userAddress).call()
+                .then((commitsVals: Array<any>) => {
+                    this.log.d("User reputation: ", commitsVals);
+                    return UserReputation.fromSmartContract(commitsVals);
+                });
+                if(!global) {
+                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
                     .then((commitsVals: Array<any>) => {
                         this.log.d("Users reputation in season " + season + ": ", commitsVals);
                         return UserReputation.fromSmartContract(commitsVals);
                     });
                 }
-                promises.push(promise);
-            }
+                return promise;
+            });
             return Promise.all(promises);
         }).catch(err => {
-            this.log.e("Error getting ranking :", err);
+            this.log.e("Error getting ranking: ", err);
             throw err;
         });
     }

@@ -5,7 +5,7 @@ import { Web3Service } from "../services/web3.service";
 import BrightContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
 import { UserDetailsDto } from "src/dto/user-details.dto";
-import { Observable, from } from "rxjs";
+import { Observable, from, forkJoin } from "rxjs";
 import { flatMap } from "rxjs/operators";
 
 interface ITrbSmartContractJson {
@@ -39,19 +39,16 @@ export class ContractManagerService {
 
     public getAllUserData(): Observable<Array<UserDetailsDto>> {
         return this.getUsersAddress().pipe(flatMap((usersAddress: String[]) => {
-            let numberUsers = usersAddress.length;
-            this.log.d("The number of users is " + numberUsers);
-            let promises = new Array<Promise<UserDetailsDto>>();
-            for(let i = 0; i < numberUsers; i++) {
-                let promise = this.contracts[0].methods.getAllUserReputation(usersAddress[i]).call()
-                    .then(userDetails => {
-                        let user = UserDetailsDto.fromSmartContract(userDetails);
-                        this.log.d("User Details: " + JSON.stringify(user));
-                        return user;
-                    });
-                promises.push(promise);
-            }
-            return from(Promise.all(promises));
+            let numberOfUsers = usersAddress.length;
+            this.log.d("The number of users is " + numberOfUsers);
+            let promises = new Array<Observable<UserDetailsDto>>();
+            promises = usersAddress.map(userAddress => from(this.contracts[0].methods.getUserGlobalReputation(userAddress).call()
+            .then(userDetails => {
+                let user = UserDetailsDto.fromSmartContract(userDetails);
+                this.log.d("User Details: " + JSON.stringify(user));
+                return user;
+            })));
+            return forkJoin(promises);
         }));
     }
 

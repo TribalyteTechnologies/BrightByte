@@ -105,7 +105,7 @@ contract Bright {
         );
     }
 
-    function getUserReputation(address userHash, uint16 seasonIndex) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
+    function getUserSeasonReputation(address userHash, uint16 seasonIndex) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
         return(user.email,
@@ -119,7 +119,7 @@ contract Bright {
         );
     }
 
-    function getAllUserReputation(address userHash) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint, address) {
+    function getUserGlobalReputation(address userHash) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.email,
                 user.globalStats.reputation,
