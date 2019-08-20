@@ -9,11 +9,13 @@ import { MenuItem } from "../../models/menu-items.model";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { LoginPage } from "../login/login";
-import { NavController } from "ionic-angular";
+import { NavController, PopoverController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { AppConfig } from "../../app.config";
 import { WebSocketService } from "../../core/websocket.service";
+import { AddCommitPopover } from "../addcommit/addcommit";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: "page-tabs",
@@ -25,29 +27,46 @@ export class TabsPage {
     public currentPage: any;
     public tabContent: any;
 
-    public home: MenuItem = new MenuItem("home.svg", HomePage, "Home");
-    public commits: MenuItem = new MenuItem("commits.svg", CommitPage, "Commits");
-    public reviews: MenuItem = new MenuItem("reviews.svg", ReviewPage, "Reviews");
-    public ranking: MenuItem = new MenuItem("ranking.svg", RankingPage, "Ranking"); 
+    public contribute: MenuItem = new MenuItem("add.svg", null, "contribute");
+    public home: MenuItem = new MenuItem("home.svg", HomePage, "home");
+    public commits: MenuItem = new MenuItem("commits.svg", CommitPage, "commits");
+    public reviews: MenuItem = new MenuItem("reviews.svg", ReviewPage, "reviews");
+    public ranking: MenuItem = new MenuItem("ranking.svg", RankingPage, "ranking");
+    
     public menuArray = new Array<MenuItem>();
     public name: string = "";
     private log: ILogger;
 
-    constructor(loggerSrv: LoggerService,
-                private userLoggerService: UserLoggerService,
-                private navCtrl: NavController, 
-                private loginService: LoginService, 
-                private contractManagerService: ContractManagerService,
-                private storageSrv: LocalStorageService,
-                private websocketSrv: WebSocketService
-                ) {
+
+    constructor(
+        loggerSrv: LoggerService,
+        private userLoggerService: UserLoggerService,
+        private navCtrl: NavController,
+        private loginService: LoginService,
+        private contractManagerService: ContractManagerService,
+        private storageSrv: LocalStorageService,
+        private websocketSrv: WebSocketService,
+        private popoverCtrl: PopoverController,
+        private translateSrv: TranslateService
+    ) {
         this.log = loggerSrv.get("TabsPage");
-        this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
+
+        this.menuArray.push(this.home, this.commits, this.reviews, this.ranking, this.contribute);
+
+        let arrayLength = this.menuArray.length;
+        for (let i = 0; i < arrayLength; i++){
+            this.translateSrv.get("app." + this.menuArray[i].pagName).subscribe((rsp) => {
+                this.menuArray[i].pagName = rsp;
+            });
+            if (i === arrayLength - 1){
+                this.menuArray.pop();
+            }
+        }
 
         let url = new URLSearchParams(document.location.search);
-        let item = this.storageSrv.get(AppConfig.StorageKey.LASTPAGE );
+        let item = this.storageSrv.get(AppConfig.StorageKey.LASTPAGE);
         let lastPageNumber = Number(item);
-        if (item === null){
+        if (item === null) {
             this.tabContent = this.ranking.url;
             this.goTo(this.ranking.url);
         } else if (url.has("reviewId")) {
@@ -60,20 +79,25 @@ export class TabsPage {
         }
         this.setUserInfo();
     }
-    
-    public goTo(page: any){
+
+    public goTo(page: any) {
         let idx = this.menuArray.map(x => x.url).indexOf(page);
         this.currentPage = page;
-        this.storageSrv.set(AppConfig.StorageKey.LASTPAGE , String(idx));
+        this.storageSrv.set(AppConfig.StorageKey.LASTPAGE, String(idx));
     }
 
-    public logout(){
+    public logout() {
         this.websocketSrv.disconnect();
         this.userLoggerService.logout();
         this.navCtrl.setRoot(LoginPage);
     }
 
-    private setUserInfo(){
+    public openAddCommitDialog() {
+        let popover = this.popoverCtrl.create(AddCommitPopover, {}, { cssClass: "add-commit-popover" });
+        popover.present();
+    }
+
+    private setUserInfo() {
         let user = this.loginService.getAccount();
         this.contractManagerService.getUserDetails(user.address).then(rsp => {
             this.name = rsp.name;
