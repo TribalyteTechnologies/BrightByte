@@ -24,6 +24,8 @@
         "agreeTerms2": "terms and conditions",
         "termsDescription": "BrightByte is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. Contact your BrightByte provider for more information.",
         "explanationText": "In order to sign up for BrightByte you need to create and identity file. This identity file contains your public and private keys, being the private key protected with the password introduced below. Please enter the password to protect your identity file, read and agree the terms and conditions and click on the button to generate and download your identity file. IMPORTANT: do not lose your identity file, your user account fully depends on it and cannot be recovered in case of loss.",
+        "contribute": "Contribute",
+        "home": "Home",
         "commits": "Commits",
         "reviews": "Reviews",
         "ranking": "Ranking",

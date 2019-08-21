@@ -27,11 +27,11 @@ export class TabsPage {
     public currentPage: any;
     public tabContent: any;
 
-    public contribute: MenuItem = new MenuItem("add.svg", null, "contribute");
-    public home: MenuItem = new MenuItem("home.svg", HomePage, "home");
-    public commits: MenuItem = new MenuItem("commits.svg", CommitPage, "commits");
-    public reviews: MenuItem = new MenuItem("reviews.svg", ReviewPage, "reviews");
-    public ranking: MenuItem = new MenuItem("ranking.svg", RankingPage, "ranking");
+    public contribute = new MenuItem("add.svg", null, "contribute");
+    public home = new MenuItem("home.svg", HomePage, "home");
+    public commits = new MenuItem("commits.svg", CommitPage, "commits");
+    public reviews = new MenuItem("reviews.svg", ReviewPage, "reviews");
+    public ranking = new MenuItem("ranking.svg", RankingPage, "ranking");
     
     public menuArray = new Array<MenuItem>();
     public name: string = "";
@@ -51,16 +51,17 @@ export class TabsPage {
     ) {
         this.log = loggerSrv.get("TabsPage");
 
-        this.menuArray.push(this.home, this.commits, this.reviews, this.ranking, this.contribute);
+        this.translateSrv.get("app." + this.contribute.pagName).subscribe((rsp) => {
+            this.contribute.pagName = rsp;
+        });
+
+        this.menuArray.push(this.home, this.commits, this.reviews, this.ranking);
 
         let arrayLength = this.menuArray.length;
         for (let i = 0; i < arrayLength; i++){
             this.translateSrv.get("app." + this.menuArray[i].pagName).subscribe((rsp) => {
                 this.menuArray[i].pagName = rsp;
             });
-            if (i === arrayLength - 1){
-                this.menuArray.pop();
-            }
         }
 
         let url = new URLSearchParams(document.location.search);
