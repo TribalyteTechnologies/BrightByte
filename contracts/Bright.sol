@@ -5,11 +5,11 @@ import { MigrationLib } from "./MigrationLib.sol";
 import { BrightModels } from "./BrightModels.sol";
 
 contract Bright {
-    uint8 private constant FEEDBACK_MULTIPLER = 100;
-    uint24 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint32 private constant MIGRATION_END_TIMESTAMP = 1557857697;
+    uint256 private constant FEEDBACK_MULTIPLER = 100;
+    uint256 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1571484040;
     Root private root;
-    uint16 private currentSeasonIndex;
+    uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
     BrightModels.HashUserMap private hashUserMap;
     BrightModels.EmailUserMap private emailUserMap;
@@ -43,7 +43,7 @@ contract Bright {
         _;
     }
 
-    function init(address _root, uint16 seasonIndex, uint256 initialTimestamp) public {
+    function init(address _root, uint256 seasonIndex, uint256 initialTimestamp) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
@@ -93,7 +93,7 @@ contract Bright {
         return a;
     }
 
-    function getUser (address userHash) public onlyDapp view returns (string, string, uint, uint, uint, uint32, uint16) {
+    function getUser (address userHash) public onlyDapp view returns (string, string, uint, uint, uint, uint256, uint256) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.name,
             user.email,
@@ -105,7 +105,7 @@ contract Bright {
         );
     }
 
-    function getUserSeasonReputation(address userHash, uint16 seasonIndex) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint16, address) {
+    function getUserSeasonReputation(address userHash, uint256 seasonIndex) public onlyDapp view returns(string, uint256, uint256, string, uint256, uint, uint256, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
         return(user.email,
@@ -119,7 +119,7 @@ contract Bright {
         );
     }
 
-    function getUserGlobalReputation(address userHash) public onlyDapp view returns(string, uint32, uint16, string, uint16, uint, uint, address) {
+    function getUserGlobalReputation(address userHash) public onlyDapp view returns(string, uint256, uint256, string, uint256, uint, uint, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.email,
                 user.globalStats.reputation,
@@ -135,7 +135,7 @@ contract Bright {
     function setCommit(bytes32 url) public onlyRoot {
         address sender = tx.origin;
         bool saved = false;
-        for (uint16 i = 0; i < hashUserMap.map[sender].pendingCommits.length; i++){
+        for (uint256 i = 0; i < hashUserMap.map[sender].pendingCommits.length; i++){
             if(hashUserMap.map[sender].pendingCommits[i] == url){
                 saved = true;
                 break;
@@ -158,7 +158,7 @@ contract Bright {
         require(user != address(0));
         bool saved = false;
         hashUserMap.map[user].toRead.push(url);
-        for (uint16 i = 0; i < hashUserMap.map[sender].pendingCommits.length; i++){
+        for (uint256 i = 0; i < hashUserMap.map[sender].pendingCommits.length; i++){
             if(hashUserMap.map[sender].pendingCommits[i] == url){
                 saved = true;
                 break;
@@ -198,7 +198,7 @@ contract Bright {
         user.globalStats.numberOfTimesReview ++;
         
         BrightModels.UserProfile storage reviewer = hashUserMap.map[sender];
-        for (uint8 j = 0 ; j < reviewer.pendingReviews.length; j++){
+        for (uint256 j = 0 ; j < reviewer.pendingReviews.length; j++){
             if (url == reviewer.pendingReviews[j]){
                 reviewer.pendingReviews[j] = reviewer.pendingReviews[reviewer.pendingReviews.length-1];
                 reviewer.pendingReviews.length--;
@@ -229,7 +229,7 @@ contract Bright {
         return read;
     }
 
-    function setFeedback(bytes32 url, address user, bool value, uint8 vote) public onlyRoot{
+    function setFeedback(bytes32 url, address user, bool value, uint256 vote) public onlyRoot{
         address sender = user;
         address maker = tx.origin;
         BrightModels.UserProfile storage userMap = hashUserMap.map[sender];
@@ -249,7 +249,7 @@ contract Bright {
             }
         }
         else{
-            for (uint16 i = 0 ; i < userMap.toRead.length; i++){
+            for (uint256 i = 0 ; i < userMap.toRead.length; i++){
                 if (url == userMap.toRead[i]){
                     userMap.toRead[i] = userMap.toRead[userMap.toRead.length - 1];
                     userMap.toRead.length--;
@@ -259,7 +259,7 @@ contract Bright {
         }
     }
 
-    function setSeasonFeedback(address user, uint8 vote) private {
+    function setSeasonFeedback(address user, uint256 vote) private {
         BrightModels.UserStats storage season = hashUserMap.map[user].seasonData[currentSeasonIndex].seasonStats;
         if(vote == 1){
             season.positeVotes++;
@@ -273,7 +273,7 @@ contract Bright {
         return (hashUserMap.map[userHash].toRead);
     }
 
-    function getVotes(address userHash, bool global, uint16 indSeason) public onlyDapp view returns (uint, uint) {
+    function getVotes(address userHash, bool global, uint256 indSeason) public onlyDapp view returns (uint, uint) {
         if(global) {
             return (hashUserMap.map[userHash].globalStats.positeVotes, hashUserMap.map[userHash].globalStats.negativeVotes);
         } else {
@@ -281,11 +281,13 @@ contract Bright {
         }
     }
 
-    function getCurrentSeason() public onlyDapp view returns (uint16, uint256) {
-        return (currentSeasonIndex, (initialSeasonTimestamp + (currentSeasonIndex * SEASON_LENGTH_SECS)));
+    function getCurrentSeason() public onlyDapp view returns (uint256, uint256) {
+        uint256 totalTimeSeasons = currentSeasonIndex * SEASON_LENGTH_SECS;
+        uint256 seasonFinaleTime = initialSeasonTimestamp + totalTimeSeasons;
+        return (currentSeasonIndex, seasonFinaleTime);
     }
 
-    function getAllUserSeasonUrls(uint16 seasonIndex, address userAddr) public onlyDapp view returns (bytes32[]) {
+    function getAllUserSeasonUrls(uint256 seasonIndex, address userAddr) public onlyDapp view returns (bytes32[]) {
         BrightModels.UserSeason memory season = hashUserMap.map[userAddr].seasonData[seasonIndex];
         return season.urlSeasonCommits;
     }
@@ -301,11 +303,11 @@ contract Bright {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
     
-    function setAllUserData(string name, string mail, address hash, uint16 perct, uint16 tmRw, uint16 pos, uint16 neg, uint32 rep, uint16 rev) public onlyDapp {
+    function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public onlyDapp {
         MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, MIGRATION_END_TIMESTAMP, name, mail,hash, perct, tmRw, pos, neg, rep, rev);
     }
 
-    function setAllUserSeasonData(uint8 sea, address userAddr, uint16 perct, uint16 tmRw, uint16 pos, uint16 neg, uint32 rep, uint16 rev) public onlyDapp {
+    function setAllUserSeasonData(uint256 sea, address userAddr, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public onlyDapp {
         MigrationLib.setAllUserSeasonData(hashUserMap, sea, userAddr, perct, tmRw, pos, neg, rep, rev);
     }
 
@@ -313,7 +315,7 @@ contract Bright {
         MigrationLib.setAllUserDataTwo(hashUserMap, MIGRATION_END_TIMESTAMP, h, pendCom,  finRev, pendRev, toRd);
     }
 
-    function setUrlsSeason(uint16 seasonIndex, address userAddr, bytes32[] urls) public onlyDapp {
+    function setUrlsSeason(uint256 seasonIndex, address userAddr, bytes32[] urls) public onlyDapp {
         MigrationLib.setUrlsSeason(hashUserMap, MIGRATION_END_TIMESTAMP, seasonIndex, userAddr, urls);
     }
 }

@@ -11,17 +11,17 @@ library BrightModels {
         bytes32[] pendingReviews;
         bytes32[] toRead;
         UserStats globalStats;
-        mapping (uint16 => UserSeason) seasonData;
+        mapping (uint256 => UserSeason) seasonData;
     }
     
     struct UserStats {
-        uint32 reputation;
-        uint32 cumulativeComplexity;
-        uint16 numberOfTimesReview;
-        uint16 agreedPercentage;
-        uint16 positeVotes;
-        uint16 negativeVotes;
-        uint16 reviewsMade;
+        uint256 reputation;
+        uint256 cumulativeComplexity;
+        uint256 numberOfTimesReview;
+        uint256 agreedPercentage;
+        uint256 positeVotes;
+        uint256 negativeVotes;
+        uint256 reviewsMade;
     }
     
     struct UserSeason {

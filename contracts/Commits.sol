@@ -2,15 +2,15 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
-    uint32 private constant MIGRATION_END_TIMESTAMP = 1557857697;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1571484040;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
 
-    uint16[] quality;
-    uint16[] confidence;
-    uint16[] complexity;
+    uint256[] quality;
+    uint256[] confidence;
+    uint256[] complexity;
 
     address private owner;
 
@@ -21,12 +21,12 @@ contract Commits {
         uint256 creationDate;
         bool isReadNeeded;
         uint256 lastModificationDate;
-        uint8 numberReviews;
-        uint8 currentNumberReviews;
-        uint32 score;
-        uint32 weightedComplexity;
-        uint32 previousScore;
-        uint32 previousComplexity;
+        uint256 numberReviews;
+        uint256 currentNumberReviews;
+        uint256 score;
+        uint256 weightedComplexity;
+        uint256 previousScore;
+        uint256 previousComplexity;
         address[] pendingComments;
         address[] finishedComments;
         mapping (address => Comment) commitComments;
@@ -34,8 +34,8 @@ contract Commits {
     struct Comment{
         string text;
         address author;
-        uint16[] points;
-        uint8 vote; //0 => no vote, 1 => dont agree, 2 => agree, 3 => report abuse
+        uint256[] points;
+        uint256 vote; //0 => no vote, 1 => dont agree, 2 => agree, 3 => report abuse
         uint256 creationDate;
         uint256 lastModificationDate;
     }
@@ -73,7 +73,7 @@ contract Commits {
         rootAddress = a;
     }
 
-    function setNewCommit (string _title, string _url, uint8 _users) public onlyDapp {
+    function setNewCommit (string _title, string _url, uint256 _users) public onlyDapp {
         address auth = tx.origin;
         address[] memory a;
         bytes32 _id = keccak256(_url);
@@ -91,7 +91,7 @@ contract Commits {
     function notifyCommit(bytes32 url,address a) public onlyRoot {
         require(storedData[url].author == tx.origin);
         bool saved = false;
-        for(uint8 i = 0; i < storedData[url].pendingComments.length; i++){
+        for(uint256 i = 0; i < storedData[url].pendingComments.length; i++){
             if(a == storedData[url].pendingComments[i]){
                 saved = true;
                 break;
@@ -109,7 +109,7 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
-    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint8, uint8, uint32){
+    function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,
@@ -123,7 +123,7 @@ contract Commits {
                 data.score
         );
     }
-    function getCommitScore(bytes32 _id) public onlyDapp view returns(uint32, uint32){
+    function getCommitScore(bytes32 _id) public onlyDapp view returns(uint256, uint256){
         return(storedData[_id].score, storedData[_id].weightedComplexity);
     }
     function getNumbers() public onlyDapp view returns(uint){
@@ -143,7 +143,7 @@ contract Commits {
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string, uint8, uint, uint, address, uint16[]){
+    function getCommentDetail(bytes32 url, address a) public onlyDapp view returns(string, uint256, uint, uint, address, uint256[]){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
@@ -155,13 +155,13 @@ contract Commits {
         );
     }
 
-    function setReview(string _url,string _text, uint16[] points) onlyDapp public{
+    function setReview(string _url,string _text, uint256[] points) onlyDapp public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
         
         Commit storage commit = storedData[url];
         bool saved = false;
-        for (uint8 j = 0;j < commit.pendingComments.length; j++){
+        for (uint256 j = 0;j < commit.pendingComments.length; j++){
             if (author == commit.pendingComments[j]){
                 commit.pendingComments[j] = commit.pendingComments[commit.pendingComments.length-1];
                 commit.pendingComments.length--;
@@ -179,20 +179,20 @@ contract Commits {
         comment.lastModificationDate = block.timestamp;
 
         if(root.checkCommitSeason(url, commit.author)) {
-            uint16[] memory qualityArray;
-            uint16[] memory complexityArray;
-            uint16[] memory confidenceArray;
+            uint256[] memory qualityArray;
+            uint256[] memory complexityArray;
+            uint256[] memory confidenceArray;
             quality = qualityArray;
             complexity = complexityArray;
             confidence = confidenceArray;
-            for(uint8 i = 0; i < storedData[url].finishedComments.length; i++) {
+            for(uint256 i = 0; i < storedData[url].finishedComments.length; i++) {
                 Comment memory reviewerComment = commit.commitComments[commit.finishedComments[i]];
                 quality.push(reviewerComment.points[0]);
                 complexity.push(reviewerComment.points[1]);
                 confidence.push(reviewerComment.points[2]);
             }
-            uint32 commitScore;
-            uint32 commitComplexity;
+            uint256 commitScore;
+            uint256 commitComplexity;
             (commitScore, commitComplexity) = root.calculatePonderation(quality, complexity, confidence);
             commit.previousScore = commit.score;
             commit.previousComplexity = commit.weightedComplexity;
@@ -205,7 +205,7 @@ contract Commits {
         //score per commit
         root.setReview(url, commit.author);
     }
-    function setVote(bytes32 url, address user, uint8 vote) public onlyRoot {
+    function setVote(bytes32 url, address user, uint256 vote) public onlyRoot {
         require(storedData[url].author == tx.origin);
         assert(vote == 1 || vote == 2 || vote == 3);
         require(storedData[url].commitComments[user].author == user);
@@ -228,7 +228,7 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint8 numberReview, uint8 currentReviews, uint32 score) public onlyDapp {
+    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint256 numberReview, uint256 currentReviews, uint256 score) public onlyDapp {
         require (block.timestamp < MIGRATION_END_TIMESTAMP);
         bytes32 _id = keccak256(url);
         address[] memory a;
@@ -248,7 +248,7 @@ contract Commits {
         }
     }
 
-    function setAllCommentData(bytes32 url, address user, string txt, address author, uint16[] points, uint8 vote, uint creationDate, uint lastMod) public onlyDapp {
+    function setAllCommentData(bytes32 url, address user, string txt, address author, uint256[] points, uint256 vote, uint creationDate, uint lastMod) public onlyDapp {
         require (block.timestamp < MIGRATION_END_TIMESTAMP);
         Comment storage data = storedData[url].commitComments[user];
         data.text = txt;
@@ -275,7 +275,7 @@ contract Commits {
         }
     }
 
-    function getCommitScores(bytes32 url) public onlyDapp view returns (uint32, uint32, uint32, uint32) {
+    function getCommitScores(bytes32 url) public onlyDapp view returns (uint256, uint256, uint256, uint256) {
         return(storedData[url].score, storedData[url].weightedComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
 }

@@ -5,7 +5,7 @@ var Reputation = artifacts.require("./Reputation.sol");
 var MigrationLib = artifacts.require("./MigrationLib.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
 
-const INITIAL_SEASON_INDEX = 2;
+const INITIAL_SEASON_INDEX = 3;
 const INITIAL_SEASON_TIMESTAMP = 1550047598;
 
 module.exports = function(deployer) {

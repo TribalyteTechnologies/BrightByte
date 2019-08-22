@@ -4,7 +4,7 @@ import { BrightModels } from "./BrightModels.sol";
 
 library MigrationLib {
     
-    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint32 migrationEndTimestamp, string name, string mail, address hash, uint16 perct, uint16 tmRw, uint16 pos, uint16 neg, uint32 rep, uint16 rev) public {
+    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint256 migrationEndTimestamp, string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public {
         require (bytes(hashUserMap.map[hash].name).length == 0 && bytes(hashUserMap.map[hash].email).length == 0 && block.timestamp < migrationEndTimestamp);
         BrightModels.UserProfile storage user = hashUserMap.map[hash];
         user.name = name;
@@ -21,7 +21,7 @@ library MigrationLib {
         allUsersArray.push(hash);
     }
     
-    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint8 sea, address userAddr, uint16 perct, uint16 tmRw, uint16 pos, uint16 neg, uint32 rep, uint16 rev) public {
+    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint256 sea, address userAddr, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public {
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[sea];
         season.seasonStats.numberOfTimesReview = tmRw;
@@ -32,7 +32,7 @@ library MigrationLib {
         season.seasonStats.reviewsMade = rev;
     }
     
-    function setAllUserDataTwo(BrightModels.HashUserMap storage hashUserMap, uint32 migrationEndTimestamp, address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public { 
+    function setAllUserDataTwo(BrightModels.HashUserMap storage hashUserMap, uint256 migrationEndTimestamp, address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public { 
         require (block.timestamp < migrationEndTimestamp);
         BrightModels.UserProfile storage user = hashUserMap.map[h];
         for(uint j = 0; j < pendCom.length; j++) {
@@ -49,11 +49,11 @@ library MigrationLib {
         }
     }
     
-    function setUrlsSeason(BrightModels.HashUserMap storage hashUserMap, uint32 migrationEndTimestamp, uint16 seasonIndex, address userAddr, bytes32[] urls) public {
+    function setUrlsSeason(BrightModels.HashUserMap storage hashUserMap, uint256 migrationEndTimestamp, uint256 seasonIndex, address userAddr, bytes32[] urls) public {
         require (block.timestamp < migrationEndTimestamp);
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
-        for(uint16 i = 0; i < urls.length; i++) {
+        for(uint256 i = 0; i < urls.length; i++) {
             season.seasonCommits[urls[i]] = true;
             season.urlSeasonCommits.push(urls[i]);
         }
