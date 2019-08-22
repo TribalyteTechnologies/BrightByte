@@ -3,12 +3,16 @@ import { CommitAchievementProcessor } from "../achievement-processor/commit-achi
 import { ReviewAchievementProcessor } from "../achievement-processor/review-achievement-processor";
 import { AchievementProcessor } from "../achievement-processor/achievement-processor";
 import { ILogger, LoggerService } from "../logger/logger.service";
-import { AchievementEventDto } from "../dto/achievement-event.dto";
+import { AchievementEventDto } from "../dto/events/achievement-event.dto";
 import { EventDatabaseService } from "./event-database.service";
 import { UserDatabaseService } from "../services/user-database.service";
 import { ClientNotificationService } from "./client-notfication.service";
 import { filter, map, flatMap } from "rxjs/operators";
 import { Observable, from, combineLatest } from "rxjs";
+import { TimedReviewAchievementProcessor } from "src/achievement-processor/timed-review-achievement-processor";
+import { BackendConfig } from "src/backend.config";
+import { SeasonAchievementProcessor } from "src/achievement-processor/season-achievement.processor";
+import { AchievementDatabaseService } from "./achievement-database.service";
 
 @Injectable()
 export class DispatcherService {
@@ -20,6 +24,7 @@ export class DispatcherService {
         loggerSrv: LoggerService,
         private eventDbSrv: EventDatabaseService,
         private userDbSrv: UserDatabaseService,
+        private achievementDbSrv: AchievementDatabaseService,
         private clientNtSrv: ClientNotificationService
     ) {
         this.log = loggerSrv.get("DispatcherService");
@@ -32,33 +37,48 @@ export class DispatcherService {
         let observables = this.achievementStack.map(achievementProcessor => {
             return achievementProcessor.process(event);
         });
-        
+
         combineLatest(observables)
-            .subscribe((achievementIds => {
-                let obtainedAchievements = achievementIds.filter(value => value);
-                this.log.d("array", obtainedAchievements);
-                let achievementsObs;
-                achievementsObs = this.userDbSrv.setObtainedAchievement(
-                    event.userHash, obtainedAchievements.toString()).subscribe(response => {
-                        this.log.d("Achievements saved");
-                        this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
-                        this.log.d("Achievements sended to client");
+            .subscribe(achievements => {
+                let obtainedAchievements = achievements.filter(value => value);
+                this.log.d("Obtained achievements:", obtainedAchievements);
+                if (obtainedAchievements.length > 0) {
+                    let achievementsObs = obtainedAchievements.map(achievement => {
+                        return this.userDbSrv.setObtainedAchievement(event.userHash, achievement.title);
                     });
-            }));
+                    combineLatest(achievementsObs)
+                        .subscribe(response => {
+                            this.log.d("Achievements saved");
+                            this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
+                            this.log.d("Achievements sent to client");
+                        });
+                }
+            });
         //TODO: NotifyFrontService stack new achievements notifications.
     }
 
     private init() {
-        this.achievementStack =
-            [new CommitAchievementProcessor(1, this.userDbSrv),
-            new CommitAchievementProcessor(2, this.userDbSrv),
-            new CommitAchievementProcessor(3, this.userDbSrv),
-            new CommitAchievementProcessor(4, this.userDbSrv),
-            new CommitAchievementProcessor(5, this.userDbSrv),
-            new ReviewAchievementProcessor(6, this.userDbSrv),
-            new ReviewAchievementProcessor(7, this.userDbSrv),
-            new ReviewAchievementProcessor(8, this.userDbSrv),
-            new ReviewAchievementProcessor(9, this.userDbSrv),
-            new ReviewAchievementProcessor(10, this.userDbSrv)];
+        this.achievementDbSrv.initObs.subscribe(mapAchievements => {
+            mapAchievements.forEach((achievement) => {
+                let processor: AchievementProcessor;
+                switch (achievement.processorType) {
+                    case BackendConfig.AchievementTypeEnum.Commit:
+                        processor = new CommitAchievementProcessor(achievement, this.userDbSrv);
+                        break;
+                    case BackendConfig.AchievementTypeEnum.Review:
+                        processor = new ReviewAchievementProcessor(achievement, this.userDbSrv);
+                        break;
+                    case BackendConfig.AchievementTypeEnum.TimedReview:
+                        processor = new TimedReviewAchievementProcessor(achievement, this.userDbSrv);
+                        break;
+                    case BackendConfig.AchievementTypeEnum.Season:
+                        processor = new SeasonAchievementProcessor(achievement, this.userDbSrv);
+                        break;
+                    default:
+                }
+                this.achievementStack.push(processor);
+            });
+        });
     }
 }
+

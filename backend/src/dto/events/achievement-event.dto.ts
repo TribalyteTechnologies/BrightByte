@@ -1,4 +1,4 @@
-import { BackendConfig } from "../backend.config";
+import { BackendConfig } from "../../backend.config";
 
 export abstract class AchievementEventDto{
     public userHash: string;    

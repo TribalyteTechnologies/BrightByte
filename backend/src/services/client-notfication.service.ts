@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { ILogger, LoggerService } from "../logger/logger.service";
-import { AchievementDto } from "src/dto/achievement.dto";
 import { AchievementDatabaseService } from "./achievement-database.service";
+import { AchievementDto } from "src/dto/achievement.dto";
 
 @Injectable()
 export class ClientNotificationService {
@@ -34,17 +34,16 @@ export class ClientNotificationService {
         return this.sessions.delete(userSession);
     }
 
-    public sendNewAchievement(userAddress: string, achievementIds: number[]) {
+    public sendNewAchievement(userAddress: string, achievements: AchievementDto[]) {
         let userSession = null;
         for (let [key, value] of this.sessions.entries()) {
             if (value === userAddress) {
                 userSession = key;
             }
         }
-        this.achievementDbSrv.getAchievements(achievementIds.toString()).subscribe(response => {
-            this.log.d("sending achievements", response);
-            this.sockets[userSession].emit("newAchievement", response);
-        });
-        
+        if (achievements) {
+            this.log.d("Sending achievements: ", achievements);
+            this.sockets[userSession].emit("newAchievement", achievements);
+        }
     }
 }

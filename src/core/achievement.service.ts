@@ -12,8 +12,7 @@ export class AchievementService {
 
     public readonly COMMIT_ID = 0;
     public readonly REVIEW_ID = 1;
-
-    private readonly NOT_FOUND = 404;
+    public readonly OK = "OK";
 
     private readonly NUMBER_OF_ACHIEVEMENTS = 18;
     private readonly REQ_ROUTE = "/database/achievements/";
@@ -32,10 +31,17 @@ export class AchievementService {
         let currentAchievements = new Array<Achievement>();
 
         return this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash).map((response: any) => {
-            if (response && response !== this.NOT_FOUND && response.length > 0) {
-                for (let i = 0; i < response.length; i++) {
+            if (response && response.status === this.OK && response.data.length > 0) {
+                for (let i = 0; i < response.data.length; i++) {
                     currentAchievements.push(
-                        new Achievement(false, response[i].title, response[i].quantity, response[i].parameter, response[i].iconPath));
+                        new Achievement(
+                            false,
+                            response.data[i].title,
+                            response.data[i].values[0],
+                            response.data[i].parameter,
+                            response.data[i].iconPath
+                        )
+                    );
                 }
             }
 
@@ -46,7 +52,7 @@ export class AchievementService {
         });
     }
 
-    public addNewAchievement(newAchievement: Achievement){
+    public addNewAchievement(newAchievement: Achievement) {
         this.achievements.push(newAchievement);
     }
 

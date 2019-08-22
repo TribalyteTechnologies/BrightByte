@@ -1,5 +1,5 @@
 import { AchievementEventDto } from "./achievement-event.dto";
-import { BackendConfig } from "../backend.config";
+import { BackendConfig } from "../../backend.config";
 
 export class CommitEventDto extends AchievementEventDto {
 

@@ -28,7 +28,7 @@ export class BackendAPIService {
         this.socket.on(this.NEW_ACHIEVEMENT, (achievements) => {
             achievements.forEach(achievement => {
                 let newAchievement = new Achievement(
-                    false, achievement.title, achievement.quantity, achievement.parameter, achievement.iconPath);
+                    false, achievement.title, achievement.values[0], achievement.parameter, achievement.iconPath);
                 this.achievementSrv.addNewAchievement(newAchievement);
             });
             this.achievementSrv.checkAchievementStack();

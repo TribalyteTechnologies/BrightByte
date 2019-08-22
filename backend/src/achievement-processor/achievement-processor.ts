@@ -1,22 +1,23 @@
-import { AchievementEventDto } from "../dto/achievement-event.dto";
+import { AchievementEventDto } from "../dto/events/achievement-event.dto";
 import { Observable } from "rxjs";
 import { UserDatabaseService } from "../services/user-database.service";
-import { ResponseDto } from "src/dto/response/response.dto";
+import { ResponseDto } from "../dto/response/response.dto";
+import { AchievementDto } from "../dto/achievement.dto";
 
 export abstract class AchievementProcessor {
 
-    protected achievementId: number;
+    protected achievement: AchievementDto;
 
     public constructor(
-        achievementId: number,
+        achievement: AchievementDto,
         public userDbSrv: UserDatabaseService
     ) {
-        this.achievementId = achievementId;
+        this.achievement = achievement;
     }
 
-    public abstract process(event: AchievementEventDto): Observable<number>;
+    public abstract process(event: AchievementEventDto): Observable<AchievementDto>;
 
     public isObtained(userHash: string): Observable<ResponseDto> {
-        return this.userDbSrv.hasAchievement(userHash, this.achievementId.toString());
+        return this.userDbSrv.hasAchievement(userHash, this.achievement.title.toString());
     }
 }
