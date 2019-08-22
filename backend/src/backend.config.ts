@@ -21,6 +21,7 @@ export class BackendConfig {
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
     public static readonly INITIALIZE_USER_DATABASE = false;
+    public static readonly SECONDS_TO_MS = 1000;
 
 }
 export namespace BackendConfig {
