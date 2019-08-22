@@ -5,10 +5,10 @@ import { flatMap, tap, map, first, catchError } from "rxjs/operators";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
-import { AchievementEventDto } from "src/dto/achievement-event.dto";
-import { ResponseDto } from "src/dto/response/response.dto";
-import { SuccessResponseDto } from "src/dto/response/success-response.dto";
-import { FailureResponseDto } from "src/dto/response/failure-response.dto";
+import { AchievementEventDto } from "../dto/events/achievement-event.dto";
+import { ResponseDto } from "../dto/response/response.dto";
+import { SuccessResponseDto } from "../dto/response/success-response.dto";
+import { FailureResponseDto } from "../dto/response/failure-response.dto";
 
 @Injectable()
 export class EventDatabaseService {
@@ -22,10 +22,19 @@ export class EventDatabaseService {
         private databaseSrv: CoreDatabaseService
     ) {
         this.log = loggerSrv.get("EventDatabaseService");
-        //first() is neccessary so that NestJS controllers can answer Http Requests.
-        this.initObs = this.init().pipe(first());
+        
+        this.initObs = this.init();
     }
-
+    public getCurrentSeason(): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            map (collection => {
+                let seasonEvents = collection.find({eventType: BackendConfig.EventTypeEnum.Season});
+                return seasonEvents.length;
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
+    }
     public setEvent(eventDto: AchievementEventDto): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
@@ -45,6 +54,8 @@ export class EventDatabaseService {
         return this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
             tap(database => this.database = database),
             flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION)),
+            //first() is neccessary so that NestJS controllers can answer Http Requests.
+            first(),
             tap(collection => this.initObs = of(collection))
         );
     }
