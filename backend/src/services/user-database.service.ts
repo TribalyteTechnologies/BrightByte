@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "src/backend.config";
-import { Observable, throwError, of, forkJoin} from "rxjs";
+import { Observable, throwError, of, forkJoin } from "rxjs";
 import { flatMap, tap, map, first, catchError } from "rxjs/operators";
 import { UserDto } from "../dto/user.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
 import { AchievementDatabaseService } from "./achievement-database.service";
-import { AchievementDto } from "src/dto/achievement.dto";
-import { ResponseDto } from "src/dto/response/response.dto";
-import { SuccessResponseDto } from "src/dto/response/success-response.dto";
-import { FailureResponseDto } from "src/dto/response/failure-response.dto";
-import { ContractManagerService } from "src/services/contract-manager.service";
+import { AchievementDto } from "../dto/achievement.dto";
+import { ResponseDto } from "../dto/response/response.dto";
+import { SuccessResponseDto } from "../dto/response/success-response.dto";
+import { FailureResponseDto } from "../dto/response/failure-response.dto";
+import { ContractManagerService } from "./contract-manager.service";
 
 @Injectable()
 export class UserDatabaseService {
@@ -27,9 +27,8 @@ export class UserDatabaseService {
         private contractManagerService: ContractManagerService
     ) {
         this.log = loggerSrv.get("UserDatabaseService");
-        //first() is neccessary so that NestJS controllers can answer Http Requests.
-        this.initObs = this.init().pipe(first());
-        if(BackendConfig.INITIALIZE_USER_DATABASE) {
+        this.initObs = this.init();
+        if (BackendConfig.INITIALIZE_USER_DATABASE) {
             this.log.d("All the users details are going to be set. Data is coming from Smart Contracts");
             let obs = this.initializeUsersDatabase();
             obs.subscribe(result => {
@@ -58,7 +57,7 @@ export class UserDatabaseService {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier })),
             map(user => user.obtainedAchievements),
-            map(achievements => new SuccessResponseDto(achievements.includes(parseInt(achievementIdentifier)))),
+            map(achievements => new SuccessResponseDto(achievements.includes(achievementIdentifier))),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
         );
     }
@@ -132,12 +131,12 @@ export class UserDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let achievementIds: number[] = Array.from(achievementIdentifiers.split(",")).map(id => parseInt(id));
+                let achievementIds: string[] = Array.from(achievementIdentifiers.split(","));
                 let user = collection.findOne({
                     id: userIdentifier
                 });
                 if (user) {
-                    let obtainedAchievements: number[] = user.obtainedAchievements;
+                    let obtainedAchievements: string[] = user.obtainedAchievements;
                     achievementIds.forEach(id => obtainedAchievements.push(id));
                     user.obtainedAchievements = obtainedAchievements;
                 } else {
@@ -157,6 +156,8 @@ export class UserDatabaseService {
         return this.databaseSrv.initDatabase(BackendConfig.USER_DB_JSON).pipe(
             tap(database => this.database = database),
             flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.USER_COLLECTION)),
+            //first() is neccessary so that NestJS controllers can answer Http Requests.
+            first(),
             tap(collection => this.initObs = of(collection))
         );
     }
@@ -172,7 +173,7 @@ export class UserDatabaseService {
                 let obs = users.map(user => {
                     this.log.d("The user is going to be saved: " + user.userHash);
                     let newUser = collection.findOne({ id: user.userHash });
-                    if(newUser) {
+                    if (newUser) {
                         newUser.reviewCount = user.finishedReviews;
                         newUser.commitCount = user.numberOfCommits;
                     } else {

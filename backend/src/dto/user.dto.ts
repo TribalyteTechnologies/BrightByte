@@ -3,6 +3,6 @@ export class UserDto {
         public id: string,
         public commitCount: number,
         public reviewCount: number,
-        public obtainedAchievements: Array<number>
+        public obtainedAchievements: Array<string>
     ) { }
 }

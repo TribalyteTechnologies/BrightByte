@@ -18,6 +18,8 @@ export class BackendConfig {
     public static readonly originHeader = "test.com";
     public static readonly netId = "83584648538";
     public static readonly SCORE_DIVISION_FACTOR = 100;
+    public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
+    public static readonly ACH_IMG_FORMAT = ".svg";
     public static readonly INITIALIZE_USER_DATABASE = false;
 
 }
@@ -26,6 +28,12 @@ export namespace BackendConfig {
         Commit = "CommitEvent",
         Review = "ReviewEvent",
         Season = "SeasonEvent"
+    }
+    export enum AchievementTypeEnum{
+        Commit,
+        Review,
+        TimedReview,
+        Season
     }
 }
 
