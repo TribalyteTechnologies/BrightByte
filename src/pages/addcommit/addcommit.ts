@@ -74,7 +74,7 @@ export class AddCommitPopover {
         this.contractManagerService.getAllUserReputation(0, true)
         .then(allReputations => {
             this.log.d("All user reputations: ", allReputations);
-            this.allEmails = allReputations.map(userRep => userRep.email);
+            this.allEmails = allReputations.map(userRep => userRep.email).sort();
             this.setUpList(this.searchInput);
             let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
             if (mailString){
