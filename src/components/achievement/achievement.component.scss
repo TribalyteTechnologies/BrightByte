@@ -19,12 +19,12 @@ achievement {
     left: 49%;
     transform: translate(-51%, -49%);
 
-    @supports (-moz-appearance: none) {
-        padding-top: 290px;
-        padding-right: 5px;
-    }
-
     &.big {
+      @supports (-moz-appearance: none) {
+        padding-top: 290px;
+        padding-right: 6px;
+      }
+
       position: absolute;
       top: 56%;
       left: auto;
