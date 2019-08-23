@@ -17,7 +17,7 @@ import { AppConfig } from "../../app.config";
 })
 
 export class ReviewPage {
-    
+
     public readonly ALL = "all";
     public readonly INCOMPLETE = "incomplete";
     public readonly COMPLETE = "complete";
@@ -27,7 +27,7 @@ export class ReviewPage {
     public msg: string;
     public projects = new Array<string>();
     public projectSelected = this.ALL;
-    public isFeedback = {} as {[key: string]: boolean};
+    public isFeedback = {} as { [key: string]: boolean };
 
     public filterValue = "";
     public filterIsPending = false;
@@ -85,8 +85,8 @@ export class ReviewPage {
         this.contractManagerService.getCommitsToReview()
             .then((commitConcat: UserCommit[][]) => {
                 commits = commitConcat[0].concat(commitConcat[1]);
-                if (this.numberOfReviews !== commitConcat[1].length){
-                    if (this.numberOfReviews !== -1){
+                if (this.numberOfReviews !== commitConcat[1].length) {
+                    if (this.numberOfReviews !== -1) {
                         this.isNewReview = true;
                     }
                     this.numberOfReviews = commitConcat[1].length;
@@ -195,14 +195,18 @@ export class ReviewPage {
         
     public applyFilters(usercommits: UserCommit[]) {
         let projectFilter = this.setProjectFilter(usercommits);
-        let statusFilter = this.setStatusFilter(projectFilter);
-        let pendingFilter = this.setPendingFilter(statusFilter);
-        this.filterArrayCommits = pendingFilter.sort((c1, c2) => {
-            return (c2.creationDateMs - c1.creationDateMs);
-        });
+        this.spinnerService.showLoader();
+        this.setStatusFilter(projectFilter)
+            .then((filteredCommits) => {
+                let pendingFilter = this.setPendingFilter(filteredCommits);
+                this.filterArrayCommits = pendingFilter.sort((c1, c2) => {
+                    return (c2.creationDateMs - c1.creationDateMs);
+                });
+                this.spinnerService.hideLoader();
+            });
     }
 
-    public setFilter(name: string){
+    public setFilter(name: string) {
         switch (name) {
             case this.INCOMPLETE:
                 this.filterValue === this.INCOMPLETE ? this.filterValue = "" : this.filterValue = this.INCOMPLETE;
@@ -218,123 +222,156 @@ export class ReviewPage {
                 break;
         }
         this.openedComments = false;
-        if (this.filterValue !== null){
+        if (this.filterValue !== null) {
             this.storageSrv.set(AppConfig.StorageKey.REVIEWFILTER, this.filterValue.toString());
         }
         this.storageSrv.set(AppConfig.StorageKey.REVIEWPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.displayCommitsToReview);
     }
 
-    public setProject(name: string){
+    public setProject(name: string) {
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);
     }
 
-    public setStyle(idx: number): string{
-        if(idx === this.filterArrayCommits.indexOf(this.currentCommit)){
+    public setStyle(idx: number): string {
+        if (idx === this.filterArrayCommits.indexOf(this.currentCommit)) {
             return "item-selected";
         } else {
             return "card-list-item";
         }
     }
 
-    public setReview(urlCom: string, text: string, points: number[]){
+    public setReview(urlCom: string, text: string, points: number[]) {
         let point: number[] = points;
         this.spinnerService.showLoader();
         this.contractManagerService.setReview(urlCom, text, points)
-        .then((response) => {
-            this.log.d("Received response " + point);
-            this.log.d("Received response " + response);
-            let userAdress = this.loginService.getAccount();
-            this.needReview = false;
-            let commitComment = new CommitComment();
-            commitComment.name = this.name;
-            commitComment.creationDateMs = Date.now();
-            commitComment.text = text;
-            commitComment.quality = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.difficulty = point[1] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.confidence = point[2] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.vote = 0;
-            commitComment.lastModificationDateMs = Date.now();
-            commitComment.user = userAdress.address;
-            this.userCommitComment[0] = commitComment;
-            for(let i = 0; i < this.numCriteria; i++){
-                this.setReputation(-1, i);
-            }
-            this.spinnerService.hideLoader();  
-            this.textComment  = "";
+            .then((response) => {
+                this.log.d("Received response " + point);
+                this.log.d("Received response " + response);
+                let userAdress = this.loginService.getAccount();
+                this.needReview = false;
+                let commitComment = new CommitComment();
+                commitComment.name = this.name;
+                commitComment.creationDateMs = Date.now();
+                commitComment.text = text;
+                commitComment.quality = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
+                commitComment.difficulty = point[1] / AppConfig.SCORE_DIVISION_FACTOR;
+                commitComment.confidence = point[2] / AppConfig.SCORE_DIVISION_FACTOR;
+                commitComment.vote = 0;
+                commitComment.lastModificationDateMs = Date.now();
+                commitComment.user = userAdress.address;
+                this.userCommitComment[0] = commitComment;
+                for (let i = 0; i < this.numCriteria; i++) {
+                    this.setReputation(-1, i);
+                }
+                this.spinnerService.hideLoader();
+                this.textComment = "";
 
-            return this.contractManagerService.getCommitDetails(urlCom);
-        }).then((commitUpdated) => {
-            let commit = this.displayCommitsToReview.find(comm => comm.url === urlCom);
-            commit.score = commitUpdated.score;
-            commit.lastModificationDateMs = commitUpdated.lastModificationDateMs;
-            commit.isReadNeeded = false;
-            commit.isPending = false;
-            commit.numberReviews = commitUpdated.numberReviews;
-            let userDetails = commit.reviewers[0].find((user) => user.userHash === this.address);
-            commit.reviewers[0].splice
-            (commit.reviewers[0].indexOf(userDetails), 1);
-            commit.reviewers[1].push(userDetails);
+                return this.contractManagerService.getCommitDetails(urlCom);
+            }).then((commitUpdated) => {
+                let commit = this.displayCommitsToReview.find(comm => comm.url === urlCom);
+                commit.score = commitUpdated.score;
+                commit.lastModificationDateMs = commitUpdated.lastModificationDateMs;
+                commit.isReadNeeded = false;
+                commit.isPending = false;
+                commit.numberReviews = commitUpdated.numberReviews;
+                let userDetails = commit.reviewers[0].find((user) => user.userHash === this.address);
+                commit.reviewers[0].splice
+                    (commit.reviewers[0].indexOf(userDetails), 1);
+                commit.reviewers[1].push(userDetails);
 
-            this.applyFilters(this.displayCommitsToReview);
-            let url = new URLSearchParams(document.location.search);
-            if(url.has(AppConfig.UrlKey.REVIEWID)){
-                let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
-                let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
-                this.shouldOpen(filteredCommit[0]);
-            }
-            this.numberOfReviews++;
-        }).catch((error) => {
-            this.spinnerService.hideLoader();
-            this.log.e("Catched error " + error);
-        });
+                this.applyFilters(this.displayCommitsToReview);
+                let url = new URLSearchParams(document.location.search);
+                if (url.has(AppConfig.UrlKey.REVIEWID)) {
+                    let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
+                    let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
+                    this.shouldOpen(filteredCommit[0]);
+                }
+                this.numberOfReviews++;
+            }).catch((error) => {
+                this.spinnerService.hideLoader();
+                this.log.e("Catched error " + error);
+            });
     }
 
-    private getReviewerName(commit: UserCommit): Promise<Array<string>>{
+    private getReviewerName(commit: UserCommit): Promise<Array<string>> {
         let hash = commit.author;
         return this.contractManagerService.getUserDetails(hash)
-        .then((user) => {
-            return [user.name, user.email];
-        }).catch((e) => {
-            this.log.e(e);
-            return ["Anonymous", "nomail@web.com"];
-        });
+            .then((user) => {
+                return [user.name, user.email];
+            }).catch((e) => {
+                this.log.e(e);
+                return ["Anonymous", "nomail@web.com"];
+            });
     }
 
-    private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{
-        if (!(this.projectSelected === this.ALL)){
-            return usercommits.filter(commit => {
+    private setProjectFilter(userCommits: UserCommit[]): UserCommit[] {
+        if (!(this.projectSelected === this.ALL)) {
+            return userCommits.filter(commit => {
                 return (commit.project === this.projectSelected);
             });
         } else {
-            return usercommits;
+            return userCommits;
         }
     }
-    private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
-        switch(this.filterValue){
+
+    private applyIncompleteFilter(userCommits: UserCommit[]): Promise<UserCommit[]>{
+        let notReviewed = userCommits.filter(commit => {
+            let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address ||
+                element.userHash === this.ANONYMOUS_ADDRESS);
+            return (!isReviewed);
+        });
+
+        let outdatedFilter = new Array<UserCommit>();
+
+        let promises = new Array<Promise<boolean>>();
+        notReviewed.forEach(commit => {
+            let promise = this.contractManagerService.checkCommitCurrentSeason(commit.url, commit.author)
+                .then(rsp => {
+                    if (rsp) {
+                        outdatedFilter.push(commit);
+                    }
+                    return rsp;
+                });
+            promises.push(promise);
+        });
+
+        return Promise.all(promises)
+            .then(() => {
+                return outdatedFilter;
+            });
+    }
+
+    private applyCompleteFilter(userCommits: UserCommit[]): Promise<UserCommit[]>{
+        return new Promise(resolve => {
+            let reviewed = userCommits.filter(commit => {
+                let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address);
+                return isReviewed;
+            });
+            resolve(reviewed);
+        });
+    }
+
+    private setStatusFilter(userCommits: UserCommit[]): Promise<UserCommit[]> {
+        switch (this.filterValue) {
             case this.INCOMPLETE:
-                return usercommits.filter(commit => {
-                    let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address || 
-                        element.userHash === this.ANONYMOUS_ADDRESS);
-                    return (!isReviewed);
-                });
+                return this.applyIncompleteFilter(userCommits);
             case this.COMPLETE:
-                return usercommits.filter(commit => {
-                    let isReviewed = commit.reviewers[1].some(element => element.userHash === this.address);
-                    return (isReviewed);
-                });
+                return this.applyCompleteFilter(userCommits);
             default:
-                return usercommits;
+                return new Promise(resolve => {
+                    resolve(userCommits);
+                });
         }
     }
-    private setPendingFilter(usercommits: UserCommit[]): UserCommit[]{
-        if(this.filterIsPending){
-            return usercommits.filter(commit => {
+    private setPendingFilter(userCommits: UserCommit[]): UserCommit[] {
+        if (this.filterIsPending) {
+            return userCommits.filter(commit => {
                 return commit.isReadNeeded;
             });
         } else {
-            return usercommits;
+            return userCommits;
         }
     }
 }

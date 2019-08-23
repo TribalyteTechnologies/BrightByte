@@ -210,6 +210,25 @@ export class ContractManagerService {
             });
     }
 
+    public checkCommitCurrentSeason(url: string, author: string): Promise<boolean> {
+        return this.initProm
+            .then(([bright]) => {
+                this.log.d("Public Address: ", this.currentUser.address);
+                this.log.d("Contract artifact", bright);
+                let urlKeccak = this.web3.utils.keccak256(url);
+                return bright.methods.getCurrentSeason().call()
+                    .then((season: number) => {
+                        return bright.methods.getAllUserSeasonUrls(season[0], author).call()
+                    .then((urls: any) => {
+                        return urls.some((currentUrl: any) => { return currentUrl === urlKeccak; });
+                    });
+                });
+            }).catch(err => {
+                this.log.e("Error calling BrightByte smart contract :", err);
+                throw err;
+            });
+    }
+
     public getDetailsCommits(url: string): Promise<CommitDetails> {
         return this.initProm.then(([bright, commit, root]) => {
             return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
