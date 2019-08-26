@@ -32,7 +32,7 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    function Root (address bright, address commits, address reputation, uint16 seasonIndex, uint256 initialTimestamp) public {
+    function Root (address bright, address commits, address reputation, uint256 seasonIndex, uint256 initialTimestamp) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -90,13 +90,13 @@ contract Root{
     function readCommit(string url) public onlyUser {
         remoteCommits.readCommit(keccak256(url));
     }
-    
+
     function setReview(bytes32 url,address a) public onlyCommit {
         remoteBright.setReview(url,a);
     }
 
-    function setVote(string url, address user, uint8 vote) public onlyUser {
-        bytes32 url_bytes = keccak256(url); 
+    function setVote(string url, address user, uint256 vote) public onlyUser {
+        bytes32 url_bytes = keccak256(url);
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
@@ -105,15 +105,15 @@ contract Root{
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
-    function calculatePonderation(uint16[] cleanliness, uint16[] complexity, uint16[] revKnowledge) public onlyCommit view returns(uint32, uint32) {
+    function calculatePonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyCommit view returns(uint256, uint256) {
         return remoteReputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
-    function calculateUserReputation(bytes32 commitsUrl, uint32 reputation, uint32 cumulativeComplexity) public view returns (uint32, uint32) {
-        uint32 commitScore;
-        uint32 commitPonderation;
-        uint32 previousScore;
-        uint32 previousPonderation;
+    function calculateUserReputation(bytes32 commitsUrl, uint256 reputation, uint256 cumulativeComplexity) public view returns (uint256, uint256) {
+        uint256 commitScore;
+        uint256 commitPonderation;
+        uint256 previousScore;
+        uint256 previousPonderation;
         (commitScore, commitPonderation, previousScore, previousPonderation) = remoteCommits.getCommitScores(commitsUrl);
         return  remoteReputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }

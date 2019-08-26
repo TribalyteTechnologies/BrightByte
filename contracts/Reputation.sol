@@ -2,11 +2,11 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Reputation {
-    uint16 private constant WEIGHT_FACTOR = 1000;
+    uint256 private constant WEIGHT_FACTOR = 1000;
     Root private root;
     address private rootAddress;
     address private owner;
-   
+
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     function Reputation() public {
@@ -41,25 +41,25 @@ contract Reputation {
         rootAddress = a;
     }
 
-    function calculateCommitPonderation(uint16[] cleanliness, uint16[] complexity, uint16[] revKnowledge) public onlyRoot view returns (uint32, uint32) {
-        uint32 weightedCleanliness = 0;
-        uint32 complexityPonderation = 0;
-        uint32 totalKnowledge = 0;
-        for(uint8 j = 0; j < cleanliness.length; j++) {
+    function calculateCommitPonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyRoot view returns (uint256, uint256) {
+        uint256 weightedCleanliness = 0;
+        uint256 complexityPonderation = 0;
+        uint256 totalKnowledge = 0;
+        for(uint256 j = 0; j < cleanliness.length; j++) {
             totalKnowledge += revKnowledge[j];
         }
-        for(uint8 i = 0; i < cleanliness.length; i++) {
-            uint32 userKnowledge = (uint32(revKnowledge[i]) * WEIGHT_FACTOR) / totalKnowledge;
+        for(uint256 i = 0; i < cleanliness.length; i++) {
+            uint256 userKnowledge = (uint256(revKnowledge[i]) * WEIGHT_FACTOR) / totalKnowledge;
             weightedCleanliness += (cleanliness[i] * userKnowledge);
             complexityPonderation += (complexity[i] * userKnowledge);
         }
         return (weightedCleanliness/WEIGHT_FACTOR, complexityPonderation/WEIGHT_FACTOR);
     }
 
-    function calculateUserReputation(uint32 prevReputation, uint32 prevPonderation, uint32 commitScore, uint32 commitComplexity, uint32 prevScore, uint32 prevComplexity) public onlyRoot view returns (uint32, uint32) {
-        uint32 num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
-        uint32 cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
-        uint32 reputation = (num * WEIGHT_FACTOR) / cumulativePonderation;
+    function calculateUserReputation(uint256 prevReputation, uint256 prevPonderation, uint256 commitScore, uint256 commitComplexity, uint256 prevScore, uint256 prevComplexity) public onlyRoot view returns (uint256, uint256) {
+        uint256 num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
+        uint256 cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
+        uint256 reputation = (num * WEIGHT_FACTOR) / cumulativePonderation;
         return (reputation/WEIGHT_FACTOR, cumulativePonderation);
     }
 }
