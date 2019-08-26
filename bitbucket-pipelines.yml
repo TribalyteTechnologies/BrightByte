@@ -3,14 +3,18 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 
-image: node:6.12.2
+image: node:10.16.0
 
 pipelines:
   default:
     - step:
         caches:
           - node
+          - backendnode
         script:
           - npm install --unsafe-perm
           - npm run build
           - npm run linters-ci
+definitions:
+  caches:
+    backendnode: backend/node_modules
