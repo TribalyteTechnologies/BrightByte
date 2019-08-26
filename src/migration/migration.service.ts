@@ -25,7 +25,6 @@ export class MigrationService {
     
     public msg: string;
     public text: string;
-    private contractAddressRootV030: string;
     private contractAddressBrightV030: string;
     private contractAddressCommitsV030: string;
     private initPromV030: Promise<Array<ITrbSmartContact>>;
@@ -152,37 +151,22 @@ export class MigrationService {
                 return contractCommits;
             });
         contractPromises.push(promCommits);
-        let promRoot = this.http.get("../assets/build/RootOld.json").toPromise()
-            .then((jsonContractData: ITrbSmartContractJson) => {
-                let truffleContractRoot = TruffleContract(jsonContractData);
-                this.contractAddressRootV030 = truffleContractRoot.networks[configNet.netId].address;
-                let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRootV030, {
-                    from: this.currentUser.address,
-                    gas: configNet.gasLimit,
-                    gasPrice: configNet.gasPrice,
-                    data: truffleContractRoot.deployedBytecode
-                });
-                this.log.d("TruffleContractBright function: ", contractRoot);
-                this.log.d("ContractAddressRoot: ", this.contractAddressRootV030);
-                return contractRoot;
-            });
-        contractPromises.push(promRoot);
         return this.initPromV030 = Promise.all(contractPromises);
     }
 
 
     public getUserMigration() {
         const NUMBER_SET_COMMITS = 5;
-        const EXCLUDED_USERS_ADDRESS = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
+        const EXCLUDED_USERS_ADDRESS = ["0xff4C1C243b8d721E6190494008A9885603c40Bea"];
         const NUMBER_SET_SEASON_COMMITS = 25;
+        const INITIAL_SEASON_TIMESTAMP = 1550047598;
+        const SEASONS_TO_MIGRATE = 2;
 
         let brightV030;
         let commitV030;
-        let rootV030;
 
         let brightNew;
         let commitNew;
-        let rootNew;
 
         let usersHash = [];
         let users = [];
@@ -204,15 +188,13 @@ export class MigrationService {
         
 
         return this.initPromV030
-        .then(([bright, commit, root]) => {
+        .then(([bright, commit]) => {
             brightV030 = bright;
             commitV030 = commit;
-            rootV030 = root;
             return this.contractManagerService.getContracts();
         }).then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
-            rootNew = root;
             
             return brightV030.methods.getNumbers().call();
         }).then(userNumber => {
@@ -246,8 +228,8 @@ export class MigrationService {
                 let user = new User();
                 user.name = userInfo[i][0];
                 user.email = userInfo[i][1];
-                user.globalStats.reputation = userInfo[i][6];
-                user.globalStats.agreedPercentage = userInfo[i][7];
+                user.globalStats.reputation = userInfo[i][5];
+                user.globalStats.agreedPercentage = userInfo[i][6];
                 user.hash = usersHash[i];
                 users.push(user);
             }
@@ -307,7 +289,7 @@ export class MigrationService {
         }).then(reputation => {
             for(let i = 0; i < usersHash.length; i++){
                 for(let j = 0; j < reputation.length; j++){
-                    if(usersHash[i] === reputation[j][8]){
+                    if(usersHash[i] === reputation[j][7]){
                         users[i].globalStats.numberOfTimesReview = reputation[i][2];
                     }
                 }
@@ -315,9 +297,9 @@ export class MigrationService {
 
             return brightV030.methods.getCurrentSeason().call();
         }).then((numSeason) => {
-            seasonNumber = numSeason[0];
-            season1End = numSeason[1];
-            season0End = (season1End - seasonLengthSecs);
+            seasonNumber = SEASONS_TO_MIGRATE;
+            season0End = INITIAL_SEASON_TIMESTAMP;
+            season1End = seasonLengthSecs + INITIAL_SEASON_TIMESTAMP;
             
             let promises = new Array<Promise<any>>();
 
@@ -337,8 +319,8 @@ export class MigrationService {
                     let userSeason =  new UserSeason();
                     userSeason.seasonStats.reputation = seasonReputation[counter][1];
                     userSeason.seasonStats.numberOfTimesReview = seasonReputation[counter][2];
-                    userSeason.seasonStats.agreedPercentage = seasonReputation[counter][5];
-                    userSeason.seasonStats.reviewsMade = seasonReputation[counter][7];
+                    userSeason.seasonStats.agreedPercentage = seasonReputation[counter][4];
+                    userSeason.seasonStats.reviewsMade = seasonReputation[counter][6];
                     users[i].seasonData.push(userSeason);
                     counter ++;
                 }
@@ -455,19 +437,21 @@ export class MigrationService {
                 for(let j = 0; j < commits[i].finishedComments.length; j++){
                     let comment = new CommentDataMigration();
                     comment.text = comments[counter][0];
-                    comment.user = comments[counter][5];
-                    comment.points.push(comments[counter][1] * 100);
-                    comment.points.push(0);
-                    comment.points.push(0);
-                    comment.vote = comments[counter][2];
-                    comment.creationDateComment = comments[counter][3];
-                    comment.lastModificationDateComment = comments[counter][4];                                 
-                    commits[i].commentDataMigration.push(comment);
-                    counter ++; 
+                    comment.user = comments[counter][4];
+                    comment.points.push(comments[counter][5][0]);
+                    comment.points.push(comments[counter][5][1]);
+                    comment.points.push(comments[counter][5][2]);
+                    comment.vote = comments[counter][1];
+                    comment.creationDateComment = comments[counter][2];
+                    comment.lastModificationDateComment = comments[counter][3];
+                    if (comments[counter][4] !== "0x0000000000000000000000000000000000000000") {
+                        commits[i].commentDataMigration.push(comment);
+                    }                             
+                    counter ++;
                 } 
             }
 
-            users = users.filter(user => EXCLUDED_USERS_ADDRESS.indexOf(user) < 0);
+            users = users.filter(user => EXCLUDED_USERS_ADDRESS.indexOf(user.hash) < 0);
 
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
