@@ -34,16 +34,15 @@ export class ClientNotificationService {
         return this.sessions.delete(userSession);
     }
 
-    public sendNewAchievement(userAddress: string, achievements: AchievementDto[]) {
+    public sendNewAchievement(userAddress: string, achievements: Array<AchievementDto>) {
         let userSession = null;
         for (let [key, value] of this.sessions.entries()) {
             if (value === userAddress) {
                 userSession = key;
             }
         }
-        if (achievements) {
-            this.log.d("Sending achievements: ", achievements);
-            this.sockets[userSession].emit("newAchievement", achievements);
-        }
+        this.log.d("Sending achievements: ", achievements);
+        this.sockets[userSession].emit("newAchievement", achievements);
+
     }
 }

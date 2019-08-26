@@ -12,7 +12,7 @@ export class AchievementService {
 
     public readonly COMMIT_ID = 0;
     public readonly REVIEW_ID = 1;
-    public readonly OK = "OK";
+    public readonly STATUS_OK = "OK";
 
     private readonly NUMBER_OF_ACHIEVEMENTS = 18;
     private readonly REQ_ROUTE = "/database/achievements/";
@@ -31,7 +31,7 @@ export class AchievementService {
         let currentAchievements = new Array<Achievement>();
 
         return this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash).map((response: any) => {
-            if (response && response.status === this.OK && response.data.length > 0) {
+            if (response && response.status === this.STATUS_OK && response.data.length > 0) {
                 for (let i = 0; i < response.data.length; i++) {
                     currentAchievements.push(
                         new Achievement(
