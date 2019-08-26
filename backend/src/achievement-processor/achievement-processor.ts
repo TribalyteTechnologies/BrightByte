@@ -17,7 +17,7 @@ export abstract class AchievementProcessor {
 
     public abstract process(event: AchievementEventDto): Observable<AchievementDto>;
 
-    public isObtained(userHash: string): Observable<ResponseDto> {
-        return this.userDbSrv.hasAchievement(userHash, this.achievement.title.toString());
+    public isObtainedAchievement(userHash: string): Observable<ResponseDto> {
+        return this.userDbSrv.hasAchievement(userHash, this.achievement.title);
     }
 }
