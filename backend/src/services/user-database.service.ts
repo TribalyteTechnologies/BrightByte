@@ -131,12 +131,12 @@ export class UserDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let achievementIds: string[] = Array.from(achievementIdentifiers.split(","));
+                let achievementIds = achievementIdentifiers.split(",");
                 let user = collection.findOne({
                     id: userIdentifier
                 });
                 if (user) {
-                    let obtainedAchievements: string[] = user.obtainedAchievements;
+                    let obtainedAchievements = user.obtainedAchievements;
                     achievementIds.forEach(id => obtainedAchievements.push(id));
                     user.obtainedAchievements = obtainedAchievements;
                 } else {
