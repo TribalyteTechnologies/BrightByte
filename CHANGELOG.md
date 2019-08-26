@@ -1,5 +1,25 @@
 # Change Log
 
+####  v 0.4.5
+
+- Solved season timestamp overflow on the smart contracts.
+
+    **IMPORTANT NOTE**: It's necessary to deploy all the new contracts again and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
+
+####  v 0.4.4
+
+- Solved minor issues
+
+    `No migration needed from 0.4.3 to 0.4.4`
+
+####  v 0.4.3
+
+- Updated truffle dependencies
+- Added optimistic refresh to commits page
+- Solved minor bugs
+
+    `No migration needed from 0.4.2 to 0.4.3`
+
 ####  v 0.4.2
 
 - Solved review component refresh bug.
