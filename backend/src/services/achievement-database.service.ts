@@ -152,10 +152,8 @@ export class AchievementDatabaseService {
     public getAchievements(ids: string): Observable<Array<AchievementDto>> {
         return this.initObs.pipe(
             map((mapAchievements: Map<string, AchievementDto>) => {
-                let achievementIdentifiers: string[] = ids.toString().split(",");
-                let achievements = new Array<AchievementDto>();
-                achievementIdentifiers
-                    .map(id => achievements.push(mapAchievements.get(id)));
+                let achievementIdentifiers = ids.split(",");
+                let achievements = achievementIdentifiers.map(id => mapAchievements.get(id));
                 return achievements;
             })
         );
