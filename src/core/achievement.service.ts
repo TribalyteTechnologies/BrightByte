@@ -32,15 +32,15 @@ export class AchievementService {
 
         return this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash).map((response: any) => {
             if (response && response.status === this.STATUS_OK) {
-                for (let i = 0; i < response.data.length; i++) {
-                    if (response.data[i]) {
+                for (let achievement of response.data) {
+                    if (achievement) {
                         currentAchievements.push(
                             new Achievement(
                                 false,
-                                response.data[i].title,
-                                response.data[i].values[0],
-                                response.data[i].parameter,
-                                response.data[i].iconPath
+                                achievement.title,
+                                achievement.values[0],
+                                achievement.parameter,
+                                achievement.iconPath
                             )
                         );
                     }

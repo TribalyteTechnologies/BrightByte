@@ -43,6 +43,8 @@ export class DispatcherService {
                     this.userDbSrv.setObtainedAchievement(event.userHash, achievement.id).subscribe(response => {
                         if (response.status === BackendConfig.STATUS_SUCCESS) {
                             this.log.d("Achievement saved for ", event.userHash, ": ", achievement);
+                        } else {
+                            this.log.d("Couldn't save achievement for ", event.userHash, ": ", achievement);
                         }
                     });
                 });

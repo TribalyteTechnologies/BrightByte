@@ -14,7 +14,7 @@ export class AchievementDatabaseService {
             "First",
             "Commits",
             [1],
-            BackendConfig.ACH_TROPHY_PATH + "1" + BackendConfig.ACH_IMG_FORMAT,
+            "1",
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -22,7 +22,7 @@ export class AchievementDatabaseService {
             "Newbie",
             "Commits",
             [10],
-            BackendConfig.ACH_TROPHY_PATH + "2" + BackendConfig.ACH_IMG_FORMAT,
+            "2" ,
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -30,7 +30,7 @@ export class AchievementDatabaseService {
             "Beginner",
             "Commits",
             [50],
-            BackendConfig.ACH_TROPHY_PATH + "3" + BackendConfig.ACH_IMG_FORMAT,
+            "3" ,
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -38,7 +38,7 @@ export class AchievementDatabaseService {
             "Intermediate",
             "Commits",
             [100],
-            BackendConfig.ACH_TROPHY_PATH + "4" + BackendConfig.ACH_IMG_FORMAT,
+            "4" ,
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -46,7 +46,7 @@ export class AchievementDatabaseService {
             "Pro",
             "Commits",
             [250],
-            BackendConfig.ACH_TROPHY_PATH + "5" + BackendConfig.ACH_IMG_FORMAT,
+            "5" ,
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -54,7 +54,7 @@ export class AchievementDatabaseService {
             "Master",
             "Commits",
             [1000],
-            BackendConfig.ACH_TROPHY_PATH + "6" + BackendConfig.ACH_IMG_FORMAT,
+            "6" ,
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -62,7 +62,7 @@ export class AchievementDatabaseService {
             "First",
             "Reviews",
             [1],
-            BackendConfig.ACH_TROPHY_PATH + "1" + BackendConfig.ACH_IMG_FORMAT,
+            "1" ,
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
@@ -70,7 +70,7 @@ export class AchievementDatabaseService {
             "Newbie",
             "Reviews",
             [10],
-            BackendConfig.ACH_TROPHY_PATH + "2" + BackendConfig.ACH_IMG_FORMAT,
+            "2" ,
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
@@ -78,7 +78,7 @@ export class AchievementDatabaseService {
             "Beginner",
             "Reviews",
             [50],
-            BackendConfig.ACH_TROPHY_PATH + "3" + BackendConfig.ACH_IMG_FORMAT,
+            "3" ,
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
@@ -86,7 +86,7 @@ export class AchievementDatabaseService {
             "Intermediate",
             "Reviews",
             [100],
-            BackendConfig.ACH_TROPHY_PATH + "4" + BackendConfig.ACH_IMG_FORMAT,
+            "4" ,
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
@@ -94,7 +94,7 @@ export class AchievementDatabaseService {
             "Pro",
             "Reviews",
             [250],
-            BackendConfig.ACH_TROPHY_PATH + "5" + BackendConfig.ACH_IMG_FORMAT,
+            "5" ,
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
@@ -102,7 +102,7 @@ export class AchievementDatabaseService {
             "Master",
             "Reviews",
             [1000],
-            BackendConfig.ACH_TROPHY_PATH + "6" + BackendConfig.ACH_IMG_FORMAT,
+            "6" ,
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
@@ -110,7 +110,7 @@ export class AchievementDatabaseService {
             "Fast",
             "Reviews",
             [2, 300],
-            BackendConfig.ACH_TROPHY_PATH + "1" + BackendConfig.ACH_IMG_FORMAT,
+            "1" ,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
@@ -118,7 +118,7 @@ export class AchievementDatabaseService {
             "Rapid Fire",
             "Reviews",
             [6, 300],
-            BackendConfig.ACH_TROPHY_PATH + "2" + BackendConfig.ACH_IMG_FORMAT,
+            "2" ,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
@@ -126,7 +126,7 @@ export class AchievementDatabaseService {
             "Batcher",
             "Reviews",
             [20, 900],
-            BackendConfig.ACH_TROPHY_PATH + "3" + BackendConfig.ACH_IMG_FORMAT,
+            "3" ,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
@@ -134,7 +134,7 @@ export class AchievementDatabaseService {
             "Consistent",
             "Reviews",
             [10, 604800],
-            BackendConfig.ACH_TROPHY_PATH + "4" + BackendConfig.ACH_IMG_FORMAT,
+            "4" ,
             BackendConfig.AchievementTypeEnum.TimedReview
         )
     ];
@@ -149,10 +149,9 @@ export class AchievementDatabaseService {
         this.initObs = this.init();
     }
 
-    public getAchievements(ids: string): Observable<Array<AchievementDto>> {
+    public getAchievements(achievementIdentifiers: Array<string>): Observable<Array<AchievementDto>> {
         return this.initObs.pipe(
             map((mapAchievements: Map<string, AchievementDto>) => {
-                let achievementIdentifiers = ids.toString().split(",");
                 let achievements = achievementIdentifiers.map(id => mapAchievements.get(id));
                 return achievements;
             })
