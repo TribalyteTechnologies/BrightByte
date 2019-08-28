@@ -39,18 +39,20 @@ export class DispatcherService {
         combineLatest(observables).pipe(
             map(achievements => achievements.filter(value => !!value)),
             tap(obtainedAchievements => {
-                obtainedAchievements.map(achievement => {
-                    return this.userDbSrv.setObtainedAchievement(event.userHash, achievement.id);
+                obtainedAchievements.forEach(achievement => {
+                    this.userDbSrv.setObtainedAchievement(event.userHash, achievement.id).subscribe(response => {
+                        if (response.status === BackendConfig.STATUS_SUCCESS) {
+                            this.log.d("Achievement saved for ", event.userHash, ": ", achievement);
+                        }
+                    });
                 });
             }),
             map(obtainedAchievements => {
                 if (obtainedAchievements.length > 0) {
-                    this.log.d("Achievements saved");
                     this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
-                    this.log.d("Achievements sent to client");
                 }
             })
-        );
+        ).subscribe();
         //TODO: NotifyFrontService stack new achievements notifications.
     }
 

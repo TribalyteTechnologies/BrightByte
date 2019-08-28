@@ -13,8 +13,8 @@ export class AchievementDatabaseService {
             "First Commit",
             "First",
             "Commits",
-            [10],
-            "2",
+            [1],
+            BackendConfig.ACH_TROPHY_PATH + "1" + BackendConfig.ACH_IMG_FORMAT,
             BackendConfig.AchievementTypeEnum.Commit
         ),
         new AchievementDto(
@@ -110,7 +110,7 @@ export class AchievementDatabaseService {
             "Fast",
             "Reviews",
             [2, 300],
-            "1",
+            BackendConfig.ACH_TROPHY_PATH + "1" + BackendConfig.ACH_IMG_FORMAT,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
@@ -118,7 +118,7 @@ export class AchievementDatabaseService {
             "Rapid Fire",
             "Reviews",
             [6, 300],
-            "2",
+            BackendConfig.ACH_TROPHY_PATH + "2" + BackendConfig.ACH_IMG_FORMAT,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
@@ -126,7 +126,7 @@ export class AchievementDatabaseService {
             "Batcher",
             "Reviews",
             [20, 900],
-            "6",
+            BackendConfig.ACH_TROPHY_PATH + "3" + BackendConfig.ACH_IMG_FORMAT,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
@@ -134,7 +134,7 @@ export class AchievementDatabaseService {
             "Consistent",
             "Reviews",
             [10, 604800],
-            "3",
+            BackendConfig.ACH_TROPHY_PATH + "4" + BackendConfig.ACH_IMG_FORMAT,
             BackendConfig.AchievementTypeEnum.TimedReview
         )
     ];
@@ -152,7 +152,7 @@ export class AchievementDatabaseService {
     public getAchievements(ids: string): Observable<Array<AchievementDto>> {
         return this.initObs.pipe(
             map((mapAchievements: Map<string, AchievementDto>) => {
-                let achievementIdentifiers = ids.split(",");
+                let achievementIdentifiers = ids.toString().split(",");
                 let achievements = achievementIdentifiers.map(id => mapAchievements.get(id));
                 return achievements;
             })
@@ -165,7 +165,6 @@ export class AchievementDatabaseService {
     private init(): Observable<Map<string, AchievementDto>> {
         let mapAchievements = new Map<string, AchievementDto>();
         this.ACHIEVEMENTS.forEach(achievement => {
-            this.log.d(achievement);
             mapAchievements.set(achievement.id, achievement);
         });
         this.initObs = of(mapAchievements);

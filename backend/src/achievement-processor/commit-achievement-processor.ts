@@ -21,7 +21,7 @@ export class CommitAchievementProcessor extends AchievementProcessor {
     }
 
     public process(event: CommitEventDto): Observable<AchievementDto> {
-        return this.isObtainedAchievement(event.userHash).pipe(map(response => {
+        return this.isAchievementObtained(event.userHash).pipe(map(response => {
             let obtainedAchievement = null;
             if (response
                 && (response.status === BackendConfig.STATUS_SUCCESS && response.data === false)

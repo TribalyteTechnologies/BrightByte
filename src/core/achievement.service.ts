@@ -31,17 +31,19 @@ export class AchievementService {
         let currentAchievements = new Array<Achievement>();
 
         return this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash).map((response: any) => {
-            if (response && response.status === this.STATUS_OK && response.data.length > 0) {
+            if (response && response.status === this.STATUS_OK) {
                 for (let i = 0; i < response.data.length; i++) {
-                    currentAchievements.push(
-                        new Achievement(
-                            false,
-                            response.data[i].title,
-                            response.data[i].values[0],
-                            response.data[i].parameter,
-                            response.data[i].iconPath
-                        )
-                    );
+                    if (response.data[i]) {
+                        currentAchievements.push(
+                            new Achievement(
+                                false,
+                                response.data[i].title,
+                                response.data[i].values[0],
+                                response.data[i].parameter,
+                                response.data[i].iconPath
+                            )
+                        );
+                    }
                 }
             }
 
