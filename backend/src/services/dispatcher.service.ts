@@ -7,11 +7,11 @@ import { UserDatabaseService } from "../services/user-database.service";
 import { ClientNotificationService } from "./client-notfication.service";
 import { filter, map, flatMap, tap } from "rxjs/operators";
 import { Observable, from, combineLatest } from "rxjs";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 import { AchievementDatabaseService } from "./achievement-database.service";
-import { CommitAchievementProcessor } from "src/achievement-processor/commit-achievement-processor";
-import { ReviewAchievementProcessor } from "src/achievement-processor/review-achievement-processor";
-import { TimedReviewAchievementProcessor } from "src/achievement-processor/timed-review-achievement-processor";
+import { CommitAchievementProcessor } from "../achievement-processor/commit-achievement-processor";
+import { ReviewAchievementProcessor } from "../achievement-processor/review-achievement-processor";
+import { TimedReviewAchievementProcessor } from "../achievement-processor/timed-review-achievement-processor";
 
 @Injectable()
 export class DispatcherService {

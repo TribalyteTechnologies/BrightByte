@@ -3,8 +3,8 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
-import { ReviewEventDto } from "src/dto/events/review-event.dto";
-import { AchievementDto } from "src/dto/achievement.dto";
+import { ReviewEventDto } from "../dto/events/review-event.dto";
+import { AchievementDto } from "../dto/achievement.dto";
 import { GlobalConstants } from "../global.constants";
 import { DispatcherService } from "../services/dispatcher.service";
 

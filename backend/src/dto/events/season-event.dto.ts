@@ -1,5 +1,5 @@
 import { AchievementEventDto } from "./achievement-event.dto";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../../backend.config";
 
 export class SeasonEventDto extends AchievementEventDto {
 

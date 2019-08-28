@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { AchievementDatabaseService } from "./achievement-database.service";
-import { AchievementDto } from "src/dto/achievement.dto";
+import { AchievementDto } from "../dto/achievement.dto";
 
 @Injectable()
 export class ClientNotificationService {

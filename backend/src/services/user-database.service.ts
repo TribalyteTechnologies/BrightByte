@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 import { Observable, throwError, of, forkJoin } from "rxjs";
 import { flatMap, tap, map, first, catchError } from "rxjs/operators";
 import { UserDto } from "../dto/user.dto";

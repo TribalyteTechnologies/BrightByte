@@ -4,7 +4,7 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import BrightContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
-import { UserDetailsDto } from "src/dto/user-details.dto";
+import { UserDetailsDto } from "../dto/user-details.dto";
 import { Observable, from, forkJoin } from "rxjs";
 import { flatMap } from "rxjs/operators";
 

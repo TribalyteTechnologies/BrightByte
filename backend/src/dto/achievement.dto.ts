@@ -1,4 +1,4 @@
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 
 export class AchievementDto {
     public constructor(

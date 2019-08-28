@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Web3 from "web3";
 
