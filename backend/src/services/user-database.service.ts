@@ -65,7 +65,7 @@ export class UserDatabaseService {
     public getObtainedAchievements(userIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier })),
-            flatMap(user => this.achievementDbSrv.getAchievements(user.obtainedAchievements.toString().split(","))),
+            flatMap(user => this.achievementDbSrv.getAchievements(user.obtainedAchievements)),
             map((achievements: Array<AchievementDto>) => new SuccessResponseDto(achievements)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
         );

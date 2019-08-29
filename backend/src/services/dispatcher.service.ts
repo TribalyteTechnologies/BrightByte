@@ -44,7 +44,7 @@ export class DispatcherService {
                         if (response.status === BackendConfig.STATUS_SUCCESS) {
                             this.log.d("Achievement saved for ", event.userHash, ": ", achievement);
                         } else {
-                            this.log.d("Couldn't save achievement for ", event.userHash, ": ", achievement);
+                            this.log.w("Couldn't save achievement for ", event.userHash, ": ", achievement);
                         }
                     });
                 });
