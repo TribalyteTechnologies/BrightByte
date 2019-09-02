@@ -11,7 +11,6 @@ import { AchievementDto } from "../dto/achievement.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { FailureResponseDto } from "../dto/response/failure-response.dto";
-import { ContractManagerService } from "./contract-manager.service";
 
 @Injectable()
 export class UserDatabaseService {
@@ -19,22 +18,16 @@ export class UserDatabaseService {
     private database: Loki;
     private initObs: Observable<Loki.Collection>;
     private log: ILogger;
+    private open: boolean;
 
     public constructor(
         loggerSrv: LoggerService,
         private achievementDbSrv: AchievementDatabaseService,
-        private databaseSrv: CoreDatabaseService,
-        private contractManagerService: ContractManagerService
+        private databaseSrv: CoreDatabaseService
     ) {
+        this.open = true;
         this.log = loggerSrv.get("UserDatabaseService");
-        this.initObs = this.init();
-        if (BackendConfig.INITIALIZE_USER_DATABASE) {
-            this.log.d("All the users details are going to be set. Data is coming from Smart Contracts");
-            let obs = this.initializeUsersDatabase();
-            obs.subscribe(result => {
-                this.log.d("The result of the initialization is " + JSON.stringify(result));
-            });
-        }
+        this.init().subscribe(res => this.log.d("The User DataBase is ready"));
     }
 
     public getCommitNumber(userIdentifier: string): Observable<ResponseDto> {
@@ -127,6 +120,25 @@ export class UserDatabaseService {
         );
     }
 
+    public initializeNewUser(userIdentifier: string, numberOfCommits: number, numberOfReviews: number): any {
+        return this.initObs.pipe(
+            flatMap(collection => {
+                this.log.d("First Find the user with id " + userIdentifier);
+                let user = collection.findOne({ id: userIdentifier });
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                if (!user) {
+                    user = collection.insert(new UserDto(userIdentifier, numberOfReviews, numberOfCommits, []));
+                } else {
+                    user.reviewCount = user.finishedReviews;
+                    user.commitCount = user.numberOfCommits;
+                    user.obtainedAchievements = [];
+                }
+                ret = this.databaseSrv.save(this.database, collection, user);
+                return ret;
+            })
+        );
+    }
+
     public setObtainedAchievement(userIdentifier: string, achievementIdentifiers: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
@@ -159,30 +171,6 @@ export class UserDatabaseService {
             //first() is neccessary so that NestJS controllers can answer Http Requests.
             first(),
             tap(collection => this.initObs = of(collection))
-        );
-    }
-
-    private initializeUsersDatabase(): Observable<String[]> {
-        return this.initObs.pipe(
-            flatMap(collection => forkJoin(
-                of(collection),
-                this.contractManagerService.getAllUserData()
-            )),
-            flatMap(([collection, users]) => {
-                this.log.d("The current number of users is: " + users.length);
-                let obs = users.map(user => {
-                    this.log.d("The user is going to be saved: " + user.userHash);
-                    let newUser = collection.findOne({ id: user.userHash });
-                    if (newUser) {
-                        newUser.reviewCount = user.finishedReviews;
-                        newUser.commitCount = user.numberOfCommits;
-                    } else {
-                        newUser = collection.insert(new UserDto(user.userHash, user.finishedReviews, user.numberOfCommits, []));
-                    }
-                    return this.databaseSrv.save(this.database, collection, newUser);
-                });
-                return forkJoin(obs);
-            })
         );
     }
 }

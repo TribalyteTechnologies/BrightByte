@@ -10,8 +10,9 @@ import { DispatcherService } from "../services/dispatcher.service";
 import { EventDatabaseService } from "../services/event-database.service";
 import { ClientGateway } from "../gateways/client-gateway";
 import { ClientNotificationService } from "../services/client-notfication.service";
-import { CoreDatabaseService } from "../services/core-database.service";
-import { ContractManagerService } from "../services/contract-manager.service";
+import { CoreDatabaseService } from "src/services/core-database.service";
+import { ContractManagerService } from "src/services/contract-manager.service";
+import { InitializeDatabaseService } from "../services/initialize-database.service";
 
 
 @Module({
@@ -32,6 +33,7 @@ import { ContractManagerService } from "../services/contract-manager.service";
         ContractManagerService,
         ClientGateway,
         ClientNotificationService,
+        InitializeDatabaseService,
         { provide: LoggerService, useFactory: () => new LoggerService(BackendConfig.LOG_DEBUG) }
     ]
 })
