@@ -43,5 +43,5 @@ Licensed under the conditions of `LICENSE.md`.
 
 Trophy icons designed by Freepik from Flaticon
 
-Identicon generator is powered by the Identicon PHP library
+Identicon generator is powered by [DiceBear Avatars](https://avatars.dicebear.com).
 
