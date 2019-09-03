@@ -3,12 +3,12 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import { forkJoin, Observable } from "rxjs";
 import { flatMap, tap } from "rxjs/operators";
 import { ContractManagerService } from "./contract-manager.service";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
 import { ReviewEventDto } from "../dto/events/review-event.dto";
 import { CommitEventDto } from "../dto/events/commit-event.dto";
 import { DispatcherService } from "./dispatcher.service";
-import { UserDetailsDto } from "src/dto/user-details.dto";
+import { UserDetailsDto } from "../dto/user-details.dto";
 
 @Injectable()
 export class InitializeDatabaseService {
