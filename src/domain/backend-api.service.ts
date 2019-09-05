@@ -3,6 +3,7 @@ import { Socket } from "ng-socket-io";
 import { WebSocketService } from "../core/websocket.service";
 import { Achievement } from "../models/achievement.model";
 import { AchievementService } from "../core/achievement.service";
+import { UserLoggerService } from "./user-logger.service";
 
 @Injectable()
 export class BackendAPIService {
@@ -14,7 +15,8 @@ export class BackendAPIService {
 
     public constructor(
         private websocketSrv: WebSocketService,
-        private achievementSrv: AchievementService
+        private achievementSrv: AchievementService,
+        private userLoggerService: UserLoggerService
     ) {
         this.socket = this.websocketSrv.getSocket();
     }
@@ -22,6 +24,7 @@ export class BackendAPIService {
     public initBackendConnection(userAddress: string) {
         this.socket.emit(this.ADD_USER, userAddress);
         this.startNewAchievementListener();
+        this.startConnectionListener();
     }
 
     private startNewAchievementListener() {
@@ -33,5 +36,17 @@ export class BackendAPIService {
             });
             this.achievementSrv.checkAchievementStack();
         });
+    }
+
+    private startConnectionListener() {
+        this.socket.on("disconnect", () => {
+            this.logout();
+        });
+    }
+
+    private logout() {
+        this.websocketSrv.disconnect();
+        this.userLoggerService.logout();
+        window.location.reload(true);
     }
 }
