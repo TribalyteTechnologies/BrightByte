@@ -41,7 +41,7 @@ export class ClientNotificationService {
                 userSession = key;
             }
         }
-        if (this.sockets[userSession]) {
+        if (this.sessions.size > 0) {
             this.log.d("Sending achievements: ", achievements);
             this.sockets[userSession].emit("newAchievement", achievements);
         }
