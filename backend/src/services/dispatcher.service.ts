@@ -32,11 +32,14 @@ export class DispatcherService {
 
     public dispatch(event: AchievementEventDto) {
         this.log.d("New event received:", event);
-        this.eventDbSrv.setEvent(event).subscribe(res => this.log.d("Event saved"));
-        let observables = this.achievementStack.map(achievementProcessor => {
-            return achievementProcessor.process(event);
-        });
-        combineLatest(observables).pipe(
+        this.eventDbSrv.setEvent(event).pipe(
+            flatMap(res => this.userDbSrv.createUser(event.userHash)),
+            flatMap(res => {
+                return this.achievementStack.map(achievementProcessor => {
+                    return achievementProcessor.process(event);
+                });
+            }),
+            flatMap(obs => combineLatest(obs)),
             map(achievements => achievements.filter(value => !!value)),
             tap(obtainedAchievements => {
                 obtainedAchievements.forEach(achievement => {

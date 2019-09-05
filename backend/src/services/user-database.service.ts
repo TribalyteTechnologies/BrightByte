@@ -68,14 +68,16 @@ export class UserDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier });
-                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                if (!user) {
+                let ret;
+                if (user) {
+                    ret = of(true);
+                } else {
                     user = collection.insert(new UserDto(userIdentifier, 0, 0, []));
                     ret = this.databaseSrv.save(this.database, collection, user);
                 }
                 return ret;
             }),
-            map(created => new SuccessResponseDto()),
+            map(created => new SuccessResponseDto(created)),
             catchError(error => of(new FailureResponseDto(error)))
         );
     }
