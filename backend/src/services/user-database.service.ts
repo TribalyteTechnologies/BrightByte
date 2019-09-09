@@ -72,7 +72,7 @@ export class UserDatabaseService {
                 if (user) {
                     ret = of(true);
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, 0, 0, []));
+                    user = collection.insert(new UserDto(userIdentifier));
                     ret = this.databaseSrv.save(this.database, collection, user);
                 }
                 return ret;

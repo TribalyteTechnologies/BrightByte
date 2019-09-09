@@ -34,11 +34,7 @@ export class DispatcherService {
         this.log.d("New event received:", event);
         this.eventDbSrv.setEvent(event).pipe(
             flatMap(res => this.userDbSrv.createUser(event.userHash)),
-            flatMap(res => {
-                return this.achievementStack.map(achievementProcessor => {
-                    return achievementProcessor.process(event);
-                });
-            }),
+            flatMap(res => this.achievementStack.map(achievementProcessor => achievementProcessor.process(event))),
             flatMap(obs => combineLatest(obs)),
             map(achievements => achievements.filter(value => !!value)),
             tap(obtainedAchievements => {
