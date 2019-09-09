@@ -21,15 +21,16 @@ library MigrationLib {
         allUsersArray.push(hash);
     }
     
-    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint256 sea, address userAddr, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public {
+    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint seasonIndex, address userAddr, uint perct, uint tmRw, uint positeVotes, uint negativeVotes, uint reputation, uint rev, uint complexity) public {
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
-        BrightModels.UserSeason storage season = user.seasonData[sea];
+        BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
         season.seasonStats.numberOfTimesReview = tmRw;
         season.seasonStats.agreedPercentage = perct;
-        season.seasonStats.positeVotes = pos;
-        season.seasonStats.negativeVotes = neg;
-        season.seasonStats.reputation = rep;
+        season.seasonStats.positeVotes = positeVotes;
+        season.seasonStats.negativeVotes = negativeVotes;
+        season.seasonStats.reputation = reputation;
         season.seasonStats.reviewsMade = rev;
+        season.seasonStats.cumulativeComplexity = complexity;
     }
     
     function setAllUserDataTwo(BrightModels.HashUserMap storage hashUserMap, uint256 migrationEndTimestamp, address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public { 

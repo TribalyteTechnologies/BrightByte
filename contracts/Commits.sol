@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
-    uint256 private constant MIGRATION_END_TIMESTAMP = 1571484040;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1568097156;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
@@ -228,12 +228,12 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint256 numberReview, uint256 currentReviews, uint256 score) public onlyDapp {
+    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint256 numberReview, uint256 currentReviews, uint256 score, uint256 weightedComplexity) public onlyDapp {
         require (block.timestamp < MIGRATION_END_TIMESTAMP);
         bytes32 _id = keccak256(url);
         address[] memory a;
         require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(title, url, author, creationDate, needRead, lastMod, numberReview, currentReviews, score, 0, 0, 0, a, a);
+        storedData[_id] = Commit(title, url, author, creationDate, needRead, lastMod, numberReview, currentReviews, score, weightedComplexity, 0, 0, a, a);
         allCommitsArray.push(_id);
     }
 

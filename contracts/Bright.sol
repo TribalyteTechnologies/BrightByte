@@ -7,7 +7,7 @@ import { BrightModels } from "./BrightModels.sol";
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint256 private constant MIGRATION_END_TIMESTAMP = 1571484040;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1568097156;
     Root private root;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -105,17 +105,18 @@ contract Bright {
         );
     }
 
-    function getUserSeasonReputation(address userHash, uint256 seasonIndex) public onlyDapp view returns(string, uint256, uint256, string, uint256, uint, uint256, address) {
+    function getUserSeasonReputation(address userHash, uint256 seasonIndex) public onlyDapp view returns(string, uint256, uint256, string, uint256, uint, uint256, address, uint256) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
-        return(user.email,
+        return (user.email,
             season.seasonStats.reputation,
             season.seasonStats.numberOfTimesReview,
             user.name,
             season.seasonStats.agreedPercentage,
             season.urlSeasonCommits.length,
             season.seasonStats.reviewsMade,
-            user.hash
+            user.hash,
+            season.seasonStats.cumulativeComplexity
         );
     }
 
@@ -299,7 +300,7 @@ contract Bright {
             emit SeasonEnds(currentSeasonIndex);
         }
     }
-    function checkCommitSeason(bytes32 url,address author) public onlyRoot view returns (bool) {
+    function checkCommitSeason(bytes32 url,address author) public onlyDapp view returns (bool) {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
     
@@ -307,8 +308,8 @@ contract Bright {
         MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, MIGRATION_END_TIMESTAMP, name, mail,hash, perct, tmRw, pos, neg, rep, rev);
     }
 
-    function setAllUserSeasonData(uint256 sea, address userAddr, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public onlyDapp {
-        MigrationLib.setAllUserSeasonData(hashUserMap, sea, userAddr, perct, tmRw, pos, neg, rep, rev);
+    function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint tmRw, uint posVotes, uint negVotes, uint reputation, uint rev, uint complexity) public onlyDapp {
+        MigrationLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, tmRw, posVotes, negVotes, reputation, rev, complexity);
     }
 
     function setAllUserDataTwo(address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
