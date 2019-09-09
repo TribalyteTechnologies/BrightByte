@@ -173,16 +173,17 @@ export class MigrationService {
 
     public getUserMigration() {
         const NUMBER_SET_COMMITS = 5;
-        const EXCLUDED_USERS_ADDRESS = ["0x5b0244CF47f017c69835633D7ac77BbA142D45Ee"];
+        const EXCLUDED_USERS_ADDRESS = ["0x20426cfe5F88252209a72B682F30Ad79C43c40c2", "0x71b1647EEde246B98cd0528a78d6B4d397505131"];
+        const INVALID_USERS_ADDRESS = "0x0000000000000000000000000000000000000000";
         const NUMBER_SET_SEASON_COMMITS = 25;
+        const INITIAL_SEASON_TIMESTAMP = 1550047598;
+        const SEASONS_TO_MIGRATE = 3;
 
         let brightV030;
         let commitV030;
-        let rootV030;
 
         let brightNew;
         let commitNew;
-        let rootNew;
 
         let usersHash = [];
         let users = [];
@@ -193,10 +194,11 @@ export class MigrationService {
 
         let seasonNumber: number;
 
-        let seasonLengthSecs: number = 90 * 24 * 60 * 60;
+        let seasonLengthSecs = 90 * 24 * 60 * 60;
 
-        let season0End;
-        let season1End;
+        let season0End: number;
+        let season1End: number;
+        let season2End: number;
 
         let addresses = this.contractManagerService.getAddresses();
         let brightNewAddress = addresses[1];
@@ -204,15 +206,13 @@ export class MigrationService {
         
 
         return this.initPromV030
-        .then(([bright, commit, root]) => {
+        .then(([bright, commit]) => {
             brightV030 = bright;
             commitV030 = commit;
-            rootV030 = root;
             return this.contractManagerService.getContracts();
         }).then(([bright, commit, root]) => {
             brightNew = bright;
             commitNew = commit;
-            rootNew = root;
             
             return brightV030.methods.getNumbers().call();
         }).then(userNumber => {
@@ -246,8 +246,8 @@ export class MigrationService {
                 let user = new User();
                 user.name = userInfo[i][0];
                 user.email = userInfo[i][1];
-                user.globalStats.reputation = userInfo[i][6];
-                user.globalStats.agreedPercentage = userInfo[i][7];
+                user.globalStats.reputation = userInfo[i][5];
+                user.globalStats.agreedPercentage = userInfo[i][6];
                 user.hash = usersHash[i];
                 users.push(user);
             }
@@ -307,7 +307,7 @@ export class MigrationService {
         }).then(reputation => {
             for(let i = 0; i < usersHash.length; i++){
                 for(let j = 0; j < reputation.length; j++){
-                    if(usersHash[i] === reputation[j][8]){
+                    if(usersHash[i] === reputation[j][7]){
                         users[i].globalStats.numberOfTimesReview = reputation[i][2];
                     }
                 }
@@ -315,9 +315,10 @@ export class MigrationService {
 
             return brightV030.methods.getCurrentSeason().call();
         }).then((numSeason) => {
-            seasonNumber = numSeason[0];
-            season1End = numSeason[1];
-            season0End = (season1End - seasonLengthSecs);
+            seasonNumber = SEASONS_TO_MIGRATE;
+            season0End = INITIAL_SEASON_TIMESTAMP;
+            season1End = seasonLengthSecs + INITIAL_SEASON_TIMESTAMP;
+            season2End = seasonLengthSecs + season1End;
             
             let promises = new Array<Promise<any>>();
 
@@ -337,8 +338,8 @@ export class MigrationService {
                     let userSeason =  new UserSeason();
                     userSeason.seasonStats.reputation = seasonReputation[counter][1];
                     userSeason.seasonStats.numberOfTimesReview = seasonReputation[counter][2];
-                    userSeason.seasonStats.agreedPercentage = seasonReputation[counter][5];
-                    userSeason.seasonStats.reviewsMade = seasonReputation[counter][7];
+                    userSeason.seasonStats.agreedPercentage = seasonReputation[counter][4];
+                    userSeason.seasonStats.reviewsMade = seasonReputation[counter][6];
                     users[i].seasonData.push(userSeason);
                     counter ++;
                 }
@@ -407,16 +408,27 @@ export class MigrationService {
                     if(user.hash === commit.author){
                         if(commit.creationDate < season0End){
                             user.seasonData[0].urlSeasonCommits.push(urlKeccak);
-                        } else if (commit.creationDate < season1End){
+                        } else if (commit.creationDate < season1End) {
                             user.seasonData[1].urlSeasonCommits.push(urlKeccak);
-                        } else{
+                        } else if(commit.creationDate < season2End) {
                             user.seasonData[2].urlSeasonCommits.push(urlKeccak);
+                        } else {
+                            user.seasonData[3].urlSeasonCommits.push(urlKeccak);
                         }
                         found = true;
                     }
                 }
             }
-           
+
+            let promisesAddress = new Array<Promise<any>>();
+            for(let i = 0; i < commitsUrls.length; i++){
+                let promise = commitV030.methods.getCommitScores(commitsUrls[i]).call();
+                promisesAddress.push(promise);
+            }
+            return Promise.all(promisesAddress);
+
+        }).then(scoresCommits => {
+            scoresCommits.forEach((scoresCommit, index) => commits[index].weightedComplexity = scoresCommit[1]);
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrls.length; i++){
                 let promise = commitV030.methods.getCommentsOfCommit(commitsUrls[i]).call();
@@ -451,23 +463,46 @@ export class MigrationService {
             return Promise.all(promises);
         }).then((comments) => {
             let counter = 0;
-            for(let i = 0; i < commitsUrls.length; i++){
-                for(let j = 0; j < commits[i].finishedComments.length; j++){
-                    let comment = new CommentDataMigration();
-                    comment.text = comments[counter][0];
-                    comment.user = comments[counter][5];
-                    comment.points.push(comments[counter][1] * 100);
-                    comment.points.push(0);
-                    comment.points.push(0);
-                    comment.vote = comments[counter][2];
-                    comment.creationDateComment = comments[counter][3];
-                    comment.lastModificationDateComment = comments[counter][4];                                 
-                    commits[i].commentDataMigration.push(comment);
-                    counter ++; 
-                } 
-            }
+            commitsUrls.forEach((commitUrl, index) => {
+                commits[index].finishedComments.forEach(finishComment => {
+                    let newComment = new CommentDataMigration();
+                    let comment = comments[counter];
+                    newComment.text = comment[0];
+                    newComment.user = comment[4];
+                    newComment.points.push(comment[5][0]);
+                    newComment.points.push(comment[5][1]);
+                    newComment.points.push(comment[5][2]);
+                    newComment.vote = comment[1];
+                    newComment.creationDateComment = comment[2];
+                    newComment.lastModificationDateComment = comment[3];
+                    if (comment[4] !== INVALID_USERS_ADDRESS) {
+                        commits[index].commentDataMigration.push(newComment);
+                    }
+                    counter++;        
+                });
+            });
 
-            users = users.filter(user => EXCLUDED_USERS_ADDRESS.indexOf(user) < 0);
+            users.forEach(user => {
+                user.seasonData.forEach(seasonData => {
+                    let seasonCumulativeComplexity = 0;
+                    seasonData.urlSeasonCommits.forEach(commitHash => {
+                        let userCommit = commits.find(commit => this.web3.utils.keccak256(commit.url) === commitHash);
+                        let commitKnowledge = 0;
+                        let commentPoints = userCommit.commentDataMigration.map(comment => {
+                            commitKnowledge += (comment.points[2]);
+                            return comment.points[1] * comment.points[2];
+                        });
+                        let commitPonderation = 0;
+                        commentPoints.forEach(score => commitPonderation += (score / commitKnowledge));
+                        if (commitPonderation) {
+                            seasonCumulativeComplexity += commitPonderation;
+                        }
+                    });
+                    seasonData.seasonStats.cumulativeComplexity = Math.round(seasonCumulativeComplexity);
+                });
+            });
+
+            users = users.filter(user => EXCLUDED_USERS_ADDRESS.indexOf(user.hash) < 0);
 
             this.log.d("Setting Users" + users);
             this.log.d("Setting Commits" + commits);
@@ -506,7 +541,7 @@ export class MigrationService {
                                         data.seasonStats.agreedPercentage, 
                                         data.seasonStats.numberOfTimesReview, data.seasonStats.positiveVotes, 
                                         data.seasonStats.negativeVotes, data.seasonStats.reputation,
-                                        data.seasonStats.reviewsMade).encodeABI(); // Reviews made
+                                        data.seasonStats.reviewsMade, data.seasonStats.cumulativeComplexity).encodeABI(); // Reviews made
                                     return this.contractManagerService.sendTx(byteCodeData, brightNewAddress);
                                 });
                             }, 
@@ -605,7 +640,7 @@ export class MigrationService {
                     Promise.resolve()
                 );
 
-        }).then(trx => {
+        }).then(trx => { 
             
             this.log.d("Setting commits");
             return commits.reduce(
@@ -619,7 +654,7 @@ export class MigrationService {
                             commit.isReadNeeded, 
                             commit.lastModificationDate,
                             commit.numberReviews,
-                            commit.currentNumberReviews, commit.score).encodeABI();
+                            commit.currentNumberReviews, commit.score, commit.weightedComplexity).encodeABI();
                         return this.contractManagerService.sendTx(byteCodeData, commitNewAddress);
                     });
                 },
@@ -686,18 +721,19 @@ export class MigrationService {
 class User{
     public name: string;
     public email: string;
-    public hash;
-    public pendingCommits = [];
-    public finishedReviews = [];
-    public pendingReviews = [];
-    public toRead = [];
+    public hash: string;
+    public pendingCommits = new Array<string>();
+    public finishedReviews = new Array<string>();
+    public pendingReviews = new Array<string>();
+    public toRead = new Array<string>();
     public globalStats: UserStats = new UserStats();
-    public seasonData = [];
+    public seasonData = new Array<UserSeason>();
 
 }
 
 class UserStats {
     public reputation: number;
+    public cumulativeComplexity = 0;
     public numberOfTimesReview: number;
     public agreedPercentage: number;
     public positiveVotes: number;
@@ -707,9 +743,7 @@ class UserStats {
 
 class UserSeason {
     public seasonStats: UserStats = new UserStats();
-    public urlSeasonCommits = [];
-    public totalScore: number = 0;
-    public seasonWeigh: number = 0;
+    public urlSeasonCommits = new Array<string>();
 }
 
 class CommitDataMigraton{
@@ -722,16 +756,16 @@ class CommitDataMigraton{
     public currentNumberReviews: number;
     public lastModificationDate: number;
     public score: number;
-    public pendingComments: Array<any>;
-    public finishedComments: Array<any>;
-    public commentDataMigration = [];
-    public totalScore: number = 0;
+    public weightedComplexity = 0;
+    public pendingComments = new Array<string>();
+    public finishedComments = new Array<string>();
+    public commentDataMigration = new Array<CommentDataMigration>();
 }
 
 class CommentDataMigration{
     public text: string;
-    public user;
-    public points = [];
+    public user: string;
+    public points = new Array<number>();
     public vote: number; 
     public creationDateComment: number;
     public lastModificationDateComment: number;
