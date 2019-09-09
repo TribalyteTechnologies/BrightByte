@@ -3,31 +3,32 @@ import { Socket } from "ng-socket-io";
 import { WebSocketService } from "../core/websocket.service";
 import { Achievement } from "../models/achievement.model";
 import { AchievementService } from "../core/achievement.service";
-import { UserLoggerService } from "./user-logger.service";
+import { UserAddressService } from "./user-address.service";
 
 @Injectable()
 export class BackendAPIService {
 
     private readonly ADD_USER = "addUser";
     private readonly NEW_ACHIEVEMENT = "newAchievement";
+    private readonly CONNECTION = "connect";
 
     private socket: Socket;
 
     public constructor(
         private websocketSrv: WebSocketService,
         private achievementSrv: AchievementService,
-        private userLoggerService: UserLoggerService
+        private userAddrSrv: UserAddressService
     ) {
         this.socket = this.websocketSrv.getSocket();
     }
 
     public initBackendConnection(userAddress: string) {
         this.socket.emit(this.ADD_USER, userAddress);
-        this.startNewAchievementListener();
-        this.startConnectionListener();
+        this.registerNewAchievementListener();
+        this.registerConnectionListener();
     }
 
-    private startNewAchievementListener() {
+    private registerNewAchievementListener() {
         this.socket.on(this.NEW_ACHIEVEMENT, (achievements) => {
             achievements.forEach(achievement => {
                 let newAchievement = new Achievement(
@@ -36,17 +37,12 @@ export class BackendAPIService {
             });
             this.achievementSrv.checkAchievementStack();
         });
+
     }
 
-    private startConnectionListener() {
-        this.socket.on("disconnect", () => {
-            this.logout();
+    private registerConnectionListener() {
+        this.socket.on(this.CONNECTION, () => {
+            this.socket.emit(this.ADD_USER, this.userAddrSrv.get());
         });
-    }
-
-    private logout() {
-        this.websocketSrv.disconnect();
-        this.userLoggerService.logout();
-        window.location.reload(true);
     }
 }

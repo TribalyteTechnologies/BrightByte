@@ -59,6 +59,7 @@ import { FilterComponent } from "../components/filter-selection/filter-selection
 import { MigrationService } from "../migration/migration.service";
 import { BackendAPIService } from "../domain/backend-api.service";
 import { WebSocketService } from "../core/websocket.service";
+import { UserAddressService } from "../domain/user-address.service";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -136,6 +137,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AchievementService,
         UserLoggerService,
         UserCacheService,
+        UserAddressService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         AppVersionService,
