@@ -22,12 +22,16 @@ achievement {
     &.big {
       @supports (-moz-appearance: none) {
         padding-top: 290px;
-        padding-right: 6px;
+        padding-right: 45px;
+        left: auto;
+      }
+
+      @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+        left: 190px;
       }
 
       position: absolute;
       top: 56%;
-      left: auto;
       transform: translate(-51%, -49%);
     }
   }
