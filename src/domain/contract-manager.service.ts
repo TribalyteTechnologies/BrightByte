@@ -211,19 +211,17 @@ export class ContractManagerService {
     }
 
     public checkCommitCurrentSeason(url: string, author: string): Promise<boolean> {
-        let brightContract;
+        let rootContract;
         let urlKeccak;
         return this.initProm
-            .then(([bright]) => {
-                brightContract = bright;
+            .then(([root]) => {
+                rootContract = root;
                 this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
+                this.log.d("Contract artifact", root);
                 urlKeccak = this.web3.utils.keccak256(url);
-                return brightContract.methods.getCurrentSeason().call();
-            }).then((season: number) => {
-                return brightContract.methods.getAllUserSeasonUrls(season[0], author).call();
-            }).then((urls: any) => {
-                return urls.some((currentUrl: any) => { return currentUrl === urlKeccak; });
+                return rootContract.methods.checkCommitSeason(urlKeccak, author).call();
+            }).then((result: boolean) => {
+                return result;
             }).catch(err => {
                 this.log.e("Error calling BrightByte smart contract :", err);
                 throw err;
