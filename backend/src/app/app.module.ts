@@ -12,7 +12,7 @@ import { ClientGateway } from "../gateways/client-gateway";
 import { ClientNotificationService } from "../services/client-notfication.service";
 import { CoreDatabaseService } from "../services/core-database.service";
 import { ContractManagerService } from "../services/contract-manager.service";
-import { InitializeDatabaseService } from "../services/initialize-database.service";
+import { DatabaseInitializationService } from "../services/database-initialization.service";
 
 
 @Module({
@@ -33,7 +33,7 @@ import { InitializeDatabaseService } from "../services/initialize-database.servi
         ContractManagerService,
         ClientGateway,
         ClientNotificationService,
-        InitializeDatabaseService,
+        DatabaseInitializationService,
         { provide: LoggerService, useFactory: () => new LoggerService(BackendConfig.LOG_DEBUG) }
     ]
 })

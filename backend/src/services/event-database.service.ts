@@ -22,8 +22,8 @@ export class EventDatabaseService {
         private databaseSrv: CoreDatabaseService
     ) {
         this.log = loggerSrv.get("EventDatabaseService");
-        
-        this.init().subscribe(res => this.log.d("The Event Data Base is ready"));
+        this.initObs = this.init();
+        this.initObs.subscribe(() => this.log.d("The Event Data Base is ready"));
     }
     public getCurrentSeason(): Observable<ResponseDto> {
         return this.initObs.pipe(

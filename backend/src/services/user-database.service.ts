@@ -18,16 +18,15 @@ export class UserDatabaseService {
     private database: Loki;
     private initObs: Observable<Loki.Collection>;
     private log: ILogger;
-    private open: boolean;
 
     public constructor(
         loggerSrv: LoggerService,
         private achievementDbSrv: AchievementDatabaseService,
         private databaseSrv: CoreDatabaseService
     ) {
-        this.open = true;
         this.log = loggerSrv.get("UserDatabaseService");
-        this.init().subscribe(res => this.log.d("The User DataBase is ready"));
+        this.initObs = this.init();
+        this.initObs.subscribe(() => this.log.d("The Event Data Base is ready"));
     }
 
     public getCommitNumber(userIdentifier: string): Observable<ResponseDto> {
@@ -133,7 +132,7 @@ export class UserDatabaseService {
                 } else {
                     user.reviewCount = user.finishedReviews;
                     user.commitCount = user.numberOfCommits;
-                    user.obtainedAchievements = [];
+                    user.obtainedAchievements = new Array<String>();
                 }
                 ret = this.databaseSrv.save(this.database, collection, user);
                 return ret;
