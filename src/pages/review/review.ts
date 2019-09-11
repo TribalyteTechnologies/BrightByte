@@ -147,11 +147,11 @@ export class ReviewPage {
         this.spinnerService.showLoader();
         commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
-            .then((comments: CommitComment[][]) => {
+            .then((comments: Array<CommitComment>) => {
                 this.openedComments = true;
-                this.commitComments = comments[1];
+                this.commitComments = comments;
 
-                let allComments: CommitComment[] = comments[1];
+                let allComments = comments;
                 let userAdress = this.loginService.getAccount().address;
                 this.userCommitComment = allComments.filter((commitUR) => {
                     return commitUR.user === userAdress;

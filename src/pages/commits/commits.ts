@@ -177,11 +177,11 @@ export class CommitPage {
         this.log.d("Opening commit: " + commit.url);
         commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
-            .then((comments: CommitComment[][]) => {
+            .then((comments: Array<CommitComment>) => {
                 this.log.d("We received " + comments.length + " comments");
-                this.commitComments = comments[1];
+                this.commitComments = comments;
                 this.currentCommit = commit;
-                this.openedComments = comments[1].length > 0;
+                this.openedComments = this.commitComments.length > 0;
                 this.log.d("Changing flag of " + commit.url);
                 this.spinnerService.hideLoader();
                 return this.getReviewerName(commit);

@@ -155,7 +155,7 @@ export class ContractManagerService {
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressCommits);
         }).then(() => {
-            let emailsArray = usersMail.filter(email => email !== "").map(email => this.web3.utils.keccak256(email));
+            let emailsArray = usersMail.filter(email => !!email).map(email => this.web3.utils.keccak256(email));
             let bytecodeData = rootContract.methods.notifyCommit(
                 url,
                 emailsArray
@@ -169,7 +169,6 @@ export class ContractManagerService {
     }
     public getCommits(): Promise<Array<UserCommit>> {
         let allUserCommits: Array<any>;
-        let promisesPending = new Array<Promise<UserCommit>>();
         return this.initProm.then(([bright, commit, root]) => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", bright);
@@ -178,6 +177,7 @@ export class ContractManagerService {
             allUserCommits = allUserCommitsRes;
             return this.initProm;
         }).then(([brigh, commit, root]) => {
+            let promisesPending = new Array<Promise<UserCommit>>();
             promisesPending = allUserCommits[2].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
             .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
             return Promise.all(promisesPending);
@@ -272,26 +272,21 @@ export class ContractManagerService {
 
     }
 
-    public getCommentsOfCommit(url: string): Promise<CommitComment[][]> {
+    public getCommentsOfCommit(url: string):  Promise<Array<CommitComment>> {
         return this.initProm.then(([bright, commit, root]) => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", commit);
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommentsOfCommit(urlKeccak).call()
-                .then((allComments: Array<any>) => {
-                    let promisesPending = allComments[0].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
-                    .then((commitVals: any) => {
-                        return CommitComment.fromSmartContract(commitVals, "");
-                    }));
-                    let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
-                    .then((commitVals: any) => {
-                        return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
-                    })
-                    .then((data) => {
-                        return CommitComment.fromSmartContract(data[0], data[1]);
-                    }));
-                    return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
-                });
+            .then((allComments: Array<any>) => {
+                let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
+                .then((commitVals: any) => {
+                    return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
+                }).then((data) => {
+                    return CommitComment.fromSmartContract(data[0], data[1]);
+                }));
+                return Promise.all(promisesFinished);
+            });
         }).catch(err => {
             this.log.e("Error calling BrightByte smart contract :", err);
             throw err;
@@ -321,8 +316,8 @@ export class ContractManagerService {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", root);
             return this.getCommentsOfCommit(url)
-                .then((arrayOfComments: CommitComment[][]) => {
-                    let bytecodeData = root.methods.setVote(url, arrayOfComments[1][index].user, value).encodeABI();
+                .then((arrayOfComments: Array<CommitComment>) => {
+                    let bytecodeData = root.methods.setVote(url, arrayOfComments[1][index], value).encodeABI();
                     this.log.d("Introduced index: ", index);
                     this.log.d("Introduced value: ", value);
                     this.log.d("DATA: ", bytecodeData);
