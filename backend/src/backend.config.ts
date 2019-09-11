@@ -20,8 +20,8 @@ export class BackendConfig {
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
-    public static readonly INITIALIZE_USER_DATABASE = false;
-
+    public static readonly INITIALIZE_USER_DATABASE = true;
+    public static readonly FRONT_ORIGIN_HEADER = "http://localhost:8100";
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {
