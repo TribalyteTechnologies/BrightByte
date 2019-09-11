@@ -35,13 +35,15 @@ export class ClientNotificationService {
     }
 
     public sendNewAchievement(userAddress: string, achievements: Array<AchievementDto>) {
-        let userSession = null;
-        for (let [key, value] of this.sessions.entries()) {
-            if (value === userAddress) {
-                userSession = key;
+        let isDbInitOngoing = this.sessions.size <= 0;
+        if (!isDbInitOngoing) {
+            let userSession = null;
+            for (let [key, value] of this.sessions.entries()) {
+                if (value === userAddress) {
+                    userSession = key;
+                    break;
+                }
             }
-        }
-        if (this.sessions.size > 0) {
             this.log.d("Sending achievements: ", achievements);
             this.sockets[userSession].emit("newAchievement", achievements);
         }
