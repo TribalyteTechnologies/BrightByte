@@ -317,7 +317,7 @@ export class ContractManagerService {
             this.log.d("Contract artifact", root);
             return this.getCommentsOfCommit(url)
                 .then((arrayOfComments: Array<CommitComment>) => {
-                    let bytecodeData = root.methods.setVote(url, arrayOfComments[1][index], value).encodeABI();
+                    let bytecodeData = root.methods.setVote(url, arrayOfComments[index].user, value).encodeABI();
                     this.log.d("Introduced index: ", index);
                     this.log.d("Introduced value: ", value);
                     this.log.d("DATA: ", bytecodeData);
