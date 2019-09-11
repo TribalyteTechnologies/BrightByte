@@ -2,6 +2,7 @@ import { Component, Input } from "@angular/core";
 import { UserReputation } from "../../models/user-reputation.model";
 import { LoginService } from "../../core/login.service";
 import { TranslateService } from "@ngx-translate/core";
+import { AppConfig } from "../../app.config";
 
 
 @Component({
@@ -45,7 +46,7 @@ export class RankingCard {
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.engagementIndex.toFixed(2);
-        this.reputationString = this.reputation.toFixed(2);
+        this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
     }
 
     @Input()

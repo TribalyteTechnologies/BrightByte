@@ -18,8 +18,8 @@ export class AppConfig {
         netId: 4447,
         urlNode: "HTTP://127.0.0.1:9545"
     }];
-    public static readonly SERVER_BASE_URL = "";
-    public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: "", options: {} };
+    public static readonly SERVER_BASE_URL = "http://localhost:3000";
+    public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
     AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
@@ -33,6 +33,7 @@ export class AppConfig {
     public static readonly MIN_TO_SECS = 60;
     public static readonly HOUR_TO_SECS = AppConfig.MIN_TO_SECS * 60;
     public static readonly DAY_TO_SECS = AppConfig.HOUR_TO_SECS * 24;
+    public static readonly REPUTATION_FACTOR = 10000;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",

@@ -1,8 +1,8 @@
 pragma solidity 0.4.21;
 
 library Reputation {
-    uint256 private constant WEIGHT_FACTOR = 1000;
 
+    uint256 private constant WEIGHT_FACTOR = 10000;
     function calculateCommitPonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public pure returns (uint256, uint256) {
         uint256 weightedCleanliness = 0;
         uint256 complexityPonderation = 0;
@@ -15,13 +15,13 @@ library Reputation {
             weightedCleanliness += (cleanliness[i] * userKnowledge);
             complexityPonderation += (complexity[i] * userKnowledge);
         }
-        return (weightedCleanliness/WEIGHT_FACTOR, complexityPonderation/WEIGHT_FACTOR);
+        return (weightedCleanliness, complexityPonderation);
     }
 
     function calculateUserReputation(uint256 prevReputation, uint256 prevPonderation, uint256 commitScore, uint256 commitComplexity, uint256 prevScore, uint256 prevComplexity) public pure returns (uint256, uint256) {
         uint256 num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
         uint256 cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
-        uint256 reputation = (num * WEIGHT_FACTOR) / cumulativePonderation;
-        return (reputation/WEIGHT_FACTOR, cumulativePonderation);
+        uint256 reputation = num / cumulativePonderation;
+        return (reputation, cumulativePonderation);
     }
 }

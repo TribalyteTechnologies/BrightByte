@@ -130,7 +130,7 @@ export class RankingPage {
             this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
             this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
             this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
-            this.userRankDetails.scoreString = this.userRankDetails.score.toFixed(2);
+            this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
             this.setUpTrophys(hash);
         }
