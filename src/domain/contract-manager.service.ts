@@ -220,8 +220,6 @@ export class ContractManagerService {
                 this.log.d("Contract artifact", root);
                 urlKeccak = this.web3.utils.keccak256(url);
                 return rootContract.methods.checkCommitSeason(urlKeccak, author).call();
-            }).then((result: boolean) => {
-                return result;
             }).catch(err => {
                 this.log.e("Error calling BrightByte smart contract :", err);
                 throw err;
