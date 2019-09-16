@@ -10,7 +10,7 @@ export class BackendConfig {
     public static readonly USER_DB_JSON = "brightbyte-user-db.json";
     public static readonly EVENT_DB_JSON = "brightbyte-event-db.json";
     public static readonly BACKEND_IP = "localhost";
-    public static readonly BRIGHTBYTE_DB_PORT = 3000;
+    public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT ? process.env.PORT : 3000;
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
@@ -21,7 +21,7 @@ export class BackendConfig {
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
     public static readonly INITIALIZE_USER_DATABASE = true;
-    public static readonly FRONT_ORIGIN_HEADER = "http://localhost:8100";
+    public static readonly FRONT_ORIGIN_HEADER = process.env.ALLOW_ORIGIN_URL ? process.env.ALLOW_ORIGIN_URL : "http://localhost:8100";
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {
