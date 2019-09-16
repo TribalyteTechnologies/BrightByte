@@ -1,5 +1,18 @@
 # Change Log
 
+####  v 0.5.0
+
+- Added backend for achievements management and Blockchain event handling.
+- Optimized Smart Conctracts bytecode size.
+- Created onchain migration  library.
+- Added contribute shortcut on the side menu.
+- Added new time based achievements.
+- Modified pending reviews for only showing pending reviews from current season.
+- Solved some firefox and safari compatibility issues
+- Minor bug fixes
+
+    **IMPORTANT NOTE**: It's necessary to deploy all the new contracts again and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
+
 ####  v 0.4.5
 
 - Solved season timestamp overflow on the smart contracts.
