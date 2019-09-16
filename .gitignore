@@ -31,14 +31,12 @@ www/
 $RECYCLE.BIN/
 package-lock.json
 truffle-config.custom.js
-app.config.custom.ts
 
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
 
 src/assets/build/
-src/app.config.custom.ts
 truffle-config.custom.js
 script2\.sh
 

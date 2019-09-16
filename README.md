@@ -1,47 +1,15 @@
 # BrightByte
 This is the BrightByte developer reputation project.
 
- #### The following commands are available:
+## Folder organization
+This project is divided in several folders.
 
-- Install the dependencies by running npm install.
-- Comment line 27 of ./node_modules/truffle-contract/contract.js.
-- Run the local network npm run truffle:develop.
-- To deploy the smart contracts to the blockchain: npm run truffle:migrate.
-- To run the frontend locally npm start.
-- Create a user account with the "Register" button of BrightByte.
-- Add balance to the user accounts using Metamask or the truffle-develop command line, as follows:
-- Change the truffle-config.js and the app.configh.ts with your own blockchain network.
-- Get the address of an automatically generated truffle-develop wallet (e.g. 0x627306090abab3a6e1400e9345bc60c78a8bef57)
-- Get the address of the generated BrightByte account ("address" field in "Identity.json") (e.g. 0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a)
-- Send funds from the former to the latter with "sendTransaction", like for example: web3.eth.sendTransaction({from: "0x627306090abab3a6e1400e9345bc60c78a8bef57", to: "0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a", value: web3.toWei("5", "ether")})
-- In order to initialize the backend, it's necessary to run "npm install" in "/backend".
-- To run the backend locally, use "npm run start" in "/backend". 
-- See `package.json` for more npm scripts.
+ - /webapp contains the frontend project developed with Ionic 3.
+ - /backend contains the backend project developed with NestJS.
+ - /tools contains useful scripts for testing or code examples.
 
- #### In order to deploy the application to a server:
+ Each one of them contains its own package.json with several commands and dependecies. Some of them also contains a README.md file with more information.
 
-1. Configure "app.config.custom.ts" and "truffle-config.custom.js" with your Ethereum/Quorum node information.
-2. Set `IS_CUSTOM_NET` to `true` in "app.config.ts".
-3. Run `ACCOUNT_PASSWORD=node_account_pass npm run truffle:custom-deploy`.
-4. Run `npm run build-browser-release`.
-5. Upload the directory `platforms/browser/www/` to your web server.
-6. Open the URL pointing to your web server.
-
- #### Migrations:
- 
-Each change of version where the smart contracts have been modified will be necessary to do a migration in order to
-keep the data. For more information about Migrations please see [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
-
- #### Terms and conditions
-This project come with a default terms and conditions text. This text can be modified by adding HTML in the file `src/pages/termsandconditions/termsandconditions.html` or in `src/assets/i18n/[language].json` to the variable `app.termsDescrition`.
-
- #### More information
-
-For more information about BrightByte please visit our [blog post about BrightByte](https://tech.tribalyte.eu/blog-lanzamiento-brightbyte-v0-4) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
-
-Licensed under the conditions of `LICENSE.md`.
-
-Trophy icons designed by Freepik from Flaticon
-
-Identicon generator is powered by [DiceBear Avatars](https://avatars.dicebear.com).
+## Dependencie installation
+Run `npm install` in each directory for installing all the dependencies.
 

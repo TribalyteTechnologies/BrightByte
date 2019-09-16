@@ -12,6 +12,7 @@ pipelines:
           - node
           - backendnode
         script:
+          - cd ./webapp 
           - npm install --unsafe-perm
           - npm run build
           - npm run linters-ci

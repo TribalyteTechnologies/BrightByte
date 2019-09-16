@@ -120,11 +120,7 @@
       "ym",
       "kebab-case"
     ],
-    "no-input-rename": true,
-    "no-output-rename": true,
-    "no-forward-ref": true,
     "use-life-cycle-interface": false,
-    "use-pipe-transform-interface": true,
     "pipe-naming": [
       false,
       "camelCase",
@@ -134,7 +130,6 @@
     "directive-class-suffix": false
   },
   "rulesDirectory": [
-    "node_modules/tslint-eslint-rules/dist/rules",
-    "node_modules/codelyzer"
+    "node_modules/tslint-eslint-rules/dist/rules"
   ]
 }

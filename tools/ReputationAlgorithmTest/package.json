@@ -1,0 +1,16 @@
+{
+  "name": "reputationalgorithm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "remix-ide": "^0.8.7",
+    "truffle-contract": "^4.0.31",
+    "web3": "^1.2.1"
+  }
+}
