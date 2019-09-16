@@ -44,8 +44,12 @@ export class ClientNotificationService {
                     break;
                 }
             }
-            this.log.d("Sending achievements: ", achievements);
-            this.sockets[userSession].emit("newAchievement", achievements);
+            try {
+                this.log.d("Sending achievements: ", achievements);
+                this.sockets[userSession].emit("newAchievement", achievements);
+            } catch (error) {
+                this.log.e("Cannot send achievement to client", error);
+            }
         }
     }
 }
