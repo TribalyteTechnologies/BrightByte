@@ -25,7 +25,6 @@ export class MigrationService {
     
     public msg: string;
     public text: string;
-    private contractAddressRootV030: string;
     private contractAddressBrightV030: string;
     private contractAddressCommitsV030: string;
     private initPromV030: Promise<Array<ITrbSmartContact>>;
@@ -152,21 +151,6 @@ export class MigrationService {
                 return contractCommits;
             });
         contractPromises.push(promCommits);
-        let promRoot = this.http.get("../assets/build/RootOld.json").toPromise()
-            .then((jsonContractData: ITrbSmartContractJson) => {
-                let truffleContractRoot = TruffleContract(jsonContractData);
-                this.contractAddressRootV030 = truffleContractRoot.networks[configNet.netId].address;
-                let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRootV030, {
-                    from: this.currentUser.address,
-                    gas: configNet.gasLimit,
-                    gasPrice: configNet.gasPrice,
-                    data: truffleContractRoot.deployedBytecode
-                });
-                this.log.d("TruffleContractBright function: ", contractRoot);
-                this.log.d("ContractAddressRoot: ", this.contractAddressRootV030);
-                return contractRoot;
-            });
-        contractPromises.push(promRoot);
         return this.initPromV030 = Promise.all(contractPromises);
     }
 
@@ -178,6 +162,7 @@ export class MigrationService {
         const NUMBER_SET_SEASON_COMMITS = 25;
         const INITIAL_SEASON_TIMESTAMP = 1550047598;
         const SEASONS_TO_MIGRATE = 3;
+        const WEIGHT_FACTOR = 10000;
 
         let brightV030;
         let commitV030;
@@ -193,12 +178,9 @@ export class MigrationService {
         let commits = [];
 
         let seasonNumber: number;
+        let seasonEndsTimestamps = new Array<number>();
 
         let seasonLengthSecs = 90 * 24 * 60 * 60;
-
-        let season0End: number;
-        let season1End: number;
-        let season2End: number;
 
         let addresses = this.contractManagerService.getAddresses();
         let brightNewAddress = addresses[1];
@@ -214,24 +196,7 @@ export class MigrationService {
             brightNew = bright;
             commitNew = commit;
             
-            return brightV030.methods.getNumbers().call();
-        }).then(userNumber => {
-
-            let promises = new Array<Promise<any>>();
-
-            for(let i = 0; i < userNumber; i++){
-                let promise = brightV030.methods.getAllUserEmail(i).call();
-                promises.push(promise);
-            }
-            return Promise.all(promises);
-        }).then(emails => {
-            let promises = new Array<Promise<any>>();
-
-            for(let i = 0; i < emails.length; i++){
-                let promise = brightV030.methods.getAddressByEmail(this.web3.utils.keccak256(emails[i])).call();
-                promises.push(promise);
-            }
-            return Promise.all(promises);
+            return brightV030.methods.getUsersAddress().call();
         }).then(addr => {
             let promises = new Array<Promise<any>>();
             usersHash = addr;
@@ -295,13 +260,8 @@ export class MigrationService {
                 users[i].globalStats.positiveVotes = userVotes[i][0];
                 users[i].globalStats.negativeVotes = userVotes[i][1];
             }
-
             let promises = new Array<Promise<any>>();
-
-            for(let i = 0; i < usersHash.length; i++){
-                let promise = brightV030.methods.getAllUserReputation(i).call();
-                promises.push(promise);
-            }
+            promises = usersHash.map(userHash => brightV030.methods.getUserGlobalReputation(userHash).call());
             return Promise.all(promises);
 
         }).then(reputation => {
@@ -316,27 +276,25 @@ export class MigrationService {
             return brightV030.methods.getCurrentSeason().call();
         }).then((numSeason) => {
             seasonNumber = SEASONS_TO_MIGRATE;
-            season0End = INITIAL_SEASON_TIMESTAMP;
-            season1End = seasonLengthSecs + INITIAL_SEASON_TIMESTAMP;
-            season2End = seasonLengthSecs + season1End;
+            seasonEndsTimestamps = new Array<number>(seasonNumber + 1).fill(null)
+            .map((element, index) => INITIAL_SEASON_TIMESTAMP + seasonLengthSecs * index);
             
             let promises = new Array<Promise<any>>();
 
-            for(let i = 0; i < usersHash.length; i++){
-                for(let j = 0; j <= seasonNumber; j++){
-                    let promise = brightV030.methods.getUserReputation(i, j).call();
+            usersHash.forEach(userHash => {
+                for(let i = 0; i <= seasonNumber; i++){
+                    let promise = brightV030.methods.getUserSeasonReputation(userHash, i).call();
                     promises.push(promise);
                 }
-            }
+            });
             return Promise.all(promises);
-
         }).then((seasonReputation) => {
             
             let counter = 0;
             for(let i = 0; i < usersHash.length; i++){
                 for(let j = 0; j <= seasonNumber; j++){
                     let userSeason =  new UserSeason();
-                    userSeason.seasonStats.reputation = seasonReputation[counter][1];
+                    userSeason.seasonStats.reputation = seasonReputation[counter][1] * WEIGHT_FACTOR;
                     userSeason.seasonStats.numberOfTimesReview = seasonReputation[counter][2];
                     userSeason.seasonStats.agreedPercentage = seasonReputation[counter][4];
                     userSeason.seasonStats.reviewsMade = seasonReputation[counter][6];
@@ -400,21 +358,20 @@ export class MigrationService {
                 commit.isReadNeeded = commitsDetails[i][5];
                 commit.numberReviews = commitsDetails[i][6];
                 commit.currentNumberReviews = commitsDetails[i][7];
-                commit.score = commitsDetails[i][8];
+                commit.score = commitsDetails[i][8] * WEIGHT_FACTOR;
                 commits.push(commit);
                 found = false;
                 for(let j = 0; j < users.length && !found; j++){
                     let user = users[j]; 
                     if(user.hash === commit.author){
-                        if(commit.creationDate < season0End){
-                            user.seasonData[0].urlSeasonCommits.push(urlKeccak);
-                        } else if (commit.creationDate < season1End) {
-                            user.seasonData[1].urlSeasonCommits.push(urlKeccak);
-                        } else if(commit.creationDate < season2End) {
-                            user.seasonData[2].urlSeasonCommits.push(urlKeccak);
-                        } else {
-                            user.seasonData[3].urlSeasonCommits.push(urlKeccak);
-                        }
+                        seasonEndsTimestamps.some((seasonEnd, index) => {
+                            let asignedUrl = false;
+                            if(commit.creationDate < seasonEnd) {
+                                asignedUrl = true;
+                                user.seasonData[index].urlSeasonCommits.push(urlKeccak);
+                            } 
+                            return asignedUrl;
+                        });
                         found = true;
                     }
                 }
@@ -428,7 +385,7 @@ export class MigrationService {
             return Promise.all(promisesAddress);
 
         }).then(scoresCommits => {
-            scoresCommits.forEach((scoresCommit, index) => commits[index].weightedComplexity = scoresCommit[1]);
+            scoresCommits.forEach((scoresCommit, index) => commits[index].weightedComplexity = scoresCommit[1] * WEIGHT_FACTOR);
             let promisesAddress = new Array<Promise<any>>();
             for(let i = 0; i < commitsUrls.length; i++){
                 let promise = commitV030.methods.getCommentsOfCommit(commitsUrls[i]).call();
@@ -483,22 +440,30 @@ export class MigrationService {
             });
 
             users.forEach(user => {
-                user.seasonData.forEach(seasonData => {
-                    let seasonCumulativeComplexity = 0;
-                    seasonData.urlSeasonCommits.forEach(commitHash => {
-                        let userCommit = commits.find(commit => this.web3.utils.keccak256(commit.url) === commitHash);
-                        let commitKnowledge = 0;
-                        let commentPoints = userCommit.commentDataMigration.map(comment => {
-                            commitKnowledge += (comment.points[2]);
-                            return comment.points[1] * comment.points[2];
+                user.seasonData.forEach((seasonData, index) => {
+                    if(index === 3) {
+                        let seasonReputation = 0;
+                        let seasonCumulativeComplexity = 0;
+                        seasonData.urlSeasonCommits.forEach(commitHash => {
+                            let userCommit = commits.find(commit => this.web3.utils.keccak256(commit.url) === commitHash);
+                            let cleanliness = new Array<number>();
+                            let complexity = new Array<number>();
+                            let revKnowledge = new Array<number>();
+                            userCommit.commentDataMigration.forEach(comment => {
+                                cleanliness.push(comment.points[0]);
+                                complexity.push(comment.points[1]);
+                                revKnowledge.push(comment.points[2]);
+                            });
+                            let commitPonderation = this.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
+                            let reputationPonderation = this.calculateUserReputation
+                            (seasonReputation, seasonCumulativeComplexity, commitPonderation[0], commitPonderation[1], 0, 0);
+
+                            seasonReputation = reputationPonderation[0];
+                            seasonCumulativeComplexity = reputationPonderation[1];
                         });
-                        let commitPonderation = 0;
-                        commentPoints.forEach(score => commitPonderation += (score / commitKnowledge));
-                        if (commitPonderation) {
-                            seasonCumulativeComplexity += commitPonderation;
-                        }
-                    });
-                    seasonData.seasonStats.cumulativeComplexity = Math.round(seasonCumulativeComplexity);
+                        seasonData.seasonStats.reputation = Math.trunc(seasonReputation);
+                        seasonData.seasonStats.cumulativeComplexity = Math.trunc(seasonCumulativeComplexity);
+                    }
                 });
             });
 
@@ -715,7 +680,31 @@ export class MigrationService {
                 translatedText = msg;
             });
         return translatedText;
-    } 
+    }
+
+    private calculateCommitPonderation(cleanliness: Array<number>, complexity: Array<number> , revKnowledge: Array<number>): Array<number> {
+        let WEIGHT_FACTOR = 10000;
+        let weightedCleanliness = 0;
+        let complexityPonderation = 0;
+        let totalKnowledge = 0;
+        for (let j = 0; j < cleanliness.length; j++) {
+            totalKnowledge += Number(revKnowledge[j]);
+        }
+        for (let i = 0; i < cleanliness.length; i++) {
+            let userKnowledge = (revKnowledge[i] * WEIGHT_FACTOR) / totalKnowledge;
+            weightedCleanliness += (cleanliness[i] * userKnowledge);
+            complexityPonderation += (complexity[i] * userKnowledge);
+        }
+        return [weightedCleanliness, complexityPonderation];
+    }
+    
+    private calculateUserReputation(prevReputation, prevPonderation, commitScore, commitComplex, prevScore, prevComplex): Array<number>{
+        let num = (prevReputation * prevPonderation) - (prevScore * prevComplex) + (commitScore * commitComplex);
+        let cumulativePonderation = prevPonderation - prevComplex + commitComplex;
+        let reputation = (num) / cumulativePonderation;
+        return [reputation, cumulativePonderation];
+    }
+    
 }
 
 class User{
