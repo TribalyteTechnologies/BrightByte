@@ -7,7 +7,7 @@ import { BrightModels } from "./BrightModels.sol";
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint256 private constant MIGRATION_END_TIMESTAMP = 1568097156;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1569570807;
     Root private root;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -23,6 +23,7 @@ contract Bright {
     event UserNewReview (address userHash, uint256 numberOfReviews);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event SeasonEnds (uint256 currentSeason);
+    event deletedCommit (address userHash, bytes32 url);
 
     function Bright() public {
         owner = msg.sender;
@@ -177,6 +178,25 @@ contract Bright {
         }
     }
 
+    function removeUserCommit(bytes32 url) public onlyDapp {
+        address userHash = tx.origin;
+        BrightModels.UserProfile storage user = hashUserMap.map[userHash];
+        uint finish;
+        finish = root.getNumberOfReviews(url);
+        require(user.seasonData[currentSeasonIndex].seasonCommits[url] && finish == 0);
+        for(uint i = 0; i < finish; i++) {
+            address reviewerHash = root.getCommitPendingReviewer(url, i);
+            BrightModels.UserProfile storage reviewer = hashUserMap.map[reviewerHash];
+            removeFromArray(reviewer.pendingReviews, url);
+            removeFromArray(reviewer.toRead, url);
+        }
+        removeFromArray(user.pendingCommits, url);
+        removeFromArray(user.seasonData[currentSeasonIndex].urlSeasonCommits, url);
+        root.deleteCommit(url);
+        delete user.seasonData[currentSeasonIndex].seasonCommits[url];
+        emit deletedCommit(userHash, url);
+    }
+
     function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[]){
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.pendingReviews,
@@ -300,6 +320,21 @@ contract Bright {
             emit SeasonEnds(currentSeasonIndex);
         }
     }
+
+    function removeFromArray(bytes32[] storage array, bytes32 url) private {
+        require(array.length > 0);
+        uint indexCommit = 0;
+        uint lastCommitIndex = array.length - 1;
+        for(uint i = lastCommitIndex; i >= 0; i--) {
+            if(array[i] == url) {
+                indexCommit = i;
+                break;
+            }
+        }
+        array[indexCommit] = array[lastCommitIndex];
+        array.length--;
+    }
+
     function checkCommitSeason(bytes32 url,address author) public onlyDapp view returns (bool) {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }

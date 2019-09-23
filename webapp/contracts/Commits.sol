@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 import "./Root.sol";
 
 contract Commits {
-    uint256 private constant MIGRATION_END_TIMESTAMP = 1568097156;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1569570807;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
@@ -109,6 +109,21 @@ contract Commits {
             storedData[url].pendingComments.push(a);
         }
     }
+
+    function deleteCommit(bytes32 url) public onlyRoot {
+        delete storedData[url];
+        uint indexCommit = 0;
+        uint lastCommitIndex = allCommitsArray.length - 1;
+        for(uint i = lastCommitIndex; i >= 0; i--) {
+            if(allCommitsArray[i] == url) {
+                indexCommit = i;
+                break;
+            }
+        }
+        allCommitsArray[indexCommit] = allCommitsArray[lastCommitIndex];
+        allCommitsArray.length--;
+    }
+
     function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
         bytes32 id = _url;
         Commit memory data = storedData[id];
@@ -278,4 +293,8 @@ contract Commits {
     function getCommitScores(bytes32 url) public onlyDapp view returns (uint256, uint256, uint256, uint256) {
         return(storedData[url].score, storedData[url].weightedComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
+
+    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
+        return storedData[url].pendingComments[reviewerIndex];
+    } 
 }
