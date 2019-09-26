@@ -26,6 +26,7 @@ export class AppConfig {
     public static CURRENT_NODE_INDEX = 0;
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly SCORE_DIVISION_FACTOR = 100;
+    public static readonly REPUTATION_DIVISION_FACTOR = 1000000;    
     public static readonly SECS_TO_MS = 1000;
     public static readonly N_USER_RANKING_LIST = 5;
     public static readonly COMMIT_WEIGHT = 0.6;
@@ -33,7 +34,7 @@ export class AppConfig {
     public static readonly MIN_TO_SECS = 60;
     public static readonly HOUR_TO_SECS = AppConfig.MIN_TO_SECS * 60;
     public static readonly DAY_TO_SECS = AppConfig.HOUR_TO_SECS * 24;
-    public static readonly REPUTATION_FACTOR = 10000;
+    public static readonly REPUTATION_FACTOR = 1000;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",

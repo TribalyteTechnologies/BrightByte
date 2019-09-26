@@ -14,7 +14,7 @@ export class UserReputation {
     public static fromSmartContract(userVals: Array<any>): UserReputation{ 
         let user = new UserReputation(); 
         user.email = userVals[0]; 
-        user.reputation = userVals[1] / AppConfig.SCORE_DIVISION_FACTOR; 
+        user.reputation = userVals[1] / AppConfig.REPUTATION_FACTOR; 
         user.numReviews = userVals[2];
         user.name = userVals[3];
         user.agreedPercentage = userVals[4];

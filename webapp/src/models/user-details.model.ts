@@ -16,7 +16,7 @@ export class UserDetails {
         user.numberCommitsReviewedByMe = userVals[2]; 
         user.numberCommitsToReviewByMe = userVals[3];
         user.numbermyCommitsPending = userVals[4];
-        user.reputation = userVals[5] / AppConfig.SCORE_DIVISION_FACTOR;
+        user.reputation = userVals[5] / AppConfig.REPUTATION_FACTOR;
         user.agreedPercentage = userVals[6];
         user.userHash = userVals[7];
         return user; 

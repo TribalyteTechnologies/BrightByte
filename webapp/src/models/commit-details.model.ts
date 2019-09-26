@@ -18,7 +18,7 @@ export class CommitDetails {
         commit.isReadNeeded = commitVals[5];
         commit.numberReviews = commitVals[6]; 
         commit.currentNumberReviews = commitVals[7];
-        commit.score = commitVals [8];
+        commit.score = Math.round(commitVals[8]);
         return commit; 
     } 
 } 
