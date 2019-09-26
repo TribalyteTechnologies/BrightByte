@@ -1,16 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpService } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
-import BrightContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
 import { UserDetailsDto } from "../dto/user-details.dto";
 import { Observable, from, forkJoin } from "rxjs";
-import { flatMap, map } from "rxjs/operators";
-
-interface ITrbSmartContractJson {
-    abi: Array<any>;
-}
+import { flatMap, map, tap } from "rxjs/operators";
 
 interface ITrbSmartContact {
     [key: string]: any;
@@ -22,17 +17,17 @@ export class ContractManagerService {
     private contractAddressBright: string;
     private log: ILogger;
     private web3: Web3;
-    private jsonBrightContractData: ITrbSmartContractJson;
     private contracts: Array<ITrbSmartContact>;
+    private brightContractAbi;
 
     public constructor(
+        private httpSrv: HttpService,
         private web3Service: Web3Service,
         private loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
         this.web3Service = web3Service;
-        this.jsonBrightContractData = BrightContractAbi;
         this.contracts = new Array<ITrbSmartContact>();
         this.init();
     }
@@ -43,23 +38,26 @@ export class ContractManagerService {
             let observables = usersAddress.map(userAddress => from(
                 this.contracts[0].methods.getUserGlobalReputation(userAddress).call()
             ).pipe(
-                map((userData: any[])  => UserDetailsDto.fromSmartContract(userData))
+                map((userData: any[]) => UserDetailsDto.fromSmartContract(userData))
             ));
             return forkJoin(observables);
         }));
-    }
-
-    private init() {
-        this.log.d("Initializing Contract Manager Service");
-        this.contractAddressBright = BrightContractAbi.networks[BackendConfig.netId].address;
-        this.contracts.push(new this.web3.eth.Contract(this.jsonBrightContractData.abi, this.contractAddressBright));
     }
 
     private getUserNumber(): Observable<Number> {
         return from<Number>(this.contracts[0].methods.getNumbers().call());
     }
 
-    private getUsersAddress(): Observable<String[]> {
-        return from<String[]>(this.contracts[0].methods.getUsersAddress().call());
+    private getUsersAddress(): Observable<Array<String>> {
+        return from<Array<String>>(this.contracts[0].methods.getUsersAddress().call());
+    }
+
+    private init() {
+        this.log.d("Initializing Contract Manager Service");
+        this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL).subscribe(response => {
+            this.brightContractAbi = response.data;
+            this.contractAddressBright = this.brightContractAbi.networks[BackendConfig.netId].address;
+            this.contracts.push(new this.web3.eth.Contract(this.brightContractAbi.abi, this.contractAddressBright));
+        });
     }
 }

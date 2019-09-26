@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, HttpModule } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
 import { AchievementDatabaseService } from "../services/achievement-database.service";
@@ -17,7 +17,8 @@ import { DatabaseInitializationService } from "../services/database-initializati
 
 @Module({
     imports: [
-        BackendConfig
+        BackendConfig,
+        HttpModule
     ],
     controllers: [
         UserDatabaseController       

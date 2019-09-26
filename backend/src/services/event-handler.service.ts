@@ -1,8 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpService } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
-import ContractAbi from "../assets/build/Bright.json";
 import Web3 from "web3";
 import { DispatcherService } from "./dispatcher.service";
 import { CommitEventDto } from "../dto/events/commit-event.dto";
@@ -31,30 +30,36 @@ export class EventHandlerService {
     private web3: Web3;
     private jsonContractData: ITrbSmartContractJson;
     private log: ILogger;
+    private contractAbi;
 
     public constructor(
         web3Service: Web3Service,
         loggerSrv: LoggerService,
+        private httpSrv: HttpService,
         private dispatcher: DispatcherService
     ) {
         this.log = loggerSrv.get("EventHandlerService");
-        this.web3 = web3Service.getWeb3();
-        this.web3.eth.net.isListening()
-            .then((res) => {
-                this.init();
-            }).catch(e => {
-                this.log.e("Not able to open a connection " + e);
-            });
         this.web3Service = web3Service;
-        this.jsonContractData = ContractAbi;
+        this.init();
     }
 
     public init() {
         this.log.d("Initializing Event Handler Service");
-        this.contractAddress = ContractAbi.networks[BackendConfig.netId].address;
-        this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
-        this.registerNewListener(this.COMMIT);
-        this.registerNewListener(this.REVIEW);
+        this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL).subscribe(response => {
+            this.contractAbi = response.data;
+            this.jsonContractData = this.contractAbi;
+            this.web3 = this.web3Service.getWeb3();
+            this.web3.eth.net.isListening()
+            .then((res) => {
+                this.log.d("Web3 Connection established");
+                this.contractAddress = this.contractAbi.networks[BackendConfig.netId].address;
+                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
+                this.registerNewListener(this.COMMIT);
+                this.registerNewListener(this.REVIEW);
+            }).catch(e => {
+                this.log.e("Not able to open a connection " + e);
+            });
+        });
     }
 
     public registerNewListener(type: string) {
