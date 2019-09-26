@@ -167,6 +167,25 @@ export class ContractManagerService {
             throw e;
         });
     }
+
+    public deleteCommit(url: string): Promise<any> {
+        let contractArtifact;
+        return this.initProm.then(([bright]) => {
+            contractArtifact = bright;
+            this.log.d("Contract: ", bright);
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", contractArtifact);
+            this.log.d("Request to delete the commit: " + url);
+            let urlKeccak = this.web3.utils.keccak256(url);
+            let bytecodeData = contractArtifact.methods.removeUserCommit(urlKeccak).encodeABI();
+            this.log.d("Bytecode data: ", bytecodeData);
+            return this.sendTx(bytecodeData, this.contractAddressBright);
+        }).catch(e => {
+            this.log.e("Error deleting a commit: ", e);
+            throw e;
+        });
+    }
+
     public getCommits(): Promise<Array<UserCommit>> {
         let allUserCommits: Array<any>;
         return this.initProm.then(([bright, commit, root]) => {

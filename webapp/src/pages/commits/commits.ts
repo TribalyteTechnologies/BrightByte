@@ -10,6 +10,7 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
+import { AlertController } from "ionic-angular";
 
 @Component({
     selector: "page-commits",
@@ -44,6 +45,7 @@ export class CommitPage {
         public spinnerService: SpinnerService,
         public storageSrv: SessionStorageService,
         private contractManagerService: ContractManagerService,
+        private alertCtrl: AlertController,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
@@ -63,7 +65,7 @@ export class CommitPage {
             .then((commitConcat: UserCommit[]) => {
                 this.log.d("User Commits received");
                 commits = commitConcat;
-                
+
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);
                 });
@@ -73,20 +75,20 @@ export class CommitPage {
                 commits.forEach((com, idx) => {
                     com.reviewers = reviewers[idx];
                 });
-                let projects = commits.map( commit => commit.project );
-                this.projects = projects.filter((value, index , array) => array.indexOf(value) === index);
-                
+                let projects = commits.map(commit => commit.project);
+                this.projects = projects.filter((value, index, array) => array.indexOf(value) === index);
+
                 this.arrayCommits = commits;
                 this.applyFilters(this.arrayCommits);
                 this.spinnerService.hideLoader();
             }).then(() => {
                 let url = new URLSearchParams(document.location.search);
-                if(url.has(AppConfig.UrlKey.COMMITID)){
+                if (url.has(AppConfig.UrlKey.COMMITID)) {
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.COMMITID));
-                    let filteredCommit = this.filterArrayCommits.filter(c =>  c.url === decodedUrl);
+                    let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
                     this.shouldOpen(filteredCommit[0]);
                 }
-                
+
             }).catch((e) => {
                 this.translateService.get("commits.getCommits").subscribe(
                     msg => {
@@ -98,10 +100,10 @@ export class CommitPage {
     }
 
     public openAddCommitDialog() {
-        let popover = this.popoverCtrl.create(AddCommitPopover, {},  {cssClass: "add-commit-popover"});
+        let popover = this.popoverCtrl.create(AddCommitPopover, {}, { cssClass: "add-commit-popover" });
         popover.present();
         popover.onDidDismiss((newCommit) => {
-            if(newCommit) {
+            if (newCommit) {
                 this.arrayCommits.push(newCommit);
                 this.applyFilters(this.arrayCommits);
             }
@@ -120,7 +122,7 @@ export class CommitPage {
                 }
                 this.spinnerService.hideLoader();
             }).catch(e => {
-                this.log.e("Can't set the vote", e);
+                this.log.e("Cant set the vote", e);
                 this.translateService.get("commitDetails.setThumbs").subscribe(
                     msg => {
                         this.msg = msg;
@@ -131,7 +133,7 @@ export class CommitPage {
             });
     }
 
-    
+
     public applyFilters(usercommits: UserCommit[]) {
         let projectFilter = this.setProjectFilter(usercommits);
         let statusFilter = this.setStatusFilter(projectFilter);
@@ -141,7 +143,7 @@ export class CommitPage {
         });
     }
 
-    public setFilter(name: string){
+    public setFilter(name: string) {
         switch (name) {
             case this.INCOMPLETE:
                 this.filterValue === this.INCOMPLETE ? this.filterValue = "" : this.filterValue = this.INCOMPLETE;
@@ -157,22 +159,20 @@ export class CommitPage {
                 break;
         }
         this.openedComments = false;
-        if (this.filterValue !== null){
+        if (this.filterValue !== null) {
             this.storageSrv.set(AppConfig.StorageKey.COMMITFILTER, this.filterValue.toString());
         }
         this.storageSrv.set(AppConfig.StorageKey.COMMITPENDINGFILTER, this.filterIsPending.toString());
         this.applyFilters(this.arrayCommits);
     }
 
-    public setProject(name: string){
+    public setProject(name: string) {
         this.projectSelected = name;
         this.applyFilters(this.arrayCommits);
     }
 
     public shouldOpen(commit: UserCommit) {
 
-        this.spinnerService.showLoader();
-        this.log.d("Opening commit: " + commit.url);
         this.spinnerService.showLoader();
         this.log.d("Opening commit: " + commit.url);
         commit.isReadNeeded = false;
@@ -186,7 +186,7 @@ export class CommitPage {
                 this.spinnerService.hideLoader();
                 return this.getReviewerName(commit);
             }).then((name) => {
-                this.currentCommitName =  name[0];
+                this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
                 return this.contractManagerService.reviewChangesCommitFlag(commit.url);
             }).then((response) => {
@@ -198,29 +198,64 @@ export class CommitPage {
                 this.log.e(err);
                 this.spinnerService.hideLoader();
             });
-            
-        
     }
 
-    public openUrl(url: string){
+    public deleteCommit(commit: UserCommit) {
+        this.log.d("The user request to erase the commit: " + commit.url);
+        this.spinnerService.showLoader();
+        this.contractManagerService.deleteCommit(commit.url)
+            .then(res => {
+                this.log.w("The result is the next");
+                this.refresh();
+            }).catch((err) => {
+                this.log.e(err);
+                this.spinnerService.hideLoader();
+            });
+    }
+
+    public presentConfirm(commit: UserCommit) {
+        let alert = this.alertCtrl.create({
+            title: "Delete Confirm",
+            message: "You are about to delete this commit. Are you sure you want to permanently delete this commit?",
+            buttons: [
+                {
+                    text: "Cancel",
+                    role: "cancel",
+                    handler: () => {
+                        this.log.d("Cancel clicked");
+                    }
+                },
+                {
+                    text: "Delete",
+                    handler: () => {
+                        this.log.d("Delete clicked" + commit.url);
+                        this.deleteCommit(commit);
+                    }
+                }
+            ]
+        });
+        alert.present();
+    }
+
+    public openUrl(url: string) {
         let urlToOpen = url;
         window.open(urlToOpen, "_blank");
     }
 
 
-    private getReviewerName(commit: UserCommit): Promise<Array<string>>{
+    private getReviewerName(commit: UserCommit): Promise<Array<string>> {
         let hash = commit.author;
         return this.contractManagerService.getUserDetails(hash)
-        .then((user) => {
-            return [user.name, user.email];
-        }).catch((e) => {
-            this.log.e(e);
-            return ["Anonymous", "nomail@web.com"];
-        });
+            .then((user) => {
+                return [user.name, user.email];
+            }).catch((e) => {
+                this.log.e(e);
+                return ["Anonymous", "nomail@web.com"];
+            });
     }
 
-    private setProjectFilter(usercommits: UserCommit[]): UserCommit[]{
-        if (this.projectSelected !== this.ALL){
+    private setProjectFilter(usercommits: UserCommit[]): UserCommit[] {
+        if (this.projectSelected !== this.ALL) {
             return usercommits.filter(commit => {
                 return (commit.project === this.projectSelected);
             });
@@ -228,8 +263,8 @@ export class CommitPage {
             return usercommits;
         }
     }
-    private setStatusFilter(usercommits: UserCommit[]): UserCommit[]{
-        switch(this.filterValue){
+    private setStatusFilter(usercommits: UserCommit[]): UserCommit[] {
+        switch (this.filterValue) {
             case this.INCOMPLETE:
                 return usercommits.filter(commit => {
                     return (commit.numberReviews !== commit.currentNumberReviews);
@@ -242,8 +277,8 @@ export class CommitPage {
                 return usercommits;
         }
     }
-    private setPendingFilter(usercommits: UserCommit[]): UserCommit[]{
-        if(this.filterIsPending){
+    private setPendingFilter(usercommits: UserCommit[]): UserCommit[] {
+        if (this.filterIsPending) {
             return usercommits.filter(commit => {
                 return commit.isReadNeeded;
             });

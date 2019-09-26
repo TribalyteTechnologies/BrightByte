@@ -41,16 +41,22 @@
                         </ion-row>
                     </ion-col>
                 </ion-row>
-                <ion-row padding class="text-details text-details--bold">
-                    {{ "commits.currentReview" | translate }}
-                </ion-row>
-                <ion-row padding class="main-style" *ngIf="commitComments.length === 0">
-                    <div class="text-description">{{ "commits.nobodyReviewed" | translate }}</div>
-                </ion-row>
-                <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
-                    <comment [isReviewPage]="false" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
-                    <ion-row padding></ion-row>
+                <ion-col *ngIf="commitComments.length === 0; else hasComments">
+                    <ion-row padding class="main-style">
+                        <div class="text-description">{{ "commits.nobodyReviewed" | translate }}</div>
+                    </ion-row>
+                    <ion-row padding>
+                        <button ion-button round class="home-button button-lowercase" (click)="presentConfirm(currentCommit)" color="danger" block>
+                            Delete Commit
+                        </button>
+                    </ion-row>
                 </ion-col>
+                <ng-template #hasComments>
+                    <ion-col no-padding *ngFor="let comment of commitComments; let j=index ">
+                        <comment [isReviewPage]="false" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
+                        <ion-row padding></ion-row>
+                    </ion-col>
+                </ng-template>
             </div>
 
         </ion-col>
