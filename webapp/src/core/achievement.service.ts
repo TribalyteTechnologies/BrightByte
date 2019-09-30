@@ -28,30 +28,35 @@ export class AchievementService {
     }
 
     public getCurrentUnlockedAchievements(userHash: string): Observable<Array<Achievement>> {
+        let observable;
         let currentAchievements = new Array<Achievement>();
 
-        return this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash).map((response: any) => {
-            if (response && response.status === this.STATUS_OK) {
-                for (let achievement of response.data) {
-                    if (achievement) {
-                        currentAchievements.push(
-                            new Achievement(
-                                false,
-                                achievement.title,
-                                achievement.values[0],
-                                achievement.parameter,
-                                achievement.iconPath
-                            )
-                        );
+        observable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash)
+            .map(
+                (response: any) => {
+                    if (response && response.status === this.STATUS_OK) {
+                        for (let achievement of response.data) {
+                            if (achievement) {
+                                currentAchievements.push(
+                                    new Achievement(
+                                        false,
+                                        achievement.title,
+                                        achievement.values[0],
+                                        achievement.parameter,
+                                        achievement.iconPath
+                                    )
+                                );
+                            }
+                        }
                     }
-                }
-            }
 
-            for (let i = currentAchievements.length; i < this.NUMBER_OF_ACHIEVEMENTS; i++) {
-                currentAchievements.push(new Achievement());
-            }
-            return currentAchievements;
-        });
+                    for (let i = currentAchievements.length; i < this.NUMBER_OF_ACHIEVEMENTS; i++) {
+                        currentAchievements.push(new Achievement());
+                    }
+                    return currentAchievements;
+                });
+
+        return observable;
     }
 
     public addNewAchievement(newAchievement: Achievement) {

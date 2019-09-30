@@ -113,7 +113,7 @@ export class AddCommitPopover {
             }
             let ret;
             if (!errMsgId){
-                ret = this.contractManagerService.getDetailsCommits(url);
+                ret = this.contractManagerService.getCommitDetails(url, false);
             } else {
                 ret = Promise.reject({msg: errMsgId});
             }

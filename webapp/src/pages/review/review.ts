@@ -272,7 +272,7 @@ export class ReviewPage {
             this.textComment = "";
 
             return this.contractManagerService.getCommitDetails(urlCom);
-        }).then((commitUpdated) => {
+        }).then((commitUpdated: UserCommit) => {
             let commit = this.displayCommitsToReview.find(comm => comm.url === urlCom);
             commit.score = commitUpdated.score;
             commit.lastModificationDateMs = commitUpdated.lastModificationDateMs;

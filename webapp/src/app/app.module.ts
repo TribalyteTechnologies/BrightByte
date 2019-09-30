@@ -138,6 +138,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         UserLoggerService,
         UserCacheService,
         UserAddressService,
+        ErrorHandlerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         AppVersionService,

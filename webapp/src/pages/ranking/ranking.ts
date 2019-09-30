@@ -10,6 +10,7 @@ import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
 import { Achievement } from "../../models/achievement.model";
 import { AchievementService } from "../../core/achievement.service";
+import { ErrorHandlerService } from "../../domain/error-handler.service";
 
 
 class UserRankDetails {
@@ -24,14 +25,14 @@ class UserRankDetails {
     public engagementIndex = 0;
     public scoreString = "";
     public engagementIndexString = "";
-}  
+}
 
 @Component({
     selector: "page-ranking",
     templateUrl: "ranking.html"
 })
 export class RankingPage {
-    
+
     public userDetails = new UserDetails();
     public msg: string;
     public usersRep = new Array<UserReputation>();
@@ -57,6 +58,7 @@ export class RankingPage {
     public isPageLoaded = false;
     private log: ILogger;
     private account: Account;
+    private isBackendOnline = true;
 
     constructor(
         public navCtrl: NavController,
@@ -64,61 +66,65 @@ export class RankingPage {
         public loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
         private loginService: LoginService,
-        private achievementSrv: AchievementService
+        private achievementSrv: AchievementService,
+        private errorHndlr: ErrorHandlerService
     ) {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
         this.log.d("Imported account: ", this.account);
     }
 
-    public ionViewWillEnter(){
+    public ionViewWillEnter() {
         this.contractManagerService.getCurrentSeason()
-        .then((season: number[]) => {
-            this.numberOfSeasons = season[0];
-            this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
-            this.seasonSelected = season[0];
-            setInterval(() => {
-                let now = new Date().getTime();
-                let distance = this.seasonFinale - now;
-                this.days = Math.floor(distance / (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS));
-                this.hours = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS))
-                    / (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS));
-                this.minutes = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS))
-                    / (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS));
-                this.seconds = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS))
-                    / AppConfig.SECS_TO_MS);
-            },          AppConfig.SECS_TO_MS);
-            this.seasons.push("Ranking Global");
-            for(let i = this.numberOfSeasons; i >= 0; i--) {
-                this.seasons.push("Season " + i); 
-            }
-            this.refresh();
-        });
+            .then((season: number[]) => {
+                this.numberOfSeasons = season[0];
+                this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
+                this.seasonSelected = season[0];
+                setInterval(
+                    () => {
+                        let now = new Date().getTime();
+                        let distance = this.seasonFinale - now;
+                        this.days = Math.floor(distance / (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS));
+                        this.hours = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS))
+                            / (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS));
+                        this.minutes = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS))
+                            / (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS));
+                        this.seconds = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS))
+                            / AppConfig.SECS_TO_MS);
+                    }, 
+                    AppConfig.SECS_TO_MS);
+                this.seasons.push("Ranking Global");
+                for (let i = this.numberOfSeasons; i >= 0; i--) {
+                    this.seasons.push("Season " + i);
+                }
+                this.refresh();
+            });
     }
 
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
-        .then((usersRep: UserReputation[]) => {
-            this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => 
-                this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
-            if(!this.globalSelected) {
-                this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
-            }
-            this.usersRep.forEach((user, i) => {
-                user.userPosition = ++i;
-            });
-            this.userHash = this.account.address;
-            this.setUser(this.account.address);
-        }).catch((e) => {
-            this.translateService.get("ranking.getReputation").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
+            .then((usersRep: UserReputation[]) => {
+                this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
+                    this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
+                if (!this.globalSelected) {
+                    this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
+                }
+                this.usersRep.forEach((user, i) => {
+                    user.userPosition = ++i;
                 });
-        });        
+                this.userHash = this.account.address;
+            }).catch((e) => {
+                this.translateService.get("ranking.getReputation").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+                throw e;
+            });
+        this.setUser(this.account.address);
     }
 
-    public setUser(hash: string){
+    public setUser(hash: string) {
         let detailsUser = this.usersRep.find(user => user.userHash === hash);
         if (detailsUser) {
             this.userRankDetails.name = detailsUser.name;
@@ -136,7 +142,7 @@ export class RankingPage {
         }
     }
 
-    public goBackToUser(){
+    public goBackToUser() {
         this.setUser(this.account.address);
     }
 
@@ -147,28 +153,28 @@ export class RankingPage {
         this.refresh();
     }
 
-    public getNumbersOfSeason(){
+    public getNumbersOfSeason() {
         this.contractManagerService.getCurrentSeason()
-        .then((season: number[]) => {
-            this.numberOfSeasons = season[0];
-            this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
-            let date = new Date(this.seasonFinale);
-            this.log.d("The current season is the number: " + this.numberOfSeasons + ", that ends the" + date);
-        }).catch((e) => {
-            this.translateService.get("ranking.getSeasonNumbers").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                });
-        });
+            .then((season: number[]) => {
+                this.numberOfSeasons = season[0];
+                this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
+                let date = new Date(this.seasonFinale);
+                this.log.d("The current season is the number: " + this.numberOfSeasons + ", that ends the" + date);
+            }).catch((e) => {
+                this.translateService.get("ranking.getSeasonNumbers").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+            });
     }
 
-    public setSeason(ind: string){
+    public setSeason(ind: string) {
         this.log.d("Change in the ranking");
         this.getNumbersOfSeason();
         this.log.d("The user has chosen the " + ind);
         this.globalSelected = (ind === this.seasons[0]);
-        if(!this.globalSelected) {
+        if (!this.globalSelected) {
             let season = this.parseInt(ind);
             this.globalSelected = false;
             this.seasonSelected = season;
@@ -177,17 +183,25 @@ export class RankingPage {
         this.refresh();
     }
 
-    private setUpTrophys(userHash: string){
+    private setUpTrophys(userHash: string) {
         this.achievementsUnlocked = new Array<Achievement>();
         this.log.d(userHash);
         this.isPageLoaded = false;
-        this.achievementSrv.getCurrentUnlockedAchievements(userHash).subscribe(response => {
-            this.achievementsUnlocked = response;
-            this.isPageLoaded = true;
-        });
+        if (this.isBackendOnline) {
+            this.achievementSrv.getCurrentUnlockedAchievements(userHash).subscribe(
+                response => {
+                    this.achievementsUnlocked = response;
+                    this.isPageLoaded = true;
+                },
+                error => {
+                    this.translateService.get("errors.backendOffline")
+                        .subscribe(msg => this.errorHndlr.showUserAlert(msg));
+                    this.isBackendOnline = false;
+                });
+        }
     }
 
-    private parseInt (ind: string): number {
+    private parseInt(ind: string): number {
         return +ind.match(/\d+/)[0];
     }
 }

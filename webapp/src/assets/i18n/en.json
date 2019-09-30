@@ -211,5 +211,8 @@
         "continue": "Continue",
         "unlockedAchievement": "You have unlocked a new achievement",
         "congratulations": "Congratulations!"
+    },
+    "errors": {
+        "backendOffline": "Can't connect to BrightByte servers."
     }
 }

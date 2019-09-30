@@ -31,7 +31,7 @@ export class ContractManagerService {
     private web3: Web3;
     private initProm: Promise<Array<ITrbSmartContact>>;
     private currentUser: Account;
-    
+
 
     constructor(
         private http: HttpClient,
@@ -198,10 +198,10 @@ export class ContractManagerService {
         }).then(([brigh, commit, root]) => {
             let promisesPending = new Array<Promise<UserCommit>>();
             promisesPending = allUserCommits[2].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-            .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
+                .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
             return Promise.all(promisesPending);
         }).catch(err => {
-            this.log.e("Error calling BrightByte smart contract :", err);
+            this.log.e("Error obtaining commits :", err);
             throw err;
         });
     }
@@ -214,17 +214,17 @@ export class ContractManagerService {
                 return bright.methods.getUserCommits(this.currentUser.address).call()
                     .then((allUserCommits: Array<any>) => {
                         let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                        .then((commitVals: any) => {
-                            return UserCommit.fromSmartContract(commitVals, true);
-                        }));
+                            .then((commitVals: any) => {
+                                return UserCommit.fromSmartContract(commitVals, true);
+                            }));
                         let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                        .then((commitVals: any) => {
-                            return UserCommit.fromSmartContract(commitVals, false);
-                        })); 
+                            .then((commitVals: any) => {
+                                return UserCommit.fromSmartContract(commitVals, false);
+                            }));
                         return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                     });
             }).catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
+                this.log.e("Error obtaining commits to review :", err);
                 throw err;
             });
     }
@@ -240,31 +240,25 @@ export class ContractManagerService {
                 urlKeccak = this.web3.utils.keccak256(url);
                 return rootContract.methods.checkCommitSeason(urlKeccak, author).call();
             }).catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
+                this.log.e("Error checking commit season :", err);
                 throw err;
             });
     }
 
-    public getDetailsCommits(url: string): Promise<CommitDetails> {
+    public getCommitDetails(url: string, returnsUserCommits = true): Promise<UserCommit | CommitDetails> {
         return this.initProm.then(([bright, commit, root]) => {
             return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
                 .then((commitVals: any) => {
-                    return CommitDetails.fromSmartContract(commitVals);
+                    let result;
+                    if (returnsUserCommits) {
+                        result = UserCommit.fromSmartContract(commitVals, false);
+                    }else{
+                        result = CommitDetails.fromSmartContract(commitVals);
+                    }
+                    return result;
                 });
         }).catch(err => {
-            this.log.e("Error calling BrightByte smart contract :", err);
-            throw err;
-        });
-    }
-
-    public getCommitDetails(url: string): Promise<UserCommit> {
-        return this.initProm.then(([bright, commit, root]) => {
-            return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
-                .then((commitVals: any) => {                
-                    return UserCommit.fromSmartContract(commitVals, false);
-                });
-        }).catch(err => {
-            this.log.e("Error calling BrightByte smart contract :", err);
+            this.log.e("Error getting commit details :", err);
             throw err;
         });
     }
@@ -283,29 +277,29 @@ export class ContractManagerService {
             return this.sendTx(bytecodeData, this.contractAddressCommits);
 
         }).catch(e => {
-            this.log.e("Error getting nonce value: ", e);
+            this.log.e("Error setting a review: ", e);
             throw e;
         });
 
     }
 
-    public getCommentsOfCommit(url: string):  Promise<Array<CommitComment>> {
+    public getCommentsOfCommit(url: string): Promise<Array<CommitComment>> {
         return this.initProm.then(([bright, commit, root]) => {
             this.log.d("Public Address: ", this.currentUser.address);
             this.log.d("Contract artifact", commit);
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommentsOfCommit(urlKeccak).call()
-            .then((allComments: Array<any>) => {
-                let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
-                .then((commitVals: any) => {
-                    return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
-                }).then((data) => {
-                    return CommitComment.fromSmartContract(data[0], data[1]);
-                }));
-                return Promise.all(promisesFinished);
-            });
+                .then((allComments: Array<any>) => {
+                    let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
+                        .then((commitVals: any) => {
+                            return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
+                        }).then((data) => {
+                            return CommitComment.fromSmartContract(data[0], data[1]);
+                        }));
+                    return Promise.all(promisesFinished);
+                });
         }).catch(err => {
-            this.log.e("Error calling BrightByte smart contract :", err);
+            this.log.e("Error getting comments of commit :", err);
             throw err;
         });
     }
@@ -322,7 +316,7 @@ export class ContractManagerService {
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
                 return userValsToUSerDetails;
             }).catch(err => {
-                this.log.e("Error calling BrightByte smart contract :", err);
+                this.log.e("Error getting user details :", err);
                 throw err;
             });
         });
@@ -341,7 +335,7 @@ export class ContractManagerService {
                     return this.sendTx(bytecodeData, this.contractAddressRoot);
                 });
         }).catch(e => {
-            this.log.e("Error getting nonce value: ", e);
+            this.log.e("Error setting thumbs: ", e);
             throw e;
         });
     }
@@ -371,16 +365,16 @@ export class ContractManagerService {
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
                 let promise = contractArtifact.methods.getUserGlobalReputation(userAddress).call()
-                .then((commitsVals: Array<any>) => {
-                    this.log.d("User reputation: ", commitsVals);
-                    return UserReputation.fromSmartContract(commitsVals);
-                });
-                if(!global) {
-                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
                     .then((commitsVals: Array<any>) => {
-                        this.log.d("Users reputation in season " + season + ": ", commitsVals);
+                        this.log.d("User reputation: ", commitsVals);
                         return UserReputation.fromSmartContract(commitsVals);
                     });
+                if (!global) {
+                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
+                        .then((commitsVals: Array<any>) => {
+                            this.log.d("Users reputation in season " + season + ": ", commitsVals);
+                            return UserReputation.fromSmartContract(commitsVals);
+                        });
                 }
                 return promise;
             });
@@ -396,9 +390,12 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root]) => {
             contractArtifact = bright;
             return contractArtifact.methods.getCurrentSeason().call();
+        }).catch(err => {
+            this.log.e("Error getting current season :", err);
+            throw err;
         });
     }
-    
+
     public getFeedback(url): Promise<boolean> {
         let urlKeccak = this.web3.utils.keccak256(url);
         return this.initProm.then(contract => {
@@ -420,7 +417,7 @@ export class ContractManagerService {
             return this.sendTx(bytecodeData, this.contractAddressRoot);
 
         }).catch(e => {
-            this.log.e("Error getting nonce value: ", e);
+            this.log.e("Error setting feedback: ", e);
             throw e;
         });
     }
@@ -430,12 +427,15 @@ export class ContractManagerService {
             this.log.d("Public Adress: ", this.currentUser.address);
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommentsOfCommit(urlKeccak).call();
+        }).catch(err => {
+            this.log.e("Error getting commit reviewers :", err);
+            throw err;
         });
     }
 
     public getReviewersName(url: string): Promise<UserDetails[][]> {
         return this.getReviewers(url).then(rsp => {
-            
+
             let userPending = rsp[0].map((usr) => {
                 return this.getUserDetails(usr);
             });
@@ -445,16 +445,16 @@ export class ContractManagerService {
             let userPromise = [userPending, userFinished];
             return Promise.all(userPromise.map(UsrPro => {
                 return Promise.all(UsrPro);
-                })
+            })
             );
         });
     }
 
-    public getContracts(): Promise<Array<ITrbSmartContact>>{
+    public getContracts(): Promise<Array<ITrbSmartContact>> {
         return this.initProm;
     }
-    
-    public getAddresses(){
+
+    public getAddresses() {
         return ([this.contractAddressRoot, this.contractAddressBright, this.contractAddressCommits]);
     }
 
