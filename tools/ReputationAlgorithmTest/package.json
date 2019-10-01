@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node test.js",
-    "truffle:custom-deploy": "./node_modules/.bin/truffle migrate --network development --reset"
+    "truffle:custom-deploy": "truffle migrate --network development --reset"
   },
   "author": "",
   "license": "ISC",
