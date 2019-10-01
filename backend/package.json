@@ -12,7 +12,7 @@
 		"start:debug": "nodemon --config nodemon-debug.json",
 		"prestart:prod": "rimraf dist && npm run build",
 		"start:prod": "node dist/main.js",
-		"test": "node_modules/.bin/jest --detectOpenHandles --forceExit",
+		"test": "jest --detectOpenHandles --forceExit",
 		"lint": "tslint -p tsconfig.json -c tslint.json",
 		"linters-ci": "npm run lint"
 	},
@@ -62,6 +62,7 @@
 		  "transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
 		  },
-		  "testEnvironment": "node"
+		  "testEnvironment": "node",
+		  "collectCoverage": true
 	}
 }
