@@ -12,7 +12,6 @@ import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
-import { MigrationService } from "../../migration/migration.service";
 import { BackendAPIService } from "../../domain/backend-api.service";
 
 @Component({
@@ -53,7 +52,6 @@ export class LoginForm {
         private loginService: LoginService,
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
-        private migrationService: MigrationService,
         private backendAPISrv: BackendAPIService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
@@ -152,10 +150,6 @@ export class LoginForm {
 
     public register() {
         this.goToRegister.next(this.NEW_USER);
-    }
-
-    public migrate(pass: string){
-        this.migrationService.startMigration(pass, this.text);
     }
 
     private checkNodesAndOpenHomePage (account: Account, currentNodeIndex: number): Promise<boolean> {

@@ -56,7 +56,6 @@ import { AchievementComponent } from "../components/achievement/achievement.comp
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { CustomRating } from "../components/custom-rating/custom-rating.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
-import { MigrationService } from "../migration/migration.service";
 import { BackendAPIService } from "../domain/backend-api.service";
 import { WebSocketService } from "../core/websocket.service";
 import { UserAddressService } from "../domain/user-address.service";
@@ -142,7 +141,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,
         AppVersionService,
-        MigrationService,
         UpdateCheckService
     ]
 })
