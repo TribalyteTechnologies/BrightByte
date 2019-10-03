@@ -7,6 +7,11 @@ import { AchievementPopOver } from "../pages/achievementpopover/achievementpopov
 import { AppConfig } from "../app.config";
 import { Observable } from "rxjs";
 
+interface IAchievementResponse {
+    data: Array<any>;
+    status: string;
+}
+
 @Injectable()
 export class AchievementService {
 
@@ -28,35 +33,34 @@ export class AchievementService {
     }
 
     public getCurrentUnlockedAchievements(userHash: string): Observable<Array<Achievement>> {
-        let observable;
+        let achievementsObservable: Observable<Array<Achievement>>;
         let currentAchievements = new Array<Achievement>();
 
-        observable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash)
-            .map(
-                (response: any) => {
-                    if (response && response.status === this.STATUS_OK) {
-                        for (let achievement of response.data) {
-                            if (achievement) {
-                                currentAchievements.push(
-                                    new Achievement(
-                                        false,
-                                        achievement.title,
-                                        achievement.values[0],
-                                        achievement.parameter,
-                                        achievement.iconPath
-                                    )
-                                );
-                            }
+        achievementsObservable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash)
+        .map((response: IAchievementResponse) => {
+                this.log.w(response);
+                if (response && response.status === this.STATUS_OK) {
+                    for (let achievement of response.data) {
+                        if (achievement) {
+                            currentAchievements.push(
+                            new Achievement(
+                                false,
+                                achievement.title,
+                                achievement.values[0],
+                                achievement.parameter,
+                                achievement.iconPath)
+                            );
                         }
                     }
+                }
 
-                    for (let i = currentAchievements.length; i < this.NUMBER_OF_ACHIEVEMENTS; i++) {
-                        currentAchievements.push(new Achievement());
-                    }
-                    return currentAchievements;
-                });
+                for (let i = currentAchievements.length; i < this.NUMBER_OF_ACHIEVEMENTS; i++) {
+                    currentAchievements.push(new Achievement());
+                }
+                return currentAchievements;
+            });
 
-        return observable;
+        return achievementsObservable;
     }
 
     public addNewAchievement(newAchievement: Achievement) {

@@ -208,25 +208,25 @@ export class ContractManagerService {
 
     public getCommitsToReview(): Promise<UserCommit[][]> {
         return this.initProm
-            .then(([bright, commit]) => {
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
-                return bright.methods.getUserCommits(this.currentUser.address).call()
-                    .then((allUserCommits: Array<any>) => {
-                        let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                            .then((commitVals: any) => {
-                                return UserCommit.fromSmartContract(commitVals, true);
-                            }));
-                        let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                            .then((commitVals: any) => {
-                                return UserCommit.fromSmartContract(commitVals, false);
-                            }));
-                        return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
-                    });
-            }).catch(err => {
-                this.log.e("Error obtaining commits to review :", err);
-                throw err;
+        .then(([bright, commit]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", bright);
+            return bright.methods.getUserCommits(this.currentUser.address).call()
+            .then((allUserCommits: Array<any>) => {
+                let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    .then((commitVals: any) => {
+                        return UserCommit.fromSmartContract(commitVals, true);
+                    }));
+                let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    .then((commitVals: any) => {
+                        return UserCommit.fromSmartContract(commitVals, false);
+                    }));
+                return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
             });
+        }).catch(err => {
+            this.log.e("Error obtaining commits to review :", err);
+            throw err;
+        });
     }
 
     public checkCommitCurrentSeason(url: string, author: string): Promise<boolean> {
