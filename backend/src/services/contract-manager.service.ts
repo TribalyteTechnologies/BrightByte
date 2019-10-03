@@ -12,6 +12,11 @@ interface ITrbSmartContact {
     [key: string]: any;
 }
 
+interface ITrbSmartContractJson {
+    abi: Array<any>;
+    networks: Array<any>;
+}
+
 @Injectable()
 export class ContractManagerService {
 
@@ -19,7 +24,7 @@ export class ContractManagerService {
     private log: ILogger;
     private web3: Web3;
     private contracts: Array<ITrbSmartContact>;
-    private brightContractAbi;
+    private brightContractAbi: ITrbSmartContractJson;
     private initObs: Observable<AxiosResponse<any>>;
 
     public constructor(
@@ -38,7 +43,7 @@ export class ContractManagerService {
     public getAllUserData(): Observable<Array<UserDetailsDto>> {
         return this.initObs.pipe(
             flatMap(() => this.getUsersAddress()),
-            flatMap((usersAddresses: any[]) => {
+            flatMap((usersAddresses: Array<String>) => {
                 let observables = usersAddresses.map(userAddress => from(
                     this.contracts[0].methods.getUserGlobalReputation(userAddress).call()
                 ).pipe(
@@ -57,7 +62,7 @@ export class ContractManagerService {
         return from<Array<String>>(this.contracts[0].methods.getUsersAddress().call());
     }
 
-    private init(): Observable<AxiosResponse<any>> {
+    private init(): Observable<AxiosResponse<JSON>> {
         this.log.d("Initializing Contract Manager Service");
         return this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL).pipe(tap(response => {
             this.brightContractAbi = response.data;
