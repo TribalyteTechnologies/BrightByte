@@ -213,6 +213,6 @@
         "congratulations": "Congratulations!"
     },
     "errors": {
-        "backendOffline": "Can't connect to BrightByte servers."
+        "backendOffline": "Can't connect to BrightByte servers. Please try again later or contact your deployment administrator."
     }
 }
