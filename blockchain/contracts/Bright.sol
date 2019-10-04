@@ -7,7 +7,7 @@ import { BrightModels } from "./BrightModels.sol";
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint256 private constant MIGRATION_END_TIMESTAMP = 1569570807;
+    uint256 private constant MIGRATION_END_TIMESTAMP = 1570519493;
     Root private root;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;

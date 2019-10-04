@@ -30,14 +30,12 @@ plugins/ios.json
 www/
 $RECYCLE.BIN/
 package-lock.json
-truffle-config.custom.js
 
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
 
 src/assets/build/
-truffle-config.custom.js
 
 Boot-script\.sh
 

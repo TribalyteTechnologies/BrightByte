@@ -1,0 +1,24 @@
+{
+  "name": "blockchain",
+  "version": "0.0.1",
+  "description": "Implementation of the BrightByte Blockchain contracts. Uses Truffle.",
+  "main": "",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "shx echo \"Error: no test specified\" && exit 1",
+    "truffle:migrate": "truffle migrate --reset",
+    "truffle:develop": "truffle develop",
+    "truffle:custom-deploy": "truffle migrate --network custom --reset; npm run copy:contracts",
+    "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "truffle": "5.0.39"
+  },
+  "devDependencies": {
+    "shx": "0.3.2"
+  }
+}
