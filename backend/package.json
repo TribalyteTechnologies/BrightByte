@@ -5,12 +5,12 @@
 	"author": "",
 	"license": "",
 	"scripts": {
-		"build": "rimraf dist && tsc -p tsconfig.build.json",
+		"build": "shx rm -rf dist && tsc -p tsconfig.build.json",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"start": "ts-node -r tsconfig-paths/register src/main.ts",
 		"start:dev": "concurrently --handle-input \"wait-on dist/main.js && nodemon\" \"tsc -w -p tsconfig.build.json\" ",
 		"start:debug": "nodemon --config nodemon-debug.json",
-		"prestart:prod": "rimraf dist && npm run build",
+		"prestart:prod": "shx rm -rf dist && npm run build",
 		"start:prod": "node dist/main.js",
 		"test": "jest --detectOpenHandles --forceExit",
 		"lint": "tslint -p tsconfig.json -c tslint.json",
@@ -29,7 +29,7 @@
 		"reflect-metadata": "0.1.13",
 		"rxjs": "6.3.3",
 		"ts-jest": "24.1.0",
-		"web3": "1.0.0-beta.55"
+		"web3": "1.2.1"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "6.6.4",
@@ -42,7 +42,7 @@
 		"htmlhint": "0.9.13",
 		"nodemon": "1.18.9",
 		"prettier": "1.15.3",
-		"rimraf": "2.6.2",
+		"shx": "0.3.2",
 		"supertest": "3.4.1",
 		"ts-node": "8.1.0",
 		"tsconfig-paths": "3.8.0",
@@ -56,13 +56,13 @@
 			"js",
 			"json",
 			"ts"
-		  ],
-		  "rootDir": "src",
-		  "testRegex": ".spec.ts$",
-		  "transform": {
+		],
+		"rootDir": "src",
+		"testRegex": ".spec.ts$",
+		"transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
-		  },
-		  "testEnvironment": "node",
-		  "collectCoverage": true
+		},
+		"testEnvironment": "node",
+		"collectCoverage": true
 	}
 }

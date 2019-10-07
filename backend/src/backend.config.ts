@@ -12,7 +12,6 @@ export class BackendConfig {
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
-    public static readonly originHeader = "test.com";
     public static readonly netId = "3";
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
