@@ -48,3 +48,6 @@ backend/src/assets/build
 
 webapp/src/assets/build
 
+/tools/DataMigration/build
+
+/blockchain/build
