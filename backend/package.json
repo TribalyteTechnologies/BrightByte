@@ -5,7 +5,7 @@
 	"author": "",
 	"license": "",
 	"scripts": {
-		"build": "shx rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "shx rm -rf dist && tsc -p tsconfig.build.json; shx cp ../version.json ./dist/version.json",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"start": "ts-node -r tsconfig-paths/register src/main.ts",
 		"start:dev": "concurrently --handle-input \"wait-on dist/main.js && nodemon\" \"tsc -w -p tsconfig.build.json\" ",

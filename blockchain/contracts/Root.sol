@@ -10,6 +10,7 @@ contract Root{
     Commits remoteCommits;
     address commitsAddress;
     address owner;
+    bytes32 version;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
 
@@ -26,17 +27,22 @@ contract Root{
         _;
     }
 
+    function getVersion() public view returns (bytes32){
+        return version;
+    }
+
     function transferOwnership(address newOwner) public onlyOwner {
         require(newOwner != address(0));
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    function Root (address bright, address commits, uint256 seasonIndex, uint256 initialTimestamp) public {
+    function Root (address bright, address commits, uint256 seasonIndex, uint256 initialTimestamp, bytes32 ver) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
         remoteCommits = Commits(commits);
         commitsAddress = commits;
+        version = ver;
         remoteCommits.init(address(this));
         remoteBright.init(address(this), seasonIndex, initialTimestamp);
     }
