@@ -11,12 +11,14 @@
     "truffle:migrate": "truffle migrate --reset",
     "truffle:develop": "truffle develop",
     "truffle:custom-deploy": "truffle migrate --network custom --reset; npm run copy:contracts",
+    "remix:start": "remix-ide",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "truffle": "5.0.39"
+    "truffle": "5.0.39",
+    "remix-ide": "0.8.8"
   },
   "devDependencies": {
     "shx": "0.3.2"
