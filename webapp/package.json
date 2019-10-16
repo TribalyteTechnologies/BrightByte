@@ -16,6 +16,7 @@
         "html-lint": "htmlhint src",
         "scss-lint": "sass-lint -v --max-warnings 0",
         "linters-ci": "npm run html-lint && npm run scss-lint && npm run lint",
+        "prepush": "npm run linters-ci",
         "preinstall": "rm -fr node_modules/*/node_modules/*/.git/",
         "postinstall": "cd ../backend; npm install --unsafe-perm",
         "postlinters-ci": "cd ../backend; npm run linters-ci"
@@ -43,7 +44,7 @@
         "ng-socket-io": "0.2.4",
         "rxjs": "5.5.11",
         "sw-toolbox": "3.6.0",
-        "truffle-contract": "4.0.18",
+        "truffle-contract": "3.0.5",
         "web3": "1.0.0-beta.34",
         "websocket": "1.0.26",
         "zone.js": "0.8.18"
@@ -58,9 +59,10 @@
         "ionic": "3.20.1",
         "path": "0.12.7",
         "sass-lint": "1.12.1",
-        "shx": "^0.3.2",
+        "shx": "0.3.2",
         "types-ethereumjs-util": "0.0.8",
-        "typescript": "2.4.2"
+        "typescript": "2.4.2",
+        "truffle": "5.0.20"
     },
     "description": "A Blockchain project",
     "cordova": {
