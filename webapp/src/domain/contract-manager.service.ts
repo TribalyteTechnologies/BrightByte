@@ -3,7 +3,6 @@ import { default as Web3 } from "web3";
 import { Web3Service } from "../core/web3.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { HttpClient } from "@angular/common/http";
-import { default as TruffleContract } from "truffle-contract";
 import { AppConfig } from "../app.config";
 import Tx from "ethereumjs-tx";
 import { TransactionReceipt, Account } from "web3/types";
@@ -14,8 +13,9 @@ import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
 import { UserCacheService } from "../domain/user-cache.service";
 
-interface ITrbSmartContractJson {
-    abi: Array<any>;
+interface IContractJson {
+    networks: any;
+    abi: any;
 }
 
 interface ITrbSmartContact { //Web3.Eth.Contract
@@ -54,45 +54,30 @@ export class ContractManagerService {
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
         let promBright = this.http.get("../assets/build/Bright.json").toPromise()
-            .then((jsonContractData: ITrbSmartContractJson) => {
-                let truffleContractBright = TruffleContract(jsonContractData);
-                this.contractAddressBright = truffleContractBright.networks[configNet.netId].address;
-                let contractBright = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBright, {
-                    from: this.currentUser.address,
-                    gas: configNet.gasLimit,
-                    gasPrice: configNet.gasPrice,
-                    data: truffleContractBright.deployedBytecode
-                });
+            .then((jsonContractData: IContractJson) => {
+                let brightContractJson = jsonContractData;
+                this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
+                let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
                 this.log.d("TruffleContractBright function: ", contractBright);
                 this.log.d("ContractAddressBright: ", this.contractAddressBright);
                 return contractBright;
             });
         contractPromises.push(promBright);
         let promCommits = this.http.get("../assets/build/Commits.json").toPromise()
-            .then((jsonContractData: ITrbSmartContractJson) => {
-                let truffleContractCommits = TruffleContract(jsonContractData);
-                this.contractAddressCommits = truffleContractCommits.networks[configNet.netId].address;
-                let contractCommits = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressCommits, {
-                    from: this.currentUser.address,
-                    gas: configNet.gasLimit,
-                    gasPrice: configNet.gasPrice,
-                    data: truffleContractCommits.deployedBytecode
-                });
+            .then((jsonContractData: IContractJson) => {
+                let commitContractJson = jsonContractData;
+                this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
+                let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
                 this.log.d("TruffleContractBright function: ", contractCommits);
                 this.log.d("ContractAddressCommits: ", this.contractAddressCommits);
                 return contractCommits;
             });
         contractPromises.push(promCommits);
         let promRoot = this.http.get("../assets/build/Root.json").toPromise()
-            .then((jsonContractData: ITrbSmartContractJson) => {
-                let truffleContractRoot = TruffleContract(jsonContractData);
-                this.contractAddressRoot = truffleContractRoot.networks[configNet.netId].address;
-                let contractRoot = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressRoot, {
-                    from: this.currentUser.address,
-                    gas: configNet.gasLimit,
-                    gasPrice: configNet.gasPrice,
-                    data: truffleContractRoot.deployedBytecode
-                });
+            .then((jsonContractData: IContractJson) => {
+                let rootContractJson = jsonContractData;
+                this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
+                let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
                 this.log.d("TruffleContractBright function: ", contractRoot);
                 this.log.d("ContractAddressRoot: ", this.contractAddressRoot);
                 return contractRoot;
