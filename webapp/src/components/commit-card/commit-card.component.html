@@ -2,7 +2,7 @@
     <ion-col no-padding col-auto align-self-center class="info-container">
         <div [ngClass]="stateFinished ? 'status status--red' : 'status status--blue'"></div>
     </ion-col>
-    <ion-col align-self-center padding>
+    <ion-col align-self-center col-7 padding>
         <ion-row align-items-center>
             <img class="ico" src="../../assets/imgs/clock-icon.svg">
             <div class="text-details">{{ creationDateMs | dateFormat }}</div>
@@ -21,7 +21,7 @@
             <div class="text-url text-ellipsis" (click)="openUrl(urlLink, false)">#{{ urlHash }}</div>
         </ion-row>
     </ion-col>
-    <ion-col col-5>
+    <ion-col>
         <ion-row padding justify-content-end>
             <custom-rating [rate]="score" readOnly="true" small="true" iconMargin="true"></custom-rating>
         </ion-row>

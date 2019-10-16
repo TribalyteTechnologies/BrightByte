@@ -12,7 +12,7 @@
 <ion-content padding class="main-container">
     <filter-selection [projects]="projects" [parentFilterValue]="filterValue" [parentPendingFilter]="filterIsPending" (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
     <ion-row no-padding>
-        <ion-col padding class="text-details text-details--bold">
+        <ion-col col-6 padding class="text-details text-details--bold">
                 {{ "commitReview.showAllCommits" | translate }}
         </ion-col>
         <ion-col col-6 padding class="text-details text-details--bold" *ngIf="currentCommit">
@@ -20,7 +20,7 @@
         </ion-col>
     </ion-row>
     <ion-row no-padding class="scroll-dimensions">
-        <ion-col no-padding class="main-style scroll-y">
+        <ion-col no-padding [attr.col-6]="currentCommit" class="main-style scroll-y">
             <div class="scrollable-content">
                 <div [ngClass]="commit === currentCommit ? 'card card__selected' : 'card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
                     <commit-card [commit]="commit" [isReviewPage]="false"></commit-card>
@@ -31,7 +31,9 @@
             <div class="scrollable-content">
                 <ion-row padding class="main-style">
                     <ion-col>
-                        <ion-row class="text-title"> {{ currentCommit.title }} </ion-row>
+                        <ion-row >  
+                            <div class="text-title text-ellipsis">{{ currentCommit.title }}</div>
+                        </ion-row>
                         <ion-row align-items-center class="text-description">
                             <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
                             <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
