@@ -122,6 +122,7 @@ export class ReviewPage {
                 this.name = ud.name;
                 this.address = userAdress.address;
                 this.applyFilters(this.displayCommitsToReview);
+                this.filterArrayCommits = this.displayCommitsToReview;
                 let url = new URLSearchParams(document.location.search);
                 if (url.has(AppConfig.UrlKey.REVIEWID)) {
                     let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
