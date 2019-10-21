@@ -35,7 +35,7 @@ package-lock.json
 Thumbs.db
 UserInterfaceState.xcuserstate
 
-src/assets/build/
+
 
 Boot-script\.sh
 
@@ -44,10 +44,5 @@ backend/brightbyte-user-db.json
 backend/brightbyte-achievement-db.json
 backend/brightbyte-event-db.json
 backend/src/backend.config.custom.ts
-backend/src/assets/build
 
-webapp/src/assets/build
-
-/tools/DataMigration/build
-
-/blockchain/build
+build/
