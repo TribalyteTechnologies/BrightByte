@@ -1,28 +1,25 @@
 import Web3 from "web3";
 import Tx = require("ethereumjs-tx");
-import axios from 'axios'
+import axios from "axios"
 import { Web3Service } from "./web3.service"
 import { MigrationConfig } from "./migration.config";
 import { TransactionReceipt } from "web3/types";
-
-
-interface ITrbSmartContact { //Web3.Eth.Contract
-    [key: string]: any;
-}
+import { User, UserStats, UserSeason, CommitDataMigraton, CommentDataMigration } from "./migration-models"
 
 interface ITrbSmartContractJson {
-    abi: Array<any>;
+    abi: Array<Object>;
+    networks: Array<any>;
 }
 
 export class MigrationService {
-    private brightOldJson: any;
-    private commitOldJson: any;
+    private brightOldJson: ITrbSmartContractJson;
+    private commitOldJson: ITrbSmartContractJson;
     private brightOldAddress: string;
     private commitOldAddress: string;
     private brightNewAddress: string;
     private commitNewAddress: string;
-    private contractBright: any;
-    private contractCommit: any;
+    private contractBright: ITrbSmartContractJson;
+    private contractCommit: ITrbSmartContractJson;
     private web3: Web3;
     private web3Websocket: Web3;
     private web3Service = new Web3Service();
@@ -32,37 +29,15 @@ export class MigrationService {
     constructor() {
         this.web3Websocket = this.web3Service.openWebSocketConnection();
         this.web3 = this.web3Service.openHttpConnection();
-        this.init().then(res => {
-            this.brightOldAddress = this.brightOldJson.networks[MigrationConfig.NETID].address;
-            this.commitOldAddress = this.commitOldJson.networks[MigrationConfig.NETID].address;
-            this.brightNewAddress = this.contractBright.networks[MigrationConfig.NETID].address;
-            this.commitNewAddress = this.contractCommit.networks[MigrationConfig.NETID].address;            
-            this.startMigration();
-        });
-    }
-
-    private init() {
-        return axios.get(MigrationConfig.BRIGHT_OLD_CONTRACT_URL).
-        then(response => {
-            this.brightOldJson = response.data;
-            return axios.get(MigrationConfig.COMMIT_OLD_CONTRACT_URL);
-        }).then(response => {
-            this.commitOldJson = response.data;
-            return axios.get(MigrationConfig.BRIGHT_CONTRACT_URL);
-        }).then(response => {
-            this.contractBright = response.data;
-            return axios.get(MigrationConfig.COMMIT_CONTRACT_URL);
-        }).then(response => {
-            this.contractCommit = response.data;
-            return true;
-        })
     }
 
     public startMigration() {
-        this.getUserMigration();
+        return this.getContractsJson().then(() => {
+            this.getUserMigration();
+        })
     }
 
-    public getUserMigration() {
+    private getUserMigration() {
         let brightOld = new this.web3Websocket.eth.Contract(this.brightOldJson.abi, this.brightOldAddress);
         let commitOld = new this.web3Websocket.eth.Contract(this.commitOldJson.abi, this.commitOldAddress);
         let brightNew = new this.web3.eth.Contract(this.contractBright.abi, this.brightNewAddress);
@@ -488,7 +463,7 @@ export class MigrationService {
         }).catch(err => console.log("Error in the migration " + err));
     }
 
-    public sendTx(bytecodeData: any, contractAddress: any): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
+    private sendTx(bytecodeData: any, contractAddress: any): Promise<void | TransactionReceipt> {
         return this.web3.eth.getTransactionCount(MigrationConfig.USER_ADDRESS)
             .then(nonceValue => {
                 let nonce = "0x" + (nonceValue).toString(16);
@@ -541,63 +516,30 @@ export class MigrationService {
         return [reputation, cumulativePonderation];
     }
 
-    private decreaseCount(){
+    private decreaseCount() {
         this.currentNumberOfSets--;
-        console.log("Migration progress: "+ (MigrationConfig.PERCENTAGE - (this.currentNumberOfSets/this.numberOfSets) * MigrationConfig.PERCENTAGE) + "%");
+        console.log("Migration progress: " + (MigrationConfig.PERCENTAGE - (this.currentNumberOfSets / this.numberOfSets) * MigrationConfig.PERCENTAGE) + "%");
+    }
+
+    private getContractsJson(): Promise<boolean> {
+        return axios.get(MigrationConfig.BRIGHT_OLD_CONTRACT_URL).
+        then(response => {
+            this.brightOldJson = response.data;
+            this.brightOldAddress = this.brightOldJson.networks[MigrationConfig.NETID].address;
+            return axios.get(MigrationConfig.COMMIT_OLD_CONTRACT_URL);
+        }).then(response => {
+            this.commitOldJson = response.data;
+            this.commitOldAddress = this.commitOldJson.networks[MigrationConfig.NETID].address;
+            return axios.get(MigrationConfig.BRIGHT_CONTRACT_URL);
+        }).then(response => {
+            this.contractBright = response.data;
+            this.brightNewAddress = this.contractBright.networks[MigrationConfig.NETID].address;
+            return axios.get(MigrationConfig.COMMIT_CONTRACT_URL);
+        }).then(response => {
+            this.contractCommit = response.data;
+            this.commitNewAddress = this.contractCommit.networks[MigrationConfig.NETID].address;
+            return true;
+        });
     }
 
 }
-
-class User {
-    public name = "";
-    public email = "";
-    public hash = "";
-    public pendingCommits = new Array<string>();
-    public finishedReviews = new Array<string>();
-    public pendingReviews = new Array<string>();
-    public toRead = new Array<string>();
-    public globalStats: UserStats = new UserStats();
-    public seasonData = new Array<UserSeason>();
-}
-
-class UserStats {
-    public reputation = 0;
-    public cumulativeComplexity = 0;
-    public numberOfTimesReview = 0;
-    public agreedPercentage = 0;
-    public positiveVotes = 0;
-    public negativeVotes = 0;
-    public reviewsMade = 0;
-}
-
-class UserSeason {
-    public seasonStats: UserStats = new UserStats();
-    public urlSeasonCommits = new Array<string>();
-}
-
-class CommitDataMigraton {
-    public title = "";
-    public url = "";
-    public author = "";
-    public creationDate = 0;
-    public isReadNeeded = false;
-    public numberReviews = 0;
-    public currentNumberReviews = 0;
-    public lastModificationDate = 0;
-    public score = 0;
-    public weightedComplexity = 0;
-    public pendingComments = new Array<string>();
-    public finishedComments = new Array<string>();
-    public commentDataMigration = new Array<CommentDataMigration>();
-}
-
-class CommentDataMigration {
-    public text = "";
-    public user = "";
-    public points = new Array<number>();
-    public vote = 0;
-    public creationDateComment = 0;
-    public lastModificationDateComment = 0;
-    public isReadNeeded = false;
-}
-
