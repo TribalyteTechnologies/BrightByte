@@ -2,8 +2,9 @@
 	"name": "brightbyte-backend",
 	"version": "0.0.1",
 	"description": "Implementation of the BrightByte Backend. Uses Nest/Loki",
-	"author": "",
-	"license": "",
+	"author": "Tribalyte Technologies",
+	"license": "SEE LICENSE IN LICENSE.md",
+	"private": true,
 	"scripts": {
 		"build": "shx rm -rf dist && tsc -p tsconfig.build.json; shx cp ../version.json ./dist/version.json",
 		"format": "prettier --write \"src/**/*.ts\"",
