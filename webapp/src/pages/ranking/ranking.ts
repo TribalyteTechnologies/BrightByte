@@ -103,25 +103,25 @@ export class RankingPage {
 
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
-            .then((usersRep: UserReputation[]) => {
-                this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
-                    this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
-                if (!this.globalSelected) {
-                    this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
-                }
-                this.usersRep.forEach((user, i) => {
-                    user.userPosition = ++i;
-                });
-                this.userHash = this.account.address;
-            }).catch((e) => {
-                this.translateService.get("ranking.getReputation").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-                throw e;
+        .then((usersRep: UserReputation[]) => {
+            this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
+                this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
+            if (!this.globalSelected) {
+                this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
+            }
+            this.usersRep.forEach((user, i) => {
+                user.userPosition = ++i;
             });
-        this.setUser(this.account.address);
+            this.userHash = this.account.address;
+            this.setUser(this.account.address);
+        }).catch((e) => {
+            this.translateService.get("ranking.getReputation").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+            throw e;
+        });
     }
 
     public setUser(hash: string) {
