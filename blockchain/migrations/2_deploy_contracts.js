@@ -4,11 +4,11 @@ var Root = artifacts.require("./Root.sol");
 var Reputation = artifacts.require("./Reputation.sol");
 var MigrationLib = artifacts.require("./MigrationLib.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
-var versionJSON = require("../../version.json");
+var scVersionObj = require("../../version.json");
 
 const INITIAL_SEASON_INDEX = 3;
 const INITIAL_SEASON_TIMESTAMP = 1550047598;
-var currentVersion = versionJSON.version;
+var currentVersion = scVersionObj.version;
 
 module.exports = function(deployer) {
     deployer.deploy(BrightModels)
