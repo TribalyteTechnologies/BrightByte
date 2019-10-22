@@ -5,10 +5,9 @@
   "main": "",
   "scripts": {
     "linters-ci": "cd webapp; npm run linters-ci",
-    "prepush": "npm run linters-ci",
-    "preinstall": "rm -fr node_modules/*/node_modules/*/.git/",
-    "postinstall": "cd ../backend; npm install --unsafe-perm",
-    "postlinters-ci": "cd ../backend; npm run linters-ci"
+    "postlinters-ci": "cd backend; npm run linters-ci"
   },
-  "author": "Tribalyte Technologies"
+  "author": "Tribalyte Technologies",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "private": true
 }
