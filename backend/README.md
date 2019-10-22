@@ -15,4 +15,4 @@ This is the BrightByte backend project.
 - Set the node websocket url by running `WEBSOCKET_URL=ws://localhost:7545`
 - Set backend allow-origins direction if needed `ORIGIN_URL=http://localhost:8100`
 - Set backend port `BACKEND_PORT=3000`
-- Create and run de container `docker run -e "NODE_WEBSOCKET_URL=${WEBSOCKET_URL}" -e "WEBAPP_URL=${ORIGIN_URL}"  -e "PORT=${BACKEND_PORT}"  -p ${BACKEND_PORT}:${BACKEND_PORT}/udp -p  ${BACKEND_PORT}:${BACKEND_PORT}/tcp -d brightbyte/backend:0.5.1`
+- Create and run de container `docker run -e "NODE_WEBSOCKET_URL=${WEBSOCKET_URL}" -e "WEBAPP_URL=${ORIGIN_URL}"  -e "PORT=${BACKEND_PORT}"  -p ${BACKEND_PORT}:${BACKEND_PORT}/udp -p  ${BACKEND_PORT}:${BACKEND_PORT}/tcp -d brightbyte/backend:latest`
