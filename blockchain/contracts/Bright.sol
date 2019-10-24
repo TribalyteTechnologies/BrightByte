@@ -7,8 +7,9 @@ import { BrightModels } from "./BrightModels.sol";
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
-    uint256 private constant MIGRATION_END_TIMESTAMP = 1570519493;
+    uint256 private constant TIME_TO_MIGRATE_SECS = 60 * 60 * 8;
     Root private root;
+    uint256 private migrationEndTimestamp;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
     BrightModels.HashUserMap private hashUserMap;
@@ -50,6 +51,7 @@ contract Bright {
         rootAddress = _root;
         currentSeasonIndex = seasonIndex;
         initialSeasonTimestamp = initialTimestamp;
+        migrationEndTimestamp = block.timestamp + TIME_TO_MIGRATE_SECS;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -340,7 +342,7 @@ contract Bright {
     }
     
     function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public onlyDapp {
-        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, MIGRATION_END_TIMESTAMP, name, mail,hash, perct, tmRw, pos, neg, rep, rev);
+        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, migrationEndTimestamp, name, mail,hash, perct, tmRw, pos, neg, rep, rev);
     }
 
     function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint tmRw, uint posVotes, uint negVotes, uint reputation, uint rev, uint complexity) public onlyDapp {
@@ -348,10 +350,10 @@ contract Bright {
     }
 
     function setAllUserDataTwo(address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
-        MigrationLib.setAllUserDataTwo(hashUserMap, MIGRATION_END_TIMESTAMP, h, pendCom,  finRev, pendRev, toRd);
+        MigrationLib.setAllUserDataTwo(hashUserMap, migrationEndTimestamp, h, pendCom,  finRev, pendRev, toRd);
     }
 
     function setUrlsSeason(uint256 seasonIndex, address userAddr, bytes32[] urls) public onlyDapp {
-        MigrationLib.setUrlsSeason(hashUserMap, MIGRATION_END_TIMESTAMP, seasonIndex, userAddr, urls);
+        MigrationLib.setUrlsSeason(hashUserMap, migrationEndTimestamp, seasonIndex, userAddr, urls);
     }
 }
