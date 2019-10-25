@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "shx echo \"Error: no test specified\" && exit 1",
-    "truffle:migrate": "truffle migrate --reset",
+    "truffle:migrate": "truffle migrate --reset; npm run copy:contracts",
     "truffle:develop": "truffle develop",
     "truffle:custom-deploy": "truffle migrate --network custom --reset; npm run copy:contracts",
     "remix:start": "remix-ide",
