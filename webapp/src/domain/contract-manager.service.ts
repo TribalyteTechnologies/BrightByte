@@ -14,8 +14,8 @@ import { UserReputation } from "../models/user-reputation.model";
 import { UserCacheService } from "../domain/user-cache.service";
 
 interface IContractJson {
-    networks: any;
-    abi: any;
+    abi: Array<Object>;
+    networks: Array<any>;
 }
 
 interface ITrbSmartContact { //Web3.Eth.Contract

@@ -7,15 +7,8 @@ import { DispatcherService } from "./dispatcher.service";
 import { CommitEventDto } from "../dto/events/commit-event.dto";
 import { ReviewEventDto } from "../dto/events/review-event.dto";
 import { SeasonEventDto } from "../dto/events/season-event.dto";
-
-
-interface ITrbSmartContractJson {
-    abi: Array<any>;
-}
-
-interface ITrbSmartContact {
-    [key: string]: any;
-}
+import { ContractManagerService } from "./contract-manager.service";
+import {ITrbSmartContact, ITrbSmartContractJson} from "../models/smart-contracts.model";
 
 @Injectable()
 export class EventHandlerService {
@@ -30,7 +23,6 @@ export class EventHandlerService {
     private web3: Web3;
     private jsonContractData: ITrbSmartContractJson;
     private log: ILogger;
-    private contractAbi;
 
     public constructor(
         web3Service: Web3Service,

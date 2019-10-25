@@ -7,15 +7,8 @@ import { UserDetailsDto } from "../dto/user-details.dto";
 import { Observable, from, forkJoin } from "rxjs";
 import { flatMap, map, tap } from "rxjs/operators";
 import { AxiosResponse } from "axios";
+import {ITrbSmartContact, ITrbSmartContractJson} from "../models/smart-contracts.model";
 
-interface ITrbSmartContact {
-    [key: string]: any;
-}
-
-interface ITrbSmartContractJson {
-    abi: Array<any>;
-    networks: Array<any>;
-}
 
 @Injectable()
 export class ContractManagerService {
@@ -66,7 +59,7 @@ export class ContractManagerService {
         this.log.d("Initializing Contract Manager Service");
         return this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL).pipe(tap(response => {
             this.brightContractAbi = response.data;
-            this.contractAddressBright = this.brightContractAbi.networks[BackendConfig.netId].address;
+            this.contractAddressBright = this.brightContractAbi.networks[BackendConfig.NET_ID].address;
             this.contracts.push(new this.web3.eth.Contract(this.brightContractAbi.abi, this.contractAddressBright));
         }));
     }
