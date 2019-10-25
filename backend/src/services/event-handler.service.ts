@@ -27,6 +27,7 @@ export class EventHandlerService {
     public constructor(
         web3Service: Web3Service,
         loggerSrv: LoggerService,
+        private contractManagerService: ContractManagerService,
         private httpSrv: HttpService,
         private dispatcher: DispatcherService
     ) {
@@ -37,14 +38,13 @@ export class EventHandlerService {
 
     public init() {
         this.log.d("Initializing Event Handler Service");
-        this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL).subscribe(response => {
-            this.contractAbi = response.data;
-            this.jsonContractData = this.contractAbi;
+        this.contractManagerService.getBrightSmartContract().subscribe(contractAbi => {
+            this.jsonContractData = contractAbi;
             this.web3 = this.web3Service.getWeb3();
             this.web3.eth.net.isListening()
             .then((res) => {
                 this.log.d("Web3 Connection established");
-                this.contractAddress = this.contractAbi.networks[BackendConfig.netId].address;
+                this.contractAddress = this.jsonContractData.networks[BackendConfig.NET_ID].address;
                 this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
                 this.registerNewListener(this.COMMIT);
                 this.registerNewListener(this.REVIEW);

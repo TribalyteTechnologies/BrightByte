@@ -47,6 +47,10 @@ export class ContractManagerService {
         );
     }
 
+    public getBrightSmartContract(): Observable<ITrbSmartContractJson> {
+        return this.initObs.pipe(map(() => this.brightContractAbi));
+    }
+
     private getUserNumber(): Observable<Number> {
         return from<Number>(this.contracts[0].methods.getNumbers().call());
     }
