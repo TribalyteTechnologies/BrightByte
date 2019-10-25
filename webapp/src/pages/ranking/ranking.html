@@ -49,7 +49,7 @@
             </ion-row>
             <ion-row padding class="profile-details-container">
                 <ion-col col-auto justify-content-center>
-                    <img class="box-avatar box-avatar__big" [src]="'http://avatars.dicebear.com/v2/identicon/' + userRankDetails.name + '.svg'">
+                    <avatar [name]="userRankDetails.name" [isBig]="true" ></avatar>
                 </ion-col>
                 <ion-col col-3 padding justify-content-center center class="vert-separator">
                     <ion-row class="text-title">

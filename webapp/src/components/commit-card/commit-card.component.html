@@ -27,7 +27,7 @@
         </ion-row>
         <ion-row justify-content-end>
             <ion-col col-auto *ngFor="let user of reviewers">
-                <img [title]="user" class="box-avatar" [src]="'http://avatars.dicebear.com/v2/identicon/' + user + '.svg'">
+                <avatar [name]="user"></avatar>
             </ion-col>
             <ion-col col-auto *ngIf="!(numberReviews === 0)">
                 <div class="box-reviewer">+{{ numberReviews }}</div>

@@ -1,0 +1,15 @@
+avatar {
+    .avatar-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        vertical-align: middle;
+        background-color: color($colors, backgroundLight);
+
+        &.__big {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+        }
+    }
+}

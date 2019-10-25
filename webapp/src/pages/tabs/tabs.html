@@ -4,7 +4,7 @@
             <img class="logo-icon" src="../../assets/imgs/logo_icon.svg">
         </div>
         <div class="avatar-container">
-            <img class="avatar-icon" [src]="'http://avatars.dicebear.com/v2/identicon/' + name + '.svg'">
+            <avatar [name]="name"></avatar>
         </div>
         <div>
             <button (click)="openAddCommitDialog()" class="tab">
