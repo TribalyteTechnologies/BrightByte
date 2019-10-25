@@ -1,21 +1,21 @@
 {
-  "name": "blockchain",
+  "name": "brightbyte-blockchain",
   "version": "0.0.1",
   "description": "Implementation of the BrightByte Blockchain contracts. Uses Truffle.",
   "main": "",
-  "directories": {
-    "test": "test"
-  },
+  "private": true,
   "scripts": {
-    "test": "shx echo \"Error: no test specified\" && exit 1",
     "truffle:migrate": "truffle migrate --reset; npm run copy:contracts",
+    "truffle:migrate": "truffle migrate --reset",
     "truffle:develop": "truffle develop",
-    "truffle:custom-deploy": "truffle migrate --network custom --reset; npm run copy:contracts",
+    "posttruffle:develop": "npm run copy:contracts",
+    "truffle:custom-deploy": "truffle migrate --network custom --reset",
+    "posttruffle:custom-deploy": "npm run copy:contracts",
     "remix:start": "remix-ide",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Tribalyte Technologies",
+  "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
     "truffle": "5.0.39",
     "remix-ide": "0.8.8"
