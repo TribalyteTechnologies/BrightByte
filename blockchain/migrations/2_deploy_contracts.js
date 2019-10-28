@@ -26,8 +26,9 @@ module.exports = function(deployer) {
     })
     .then(function(){
         return deployer.deploy(Bright);
-    })
-    .then(function(){
+    }).then(function(){
+        return deployer.link(MigrationLib, Commits);
+    }).then(function(){
         return deployer.deploy(Commits);
     }).then(function() {
         return deployer.deploy(Reputation);

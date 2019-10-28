@@ -1,8 +1,10 @@
 pragma solidity 0.4.21;
+
 import "./Root.sol";
+import { MigrationLib } from "./MigrationLib.sol";
+
 
 contract Commits {
-    uint256 private constant TIME_TO_MIGRATE_SECS = 60 * 60 * 8;
     uint256 private migrationEndTimestamp;
     Root private root;
     address private rootAddress;
@@ -62,7 +64,7 @@ contract Commits {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        migrationEndTimestamp = block.timestamp + TIME_TO_MIGRATE_SECS;
+        migrationEndTimestamp = block.timestamp + MigrationLib.getTimeToMigrate();
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
