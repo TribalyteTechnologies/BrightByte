@@ -3,6 +3,7 @@ import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
 import { AchievementDatabaseService } from "../services/achievement-database.service";
 import { UserDatabaseController } from "../controllers/user-database.controller";
+import { ProfileImageController } from "../controllers/profile-image.controller";
 import { LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
@@ -13,15 +14,20 @@ import { ClientNotificationService } from "../services/client-notfication.servic
 import { CoreDatabaseService } from "../services/core-database.service";
 import { ContractManagerService } from "../services/contract-manager.service";
 import { DatabaseInitializationService } from "../services/database-initialization.service";
+import { MulterModule } from "@nestjs/platform-express";
 
 
 @Module({
     imports: [
         BackendConfig,
-        HttpModule
+        HttpModule,
+        MulterModule.register({
+            dest: "./public"
+        })
     ],
     controllers: [
-        UserDatabaseController       
+        UserDatabaseController,
+        ProfileImageController     
     ],
     providers: [
         UserDatabaseService,
