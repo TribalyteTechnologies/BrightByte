@@ -13,6 +13,7 @@ import { UserLoggerService } from "../../domain/user-logger.service";
 import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
 import { BackendAPIService } from "../../domain/backend-api.service";
+import { UserAddressService } from "../../domain/user-address.service";
 
 @Component({
     selector: "login-form",
@@ -53,6 +54,7 @@ export class LoginForm {
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
         private backendAPISrv: BackendAPIService,
+        private userAddressSrv: UserAddressService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
@@ -126,6 +128,7 @@ export class LoginForm {
                                 this.msg = msg;
                             });
                     }else{
+                        this.userAddressSrv.set(account.address);
                         this.backendAPISrv.initBackendConnection(account.address);
                     }
                 }).catch((e) => {
