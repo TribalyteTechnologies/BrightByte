@@ -16,6 +16,7 @@ export class ErrorHandlerService implements ErrorHandler {
     public handleError(error: any): void {
         if(error){
             let errorText = error.toString().substring(0, this.MAX_ERROR_LENGTH).concat("...");
+            this.log.e(errorText);
             const alert = this.alertCtrl.create({
                 title: "Technical error",
                 subTitle: errorText,
