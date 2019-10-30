@@ -11,5 +11,11 @@ avatar {
             height: 60px;
             min-width: 60px;
         }
+
+        &.__preview {
+            width: 150px;
+            height: 150px;
+            min-width: 150px;
+        }
     }
 }

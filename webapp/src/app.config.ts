@@ -36,6 +36,9 @@ export class AppConfig {
     public static readonly DAY_TO_SECS = AppConfig.HOUR_TO_SECS * 24;
     public static readonly REPUTATION_FACTOR = 1000;
 
+    public static readonly STATUS_NOT_FOUND = 404;
+    public static readonly STATUS_OK = 200;
+
     public static readonly StorageKey = {
         USERNAME: "brightUser",
         PASSWORD: "brightPassword",

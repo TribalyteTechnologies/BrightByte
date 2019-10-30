@@ -25,6 +25,7 @@ class UserRankDetails {
     public engagementIndex = 0;
     public scoreString = "";
     public engagementIndexString = "";
+    public hash = "";
 }
 
 @Component({
@@ -138,6 +139,7 @@ export class RankingPage {
             this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
             this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
+            this.userRankDetails.hash = hash;
             this.setUpTrophys(hash);
         }
     }

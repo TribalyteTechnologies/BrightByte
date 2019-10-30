@@ -25,6 +25,7 @@ export class CommitCard {
     public stateFinished = false;
     public reviewers = new Array<string>();
     public pendingReviewers = new Array<string>();
+    public reviewersAddress = new Array<string>();
 
     @Input()
     public isReviewPage: boolean;
@@ -41,6 +42,7 @@ export class CommitCard {
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         this.reviewers = val.reviewers[1].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
+        this.reviewersAddress = val.reviewers[1].map(userval => ((userval.name !== "") ? userval.userHash : null));
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;

@@ -26,8 +26,8 @@
             <custom-rating [rate]="score" readOnly="true" small="true" iconMargin="true"></custom-rating>
         </ion-row>
         <ion-row justify-content-end>
-            <ion-col col-auto *ngFor="let user of reviewers">
-                <avatar [name]="user"></avatar>
+            <ion-col col-auto *ngFor="let user of reviewers; let i = index">
+                <avatar [userAddress]="reviewersAddress[i]"></avatar>
             </ion-col>
             <ion-col col-auto *ngIf="!(numberReviews === 0)">
                 <div class="box-reviewer">+{{ numberReviews }}</div>

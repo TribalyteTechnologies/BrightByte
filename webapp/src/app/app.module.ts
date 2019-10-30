@@ -60,6 +60,7 @@ import { BackendAPIService } from "../domain/backend-api.service";
 import { WebSocketService } from "../core/websocket.service";
 import { UserAddressService } from "../domain/user-address.service";
 import { Avatar } from "../components/avatar/avatar.component";
+import { Profile } from "../pages/profile/profile";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -83,6 +84,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginForm,
         NewUserForm,
         Avatar,
+        Profile,
         SetProfileForm,
         FilterComponent,
         CustomRating,
@@ -119,6 +121,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         LoginForm,
         NewUserForm,
         Avatar,
+        Profile,
         SetProfileForm,
         FilterComponent,
         CustomRating,

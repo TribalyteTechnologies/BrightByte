@@ -1,1 +1,7 @@
-<img class="avatar-icon" [ngClass]="(isBig ? '__big' : '')" [src]="avatarUrl">
+<img *ngIf="isClickable; else notClickable" class="avatar-icon"
+    [ngClass]="(isBig ? '__big ' : '') + (isPreview ? '__preview' : '')" [src]="avatarUrl"
+    (click)="openAddCommitDialog()">
+<ng-template #notClickable>
+    <img class="avatar-icon"
+    [ngClass]="(isBig ? '__big ' : '') + (isPreview ? '__preview' : '')" [src]="avatarUrl">
+</ng-template>

@@ -164,7 +164,11 @@
         "emailFormat": "email@example.com",
         "emailUsed": "Email already in use",
         "getEmails": "Error getting emails",
-        "notEmail": "It is not an email"
+        "notEmail": "It is not an email",
+        "profile": "Profile",
+        "save": "Save",
+        "noImageError": "Please, select an image to save.",
+        "uploadError": "Cannot upload the image. Please contact the service provider"
     },
     "commitDetails": {
         "author": "Author",
