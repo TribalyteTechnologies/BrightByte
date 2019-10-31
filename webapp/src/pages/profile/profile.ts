@@ -97,6 +97,6 @@ export class Profile {
     }
 
     private dismiss() {
-        this.viewCtrl.dismiss();
+        this.viewCtrl.dismiss(this.avatarUrl);
     }
 }

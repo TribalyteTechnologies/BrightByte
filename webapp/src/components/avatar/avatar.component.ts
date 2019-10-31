@@ -63,6 +63,11 @@ export class Avatar {
     public openAddCommitDialog() {
         let popover = this.popoverCtrl.create(Profile, { }, { cssClass: "profile" });
         popover.present();
+        popover.onDidDismiss(imageUrl => {
+            if (imageUrl){
+                this.avatarUrl = imageUrl;
+            }
+        });
     }
 
     private updateAvatar(){
