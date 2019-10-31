@@ -5,6 +5,7 @@ avatar {
         border-radius: 50%;
         vertical-align: middle;
         background-color: color($colors, backgroundLight);
+        max-width: none;
 
         &.__big {
             width: 60px;
