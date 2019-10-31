@@ -21,13 +21,6 @@ page-tabs {
             line-height: 70px;
             text-align: center;
             width: 100%;
-            .avatar-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                vertical-align: middle;
-                background-color: color($colors, backgroundLight);
-            }
         }
         .logout {
             margin-top: auto;
