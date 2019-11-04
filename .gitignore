@@ -46,3 +46,5 @@ backend/brightbyte-event-db.json
 backend/src/backend.config.custom.ts
 
 build/
+
+public/

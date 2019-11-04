@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 
 interface IResponse {
     data: string;
-    status: number;
+    status: string;
     descrption: string;
 }
 

@@ -17,7 +17,6 @@ export class AchievementService {
 
     public readonly COMMIT_ID = 0;
     public readonly REVIEW_ID = 1;
-    public readonly STATUS_OK = "OK";
 
     private readonly NUMBER_OF_ACHIEVEMENTS = 18;
     private readonly REQ_ROUTE = "/database/achievements/";
@@ -39,7 +38,7 @@ export class AchievementService {
         achievementsObservable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash)
         .map((response: IAchievementResponse) => {
                 this.log.w(response);
-                if (response && response.status === this.STATUS_OK) {
+                if (response && response.status === AppConfig.STATUS_OK) {
                     for (let achievement of response.data) {
                         if (achievement) {
                             currentAchievements.push(
