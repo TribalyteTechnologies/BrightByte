@@ -27,7 +27,7 @@
         </ion-row>
         <ion-row justify-content-end>
             <ion-col col-auto *ngFor="let user of reviewers; let i = index">
-                <avatar [userAddress]="reviewersAddress[i]"></avatar>
+                <avatar [avatarUrl]="reviewersObs[i] | async"></avatar>
             </ion-col>
             <ion-col col-auto *ngIf="!(numberReviews === 0)">
                 <div class="box-reviewer">+{{ numberReviews }}</div>

@@ -3,6 +3,8 @@ import { UserCommit } from "../../models/user-commit.model";
 import { TranslateService } from "@ngx-translate/core";
 import { FormatUtils } from "../../core/format-utils";
 import { AppConfig } from "../../app.config";
+import { Observable } from "rxjs";
+import { AvatarService } from "../../domain/avatar.service";
 
 
 @Component({
@@ -26,6 +28,7 @@ export class CommitCard {
     public reviewers = new Array<string>();
     public pendingReviewers = new Array<string>();
     public reviewersAddress = new Array<string>();
+    public reviewersObs = new Array<Observable<string>>();
 
     @Input()
     public isReviewPage: boolean;
@@ -43,6 +46,7 @@ export class CommitCard {
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         this.reviewers = val.reviewers[1].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         this.reviewersAddress = val.reviewers[1].map(userval => ((userval.name !== "") ? userval.userHash : null));
+        this.reviewersObs = this.reviewersAddress.map(reviewer => this.avatarSrv.getAvatarObs(reviewer));
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;
@@ -71,7 +75,10 @@ export class CommitCard {
         }
     }
 
-    constructor(public translateService: TranslateService){
+    constructor(
+        public translateService: TranslateService,
+        private avatarSrv: AvatarService
+        ){
         translateService.get("app.anonymous").subscribe(
             msg => {
                 this.ANONYMOUS = msg;

@@ -61,6 +61,7 @@ import { WebSocketService } from "../core/websocket.service";
 import { UserAddressService } from "../domain/user-address.service";
 import { Avatar } from "../components/avatar/avatar.component";
 import { Profile } from "../pages/profile/profile";
+import { AvatarService } from "../domain/avatar.service";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -142,6 +143,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AchievementService,
         UserLoggerService,
         UserCacheService,
+        AvatarService,
         UserAddressService,
         ErrorHandlerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},

@@ -3,6 +3,8 @@ import { CommitComment } from "../../models/commit-comment.model";
 import { TranslateService } from "@ngx-translate/core";
 import { AlertController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
+import { Observable } from "rxjs";
+import { AvatarService } from "../../domain/avatar.service";
 
 @Component({
     selector: "comment",
@@ -30,6 +32,7 @@ export class CommentComponent {
     private _isReviewPage: boolean = true;
     private _isReviewNeeded: boolean = false;
     private log: ILogger;
+    private avatarObs: Observable<string>;
 
     @Input()
     public set isReviewNeeded(val: boolean){
@@ -72,12 +75,17 @@ export class CommentComponent {
 
     constructor(public translateService: TranslateService,
                 private alertCtrl: AlertController,
+                private avatarSrv: AvatarService,
                 loggerSrv: LoggerService){
         this.log = loggerSrv.get("CommentComponent");
         translateService.get("app.anonymous").subscribe(
             msg => {
                 this.ANONYMOUS = msg;
             });
+    }
+
+    public ngOnInit() {
+        this.avatarObs = this.avatarSrv.getAvatarObs(this.review.user);
     }
 
     public validateAndSetReview(text: string){

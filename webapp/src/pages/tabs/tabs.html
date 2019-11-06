@@ -4,7 +4,7 @@
             <img class="logo-icon" src="../../assets/imgs/logo_icon.svg">
         </div>
         <div class="avatar-container">
-                <avatar [isClickable]="true"></avatar>
+                <avatar [avatarUrl]="avatarObs | async" [isClickable]="true"></avatar>
         </div>
         <div>
             <button (click)="openAddCommitDialog()" class="tab">

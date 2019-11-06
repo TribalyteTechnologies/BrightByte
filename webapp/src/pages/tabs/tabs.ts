@@ -16,6 +16,9 @@ import { AppConfig } from "../../app.config";
 import { WebSocketService } from "../../core/websocket.service";
 import { AddCommitPopover } from "../addcommit/addcommit";
 import { TranslateService } from "@ngx-translate/core";
+import { Observable } from "rxjs";
+import { AvatarService } from "../../domain/avatar.service";
+import { UserAddressService } from "../../domain/user-address.service";
 
 @Component({
     selector: "page-tabs",
@@ -36,6 +39,7 @@ export class TabsPage {
     public menuArray = new Array<MenuItem>();
     public name: string = "";
     private log: ILogger;
+    private avatarObs: Observable<string>;
 
 
     constructor(
@@ -47,7 +51,9 @@ export class TabsPage {
         private storageSrv: LocalStorageService,
         private websocketSrv: WebSocketService,
         private popoverCtrl: PopoverController,
-        private translateSrv: TranslateService
+        private translateSrv: TranslateService,
+        private avatarSrv: AvatarService,
+        private userAddressSrv: UserAddressService
     ) {
         this.log = loggerSrv.get("TabsPage");
 
@@ -79,6 +85,10 @@ export class TabsPage {
             this.goTo(this.menuArray[lastPageNumber].url);
         }
         this.setUserInfo();
+    }
+
+    public ngOnInit(){
+        this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddressSrv.get());
     }
 
     public goTo(page: any) {

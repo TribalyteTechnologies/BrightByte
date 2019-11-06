@@ -214,6 +214,20 @@ export class ContractManagerService {
         });
     }
 
+    public getAllUserAddresses(): Promise<Array<string>> {
+        let brightContract;
+        return this.initProm
+            .then(([bright]) => {
+                brightContract = bright;
+                this.log.d("Public Address: ", this.currentUser.address);
+                this.log.d("Contract artifact", bright);
+                return brightContract.methods.getUsersAddress().call();
+            }).catch(err => {
+                this.log.e("Error checking commit season :", err);
+                throw err;
+            });
+    }
+
     public checkCommitCurrentSeason(url: string, author: string): Promise<boolean> {
         let rootContract;
         let urlKeccak;

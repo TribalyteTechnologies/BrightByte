@@ -11,6 +11,8 @@ import { AppConfig } from "../../app.config";
 import { Achievement } from "../../models/achievement.model";
 import { AchievementService } from "../../core/achievement.service";
 import { ErrorHandlerService } from "../../domain/error-handler.service";
+import { AvatarService } from "../../domain/avatar.service";
+import { Observable } from "rxjs";
 
 
 class UserRankDetails {
@@ -57,6 +59,7 @@ export class RankingPage {
     public globalSelected = false;
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
+    public currentUserObs: Observable<string>;
     private log: ILogger;
     private account: Account;
     private isBackendOnline = true;
@@ -68,7 +71,8 @@ export class RankingPage {
         private contractManagerService: ContractManagerService,
         private loginService: LoginService,
         private achievementSrv: AchievementService,
-        private errorHndlr: ErrorHandlerService
+        private errorHndlr: ErrorHandlerService,
+        private avatarSrv: AvatarService
     ) {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
@@ -140,6 +144,7 @@ export class RankingPage {
             this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
             this.userRankDetails.hash = hash;
+            this.currentUserObs = this.avatarSrv.getAvatarObs(hash);
             this.setUpTrophys(hash);
         }
     }

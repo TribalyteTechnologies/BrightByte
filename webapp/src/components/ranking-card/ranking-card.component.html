@@ -3,7 +3,7 @@
 </td>
 <td>
     <ion-row justify-content-center>
-            <avatar [userAddress]="userHash" ></avatar>
+            <avatar [avatarUrl]="avatarObs | async" ></avatar>
     </ion-row>
 </td>
 <td>

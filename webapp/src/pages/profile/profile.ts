@@ -7,6 +7,8 @@ import { UserAddressService } from "../../domain/user-address.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { map, catchError, flatMap} from "rxjs/operators";
+import { Observable } from "rxjs";
+import { AvatarService } from "../../domain/avatar.service";
 
 interface IResponse {
     data: string;
@@ -20,6 +22,8 @@ interface IResponse {
 })
 
 export class Profile {
+
+    public avatarObs: Observable<string>;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload";
 
@@ -39,6 +43,7 @@ export class Profile {
         private translateSrv: TranslateService,
         private userAddressSrv: UserAddressService,
         private viewCtrl: ViewController,
+        private avatarSrv: AvatarService,
         private formBuilder: FormBuilder
     ) {
         this.userAddress = this.userAddressSrv.get();
@@ -46,6 +51,8 @@ export class Profile {
     }
 
     public ngOnInit() {
+        this.userAddress = this.userAddressSrv.get();
+        this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
         this.translateSrv.get("setProfile.noImageError").subscribe(translation => {
             this.noImageError = translation;
         });
@@ -81,6 +88,7 @@ export class Profile {
                 .subscribe(
                 (response: IResponse) => {
                     if (response.status === AppConfig.STATUS_OK) {
+                        this.avatarSrv.updateUrl(this.userAddress, AppConfig.SERVER_BASE_URL + response.data);
                         this.dismiss();
                     }
                 },
@@ -110,6 +118,7 @@ export class Profile {
             if (response && response.status === AppConfig.STATUS_OK) {
                 this.avatarUrl = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
                 this.log.d("Changed the avatar to default one " + this.avatarUrl);
+                this.avatarSrv.updateUrl(this.userAddress);
                 this.dismiss();
             }
         }),
@@ -127,6 +136,6 @@ export class Profile {
     }
 
     private dismiss() {
-        this.viewCtrl.dismiss(this.avatarUrl);
+        this.viewCtrl.dismiss();
     }
 }

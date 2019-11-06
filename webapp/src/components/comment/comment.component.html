@@ -4,7 +4,7 @@
             <ion-col col-3 class="criterial-border">
                 <ion-row>
                     <ion-col>
-                        <avatar [userAddress]="review.user" [isBig]="true"></avatar>
+                        <avatar [avatarUrl]="avatarObs | async" [isBig]="true"></avatar>
                     </ion-col>
                     <ion-col>
                         <ion-row no-padding class="criterial-border">

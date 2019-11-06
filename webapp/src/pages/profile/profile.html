@@ -12,7 +12,7 @@
                     <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarUrl" [isPreview]="true">
                     </avatar>
                     <ng-template #imageNotSelected>
-                        <avatar [isPreview]="true"></avatar>
+                        <avatar [avatarUrl]="avatarObs | async" [isPreview]="true"></avatar>
                     </ng-template>
                 </ion-row>
                 <ion-row class="middle" no-padding>

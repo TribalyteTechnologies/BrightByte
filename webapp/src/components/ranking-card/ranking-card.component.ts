@@ -3,6 +3,8 @@ import { UserReputation } from "../../models/user-reputation.model";
 import { LoginService } from "../../core/login.service";
 import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
+import { AvatarService } from "../../domain/avatar.service";
+import { Observable } from "rxjs";
 
 
 @Component({
@@ -30,6 +32,7 @@ export class RankingCard {
     public globalSelected = true;
     public reputationString = "";
     public engagementIndexString = "";
+    public avatarObs: Observable<string>;
     
     @Input()
     public set ranking(val: UserReputation) {
@@ -54,14 +57,21 @@ export class RankingCard {
         this.globalSelected = global;
     }
 
-    constructor(loginService: LoginService, public translateService: TranslateService){
+    constructor(
+        loginService: LoginService, 
+        translateSrv: TranslateService,
+        private avatarSrv: AvatarService
+        ){
         let account = loginService.getAccount();
         this.accountHash = account.address;
-        translateService.get("app.anonymous").subscribe(
+        translateSrv.get("app.anonymous").subscribe(
             msg => {
                 this.ANONYMOUS = msg;
             });
     }
 
+    public ngOnInit() {
+        this.avatarObs = this.avatarSrv.getAvatarObs(this.userHash);
+    }
 
 }

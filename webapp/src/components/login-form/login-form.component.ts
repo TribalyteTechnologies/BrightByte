@@ -14,6 +14,7 @@ import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
 import { BackendAPIService } from "../../domain/backend-api.service";
 import { UserAddressService } from "../../domain/user-address.service";
+import { AvatarService } from "../../domain/avatar.service";
 
 @Component({
     selector: "login-form",
@@ -55,6 +56,7 @@ export class LoginForm {
         private spinnerService: SpinnerService,
         private backendAPISrv: BackendAPIService,
         private userAddressSrv: UserAddressService,
+        private avatarSrv: AvatarService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
@@ -161,6 +163,11 @@ export class LoginForm {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
+                return this.contractManager.getAllUserAddresses();                
+            }).then((addresses: Array<string>) => {
+                addresses.forEach(address => {
+                    this.avatarSrv.addUser(address);
+                });
                 return this.contractManager.getUserDetails(account.address);
             }).then((detailsUser: UserDetails) => {
                 this.log.d("Email: ", detailsUser.email);
