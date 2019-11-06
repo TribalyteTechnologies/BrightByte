@@ -13,6 +13,7 @@ import { BackendConfig } from "../backend.config";
 @Controller("profile-image")
 export class ProfileImageController {
     private readonly PATH_IMAGES = "./public/";
+    private readonly ROUTE_AVATARS = "/profile-image/";
 
     private log: ILogger;
     public constructor(
@@ -31,7 +32,7 @@ export class ProfileImageController {
     @Bind(UploadedFile())
     public uploadFile(file): ResponseDto {
         this.log.d("The avatar is saved for user: " + file.filename);
-        return new SuccessResponseDto(this.PATH_IMAGES + file.filename);
+        return new SuccessResponseDto(this.ROUTE_AVATARS + file.filename);
     }
 
     @Get("getPath/:hash")
