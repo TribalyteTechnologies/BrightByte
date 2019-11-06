@@ -168,7 +168,8 @@
         "profile": "Profile",
         "save": "Save",
         "noImageError": "Please, select an image to save.",
-        "uploadError": "Cannot upload the image. Please contact the service provider"
+        "uploadError": "Cannot upload the image. Please contact the service provider",
+        "defaultError": "You alredy have the defaul avatar image"
     },
     "commitDetails": {
         "author": "Author",

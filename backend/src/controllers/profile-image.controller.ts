@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UseInterceptors, Bind, UploadedFile, Res } from "@nestjs/common";
+import { Controller, Get, Param, Post, UseInterceptors, Bind, UploadedFile, Res, Delete } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { editFileName } from "../utils/image-upload.utils";
@@ -24,7 +24,7 @@ export class ProfileImageController {
     @Post("upload")
     @UseInterceptors(FileInterceptor("image", {
         storage: diskStorage({
-            destination: this.PATH_IMAGES,
+            destination: "./public/",
             filename: editFileName
         })
     }))
@@ -50,5 +50,12 @@ export class ProfileImageController {
     public getUploadedFile(@Param("hash") image, @Res() res) {
         this.log.d("Getting avatar: " + image);
         res.sendFile(image, { root: "./public" });
+    }
+
+    @Delete(":hash")
+    public deleteAvatar(@Param("hash") image): ResponseDto {
+        this.log.d("Erasing avatar: " + image);
+        fs.unlinkSync("./public/" + image);
+        return new SuccessResponseDto("Image deleted");
     }
 }

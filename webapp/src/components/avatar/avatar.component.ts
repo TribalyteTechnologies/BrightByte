@@ -35,11 +35,6 @@ export class Avatar {
 
     private log: ILogger;
 
-    private readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
-    private readonly GET_PROFILE_IMAGE = this.PROFILE_IMAGE_URL + "getPath/";    
-    private readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
-    private readonly IDENTICON_FORMAT = ".svg";
-
     constructor(
         loggerSrv: LoggerService,
         private popoverCtrl: PopoverController,
@@ -76,18 +71,18 @@ export class Avatar {
 
     private updateAvatar(){
         this.log.d("Updating the avatar of user: " + this.userAddress);
-        this.http.get(this.GET_PROFILE_IMAGE + this.userAddress).subscribe(
+        this.http.get(AppConfig.GET_PROFILE_IMAGE + this.userAddress).subscribe(
         (response: IResponse) => {
             if (response && response.status === AppConfig.STATUS_OK){
-                this.avatarUrl = this.PROFILE_IMAGE_URL + response.data + "?t=" + Math.random();
+                this.avatarUrl = AppConfig.PROFILE_IMAGE_URL + response.data + "?t=" + Math.random();
             }else{
-                this.avatarUrl = this.IDENTICON_URL + this.userAddress + this.IDENTICON_FORMAT;
+                this.avatarUrl = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
             }
             this.log.d("Avatar url is " + this.avatarUrl);
         }, 
         error => {
             this.log.e("ERROR: " + error.message);
-            this.avatarUrl = this.IDENTICON_URL + this.userAddress + this.IDENTICON_FORMAT;
+            this.avatarUrl = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
         });
     }
 }

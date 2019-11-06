@@ -7,16 +7,19 @@
             <h1>{{ "setProfile.profile" | translate }}</h1>
         </ion-row>
         <ion-row no-padding>
-            <ion-col col-3>
-                <ion-row class="preview-image" justify-center>
+            <ion-col col-3 class="avatarContainer">
+                <ion-row class="preview-image avatarImage" justify-center>
                     <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarUrl" [isPreview]="true">
                     </avatar>
                     <ng-template #imageNotSelected>
                         <avatar [isPreview]="true"></avatar>
                     </ng-template>
                 </ion-row>
+                <ion-row class="middle" no-padding>
+                    <ion-icon class="close-icon" name="close" (click)="deleteAvatar()"></ion-icon>
+                </ion-row>
             </ion-col>
-            <ion-col align-self-end>
+            <ion-col padding align-self-end>
                 <form [formGroup]="uploadForm" (ngSubmit)="saveProfileImage()">
                     <ion-row class="upload-form">
                         <input type="file" (change)="openFile($event)">

@@ -20,6 +20,11 @@ export class AppConfig {
     }];
     public static readonly SERVER_BASE_URL = "http://localhost:3000";
     public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
+    
+    public static readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
+    public static readonly GET_PROFILE_IMAGE = AppConfig.PROFILE_IMAGE_URL + "getPath/";
+    public static readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
+    public static readonly IDENTICON_FORMAT = ".svg";
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
     AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
