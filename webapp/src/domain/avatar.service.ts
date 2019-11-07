@@ -3,7 +3,7 @@ import { ILogger, LoggerService } from "../core/logger.service";
 import { Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../app.config";
-import { map, catchError } from "rxjs/operators";
+import { map, catchError, share } from "rxjs/operators";
 
 
 interface IResponse {
@@ -14,10 +14,7 @@ interface IResponse {
 @Injectable()
 export class AvatarService {
 
-    private readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
-    private readonly GET_PROFILE_IMAGE = this.PROFILE_IMAGE_URL + "getPath/";
-    private readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
-    private readonly IDENTICON_FORMAT = ".svg";
+    private readonly ANONYMOUS = "0x0";
 
     private log: ILogger;
     private avatarObsMap = new Map<string, Observable<string>>();
@@ -28,26 +25,29 @@ export class AvatarService {
         private http: HttpClient
     ) {
         this.log = loggerSrv.get("AvatarService");
+        let avatarObs: Observable<string> = Observable.of(AppConfig.IDENTICON_URL + this.ANONYMOUS + AppConfig.IDENTICON_FORMAT);
+        this.avatarObsMap.set(this.ANONYMOUS, avatarObs);
     }
 
     public addUser(hash: string) {
-        if (!this.avatarObsMap.has(hash)) {
+        if (!this.avatarObsMap.has(hash) && hash) {
             let avatarSubj = new Subject<string>();
-            let avatarObs: Observable<string> = this.http.get(this.GET_PROFILE_IMAGE + hash).pipe(
+            let avatarObs = this.http.get(AppConfig.GET_PROFILE_IMAGE + hash).pipe(
                 catchError((error) => {
                     this.log.e("ERROR: " + error.message);
-                    let imageUrl = this.IDENTICON_URL + hash + this.IDENTICON_FORMAT;
+                    let imageUrl = AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
                     return imageUrl;
                 }),
                 map((response: IResponse) => {
                     let imageUrl = "";
                     if (response && response.status === AppConfig.STATUS_OK) {
-                        imageUrl = this.PROFILE_IMAGE_URL + response.data;
+                        imageUrl = AppConfig.PROFILE_IMAGE_URL + response.data;
                     } else {
-                        imageUrl = this.IDENTICON_URL + hash + this.IDENTICON_FORMAT;
+                        imageUrl = AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
                     }
                     return imageUrl;
-                }));
+                }),
+                share());
             avatarObs = Observable.merge(avatarObs, avatarSubj);
             this.avatarObsMap.set(hash, avatarObs);
             this.avatarSubjMap.set(hash, avatarSubj);
@@ -55,12 +55,12 @@ export class AvatarService {
     }
 
     public updateUrl(hash: string, url?: string) {
-        let newUrl = url ? url : this.IDENTICON_URL + hash + this.IDENTICON_FORMAT;
+        let newUrl = url ? url : AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
         this.avatarSubjMap.get(hash)
             .next(newUrl + "?r=" + Math.random());
     }
 
     public getAvatarObs(hash: string): Observable<string> {
-        return this.avatarObsMap.has(hash) ? this.avatarObsMap.get(hash) : Observable.throw("No user image for " + hash);
+        return this.avatarObsMap.has(hash) ? this.avatarObsMap.get(hash) : this.avatarObsMap.get(this.ANONYMOUS);
     }
 }
