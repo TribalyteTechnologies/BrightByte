@@ -169,7 +169,11 @@
         "save": "Save",
         "noImageError": "Please, select an image to save.",
         "uploadError": "Cannot upload the image. Please contact the service provider",
-        "defaultError": "You alredy have the defaul avatar image"
+        "defaultError": "You already have the default avatar image",
+        "removeImage": "Remove Image",
+        "removeConfirmation": "Are you sure you want to remove your avatar image?",
+        "remove": "Remove",
+        "cancel": "Cancel"
     },
     "commitDetails": {
         "author": "Author",

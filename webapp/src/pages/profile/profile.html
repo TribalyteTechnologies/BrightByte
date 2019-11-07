@@ -7,16 +7,19 @@
             <h1>{{ "setProfile.profile" | translate }}</h1>
         </ion-row>
         <ion-row no-padding>
-            <ion-col col-3 class="avatarContainer">
-                <ion-row class="preview-image avatarImage" justify-center>
-                    <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarUrl" [isPreview]="true">
+            <ion-col col-3>
+                <ion-row class="preview-image" justify-center>
+                    <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarUrl" [isPreview]="true" class="avatar-container">
                     </avatar>
                     <ng-template #imageNotSelected>
-                        <avatar [avatarUrl]="avatarObs | async" [isPreview]="true"></avatar>
+                        <div class="container">
+                            <avatar [avatarUrl]="avatarObs | async" [isPreview]="true" alt="Avatar" class="image"></avatar>
+                            <div class="overlay" (click)="confirmImageRemove()">
+                                <ion-icon class="remove icon" name="close"></ion-icon>
+                                <h1 class="remove text">Remove Image</h1>
+                            </div>
+                        </div>
                     </ng-template>
-                </ion-row>
-                <ion-row class="middle" no-padding>
-                    <ion-icon class="close-icon" name="close" (click)="deleteAvatar()"></ion-icon>
                 </ion-row>
             </ion-col>
             <ion-col padding align-self-end>

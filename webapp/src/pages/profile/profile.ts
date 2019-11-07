@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { ViewController } from "ionic-angular";
+import { ViewController, AlertController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../../app.config";
 import { TranslateService } from "@ngx-translate/core";
@@ -44,7 +44,8 @@ export class Profile {
         private userAddressSrv: UserAddressService,
         private viewCtrl: ViewController,
         private avatarSrv: AvatarService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private alertCtrl: AlertController
     ) {
         this.userAddress = this.userAddressSrv.get();
         this.log = loggerSrv.get("ProfilePage");
@@ -53,14 +54,10 @@ export class Profile {
     public ngOnInit() {
         this.userAddress = this.userAddressSrv.get();
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
-        this.translateSrv.get("setProfile.noImageError").subscribe(translation => {
-            this.noImageError = translation;
-        });
-        this.translateSrv.get("setProfile.uploadError").subscribe(translation => {
-            this.uploadError = translation;
-        });
-        this.translateSrv.get("setProfile.defaultError").subscribe(translation => {
-            this.defaultError = translation;
+        this.translateSrv.get(["setProfile.noImageError", "setProfile.uploadError", "setProfile.defaultError"]).subscribe(translation => {
+            this.noImageError = translation["setProfile.noImageError"];
+            this.uploadError = translation["setProfile.uploadError"];
+            this.defaultError = translation["setProfile.defaultError"];
         });
         this.uploadForm = this.formBuilder.group({
             image: [""]
@@ -77,6 +74,40 @@ export class Profile {
             this.imageSelected = true;
             this.errorMsg = null;
         });
+    }
+
+    public confirmImageRemove() {
+        this.translateSrv.get(["setProfile.removeImage", "setProfile.removeConfirmation", "setProfile.remove", "setProfile.cancel"])
+        .subscribe((response) => {
+                let removeImage = response["setProfile.removeImage"];
+                let removeConfirmation = response["setProfile.removeConfirmation"];
+                let remove = response["setProfile.remove"];
+                let cancel = response["setProfile.cancel"];
+
+                let alert = this.alertCtrl.create({
+                    title: removeImage,
+                    message: removeConfirmation,
+                    buttons: [
+                        {
+                            text: cancel,
+                            role: "cancel",
+                            handler: () => {
+                                this.log.d("Cancel clicked");
+                            }
+                        },
+                        {
+                            text: remove,
+                            handler: () => {
+                                this.log.d("Remove clicked");
+                                this.deleteAvatar();
+                            }
+                        }
+                    ]
+                });
+                alert.present();
+            }
+        );
+        
     }
 
     public saveProfileImage() {
@@ -101,7 +132,7 @@ export class Profile {
         }
     }
 
-    public deleteAvatar() {
+    private deleteAvatar() {
         this.log.d("Request to delete profile avatar");
         this.http.get(AppConfig.GET_PROFILE_IMAGE + this.userAddress).pipe(
         flatMap((response: IResponse) => {
