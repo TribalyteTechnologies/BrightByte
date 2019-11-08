@@ -51,6 +51,9 @@ export class AvatarService {
             avatarObs = Observable.merge(avatarObs, avatarSubj);
             this.avatarObsMap.set(hash, avatarObs);
             this.avatarSubjMap.set(hash, avatarSubj);
+        }else if (!hash) {
+            let avatarObs: Observable<string> = Observable.of(AppConfig.IDENTICON_URL + this.ANONYMOUS + AppConfig.IDENTICON_FORMAT);
+            this.avatarObsMap.set(this.ANONYMOUS, avatarObs);
         }
     }
 

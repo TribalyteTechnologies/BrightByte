@@ -23,7 +23,6 @@ export class ReviewPage {
     public readonly COMPLETE = "complete";
     public displayCommitsToReview: Array<UserCommit>;
     public arrayCommits: Array<UserCommit>;
-    public allCommitsArray: Array<UserCommit>;
     public msg: string;
     public projects = new Array<string>();
     public projectSelected = this.ALL;

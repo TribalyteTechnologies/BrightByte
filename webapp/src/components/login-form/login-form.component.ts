@@ -168,6 +168,7 @@ export class LoginForm {
                 addresses.forEach(address => {
                     this.avatarSrv.addUser(address);
                 });
+                this.avatarSrv.addUser(null);
                 return this.contractManager.getUserDetails(account.address);
             }).then((detailsUser: UserDetails) => {
                 this.log.d("Email: ", detailsUser.email);
