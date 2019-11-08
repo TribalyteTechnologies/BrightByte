@@ -25,11 +25,7 @@ profile {
     }
 
     .close-icon:hover {
-        cursor: pointer;
-    }
-
-    .remove-icon {
-        font-size: 80px;
+      cursor: pointer;
     }
 
     .error-body {
@@ -73,24 +69,16 @@ profile {
         opacity: 0.9;
     }
 
-    .remove {
+    .remove-icon {
         color: white;
+        font-size: 80px;
         position: absolute;
+        top: 45%;
         left: 50%;
         -webkit-transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
         text-align: center;
-
-        &.icon {
-            top: 45%;
-            font-size: 80px;
-        }
-
-        &.text {
-            top: 65%;
-            font-size: 14px;
-        }
     }
 
     .remove-text {

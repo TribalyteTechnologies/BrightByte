@@ -107,7 +107,6 @@ export class Profile {
                 alert.present();
             }
         );
-        
     }
 
     public saveProfileImage() {
@@ -141,7 +140,7 @@ export class Profile {
                 this.log.d("Enable to delete the user avatar");
                 ret = this.http.delete(AppConfig.PROFILE_IMAGE_URL + this.userAddress);
             } else {
-                this.log.d("User alredy has his default avatar");
+                this.log.d("User already has his default avatar");
             }
             return ret;
         }),
