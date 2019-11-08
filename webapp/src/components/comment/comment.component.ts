@@ -85,7 +85,9 @@ export class CommentComponent {
     }
 
     public ngOnInit() {
-        this.avatarObs = this.avatarSrv.getAvatarObs(this.review.user);
+        if(!this._isReviewNeeded) {
+            this.avatarObs = this.avatarSrv.getAvatarObs(this.review.user);
+        }
     }
 
     public validateAndSetReview(text: string){
