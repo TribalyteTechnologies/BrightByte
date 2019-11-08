@@ -8,7 +8,7 @@
         "start": "shx mkdir www; shx cp config.xml www; npm run ionic:serve",
         "clean": "ionic-app-scripts clean",
         "build": "ionic-app-scripts build",
-        "prebuild-browser-release": "node versionSync.js",
+        "prebuild-browser-release": "node version-sync.js",
         "build-browser-release": "ionic cordova build browser --prod --release",
         "ionic:build": "ionic-app-scripts build",
         "ionic:serve": "ionic-app-scripts serve",
