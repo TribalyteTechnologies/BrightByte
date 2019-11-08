@@ -129,7 +129,8 @@
         "userRanking": "User Ranking",
         "left": "left",
         "engagementIndex": "Engagement Index",
-        "selectSeason": "Select Season"
+        "selectSeason": "Select Season",
+        "seasonEnd": "Season Ended" 
     },
     "review": {
         "getCommits": "Error getting commits to review",

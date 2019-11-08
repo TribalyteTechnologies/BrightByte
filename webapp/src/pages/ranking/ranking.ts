@@ -56,6 +56,7 @@ export class RankingPage {
     public hours: number;
     public minutes: number;
     public seconds: number;
+    public seasonEnded = false;
     public globalSelected = false;
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
@@ -89,6 +90,7 @@ export class RankingPage {
                     () => {
                         let now = new Date().getTime();
                         let distance = this.seasonFinale - now;
+                        this.seasonEnded = distance < 0;
                         this.days = Math.floor(distance / (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS));
                         this.hours = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.DAY_TO_SECS))
                             / (AppConfig.SECS_TO_MS * AppConfig.HOUR_TO_SECS));
@@ -165,6 +167,7 @@ export class RankingPage {
             .then((season: number[]) => {
                 this.numberOfSeasons = season[0];
                 this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
+                this.seasonEnded = (this.seasonFinale - new Date().getTime()) < 0;
                 let date = new Date(this.seasonFinale);
                 this.log.d("The current season is the number: " + this.numberOfSeasons + ", that ends the" + date);
             }).catch((e) => {

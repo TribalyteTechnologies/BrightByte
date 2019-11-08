@@ -16,7 +16,8 @@
                 <ion-row>
                     <ion-col col-7>{{ "ranking.current" | translate }} {{ "ranking.season" | translate }}: {{ numberOfSeasons }}</ion-col>
                     <ion-col col-5 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }} {{ "ranking.left" | translate }}</ion-col>
-                    <ion-col col-5 *ngIf="days <= 0" class="ranking-left">{{ hours }} {{ "ranking.hours" | translate }}, {{ minutes }} {{ "ranking.minutes" | translate }}  {{ "ranking.left" | translate }} </ion-col>
+                    <ion-col col-5 *ngIf="days <= 0 && !seasonEnded" class="ranking-left">{{ hours }} {{ "ranking.hours" | translate }}, {{ minutes }} {{ "ranking.minutes" | translate }}  {{ "ranking.left" | translate }} </ion-col>
+                    <ion-col col-5 *ngIf="seasonEnded" class="ranking-left">{{ "ranking.seasonEnd" | translate }}</ion-col>
                 </ion-row>
             </div>
         </ion-col>
