@@ -32,6 +32,8 @@ export class CommitCard {
 
     @Input()
     public isReviewPage: boolean;
+    @Input()
+    public reviewerAddress: string;
 
     private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
     private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
@@ -50,7 +52,11 @@ export class CommitCard {
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;
-        this.score = val.score;
+        if(this.isReviewPage) {
+            this.score = val.reviewers[1].find(user => user.userHash === this.reviewerAddress) ? val.score : 0;
+        } else {
+            this.score = val.score;
+        }
         this.creationDateMs = val.creationDateMs;
         this.urlLink = val.url;
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
