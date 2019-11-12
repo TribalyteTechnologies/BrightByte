@@ -6,15 +6,10 @@ import { TranslateService } from "@ngx-translate/core";
 import { UserAddressService } from "../../domain/user-address.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { map, catchError, flatMap} from "rxjs/operators";
+import { catchError } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
-
-interface IResponse {
-    data: string;
-    status: string;
-    descrption: string;
-}
+import { IResponse } from "../../models/response.model";
 
 @Component({
     selector: "profile",
@@ -26,6 +21,7 @@ export class Profile {
     public avatarObs: Observable<string>;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload";
+    private readonly IMAGE = "image";
 
     private noImageError: string;
     private uploadError: string;
@@ -68,7 +64,7 @@ export class Profile {
         let target = <HTMLInputElement>event.target;
         let uploadedFiles = <FileList>target.files;
         let input = uploadedFiles[0];
-        this.uploadForm.get("image").setValue(input);
+        this.uploadForm.get(this.IMAGE).setValue(input);
         this.getBase64(input).then((data: string) => {
             this.avatarUrl = data;
             this.imageSelected = true;
@@ -112,7 +108,7 @@ export class Profile {
     public saveProfileImage() {
         if (this.imageSelected) {
             let formData = new FormData();
-            formData.append("image", this.uploadForm.get("image").value);
+            formData.append(this.IMAGE, this.uploadForm.get(this.IMAGE).value);
 
             this.http.post(this.UPDATE_IMAGE_URL + "?userHash=" + this.userAddress, formData)
                 .subscribe(
@@ -133,18 +129,19 @@ export class Profile {
 
     private deleteAvatar() {
         this.log.d("Request to delete profile avatar");
-        this.http.get(AppConfig.GET_PROFILE_IMAGE + this.userAddress).pipe(
+        this.http.get(AppConfig.PROFILE_IMAGE_URL + this.userAddress + AppConfig.GET_AVATAR_STATUS).
         flatMap((response: IResponse) => {
-            let ret;
+            let ret: Observable<Object> = Observable.empty<IResponse>();
             if (response && response.status === AppConfig.STATUS_OK) {
                 this.log.d("Enable to delete the user avatar");
                 ret = this.http.delete(AppConfig.PROFILE_IMAGE_URL + this.userAddress);
             } else {
                 this.log.d("User already has his default avatar");
+                this.errorMsg = this.defaultError;
             }
             return ret;
-        }),
-        map((response: IResponse) => {
+        }).
+        subscribe((response: IResponse) => {
             if (response && response.status === AppConfig.STATUS_OK) {
                 this.avatarUrl = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
                 this.log.d("Changed the avatar to default one " + this.avatarUrl);
@@ -152,8 +149,7 @@ export class Profile {
                 this.dismiss();
             }
         }),
-        catchError(error => this.errorMsg = this.defaultError)
-        ).subscribe();
+        catchError(error => this.errorMsg = this.defaultError);
     }
 
     private getBase64(file: File): Promise<string | ArrayBuffer> {

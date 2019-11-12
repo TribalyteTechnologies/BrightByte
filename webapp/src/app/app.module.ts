@@ -59,7 +59,7 @@ import { FilterComponent } from "../components/filter-selection/filter-selection
 import { BackendAPIService } from "../domain/backend-api.service";
 import { WebSocketService } from "../core/websocket.service";
 import { UserAddressService } from "../domain/user-address.service";
-import { Avatar } from "../components/avatar/avatar.component";
+import { AvatarComponent } from "../components/avatar/avatar.component";
 import { Profile } from "../pages/profile/profile";
 import { AvatarService } from "../domain/avatar.service";
 export function HttpLoaderFactory(http: HttpClient) {
@@ -84,7 +84,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AchievementComponent,
         LoginForm,
         NewUserForm,
-        Avatar,
+        AvatarComponent,
         Profile,
         SetProfileForm,
         FilterComponent,
@@ -121,7 +121,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AchievementComponent,
         LoginForm,
         NewUserForm,
-        Avatar,
+        AvatarComponent,
         Profile,
         SetProfileForm,
         FilterComponent,

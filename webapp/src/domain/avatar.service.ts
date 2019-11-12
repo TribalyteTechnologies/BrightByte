@@ -4,12 +4,7 @@ import { Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../app.config";
 import { map, catchError, share } from "rxjs/operators";
-
-
-interface IResponse {
-    data: string;
-    status: string;
-}
+import { IResponse } from "../models/response.model";
 
 @Injectable()
 export class AvatarService {
@@ -32,19 +27,15 @@ export class AvatarService {
     public addUser(hash: string) {
         if (!this.avatarObsMap.has(hash) && hash) {
             let avatarSubj = new Subject<string>();
-            let avatarObs = this.http.get(AppConfig.GET_PROFILE_IMAGE + hash).pipe(
+            let avatarObs = this.http.get(AppConfig.PROFILE_IMAGE_URL + hash + AppConfig.GET_AVATAR_STATUS).pipe(
                 catchError((error) => {
                     this.log.e("ERROR: " + error.message);
                     let imageUrl = AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
                     return imageUrl;
                 }),
                 map((response: IResponse) => {
-                    let imageUrl = "";
-                    if (response && response.status === AppConfig.STATUS_OK) {
-                        imageUrl = AppConfig.PROFILE_IMAGE_URL + response.data;
-                    } else {
-                        imageUrl = AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
-                    }
+                    let imageUrl = (response && response.status === AppConfig.STATUS_OK) ? 
+                    AppConfig.SERVER_BASE_URL + response.data : AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
                     return imageUrl;
                 }),
                 share());

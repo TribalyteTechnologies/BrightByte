@@ -22,7 +22,7 @@ export class AppConfig {
     public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
     
     public static readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
-    public static readonly GET_PROFILE_IMAGE = AppConfig.PROFILE_IMAGE_URL + "getPath/";
+    public static readonly GET_AVATAR_STATUS = "/status/";
     public static readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
     public static readonly IDENTICON_FORMAT = ".svg";
 

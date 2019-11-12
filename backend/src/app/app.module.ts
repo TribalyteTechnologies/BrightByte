@@ -22,7 +22,7 @@ import { MulterModule } from "@nestjs/platform-express";
         BackendConfig,
         HttpModule,
         MulterModule.register({
-            dest: "./public"
+            dest: BackendConfig.IMAGE_STORAGE_PATH
         })
     ],
     controllers: [

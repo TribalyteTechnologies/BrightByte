@@ -9,54 +9,65 @@ import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { BackendConfig } from "../backend.config";
 
+interface IUploadedFile { 
+    fieldname: string;
+    originalname: boolean; 
+    encoding: string;
+    mimetype: string;
+    destination: string;
+    filename: string;
+    path: string;
+    size: number;
+}
+
 
 @Controller("profile-image")
 export class ProfileImageController {
-    private readonly PATH_IMAGES = "./public/";
     private readonly ROUTE_AVATARS = "/profile-image/";
 
     private log: ILogger;
     public constructor(
         loggerSrv: LoggerService
     ) {
-        this.log = loggerSrv.get("Profile Image Controller");
+        this.log = loggerSrv.get("ProfileImageController");
     }
 
     @Post("upload")
     @UseInterceptors(FileInterceptor("image", {
         storage: diskStorage({
-            destination: "./public/",
+            destination: BackendConfig.IMAGE_STORAGE_PATH,
             filename: editFileName
         })
     }))
     @Bind(UploadedFile())
-    public uploadFile(file): ResponseDto {
-        this.log.d("The avatar is saved for user: " + file.filename);
+    public uploadFile(file: IUploadedFile): ResponseDto {
+        this.log.d("The avatar is saved for user: " + file);
         return new SuccessResponseDto(this.ROUTE_AVATARS + file.filename);
     }
 
-    @Get("getPath/:hash")
-    public getUserPath(@Param("hash") image): ResponseDto {
-        this.log.d("Request to get avatar: " + image);        
-        if(fs.existsSync(this.PATH_IMAGES + image)) {
-            this.log.d("Avatar available: " + image);
-            return new SuccessResponseDto(image);            
+    @Get("/:userAddress/status")
+    public checkStatus(@Param("userAddress") hash): ResponseDto {
+        this.log.d("Request to get avatar: " + hash);
+        let ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "User avatar not available");
+        if(fs.existsSync(BackendConfig.IMAGE_STORAGE_PATH + hash)) {
+            this.log.d("Avatar available: " + hash);
+            ret =  new SuccessResponseDto(this.ROUTE_AVATARS + hash);            
         } else {
-            this.log.d("User avatar does not exist: " + image);
-            return new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "User avatar not available");
+            this.log.d("User avatar does not exist: " + hash);
         }
+        return ret;
     }
     
-    @Get(":hash")
-    public getUploadedFile(@Param("hash") image, @Res() res) {
-        this.log.d("Getting avatar: " + image);
-        res.sendFile(image, { root: "./public" });
+    @Get(":userAddress")
+    public getUploadedFile(@Param("userAddress") hash, @Res() res) {
+        this.log.d("Getting avatar: " + hash);
+        res.sendFile(hash, { root: BackendConfig.IMAGE_STORAGE_PATH });
     }
 
-    @Delete(":hash")
-    public deleteAvatar(@Param("hash") image): ResponseDto {
-        this.log.d("Erasing avatar: " + image);
-        fs.unlinkSync("./public/" + image);
+    @Delete(":userAddress")
+    public deleteAvatar(@Param("userAddress") hash): ResponseDto {
+        this.log.d("Erasing avatar: " + hash);
+        fs.unlinkSync(BackendConfig.IMAGE_STORAGE_PATH + hash);
         return new SuccessResponseDto("Image deleted");
     }
 }

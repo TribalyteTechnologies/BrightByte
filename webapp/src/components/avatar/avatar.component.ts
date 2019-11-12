@@ -9,7 +9,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
     styles: ["avatar.component.scss"]
 })
 
-export class Avatar {
+export class AvatarComponent {
 
     @Input()
     public isBig = false;
