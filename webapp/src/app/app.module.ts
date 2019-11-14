@@ -56,7 +56,7 @@ import { AchievementComponent } from "../components/achievement/achievement.comp
 import { RankingCard } from "../components/ranking-card/ranking-card.component";
 import { CustomRating } from "../components/custom-rating/custom-rating.component";
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
-import { BackendAPIService } from "../domain/backend-api.service";
+import { BackendApiService } from "../domain/backend-api.service";
 import { WebSocketService } from "../core/websocket.service";
 import { UserAddressService } from "../domain/user-address.service";
 import { AvatarComponent } from "../components/avatar/avatar.component";
@@ -137,7 +137,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         SpinnerService,
         LocalStorageService,
         SessionStorageService,
-        BackendAPIService,
+        BackendApiService,
         WebSocketService,
         BitbucketService,
         AchievementService,

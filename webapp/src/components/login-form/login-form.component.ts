@@ -12,7 +12,7 @@ import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
-import { BackendAPIService } from "../../domain/backend-api.service";
+import { BackendApiService } from "../../domain/backend-api.service";
 import { UserAddressService } from "../../domain/user-address.service";
 import { AvatarService } from "../../domain/avatar.service";
 
@@ -54,7 +54,7 @@ export class LoginForm {
         private loginService: LoginService,
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
-        private backendApiSrv: BackendAPIService,
+        private backendApiSrv: BackendApiService,
         private userAddressSrv: UserAddressService,
         private avatarSrv: AvatarService,
         loggerSrv: LoggerService,
