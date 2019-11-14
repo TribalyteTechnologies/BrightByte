@@ -54,7 +54,7 @@ export class LoginForm {
         private loginService: LoginService,
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
-        private backendAPISrv: BackendAPIService,
+        private backendApiSrv: BackendAPIService,
         private userAddressSrv: UserAddressService,
         private avatarSrv: AvatarService,
         loggerSrv: LoggerService,
@@ -124,14 +124,14 @@ export class LoginForm {
                 this.loginService.setAccount(account);
                 this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
-                    if(!result) {
+                    if(result) {
+                        this.userAddressSrv.set(account.address);
+                        this.backendApiSrv.initBackendConnection(account.address);
+                    }else{
                         this.translateService.get("app.connectionFailure").subscribe(
                             msg => {
                                 this.msg = msg;
                             });
-                    }else{
-                        this.userAddressSrv.set(account.address);
-                        this.backendAPISrv.initBackendConnection(account.address);
                     }
                 }).catch((e) => {
                     this.spinnerService.hideLoader();
