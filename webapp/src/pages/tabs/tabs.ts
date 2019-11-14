@@ -18,7 +18,6 @@ import { AddCommitPopover } from "../addcommit/addcommit";
 import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
-import { UserAddressService } from "../../domain/user-address.service";
 
 @Component({
     selector: "page-tabs",
@@ -53,7 +52,6 @@ export class TabsPage {
         private popoverCtrl: PopoverController,
         private translateSrv: TranslateService,
         private avatarSrv: AvatarService,
-        private userAddressSrv: UserAddressService
     ) {
         this.log = loggerSrv.get("TabsPage");
 
@@ -88,7 +86,7 @@ export class TabsPage {
     }
 
     public ngOnInit(){
-        this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddressSrv.get());
+        this.avatarObs = this.avatarSrv.getAvatarObs(this.loginService.getAccount().address);
     }
 
     public goTo(page: any) {

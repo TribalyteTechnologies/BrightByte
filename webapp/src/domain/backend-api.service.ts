@@ -3,8 +3,8 @@ import { Socket } from "ng-socket-io";
 import { WebSocketService } from "../core/websocket.service";
 import { Achievement } from "../models/achievement.model";
 import { AchievementService } from "../core/achievement.service";
-import { UserAddressService } from "./user-address.service";
 import { ILogger, LoggerService } from "../core/logger.service";
+import { LoginService } from "../core/login.service";
 
 @Injectable()
 export class BackendApiService {
@@ -19,7 +19,7 @@ export class BackendApiService {
     public constructor(
         private websocketSrv: WebSocketService,
         private achievementSrv: AchievementService,
-        private userAddrSrv: UserAddressService,
+        private loginSrv: LoginService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("BackendApiService");
@@ -48,7 +48,7 @@ export class BackendApiService {
 
     private registerConnectionListener() {
         this.socket.on(this.CONNECTION, () => {
-            this.socket.emit(this.ADD_USER, this.userAddrSrv.get());
+            this.socket.emit(this.ADD_USER, this.loginSrv.getAccount().address);
             this.log.d("Sending user address to the backend");
         });
     }

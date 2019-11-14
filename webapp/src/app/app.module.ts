@@ -58,7 +58,6 @@ import { CustomRating } from "../components/custom-rating/custom-rating.componen
 import { FilterComponent } from "../components/filter-selection/filter-selection.component";
 import { BackendApiService } from "../domain/backend-api.service";
 import { WebSocketService } from "../core/websocket.service";
-import { UserAddressService } from "../domain/user-address.service";
 import { AvatarComponent } from "../components/avatar/avatar.component";
 import { Profile } from "../pages/profile/profile";
 import { AvatarService } from "../domain/avatar.service";
@@ -144,7 +143,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         UserLoggerService,
         UserCacheService,
         AvatarService,
-        UserAddressService,
         ErrorHandlerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,

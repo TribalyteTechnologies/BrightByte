@@ -30,7 +30,7 @@ export class AvatarService {
             let avatarObs = this.http.get(AppConfig.PROFILE_IMAGE_URL + hash + AppConfig.GET_AVATAR_STATUS).pipe(
                 catchError((error) => {
                     this.log.e("ERROR: " + error.message);
-                    let imageUrl = AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
+                    let imageUrl = this.createIdenticonUrl(hash);
                     return imageUrl;
                 }),
                 map((response: IResponse) => {
@@ -49,12 +49,16 @@ export class AvatarService {
     }
 
     public updateUrl(hash: string, url?: string) {
-        let newUrl = url ? url : AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
+        let newUrl = url ? url : this.createIdenticonUrl(hash);
         this.avatarSubjMap.get(hash)
             .next(newUrl + "?r=" + Math.random());
     }
 
     public getAvatarObs(hash: string): Observable<string> {
         return this.avatarObsMap.has(hash) ? this.avatarObsMap.get(hash) : this.avatarObsMap.get(this.ANONYMOUS);
+    }
+
+    private createIdenticonUrl(hash: string){
+        return AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
     }
 }

@@ -32,13 +32,10 @@ export class CommitCard {
 
     @Input()
     public isReviewPage: boolean;
+    
     @Input()
     public reviewerAddress: string;
-
-    private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
-    private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
-    private _commit: UserCommit;
-
+    
     @Input()
     public set commit(val: UserCommit){
         this._commit = val;
@@ -47,8 +44,7 @@ export class CommitCard {
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         this.reviewers = val.reviewers[1].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
-        this.reviewersAddress = val.reviewers[1].map(userval => ((userval.name !== "") ? userval.userHash : null));
-        this.reviewersObs = this.reviewersAddress.map(reviewer => this.avatarSrv.getAvatarObs(reviewer));
+        this.reviewersObs = val.reviewers[1].map(userval => ((userval.name !== "") ? this.avatarSrv.getAvatarObs(userval.userHash) : null));
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;
@@ -61,9 +57,26 @@ export class CommitCard {
         this.urlLink = val.url;
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
     }
+    
     public get commit(){
         return this._commit;
     }
+
+    private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
+    private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
+    private _commit: UserCommit;
+
+    public constructor(
+        public translateService: TranslateService,
+        private avatarSrv: AvatarService
+        ){
+        translateService.get("app.anonymous").subscribe(
+            msg => {
+                this.ANONYMOUS = msg;
+            });
+        
+    }
+
     public ngDoCheck() {
         this.commit = this._commit;
     }
@@ -80,16 +93,4 @@ export class CommitCard {
             e.stopPropagation();
         }
     }
-
-    constructor(
-        public translateService: TranslateService,
-        private avatarSrv: AvatarService
-        ){
-        translateService.get("app.anonymous").subscribe(
-            msg => {
-                this.ANONYMOUS = msg;
-            });
-        
-    }
-
 }

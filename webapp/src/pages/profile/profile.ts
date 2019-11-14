@@ -3,13 +3,13 @@ import { ViewController, AlertController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../../app.config";
 import { TranslateService } from "@ngx-translate/core";
-import { UserAddressService } from "../../domain/user-address.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { catchError } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
 import { IResponse } from "../../models/response.model";
+import { LoginService } from "../../core/login.service";
 
 @Component({
     selector: "profile",
@@ -37,18 +37,17 @@ export class Profile {
         loggerSrv: LoggerService,
         private http: HttpClient,
         private translateSrv: TranslateService,
-        private userAddressSrv: UserAddressService,
+        private loginSrv: LoginService,
         private viewCtrl: ViewController,
         private avatarSrv: AvatarService,
         private formBuilder: FormBuilder,
         private alertCtrl: AlertController
     ) {
-        this.userAddress = this.userAddressSrv.get();
         this.log = loggerSrv.get("ProfilePage");
     }
 
     public ngOnInit() {
-        this.userAddress = this.userAddressSrv.get();
+        this.userAddress = this.loginSrv.getAccount().address;
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
         this.translateSrv.get(["setProfile.noImageError", "setProfile.uploadError", "setProfile.defaultError"]).subscribe(translation => {
             this.noImageError = translation["setProfile.noImageError"];

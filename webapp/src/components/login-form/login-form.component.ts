@@ -13,7 +13,6 @@ import { UserLoggerService } from "../../domain/user-logger.service";
 import { Account } from "web3/types";
 import { AppConfig } from "../../app.config";
 import { BackendApiService } from "../../domain/backend-api.service";
-import { UserAddressService } from "../../domain/user-address.service";
 import { AvatarService } from "../../domain/avatar.service";
 
 @Component({
@@ -55,7 +54,6 @@ export class LoginForm {
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
         private backendApiSrv: BackendApiService,
-        private userAddressSrv: UserAddressService,
         private avatarSrv: AvatarService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
@@ -125,7 +123,6 @@ export class LoginForm {
                 this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
                     if(result) {
-                        this.userAddressSrv.set(account.address);
                         this.backendApiSrv.initBackendConnection(account.address);
                     }else{
                         this.translateService.get("app.connectionFailure").subscribe(
