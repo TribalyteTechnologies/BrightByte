@@ -19,6 +19,10 @@ import { IResponse } from "../../models/response.model";
 export class Profile {
 
     public avatarObs: Observable<string>;
+    public avatarData: string;
+    public imageSelected = false;
+    public errorMsg: string;
+    public uploadForm: FormGroup;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload";
     private readonly IMAGE = "image";
@@ -26,11 +30,7 @@ export class Profile {
     private noImageError: string;
     private uploadError: string;
     private defaultError: string;
-    private avatarUrl: string;
-    private imageSelected = false;
-    private errorMsg: string;
     private userAddress: string;
-    private uploadForm: FormGroup;
     private log: ILogger;
 
     constructor(
@@ -66,7 +66,7 @@ export class Profile {
         let input = uploadedFiles[0];
         this.uploadForm.get(this.IMAGE).setValue(input);
         this.getBase64(input).then((data: string) => {
-            this.avatarUrl = data;
+            this.avatarData = data;
             this.imageSelected = true;
             this.errorMsg = null;
         });
@@ -143,8 +143,8 @@ export class Profile {
         }).
         subscribe((response: IResponse) => {
             if (response && response.status === AppConfig.STATUS_OK) {
-                this.avatarUrl = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
-                this.log.d("Changed the avatar to default one " + this.avatarUrl);
+                this.avatarData = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
+                this.log.d("Changed the avatar to default one " + this.avatarData);
                 this.avatarSrv.updateUrl(this.userAddress);
                 this.dismiss();
             }

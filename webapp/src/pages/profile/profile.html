@@ -9,7 +9,7 @@
         <ion-row no-padding>
             <ion-col col-3>
                 <ion-row class="preview-image" justify-center>
-                    <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarUrl" [isPreview]="true" class="avatar-container">
+                    <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarData" [isPreview]="true" class="avatar-container">
                     </avatar>
                     <ng-template #imageNotSelected>
                         <div class="container">
