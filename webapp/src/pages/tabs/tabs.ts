@@ -51,7 +51,7 @@ export class TabsPage {
         private websocketSrv: WebSocketService,
         private popoverCtrl: PopoverController,
         private translateSrv: TranslateService,
-        private avatarSrv: AvatarService,
+        private avatarSrv: AvatarService
     ) {
         this.log = loggerSrv.get("TabsPage");
 

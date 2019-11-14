@@ -9,7 +9,7 @@ import { IResponse } from "../models/response.model";
 @Injectable()
 export class AvatarService {
 
-    private readonly ANONYMOUS = "0x0";
+    private readonly ANONYMOUS_ADDRESS = "0x0";
 
     private log: ILogger;
     private avatarObsMap = new Map<string, Observable<string>>();
@@ -20,8 +20,6 @@ export class AvatarService {
         private http: HttpClient
     ) {
         this.log = loggerSrv.get("AvatarService");
-        let avatarObs: Observable<string> = Observable.of(AppConfig.IDENTICON_URL + this.ANONYMOUS + AppConfig.IDENTICON_FORMAT);
-        this.avatarObsMap.set(this.ANONYMOUS, avatarObs);
     }
 
     public addUser(hash: string) {
@@ -43,8 +41,9 @@ export class AvatarService {
             this.avatarObsMap.set(hash, avatarObs);
             this.avatarSubjMap.set(hash, avatarSubj);
         }else if (!hash) {
-            let avatarObs: Observable<string> = Observable.of(AppConfig.IDENTICON_URL + this.ANONYMOUS + AppConfig.IDENTICON_FORMAT);
-            this.avatarObsMap.set(this.ANONYMOUS, avatarObs);
+            let avatarObs: Observable<string> = 
+                Observable.of(this.createIdenticonUrl(this.ANONYMOUS_ADDRESS));
+            this.avatarObsMap.set(this.ANONYMOUS_ADDRESS, avatarObs);
         }
     }
 
@@ -55,7 +54,7 @@ export class AvatarService {
     }
 
     public getAvatarObs(hash: string): Observable<string> {
-        return this.avatarObsMap.has(hash) ? this.avatarObsMap.get(hash) : this.avatarObsMap.get(this.ANONYMOUS);
+        return this.avatarObsMap.get(this.avatarObsMap.has(hash) ? hash : this.ANONYMOUS_ADDRESS);
     }
 
     private createIdenticonUrl(hash: string){
