@@ -25,7 +25,7 @@ export class FilterComponent {
 
     @Input()
     public set projects(val: string[]){
-        this._projects = val;
+        this._projects = val.sort();
     }
 
     public get projects(){
