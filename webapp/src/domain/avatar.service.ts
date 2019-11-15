@@ -20,6 +20,8 @@ export class AvatarService {
         private http: HttpClient
     ) {
         this.log = loggerSrv.get("AvatarService");
+        //This null is added for the anonymous users to be recognise
+        this.addUser(null);
     }
 
     public addUser(hash: string) {
