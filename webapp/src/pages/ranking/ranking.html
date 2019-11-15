@@ -44,7 +44,7 @@
                 </table>
             </ion-row>
         </ion-col>
-        <ion-col>
+        <ion-col *ngIf="showDetails; else notShowDetails">
             <ion-row no-padding>
                 <span class="text-details text-details--bold">{{ "ranking.details" | translate }}:</span>
             </ion-row>
@@ -107,5 +107,8 @@
                 </ion-col>
             </ion-row>
         </ion-col>
+        <ng-template #notShowDetails>
+            <ion-col></ion-col>
+        </ng-template>
     </ion-row>
 </ion-content>

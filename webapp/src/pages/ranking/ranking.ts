@@ -64,6 +64,7 @@ export class RankingPage {
     private log: ILogger;
     private account: Account;
     private isBackendOnline = true;
+    private showDetails = false;
 
     constructor(
         public navCtrl: NavController,
@@ -133,6 +134,8 @@ export class RankingPage {
 
     public setUser(hash: string) {
         let detailsUser = this.usersRep.find(user => user.userHash === hash);
+        this.showDetails = this.usersRep.length > 0 ? true : false;
+        detailsUser = (!detailsUser && this.showDetails) ? this.usersRep[0] : detailsUser;
         if (detailsUser) {
             this.userRankDetails.name = detailsUser.name;
             this.userRankDetails.email = detailsUser.email;
@@ -145,9 +148,9 @@ export class RankingPage {
             this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
             this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
-            this.userRankDetails.hash = hash;
-            this.currentUserObs = this.avatarSrv.getAvatarObs(hash);
-            this.setUpTrophys(hash);
+            this.userRankDetails.hash = detailsUser.userHash;
+            this.currentUserObs = this.avatarSrv.getAvatarObs(detailsUser.userHash);
+            this.setUpTrophys(detailsUser.userHash);
         }
     }
 
