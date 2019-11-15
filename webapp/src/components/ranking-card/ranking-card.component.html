@@ -12,12 +12,16 @@
 </td>
 <td>
     <ion-row *ngIf="globalSelected; else elseBlock">
-        <img class="ico ico__big" src="../../assets/imgs/chains.svg">
-        <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+        <div class="criterial-center">
+            <img class="ico ico__big" src="../../assets/imgs/chains.svg">
+            <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+        </div>
     </ion-row>
     <ng-template #elseBlock>
-        <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
-        <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+        <div class="criterial-center">
+            <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
+            <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+        </div>
     </ng-template>
 
 </td>
