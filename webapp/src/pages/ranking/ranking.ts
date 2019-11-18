@@ -84,9 +84,9 @@ export class RankingPage {
     public ionViewWillEnter() {
         this.contractManagerService.getCurrentSeason()
             .then((season: number[]) => {
-                this.numberOfSeasons = season[0];
+                this.numberOfSeasons = Number(season[0]);
                 this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
-                this.seasonSelected = season[0];
+                this.seasonSelected = Number(season[0]);
                 setInterval(
                     () => {
                         let now = new Date().getTime();
@@ -110,12 +110,21 @@ export class RankingPage {
     }
 
     public refresh() {
+        this.log.w("Getting the global ranking" + this.seasonSelected + " or the season number " + this.seasonSelected);
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
         .then((usersRep: UserReputation[]) => {
             this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
                 this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
-            if (!this.globalSelected) {
+            if(!this.globalSelected) {
                 this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
+                let rankedUsers = this.usersRep.filter
+                (user => user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY);
+                let unRankedUsers = this.usersRep.filter
+                (user => user.numberOfCommits < AppConfig.MIN_COMMIT_QUALIFY || user.finishedReviews < AppConfig.MIN_REVIEW_QUALIFY);
+                unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
+                    return (b.numberOfCommits + b.finishedReviews) - ( a.numberOfCommits + a.finishedReviews);
+                });
+                this.usersRep = rankedUsers.concat(unRankedUsers);
             }
             this.usersRep.forEach((user, i) => {
                 user.userPosition = ++i;
@@ -168,7 +177,7 @@ export class RankingPage {
     public getNumbersOfSeason() {
         this.contractManagerService.getCurrentSeason()
             .then((season: number[]) => {
-                this.numberOfSeasons = season[0];
+                this.numberOfSeasons = Number(season[0]);
                 this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
                 this.seasonEnded = (this.seasonFinale - new Date().getTime()) < 0;
                 let date = new Date(this.seasonFinale);
