@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Socket } from "ng-socket-io";
 import { WebSocketService } from "../core/websocket.service";
 import { Achievement } from "../models/achievement.model";
-import { AchievementService } from "../core/achievement.service";
+import { AchievementService } from "./achievement.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { LoginService } from "../core/login.service";
 

@@ -9,7 +9,7 @@ import { UserDetails } from "../../models/user-details.model";
 import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
 import { Achievement } from "../../models/achievement.model";
-import { AchievementService } from "../../core/achievement.service";
+import { AchievementService } from "../../domain/achievement.service";
 import { ErrorHandlerService } from "../../domain/error-handler.service";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";

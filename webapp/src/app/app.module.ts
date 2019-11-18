@@ -28,7 +28,7 @@ import { DateFormatPipe } from "../core/date-format.pipe";
 import { SpinnerService } from "../core/spinner.service";
 import { SessionStorageService } from "../core/session-storage.service";
 import { LocalStorageService } from "../core/local-storage.service";
-import { AchievementService } from "../core/achievement.service";
+import { AchievementService } from "../domain/achievement.service";
 import { UpdateCheckService } from "../core/update-check.service";
 import { SocketIoModule } from "ng-socket-io";
 

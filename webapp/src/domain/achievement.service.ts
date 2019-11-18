@@ -1,4 +1,4 @@
-import { ILogger, LoggerService } from "./logger.service";
+import { ILogger, LoggerService } from "../core/logger.service";
 import { PopoverController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
@@ -37,7 +37,6 @@ export class AchievementService {
 
         achievementsObservable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash)
         .map((response: IAchievementResponse) => {
-                this.log.w(response);
                 if (response && response.status === AppConfig.STATUS_OK) {
                     for (let achievement of response.data) {
                         if (achievement) {

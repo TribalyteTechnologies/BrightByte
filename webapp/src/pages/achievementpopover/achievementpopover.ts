@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { ViewController, NavParams } from "ionic-angular";
 import { Achievement } from "../../models/achievement.model";
 import { LoggerService, ILogger } from "../../core/logger.service";
-import { AchievementService } from "../../core/achievement.service";
+import { AchievementService } from "../../domain/achievement.service";
 
 
 @Component({
