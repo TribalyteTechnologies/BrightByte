@@ -69,7 +69,7 @@ export class ReviewPage {
         this.log = loggerSrv.get("ReviewPage");
         this.filterValue = this.storageSrv.get(AppConfig.StorageKey.REVIEWFILTER);
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === "true";
-        this.userAdress = this.loginService.getAccount().address;
+        this.userAdress = this.loginService.getAccountAddress();
 
     }
 

@@ -35,7 +35,7 @@ export class AvatarService {
                 }),
                 map((response: IResponse) => {
                     let imageUrl = (response && response.status === AppConfig.STATUS_OK) ? 
-                    AppConfig.SERVER_BASE_URL + response.data : AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
+                    AppConfig.SERVER_BASE_URL + response.data : this.createIdenticonUrl(hash);
                     return imageUrl;
                 }),
                 share());
@@ -59,7 +59,7 @@ export class AvatarService {
         return this.avatarObsMap.get(this.avatarObsMap.has(hash) ? hash : this.ANONYMOUS_ADDRESS);
     }
 
-    private createIdenticonUrl(hash: string){
+    private createIdenticonUrl(hash: string): string{
         return AppConfig.IDENTICON_URL + hash + AppConfig.IDENTICON_FORMAT;
     }
 }

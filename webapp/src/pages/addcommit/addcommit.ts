@@ -70,7 +70,7 @@ export class AddCommitPopover {
             username: ["", [Validators.required]],
             password: ["", [Validators.required]]
         });
-        this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccount().address);
+        this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccountAddress());
         this.contractManagerService.getAllUserReputation(0, true)
         .then(allReputations => {
             this.log.d("All user reputations: ", allReputations);

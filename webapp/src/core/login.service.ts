@@ -14,4 +14,8 @@ export class LoginService {
         return this.account;
     }
 
+    public getAccountAddress(): string {
+        return this.account.address;
+    }
+
 }

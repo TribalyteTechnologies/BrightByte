@@ -48,7 +48,7 @@ export class BackendApiService {
 
     private registerConnectionListener() {
         this.socket.on(this.CONNECTION, () => {
-            this.socket.emit(this.ADD_USER, this.loginSrv.getAccount().address);
+            this.socket.emit(this.ADD_USER, this.loginSrv.getAccountAddress());
             this.log.d("Sending user address to the backend");
         });
     }

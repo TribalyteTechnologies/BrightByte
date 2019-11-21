@@ -86,7 +86,7 @@ export class TabsPage {
     }
 
     public ngOnInit(){
-        this.avatarObs = this.avatarSrv.getAvatarObs(this.loginService.getAccount().address);
+        this.avatarObs = this.avatarSrv.getAvatarObs(this.loginService.getAccountAddress());
     }
 
     public goTo(page: any) {

@@ -47,7 +47,7 @@ export class Profile {
     }
 
     public ngOnInit() {
-        this.userAddress = this.loginSrv.getAccount().address;
+        this.userAddress = this.loginSrv.getAccountAddress();
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
         this.translateSrv.get(["setProfile.noImageError", "setProfile.uploadError", "setProfile.defaultError"]).subscribe(translation => {
             this.noImageError = translation["setProfile.noImageError"];

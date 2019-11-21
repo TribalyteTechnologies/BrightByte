@@ -70,11 +70,6 @@ export class CommitCard {
         public translateService: TranslateService,
         private avatarSrv: AvatarService
         ){
-        translateService.get("app.anonymous").subscribe(
-            msg => {
-                this.ANONYMOUS = msg;
-            });
-        
     }
 
     public ngDoCheck() {
