@@ -27,7 +27,7 @@ export class AvatarService {
     public addUser(hash: string) {
         if (!this.avatarObsMap.has(hash) && hash) {
             let avatarSubj = new Subject<string>();
-            let avatarObs = this.http.get(AppConfig.PROFILE_IMAGE_URL + hash + AppConfig.GET_AVATAR_STATUS).pipe(
+            let avatarObs = this.http.get(AppConfig.PROFILE_IMAGE_URL + hash + AppConfig.AVATAR_STATUS_PATH).pipe(
                 catchError((error) => {
                     this.log.e("ERROR: " + error.message);
                     let imageUrl = this.createIdenticonUrl(hash);

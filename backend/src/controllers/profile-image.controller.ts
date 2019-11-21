@@ -48,12 +48,13 @@ export class ProfileImageController {
     @Get("/:userAddress/status")
     public checkStatus(@Param("userAddress") hash): ResponseDto {
         this.log.d("Request to get avatar: " + hash);
-        let ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "User avatar not available");
+        let ret: ResponseDto;
         if(fs.existsSync(BackendConfig.IMAGE_STORAGE_PATH + hash)) {
             this.log.d("Avatar available: " + hash);
             ret =  new SuccessResponseDto(this.ROUTE_AVATARS + hash);            
         } else {
             this.log.d("User avatar does not exist: " + hash);
+            ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "User avatar not available");
         }
         return ret;
     }

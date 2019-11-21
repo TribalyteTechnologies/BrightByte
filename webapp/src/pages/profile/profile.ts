@@ -25,7 +25,7 @@ export class Profile {
     public uploadForm: FormGroup;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload";
-    private readonly IMAGE = "image";
+    private readonly UPLOAD_TYPE = "image";
 
     private noImageError: string;
     private uploadError: string;
@@ -63,7 +63,7 @@ export class Profile {
         let target = <HTMLInputElement>event.target;
         let uploadedFiles = <FileList>target.files;
         let input = uploadedFiles[0];
-        this.uploadForm.get(this.IMAGE).setValue(input);
+        this.uploadForm.get(this.UPLOAD_TYPE).setValue(input);
         this.getBase64(input).then((data: string) => {
             this.avatarData = data;
             this.imageSelected = true;
@@ -107,7 +107,7 @@ export class Profile {
     public saveProfileImage() {
         if (this.imageSelected) {
             let formData = new FormData();
-            formData.append(this.IMAGE, this.uploadForm.get(this.IMAGE).value);
+            formData.append(this.UPLOAD_TYPE, this.uploadForm.get(this.UPLOAD_TYPE).value);
 
             this.http.post(this.UPDATE_IMAGE_URL + "?userHash=" + this.userAddress, formData)
                 .subscribe(
@@ -128,7 +128,7 @@ export class Profile {
 
     private deleteAvatar() {
         this.log.d("Request to delete profile avatar");
-        this.http.get(AppConfig.PROFILE_IMAGE_URL + this.userAddress + AppConfig.GET_AVATAR_STATUS).
+        this.http.get(AppConfig.PROFILE_IMAGE_URL + this.userAddress + AppConfig.AVATAR_STATUS_PATH).
         flatMap((response: IResponse) => {
             let ret: Observable<Object> = Observable.empty<IResponse>();
             if (response && response.status === AppConfig.STATUS_OK) {
