@@ -86,8 +86,8 @@ export class RankingPage {
         this.contractManagerService.getCurrentSeason()
             .then((season: number[]) => {
                 this.numberOfSeasons = Number(season[0]);
+                this.seasonSelected = this.numberOfSeasons;
                 this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
-                this.seasonSelected = Number(season[0]);
                 setInterval(
                     () => {
                         let now = new Date().getTime();
@@ -111,17 +111,14 @@ export class RankingPage {
     }
 
     public refresh() {
-        this.log.w("Getting the global ranking" + this.seasonSelected + " or the season number " + this.seasonSelected);
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
         .then((usersRep: UserReputation[]) => {
             this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
                 this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
             if(!this.globalSelected) {
                 this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
-                let rankedUsers = this.usersRep.filter
-                (user => user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY);
-                let unRankedUsers = this.usersRep.filter
-                (user => user.numberOfCommits < AppConfig.MIN_COMMIT_QUALIFY || user.finishedReviews < AppConfig.MIN_REVIEW_QUALIFY);
+                let rankedUsers = this.usersRep.filter(user => this.filterRankedUser(user));
+                let unRankedUsers = this.usersRep.filter(user => !this.filterRankedUser(user));
                 unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
                     return (b.numberOfCommits + b.finishedReviews) - ( a.numberOfCommits + a.finishedReviews);
                 });
@@ -228,5 +225,9 @@ export class RankingPage {
 
     private parseInt(ind: string): number {
         return +ind.match(/\d+/)[0];
+    }
+
+    private filterRankedUser(user: UserReputation): boolean {
+        return user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY;
     }
 }
