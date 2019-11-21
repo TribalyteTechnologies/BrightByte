@@ -5,7 +5,6 @@ import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
 import { Account } from "web3/types";
-import { UserDetails } from "../../models/user-details.model";
 import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
 import { Achievement } from "../../models/achievement.model";
@@ -37,7 +36,6 @@ class UserRankDetails {
 })
 export class RankingPage {
 
-    public userDetails = new UserDetails();
     public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
@@ -141,25 +139,26 @@ export class RankingPage {
     }
 
     public setUser(hash: string) {
-        let detailsUser = this.usersRep.find(user => user.userHash === hash);
-        this.showDetails = this.usersRep.length > 0 ? true : false;
-        detailsUser = (!detailsUser && this.showDetails) ? this.usersRep[0] : detailsUser;
-        if (detailsUser) {
-            this.userRankDetails.name = detailsUser.name;
-            this.userRankDetails.email = detailsUser.email;
-            this.userRankDetails.reviews = detailsUser.finishedReviews;
-            this.userRankDetails.commits = detailsUser.numberOfCommits;
-            this.userRankDetails.agreed = detailsUser.agreedPercentage;
-            this.userRankDetails.score = detailsUser.reputation;
-            this.userRankDetails.rank = this.rankingTitle[Math.round(detailsUser.reputation)];
-            this.userRankDetails.level = Math.round(detailsUser.reputation * 3);
-            this.userRankDetails.engagementIndex = detailsUser.engagementIndex;
+        let userSearch = this.usersRep.filter(user => user.userHash === hash);
+        let userDetails = userSearch[0];
+        this.showDetails = this.usersRep.length > 0;
+        userDetails = (!userDetails && this.showDetails) ? this.usersRep[0] : userDetails;
+        if (userDetails) {
+            this.userRankDetails.name = userDetails.name;
+            this.userRankDetails.email = userDetails.email;
+            this.userRankDetails.reviews = userDetails.finishedReviews;
+            this.userRankDetails.commits = userDetails.numberOfCommits;
+            this.userRankDetails.agreed = userDetails.agreedPercentage;
+            this.userRankDetails.score = userDetails.reputation;
+            this.userRankDetails.rank = this.rankingTitle[Math.round(userDetails.reputation)];
+            this.userRankDetails.level = Math.round(userDetails.reputation * 3);
+            this.userRankDetails.engagementIndex = userDetails.engagementIndex;
             this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
-            this.userRankDetails.hash = detailsUser.userHash;
-            this.userRankDetails.ranked = detailsUser.ranked;
-            this.currentUserObs = this.avatarSrv.getAvatarObs(detailsUser.userHash);
-            this.setUpTrophys(detailsUser.userHash);
+            this.userRankDetails.hash = userDetails.userHash;
+            this.userRankDetails.ranked = userDetails.ranked;
+            this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
+            this.setUpTrophys(userDetails.userHash);
         }
     }
 
