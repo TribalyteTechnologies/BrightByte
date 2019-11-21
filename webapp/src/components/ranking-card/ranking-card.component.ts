@@ -33,6 +33,9 @@ export class RankingCard {
     public reputationString = "";
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
+    public ranked = false;
+    public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
+    public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
     
     @Input()
     public set ranking(val: UserReputation) {
@@ -50,6 +53,7 @@ export class RankingCard {
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.engagementIndex.toFixed(2);
         this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
+        this.ranked = val.ranked;
     }
 
     @Input()

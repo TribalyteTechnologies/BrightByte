@@ -28,6 +28,7 @@ class UserRankDetails {
     public scoreString = "";
     public engagementIndexString = "";
     public hash = "";
+    public ranked = true;
 }
 
 @Component({
@@ -124,6 +125,7 @@ export class RankingPage {
                 unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
                     return (b.numberOfCommits + b.finishedReviews) - ( a.numberOfCommits + a.finishedReviews);
                 });
+                unRankedUsers.forEach(user => user.ranked = false);
                 this.usersRep = rankedUsers.concat(unRankedUsers);
             }
             this.usersRep.forEach((user, i) => {
@@ -158,6 +160,7 @@ export class RankingPage {
             this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
             this.userRankDetails.hash = detailsUser.userHash;
+            this.userRankDetails.ranked = detailsUser.ranked;
             this.currentUserObs = this.avatarSrv.getAvatarObs(detailsUser.userHash);
             this.setUpTrophys(detailsUser.userHash);
         }
@@ -227,4 +230,3 @@ export class RankingPage {
         return +ind.match(/\d+/)[0];
     }
 }
-

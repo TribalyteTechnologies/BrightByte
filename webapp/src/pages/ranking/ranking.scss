@@ -11,10 +11,11 @@ page-ranking {
         background-color: #fff;
         border-radius: 5px;
     }
-
     .box-height {
         height: 450px;
         overflow-y: scroll;
-
+    }
+    .not-ranked {
+        background-color: rgb(230, 230, 230);
     }
 }

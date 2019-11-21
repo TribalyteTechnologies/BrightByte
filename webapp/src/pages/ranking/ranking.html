@@ -40,7 +40,7 @@
             </ion-row>
             <ion-row>
                 <table class="table">
-                    <tr *ngFor="let user of usersRep" ranking-card [ngClass]="{'card-user':user.userHash === userHash}" (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user"></tr>
+                    <tr *ngFor="let user of usersRep" ranking-card (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user" class="{{user.ranked ? 'ranked' : 'not-ranked' }}"></tr>
                 </table>
             </ion-row>
         </ion-col>
@@ -89,8 +89,13 @@
                     <ng-template #globalNotSelectedBlockTwo>
                         <ion-row justify-content-center padding>
                             <ion-col no-padding class="no-wrap">
+                                <div *ngIf="userRankDetails.ranked; else detailNotRanked">
                                     <span class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
                                     <img class="btn--img" src="../../assets/imgs/star-icon.svg">
+                                </div>
+                                <ng-template #detailNotRanked>
+                                        <span class="ranking-details--star">{{ "ranking.noReputation" | translate }}</span>
+                                </ng-template>
                             </ion-col> 
                         </ion-row>
                     </ng-template>

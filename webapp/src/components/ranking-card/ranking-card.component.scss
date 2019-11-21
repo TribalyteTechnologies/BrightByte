@@ -1,1 +1,47 @@
 ranking-card {}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    justify-content: center;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 160px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+    top: 80%;
+    left: 50%;
+    margin-left: -80px;
+    font-size: 12px;
+
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip .tooltip-text::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+.tooltip-text-open {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 11px;
+    text-align: center;
+}
