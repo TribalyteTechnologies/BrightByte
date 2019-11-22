@@ -25,7 +25,9 @@ export class FilterComponent {
 
     @Input()
     public set projects(val: string[]){
-        this._projects = val.sort();
+        this._projects = val.sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
     }
 
     public get projects(){
