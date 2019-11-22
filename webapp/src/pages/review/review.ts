@@ -269,13 +269,15 @@ export class ReviewPage {
 
             return this.contractManagerService.getCommitDetails(urlCom);
         }).then((commitUpdated: UserCommit) => {
-            let commit = this.displayCommitsToReview.find(comm => comm.url === urlCom);
+            let commitSearch = this.displayCommitsToReview.filter(comm => comm.url === urlCom);
+            let commit = commitSearch[0];
             commit.score = commitUpdated.score;
             commit.lastModificationDateMs = commitUpdated.lastModificationDateMs;
             commit.isReadNeeded = false;
             commit.isPending = false;
             commit.numberReviews = commitUpdated.numberReviews;
-            let userDetails = commit.reviewers[0].find((user) => user.userHash === this.userAdress);
+            let userDetailsSearch = commit.reviewers[0].filter(user => user.userHash === this.userAdress);
+            let userDetails = userDetailsSearch[0];
             commit.reviewers[0].splice
                 (commit.reviewers[0].indexOf(userDetails), 1);
             commit.reviewers[1].push(userDetails);

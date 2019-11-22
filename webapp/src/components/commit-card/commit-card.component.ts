@@ -15,6 +15,7 @@ import { AvatarService } from "../../domain/avatar.service";
  
 export class CommitCard {
     public ANONYMOUS = "";
+    public ANONYMOUS_ADDRESS = "0x0";
     public urlHash: string = "0000";
     public urlLink = "http";
     public numberReviews = 0;
@@ -44,15 +45,18 @@ export class CommitCard {
         this.numberReviews = val.reviewers[0].length;
         this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         this.reviewers = val.reviewers[1].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
-        this.reviewersObs = val.reviewers[1].map(userval => ((userval.name !== "") ? this.avatarSrv.getAvatarObs(userval.userHash) : null));
+        let searchUser = val.reviewers[1].filter(user => {
+            if(user.name !== "") {
+                this.reviewersObs.push(this.avatarSrv.getAvatarObs(user.userHash));
+            } else {
+                this.reviewersObs.push(this.avatarSrv.getAvatarObs(this.ANONYMOUS_ADDRESS));
+            }
+            return user.userHash === this.reviewerAddress;
+        });
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;
-        if(this.isReviewPage) {
-            this.score = val.reviewers[1].find(user => user.userHash === this.reviewerAddress) ? val.score : 0;
-        } else {
-            this.score = val.score;
-        }
+        this.score = (this.isReviewPage && !searchUser[0]) ? 0 : val.score;
         this.creationDateMs = val.creationDateMs;
         this.urlLink = val.url;
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
