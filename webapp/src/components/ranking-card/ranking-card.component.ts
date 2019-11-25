@@ -11,7 +11,7 @@ import { Observable } from "rxjs";
     selector: "[ranking-card]",
     templateUrl: "ranking-card.component.html",
     styles: ["ranking-card.component.scss"]
- })
+})
 export class RankingCard {
 
     public ANONYMOUS = "";
@@ -21,7 +21,7 @@ export class RankingCard {
     public userPosition = 0;
     public reputation = 0;
     public level = 0;
-    public email  = "";
+    public email = "";
     public numReviews = 0;
     public numCommits = 0;
     public agreed = 99;
@@ -36,7 +36,8 @@ export class RankingCard {
     public ranked = false;
     public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
     public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
-    
+    public viewParams = {};
+
     @Input()
     public set ranking(val: UserReputation) {
         let rankIdx = val.reputation;
@@ -47,13 +48,19 @@ export class RankingCard {
         this.email = val.email;
         this.numReviews = val.finishedReviews;
         this.numCommits = val.numberOfCommits,
-        this.agreed = val.agreedPercentage;
+            this.agreed = val.agreedPercentage;
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.engagementIndex.toFixed(2);
         this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
         this.ranked = val.ranked;
+        let pendingCommits = this.minNumberCommit - this.numCommits;
+        let pendingReviews = this.minNumberReview - this.numReviews;
+        this.viewParams = {
+            pendingCommits: pendingCommits < 0 ? 0 : pendingCommits,
+            pendingReviews: pendingReviews < 0 ? 0 : pendingReviews
+        };
     }
 
     @Input()
@@ -62,10 +69,10 @@ export class RankingCard {
     }
 
     constructor(
-        loginService: LoginService, 
+        loginService: LoginService,
         translateSrv: TranslateService,
         private avatarSrv: AvatarService
-        ){
+    ) {
         let account = loginService.getAccount();
         this.accountHash = account.address;
         translateSrv.get("app.anonymous").subscribe(
