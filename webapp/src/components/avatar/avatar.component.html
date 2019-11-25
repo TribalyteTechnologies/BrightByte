@@ -1,3 +1,3 @@
-<img class="avatar-icon"
+<img class="avatar-icon" *ngIf="avatarUrl"
     [ngClass]="(isBig ? '__big ' : '') + (isPreview ? '__preview' : '')" [src]="avatarUrl"
     (click)="isClickable ? openAddCommitDialog() : null">
