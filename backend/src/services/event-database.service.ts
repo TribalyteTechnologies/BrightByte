@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { Observable, throwError, of } from "rxjs";
-import { flatMap, tap, map, first, catchError } from "rxjs/operators";
+import { flatMap, tap, map, first, catchError, share } from "rxjs/operators";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
@@ -22,8 +22,7 @@ export class EventDatabaseService {
         private databaseSrv: CoreDatabaseService
     ) {
         this.log = loggerSrv.get("EventDatabaseService");
-        this.initObs = this.init();
-        this.initObs.subscribe(() => this.log.d("The Event Data Base is ready"));
+        this.init();
     }
     public getCurrentSeason(): Observable<ResponseDto> {
         return this.initObs.pipe(
@@ -50,13 +49,14 @@ export class EventDatabaseService {
         );
     }
 
-    private init(): Observable<Loki.Collection> {
-        return this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
+    private init() {
+        this.initObs = this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
             tap(database => this.database = database),
             flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION)),
             //first() is neccessary so that NestJS controllers can answer Http Requests.
             first(),
-            tap(collection => this.initObs = of(collection))
+            tap(collection => this.initObs = of(collection)),
+            share()
         );
     }
 }

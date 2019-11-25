@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Observable, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, share } from "rxjs/operators";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { AchievementDto } from "../dto/achievement.dto";
 import { BackendConfig } from "../backend.config";
@@ -146,7 +146,7 @@ export class AchievementDatabaseService {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("AchievementDatabaseService");
-        this.initObs = this.init();
+        this.init();
     }
 
     public getAchievements(achievementIdentifiers: Array<string>): Observable<Array<AchievementDto>> {
@@ -161,12 +161,12 @@ export class AchievementDatabaseService {
     public getAchievementMap(): Observable<Map<string, AchievementDto>> {
         return this.initObs;
     }
-    private init(): Observable<Map<string, AchievementDto>> {
+
+    private init() {
         let mapAchievements = new Map<string, AchievementDto>();
         this.ACHIEVEMENTS.forEach(achievement => {
             mapAchievements.set(achievement.id, achievement);
         });
-        this.initObs = of(mapAchievements);
-        return this.initObs;
+        this.initObs = of(mapAchievements).pipe(share());
     }
 }
