@@ -25,8 +25,10 @@ export class FilterComponent {
 
     @Input()
     public set projects(val: string[]){
-        this._projects = val.sort(function (a, b) {
-            return a.toLowerCase().localeCompare(b.toLowerCase());
+        this._projects = val.sort((inA, inB) => {
+            const a = inA.toLowerCase();
+            const b = inB.toLowerCase();            
+            return a > b ? 1 : a < b ? -1 : 0;
         });
     }
 
