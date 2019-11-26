@@ -120,7 +120,9 @@ export class RankingPage {
                 unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
                     return (b.numberOfCommits + b.finishedReviews) - ( a.numberOfCommits + a.finishedReviews);
                 });
-                unRankedUsers.forEach(user => user.ranked = false);
+                if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON){
+                    unRankedUsers.forEach(user => user.ranked = false);
+                }
                 this.usersRep = rankedUsers.concat(unRankedUsers);
             }
             this.usersRep.forEach((user, i) => {

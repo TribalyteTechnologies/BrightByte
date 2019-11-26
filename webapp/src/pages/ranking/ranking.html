@@ -89,13 +89,13 @@
                     <ng-template #globalNotSelectedBlockTwo>
                         <ion-row justify-content-center padding>
                             <ion-col no-padding class="no-wrap">
-                                <div *ngIf="userRankDetails.ranked; else detailNotRanked">
-                                    <span class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
+                                <div>
+                                    <span *ngIf="userRankDetails.ranked; else detailNotRanked" class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
+                                    <ng-template #detailNotRanked>
+                                        <span class="ranking-details-text text-title--grey">{{ "ranking.noReputation" | translate }}</span>
+                                    </ng-template>
                                     <img class="btn--img" src="../../assets/imgs/star-icon.svg">
                                 </div>
-                                <ng-template #detailNotRanked>
-                                        <span class="ranking-details--star">{{ "ranking.noReputation" | translate }}</span>
-                                </ng-template>
                             </ion-col> 
                         </ion-row>
                     </ng-template>
