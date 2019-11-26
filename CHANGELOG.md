@@ -1,5 +1,63 @@
 # Change Log
 
+#### v 0.5.6
+
+- Added season qualifying functionality.
+- Visual mods on ranking page for qualifying functionality.
+- Browser compatiblity refactor.
+- Solved minor bugs.
+
+`No migration needed from 0.5.5 to 0.5.6`
+
+#### v 0.5.5
+
+- Hided review card reputation after reviewing the commit.
+- Added new use analytics tool.
+- Refactored avatar component.
+- Minor visual fixes.
+- Solved some avatar component bugs.
+
+`No migration needed from 0.5.4 to 0.5.5`
+
+#### v 0.5.4
+
+- Solved review showng error issue.
+- Added countdown for season end.
+
+`No migration needed from 0.5.3 to 0.5.4`
+
+#### v 0.5.3
+
+- Implemented directory for profile image storing on the backend.
+- Implemented avatar component for profile image managing on the webapp.
+- New versioning update procedure for webapp.
+- Implemented profile upluading tests.
+- Minor documentation mods.
+- Minor bug fixes.
+
+`No migration needed from 0.5.2 to 0.5.3`
+
+#### v 0.5.2
+
+- Remove truffle-contract dependecies to avoid chrome realated bugs.
+- Added new tool in node.js for migrations.
+- Added versioning for smartcontracts
+- Improved webapp error handling.
+- Updated cross-platform pacake.json scripts
+- Solved minor bugs
+
+`No migration needed from 0.5.1 to 0.5.2`
+
+#### v 0.5.1
+
+- Solved reputation precission bug on the smartcontracts (migration needed).
+- Added delete commit functionality to the smartcontracts and the webapp.
+- Modified backend to get the contracts ABIs from the frontend.
+- Implemented first backend test.
+- Minor style modifications.
+
+**IMPORTANT NOTE**: It's necessary to deploy all the new contracts again and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
+
 ####  v 0.5.0
 
 - Added backend for achievements management and Blockchain event handling.
