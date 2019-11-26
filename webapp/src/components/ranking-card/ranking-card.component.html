@@ -34,14 +34,14 @@
     </ng-template>
 </td>
 <td>
-    <ion-row *ngIf="ranked; else toQualifyReview" justify-content-center class="text-title">{{ numReviews }}</ion-row>
+    <ion-row *ngIf="numReviews >= minNumberReview; else toQualifyReview" justify-content-center class="text-title">{{ numReviews }}</ion-row>
     <ng-template  #toQualifyReview>
         <ion-row justify-content-center class="text-title">{{ numReviews }} {{ "ranking.outOf" | translate }} {{ minNumberReview }}</ion-row>
     </ng-template>
     <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
 </td>
 <td>
-    <ion-row *ngIf="ranked; else toQualifyCommit" justify-content-center class="text-title">{{ numCommits }}</ion-row>
+    <ion-row *ngIf="numCommits >= minNumberCommit; else toQualifyCommit" justify-content-center class="text-title">{{ numCommits }}</ion-row>
     <ng-template #toQualifyCommit>
         <ion-row justify-content-center class="text-title">{{ numCommits }} {{ "ranking.outOf" | translate }} {{ minNumberCommit }}</ion-row>
     </ng-template>
