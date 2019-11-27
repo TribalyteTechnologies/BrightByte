@@ -36,7 +36,9 @@ export class RankingCard {
     public ranked = false;
     public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
     public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
-    public viewParams = {};
+    public tooltipParams: { pendingCommits: number; pendingReviews: number; };
+    public commitParams: { numCommits: number; minNumberCommit: number; };
+    public reviewParams: { numReviews: number; minNumberReview: number; };
 
     @Input()
     public set ranking(val: UserReputation) {
@@ -55,11 +57,17 @@ export class RankingCard {
         this.engagementIndexString = this.engagementIndex.toFixed(2);
         this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
         this.ranked = val.ranked;
-        let pendingCommits = this.minNumberCommit - this.numCommits;
-        let pendingReviews = this.minNumberReview - this.numReviews;
-        this.viewParams = {
-            pendingCommits: pendingCommits < 0 ? 0 : pendingCommits,
-            pendingReviews: pendingReviews < 0 ? 0 : pendingReviews
+        this.tooltipParams = {
+            pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
+            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews)
+        };
+        this.commitParams = {
+            numCommits: this.numCommits,
+            minNumberCommit : this.minNumberCommit 
+        };
+        this.reviewParams = {
+            numReviews: this.numReviews,
+            minNumberReview : this.minNumberReview
         };
     }
 

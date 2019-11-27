@@ -132,7 +132,8 @@
         "selectSeason": "Select Season",
         "seasonEnd": "Season Ended",
         "noReputation": "?.??",
-        "outOf": "out of",
+        "reviewOutOf": "{{numReviews}} out of {{minNumberReview}}",
+        "commitOutOf": "{{numCommits}} out of {{minNumberCommit}}",
         "notQualified": "<h6>Not Qualifid yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season"
     },
     "review": {

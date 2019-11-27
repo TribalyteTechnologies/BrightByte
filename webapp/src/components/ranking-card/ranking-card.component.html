@@ -31,7 +31,7 @@
                         <span
                             class="text-title text-title--grey ranking-score">{{ "ranking.noReputation" | translate }}</span>
                         <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
-                        <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:viewParams"></div>
+                        <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:tooltipParams"></div>
                     </ion-col>
                 </ng-template>
             </div>
@@ -41,8 +41,7 @@
         <ion-row *ngIf="ranked || numReviews >= minNumberReview; else toQualifyReview" justify-content-center
             class="text-title">{{ numReviews }}</ion-row>
         <ng-template #toQualifyReview>
-            <ion-row justify-content-center class="text-title">{{ numReviews }} {{ "ranking.outOf" | translate }}
-                {{ minNumberReview }}</ion-row>
+            <ion-row justify-content-center class="text-title">{{ "ranking.reviewOutOf" | translate: reviewParams }}</ion-row>
         </ng-template>
         <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
     </ion-col>
@@ -50,8 +49,7 @@
         <ion-row *ngIf="ranked || numCommits >= minNumberCommit; else toQualifyCommit" justify-content-center
             class="text-title">{{ numCommits }}</ion-row>
         <ng-template #toQualifyCommit>
-            <ion-row justify-content-center class="text-title">{{ numCommits }} {{ "ranking.outOf" | translate }}
-                {{ minNumberCommit }}</ion-row>
+            <ion-row justify-content-center class="text-title">{{ "ranking.commitOutOf" | translate: commitParams }}</ion-row>
         </ng-template>
         <ion-row justify-content-center class="text-description">{{ "app.commits" | translate }}</ion-row>
     </ion-col>
