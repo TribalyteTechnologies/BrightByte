@@ -36,7 +36,7 @@ ranking-card {}
     border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
 }
 
-.tooltip:hover .tooltip-text {
+.tooltip-block:hover .tooltip-text {
     visibility: visible;
 }
 
@@ -44,4 +44,20 @@ ranking-card {}
     color: rgba(0, 0, 0, 0.6);
     font-size: 11px;
     text-align: center;
+}
+
+.block-padding {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.user-info {
+    padding-left: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.remove-horizontal-padding {
+    padding-left: 0px;
+    padding-right: 0px;
 }

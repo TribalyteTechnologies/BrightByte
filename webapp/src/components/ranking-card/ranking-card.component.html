@@ -1,53 +1,62 @@
-<td>
-    <ion-row padding class="text-details text-details--bold"> {{ userPosition }} </ion-row>
-</td>
-<td>
-    <ion-row justify-content-center>
-            <avatar [avatarUrl]="avatarObs | async" ></avatar>
-    </ion-row>
-</td>
-<td>
-    <ion-row class="text-title"> {{ name }} </ion-row>
-    <ion-row class="text-description no-wrap"> {{ email }} </ion-row>
-</td>
-<td>
-    <ion-row *ngIf="globalSelected; else elseBlock">
+<ion-row class="block-padding tooltip-block">
+    <ion-col col-1 padding class="text-details text-details--bold"> {{ userPosition }} </ion-col>
+    <ion-col col-1>
+        <ion-row justify-content-center>
+            <avatar [avatarUrl]="avatarObs | async"></avatar>
+        </ion-row>
+    </ion-col>
+    <ion-col col-3>
+        <ion-row>
+            <span class="user-info text-title no-wrap"> {{ name }} </span>
+        </ion-row> 
+        <ion-row>
+            <span class="user-info text-description no-wrap"> {{ email }} </span>
+        </ion-row>
+    </ion-col>
+    <ion-col col-2 class="remove-horizontal-padding" *ngIf="globalSelected; else elseBlock">
         <div class="criterial-center">
             <img class="ico ico__big" src="../../assets/imgs/chains.svg">
             <span class="text-title ranking-score">{{ engagementIndexString }}</span>
         </div>
-    </ion-row>
+    </ion-col>
     <ng-template #elseBlock>
-        <div class="criterial-center">
-            <div *ngIf="ranked; else notRanked">
-                <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
-                <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
-            </div>
-            <ng-template #notRanked no-padding>
-                <ion-col class="tooltip">
-                    <span class="text-title text-title--grey ranking-score">{{ "ranking.noReputation" | translate }}</span>
+        <ion-col col-2 class="remove-horizontal-padding">
+            <div class="criterial-center">
+                <div *ngIf="ranked; else notRanked">
+                    <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
                     <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
-                    <div  class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:viewParams"></div>
-                </ion-col>
-            </ng-template>
-        </div>
+                </div>
+                <ng-template #notRanked no-padding>
+                    <ion-col class="remove-horizontal-padding tooltip">
+                        <span
+                            class="text-title text-title--grey ranking-score">{{ "ranking.noReputation" | translate }}</span>
+                        <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+                        <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:viewParams"></div>
+                    </ion-col>
+                </ng-template>
+            </div>
+        </ion-col>
     </ng-template>
-</td>
-<td>
-    <ion-row *ngIf="ranked || numReviews >= minNumberReview; else toQualifyReview" justify-content-center class="text-title">{{ numReviews }}</ion-row>
-    <ng-template  #toQualifyReview>
-        <ion-row justify-content-center class="text-title">{{ numReviews }} {{ "ranking.outOf" | translate }} {{ minNumberReview }}</ion-row>
-    </ng-template>
-    <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
-</td>
-<td>
-    <ion-row *ngIf="ranked || numCommits >= minNumberCommit; else toQualifyCommit" justify-content-center class="text-title">{{ numCommits }}</ion-row>
-    <ng-template #toQualifyCommit>
-        <ion-row justify-content-center class="text-title">{{ numCommits }} {{ "ranking.outOf" | translate }} {{ minNumberCommit }}</ion-row>
-    </ng-template>
-    <ion-row justify-content-center class="text-description">{{ "app.commits" | translate }}</ion-row>
-</td>
-<td>
-    <ion-row justify-content-center class="text-title">{{ agreed }}%</ion-row>
-    <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }}</ion-row>
-</td>
+    <ion-col col-2 class="remove-horizontal-padding">
+        <ion-row *ngIf="ranked || numReviews >= minNumberReview; else toQualifyReview" justify-content-center
+            class="text-title">{{ numReviews }}</ion-row>
+        <ng-template #toQualifyReview>
+            <ion-row justify-content-center class="text-title">{{ numReviews }} {{ "ranking.outOf" | translate }}
+                {{ minNumberReview }}</ion-row>
+        </ng-template>
+        <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
+    </ion-col>
+    <ion-col col-2 class="remove-horizontal-padding">
+        <ion-row *ngIf="ranked || numCommits >= minNumberCommit; else toQualifyCommit" justify-content-center
+            class="text-title">{{ numCommits }}</ion-row>
+        <ng-template #toQualifyCommit>
+            <ion-row justify-content-center class="text-title">{{ numCommits }} {{ "ranking.outOf" | translate }}
+                {{ minNumberCommit }}</ion-row>
+        </ng-template>
+        <ion-row justify-content-center class="text-description">{{ "app.commits" | translate }}</ion-row>
+    </ion-col>
+    <ion-col col-1 class="remove-horizontal-padding">
+        <ion-row justify-content-center class="text-title">{{ agreed }}%</ion-row>
+        <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }} </ion-row>
+    </ion-col>
+</ion-row>

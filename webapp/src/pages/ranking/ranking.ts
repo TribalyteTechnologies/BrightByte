@@ -98,7 +98,7 @@ export class RankingPage {
                             / (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS));
                         this.seconds = Math.floor((distance % (AppConfig.SECS_TO_MS * AppConfig.MIN_TO_SECS))
                             / AppConfig.SECS_TO_MS);
-                    }, 
+                    },
                     AppConfig.SECS_TO_MS);
                 this.seasons.push("Ranking Global");
                 for (let i = this.numberOfSeasons; i >= 0; i--) {
@@ -110,34 +110,37 @@ export class RankingPage {
 
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
-        .then((usersRep: UserReputation[]) => {
-            this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
-                this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
-            if(!this.globalSelected) {
-                this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
-                let rankedUsers = this.usersRep.filter(user => this.filterRankedUser(user));
-                let unRankedUsers = this.usersRep.filter(user => !this.filterRankedUser(user));
-                unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
-                    return (b.numberOfCommits + b.finishedReviews) - ( a.numberOfCommits + a.finishedReviews);
-                });
-                if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON){
-                    unRankedUsers.forEach(user => user.ranked = false);
+            .then((usersRep: UserReputation[]) => {
+                this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
+                    this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
+                if (!this.globalSelected) {
+                    this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
+
+                    let rankedUsers = this.usersRep.filter(user => this.filterRankedUser(user));
+                    let unRankedUsers = this.usersRep.filter(user => !this.filterRankedUser(user));
+                    unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
+                        return (b.numberOfCommits + b.finishedReviews) - (a.numberOfCommits + a.finishedReviews);
+                    });
+                    if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON) {
+                        unRankedUsers.forEach(user => user.ranked = false);
+                    }
+                    this.usersRep = rankedUsers.concat(unRankedUsers);
+
                 }
-                this.usersRep = rankedUsers.concat(unRankedUsers);
-            }
-            this.usersRep.forEach((user, i) => {
-                user.userPosition = ++i;
-            });
-            this.userHash = this.account.address;
-            this.setUser(this.account.address);
-        }).catch((e) => {
-            this.translateService.get("ranking.getReputation").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
+
+                this.usersRep.forEach((user, i) => {
+                    user.userPosition = ++i;
                 });
-            throw e;
-        });
+                this.userHash = this.account.address;
+                this.setUser(this.account.address);
+            }).catch((e) => {
+                this.translateService.get("ranking.getReputation").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+                throw e;
+            });
     }
 
     public setUser(hash: string) {

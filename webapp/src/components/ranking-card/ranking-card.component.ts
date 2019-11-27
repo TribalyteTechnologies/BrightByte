@@ -8,7 +8,7 @@ import { Observable } from "rxjs";
 
 
 @Component({
-    selector: "[ranking-card]",
+    selector: "ranking-card",
     templateUrl: "ranking-card.component.html",
     styles: ["ranking-card.component.scss"]
 })

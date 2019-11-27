@@ -39,9 +39,9 @@
                 </ion-col>
             </ion-row>
             <ion-row>
-                <table class="table">
-                    <tr *ngFor="let user of usersRep" ranking-card (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user" class="{{user.ranked ? 'ranked' : 'not-ranked' }}"></tr>
-                </table>
+                <ion-grid no-padding class="table">
+                    <ranking-card *ngFor="let user of usersRep" (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user" class="{{user.ranked ? 'ranked' : 'not-ranked' }}"></ranking-card>
+                </ion-grid>
             </ion-row>
         </ion-col>
         <ion-col *ngIf="showDetails; else notShowDetails">
