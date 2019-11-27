@@ -7,7 +7,7 @@ import { UserDetailsDto } from "../dto/user-details.dto";
 import { Observable, from, forkJoin } from "rxjs";
 import { flatMap, map, tap, share } from "rxjs/operators";
 import { AxiosResponse } from "axios";
-import {ITrbSmartContact, ITrbSmartContractJson} from "../models/smart-contracts.model";
+import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
 
 
 @Injectable()
@@ -26,8 +26,8 @@ export class ContractManagerService {
         private loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
-        this.web3 = web3Service.getWeb3();
         this.web3Service = web3Service;
+        this.web3 = this.web3Service.openConnection();
         this.contracts = new Array<ITrbSmartContact>();
         this.init();
     }

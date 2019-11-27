@@ -8,7 +8,7 @@ import { CommitEventDto } from "../dto/events/commit-event.dto";
 import { ReviewEventDto } from "../dto/events/review-event.dto";
 import { SeasonEventDto } from "../dto/events/season-event.dto";
 import { ContractManagerService } from "./contract-manager.service";
-import {ITrbSmartContact, ITrbSmartContractJson} from "../models/smart-contracts.model";
+import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
 
 @Injectable()
 export class EventHandlerService {
@@ -40,14 +40,13 @@ export class EventHandlerService {
         this.log.d("Initializing Event Handler Service");
         this.contractManagerService.getBrightSmartContract().subscribe(contractAbi => {
             this.jsonContractData = contractAbi;
-            this.web3 = this.web3Service.getWeb3();
+            this.web3 = this.web3Service.openConnection();
             this.web3.eth.net.isListening()
             .then((res) => {
                 this.log.d("Web3 Connection established");
                 this.contractAddress = this.jsonContractData.networks[BackendConfig.NET_ID].address;
                 this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
-                this.registerNewListener(this.COMMIT);
-                this.registerNewListener(this.REVIEW);
+                this.eventsSubscription();
             }).catch(e => {
                 this.log.e("Not able to open a connection " + e);
             });
@@ -63,11 +62,11 @@ export class EventHandlerService {
                 switch (type) {
                     case this.COMMIT:
                         newEvent = new CommitEventDto(
-                            event.returnValues["userHash"], parseInt(event.returnValues["numberOfCommits"]["_hex"]));
+                            event.returnValues["userHash"], parseInt(event.returnValues["numberOfCommits"]));
                         break;
                     case this.REVIEW:
                         newEvent = new ReviewEventDto(
-                            event.returnValues["userHash"], parseInt(event.returnValues["numberOfReviews"]["_hex"]));
+                            event.returnValues["userHash"], parseInt(event.returnValues["numberOfReviews"]));
                         break;
                     case this.SEASON:
                         newEvent = new SeasonEventDto(
@@ -77,20 +76,16 @@ export class EventHandlerService {
                         this.log.e("The parameter 'type' is not valid");
                 }
                 this.dispatcher.dispatch(newEvent);
-            } else if (error) {
-                this.log.d("Connection error: " + JSON.stringify(error));
-                this.web3Service.openConnection();
-                this.web3 = this.web3Service.getWeb3();
-                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
-                this.registerNewListener(type);
             }
         };
 
         switch (type) {
             case this.COMMIT:
+                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
                 this.contract.events.UserNewCommit({ fromBlock: "latest" }, callback);
                 break;
             case this.REVIEW:
+                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
                 this.contract.events.UserNewReview({ fromBlock: "latest" }, callback);
                 break;
             case this.SEASON:
@@ -99,5 +94,20 @@ export class EventHandlerService {
             default:
                 this.log.e("The parameter 'type' is not valid");
         }
+    }
+
+    private handlerDisconnects(error) {
+        this.log.d("Disconnected from Provider");
+        this.web3 = this.web3Service.openConnection();
+        this.eventsSubscription();
+    }
+
+    private eventsSubscription() {
+        this.log.d("Setting the event subscriptions");
+        this.registerNewListener(this.COMMIT);
+        this.registerNewListener(this.REVIEW);
+        let provider = this.web3.currentProvider;
+        provider.on("close", e => this.handlerDisconnects(e));
+        provider.on("end", e => this.handlerDisconnects(e));
     }
 }
