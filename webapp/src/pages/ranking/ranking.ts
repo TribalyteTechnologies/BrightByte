@@ -111,8 +111,15 @@ export class RankingPage {
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
             .then((usersRep: UserReputation[]) => {
-                this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) =>
-                    this.globalSelected ? b.engagementIndex - a.engagementIndex : b.reputation - a.reputation);
+                this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
+                    let ret = -1;
+                    if(this.globalSelected) {
+                        ret = b.engagementIndex - a.engagementIndex;
+                    } else {
+                        ret = b.reputation - a.reputation || b.numberOfCommits + b.finishedReviews - a.numberOfCommits + a.finishedReviews;
+                    }
+                    return ret;
+                });
                 if (!this.globalSelected) {
                     this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
 
