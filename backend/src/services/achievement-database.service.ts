@@ -106,15 +106,15 @@ export class AchievementDatabaseService {
             BackendConfig.AchievementTypeEnum.Review
         ),
         new AchievementDto(
-            "Fast Reviewer",
-            "Fast",
+            "Timed Review Fast",
+            "Fast & Furious",
             "Reviews",
             [2, 300],
             "1" ,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
-            "Rapid Reviewer",
+            "Timed Review Rapid",
             "Rapid Fire",
             "Reviews",
             [6, 300],
@@ -122,16 +122,16 @@ export class AchievementDatabaseService {
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
-            "Batch Reviewer",
-            "Batcher",
+            "Timed Review Bullets",
+            "Few time, many bullets",
             "Reviews",
             [20, 900],
             "3" ,
             BackendConfig.AchievementTypeEnum.TimedReview
         ),
         new AchievementDto(
-            "Consistent Reviewer",
-            "Consistent",
+            "Timed Review Hero",
+            "Non-stop hero",
             "Reviews",
             [10, 604800],
             "4" ,

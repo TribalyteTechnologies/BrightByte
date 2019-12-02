@@ -8,7 +8,11 @@ export class AchievementDto {
         public values: any,
         public iconPath: string,
         public processorType?: BackendConfig.AchievementTypeEnum
-    ) { 
-        this.iconPath = BackendConfig.ACH_TROPHY_PATH + this.iconPath + BackendConfig.ACH_IMG_FORMAT;
+    ) {
+        if (processorType && processorType === BackendConfig.AchievementTypeEnum.TimedReview) {
+            this.iconPath = BackendConfig.ACH_TIMED_TROPHY_PATH + this.iconPath + BackendConfig.ACH_IMG_FORMAT;
+        } else if (!processorType || processorType !== BackendConfig.AchievementTypeEnum.TimedReview) {
+            this.iconPath = BackendConfig.ACH_TROPHY_PATH + this.iconPath + BackendConfig.ACH_IMG_FORMAT;
+        }
     }
 }

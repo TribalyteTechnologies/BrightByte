@@ -46,7 +46,8 @@ export class AchievementService {
                                 achievement.title,
                                 achievement.values[0],
                                 achievement.parameter,
-                                achievement.iconPath)
+                                achievement.iconPath,
+                                achievement.processorType)
                             );
                         }
                     }

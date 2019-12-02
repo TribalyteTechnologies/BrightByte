@@ -6,7 +6,7 @@
         <img class="ico-trophy" [ngClass]="{ 'big' : isBig }" [src]="achievementInfo.iconPath">
     </ion-row>
     <ion-row justify-content-center>
-        <ion-col class="centered" [ngClass]="{ 'big' : isBig }">
+        <ion-col class="centered" [ngClass]="{ 'big' : isBig, 'timed-review': achievementInfo.achievementType === timedReviewType }">
             <ion-row class="achievement-number" [ngClass]="{ 'big' : isBig }" justify-content-center>
                 {{ achievementInfo.quantity }}
             </ion-row>

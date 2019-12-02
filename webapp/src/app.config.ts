@@ -78,3 +78,12 @@ export class AppConfig {
     }
 }
 
+export namespace AppConfig {
+    export enum AchievementType{
+        Commit = 0,
+        Review = 1,
+        TimedReview = 2,
+        Season = 3
+    }
+}
+

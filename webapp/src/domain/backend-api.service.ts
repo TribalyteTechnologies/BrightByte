@@ -38,7 +38,8 @@ export class BackendApiService {
         this.socket.on(this.NEW_ACHIEVEMENT, (achievements) => {
             achievements.forEach(achievement => {
                 let newAchievement = new Achievement(
-                    false, achievement.title, achievement.values[0], achievement.parameter, achievement.iconPath);
+                    false, achievement.title, achievement.values[0], achievement.parameter, 
+                    achievement.iconPath, achievement.processorType);
                 this.achievementSrv.addNewAchievement(newAchievement);
                 this.log.d("New achievement recieved" + newAchievement);
             });

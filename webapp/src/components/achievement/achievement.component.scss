@@ -34,6 +34,10 @@ achievement {
       top: 56%;
       transform: translate(-51%, -49%);
     }
+
+    &.timed-review {
+      padding-top: 30px;
+    }
   }
 
   .achievement-title {
@@ -49,12 +53,14 @@ achievement {
   }
 
   .achievement-number {
-    font-size: 45px;
+    max-height: 42px;
+    font-size: 40px;
     color: white;
     letter-spacing: -5px;
     font-weight: bold;
 
     &.big {
+      max-height: none;
       font-size: 75px;
       color: white;
       letter-spacing: -5px;

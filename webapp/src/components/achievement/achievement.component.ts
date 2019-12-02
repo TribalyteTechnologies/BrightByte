@@ -1,4 +1,6 @@
 import { Component, Input } from "@angular/core";
+import { AppConfig } from "../../app.config";
+import { Achievement } from "../../models/achievement.model";
 
 
 @Component({
@@ -9,14 +11,14 @@ import { Component, Input } from "@angular/core";
 
 export class AchievementComponent {
 
+    public timedReviewType = AppConfig.AchievementType.TimedReview;
+
     @Input()
     public isEmpty = false;
 
     @Input()
-    public achievementInfo: AchievementComponent;
+    public achievementInfo: Achievement;
 
     @Input()
     public isBig = false;
-
-    
 }
