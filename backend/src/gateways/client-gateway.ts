@@ -7,8 +7,7 @@ import {
     OnGatewayDisconnect,
     OnGatewayConnection
 } from "@nestjs/websockets";
-import { from, Observable, observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { Observable } from "rxjs";
 import { Client, Server } from "socket.io";
 import { LoggerService, ILogger } from "../logger/logger.service";
 import { ClientNotificationService } from "../services/client-notfication.service";
