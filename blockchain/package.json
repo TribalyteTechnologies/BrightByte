@@ -6,7 +6,6 @@
   "private": true,
   "scripts": {
     "truffle:migrate": "truffle migrate --reset; npm run copy:contracts",
-    "truffle:migrate": "truffle migrate --reset",
     "truffle:develop": "truffle develop",
     "posttruffle:develop": "npm run copy:contracts",
     "truffle:custom-deploy": "truffle migrate --network custom --reset",
