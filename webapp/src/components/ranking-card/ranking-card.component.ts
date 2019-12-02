@@ -39,6 +39,8 @@ export class RankingCard {
     public tooltipParams: { pendingCommits: number; pendingReviews: number; };
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
+    public isRankedByReviews: boolean;
+    public isRankedByCommits: boolean;
 
     @Input()
     public set ranking(val: UserReputation) {
@@ -69,6 +71,8 @@ export class RankingCard {
             numReviews: this.numReviews,
             minNumberReview : this.minNumberReview
         };
+        this.isRankedByReviews = this.ranked || this.numReviews >= this.minNumberReview;
+        this.isRankedByCommits = this.ranked || this.numCommits >= this.minNumberCommit;
     }
 
     @Input()
