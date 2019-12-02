@@ -134,7 +134,7 @@
         "noReputation": "?.??",
         "reviewOutOf": "{{numReviews}} out of {{minNumberReview}}",
         "commitOutOf": "{{numCommits}} out of {{minNumberCommit}}",
-        "notQualified": "<h6>Not Qualifid yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season"
+        "notQualified": "<h6>Not qualified yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season"
     },
     "review": {
         "getCommits": "Error getting commits to review",

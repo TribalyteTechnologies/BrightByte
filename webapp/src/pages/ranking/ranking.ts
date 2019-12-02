@@ -60,6 +60,11 @@ export class RankingPage {
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
     public currentUserObs: Observable<string>;
+    public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
+    public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
+    public tooltipParams: { pendingCommits: number; pendingReviews: number; };
+    public commitParams: { numCommits: number; minNumberCommit: number; };
+    public reviewParams: { numReviews: number; minNumberReview: number; };
     private log: ILogger;
     private account: Account;
     private isBackendOnline = true;
@@ -171,6 +176,18 @@ export class RankingPage {
             this.userRankDetails.ranked = userDetails.ranked;
             this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
             this.setUpTrophys(userDetails.userHash);
+            this.tooltipParams = {
+                pendingCommits: Math.max(0, this.minNumberCommit - this.userRankDetails.commits),
+                pendingReviews: Math.max(0, this.minNumberReview - this.userRankDetails.reviews)
+            };
+            this.commitParams = {
+                numCommits: this.userRankDetails.commits,
+                minNumberCommit : this.minNumberCommit 
+            };
+            this.reviewParams = {
+                numReviews: this.userRankDetails.reviews,
+                minNumberReview : this.minNumberReview
+            };
         }
     }
 
@@ -239,6 +256,6 @@ export class RankingPage {
     }
 
     private filterRankedUser(user: UserReputation): boolean {
-        return user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY;
+        return user.numberOfCommits >= this.minNumberCommit && user.finishedReviews >= this.minNumberReview;
     }
 }

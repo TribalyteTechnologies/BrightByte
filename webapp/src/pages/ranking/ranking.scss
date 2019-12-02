@@ -15,7 +15,15 @@ page-ranking {
         height: 450px;
         overflow-y: scroll;
     }
+    .ranked {
+        background-color: white;
+    }
     .not-ranked {
         background-color: rgb(230, 230, 230);
+    }
+    .not-qualified-display-info {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        text-align: center;
     }
 }

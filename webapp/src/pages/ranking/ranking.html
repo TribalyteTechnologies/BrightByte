@@ -3,7 +3,8 @@
         <ion-col no-padding align-self-center col-4>
             <ion-row>
                 <span class="text-main">{{ "app.ranking" | translate }}</span>
-                <select [(ngModel)]="comboSelected" (ngModelChange)="setSeason($event)" class="dropdown dropdown--ranking">
+                <select [(ngModel)]="comboSelected" (ngModelChange)="setSeason($event)"
+                    class="dropdown dropdown--ranking">
                     <option hidden value="" disabled selected>{{ "ranking.selectSeason" | translate }}</option>
                     <option *ngFor="let option of seasons" [ngValue]="option">
                         {{ option }}
@@ -14,10 +15,15 @@
         <ion-col col-4 no-padding class="text-ranking">
             <div class="ranking-top">
                 <ion-row>
-                    <ion-col col-7>{{ "ranking.current" | translate }} {{ "ranking.season" | translate }}: {{ numberOfSeasons }}</ion-col>
-                    <ion-col col-5 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }} {{ "ranking.left" | translate }}</ion-col>
-                    <ion-col col-5 *ngIf="days <= 0 && !seasonEnded" class="ranking-left">{{ hours }} {{ "ranking.hours" | translate }}, {{ minutes }} {{ "ranking.minutes" | translate }}  {{ "ranking.left" | translate }} </ion-col>
-                    <ion-col col-5 *ngIf="seasonEnded" class="ranking-left">{{ "ranking.seasonEnd" | translate }}</ion-col>
+                    <ion-col col-7>{{ "ranking.current" | translate }} {{ "ranking.season" | translate }}:
+                        {{ numberOfSeasons }}</ion-col>
+                    <ion-col col-5 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }}
+                        {{ "ranking.left" | translate }}</ion-col>
+                    <ion-col col-5 *ngIf="days <= 0 && !seasonEnded" class="ranking-left">{{ hours }}
+                        {{ "ranking.hours" | translate }}, {{ minutes }} {{ "ranking.minutes" | translate }}
+                        {{ "ranking.left" | translate }} </ion-col>
+                    <ion-col col-5 *ngIf="seasonEnded" class="ranking-left">{{ "ranking.seasonEnd" | translate }}
+                    </ion-col>
                 </ion-row>
             </div>
         </ion-col>
@@ -31,16 +37,21 @@
             <ion-row no-padding>
                 <ion-col col-10 no-padding>
                     <span *ngIf="globalSelected; else globalNotSelectedBlock"> {{ "ranking.global" | translate }}</span>
-                    <ng-template #globalNotSelectedBlock>{{ "app.ranking" | translate }} · {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
-                    <span class="text-details ranking-a"><a no-padding (click)="setCurrentSeason()"> | {{ "ranking.retrieveToSeason" | translate }}</a></span>
+                    <ng-template #globalNotSelectedBlock>{{ "app.ranking" | translate }} ·
+                        {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+                    <span class="text-details ranking-a"><a no-padding (click)="setCurrentSeason()"> |
+                            {{ "ranking.retrieveToSeason" | translate }}</a></span>
                 </ion-col>
                 <ion-col col-2 no-padding class="ranking-left">
-                    <a class="text-details ranking-a" no-padding (click)="goBackToUser()">{{ "ranking.retrieve" | translate }}</a>
+                    <a class="text-details ranking-a" no-padding
+                        (click)="goBackToUser()">{{ "ranking.retrieve" | translate }}</a>
                 </ion-col>
             </ion-row>
             <ion-row>
                 <ion-grid no-padding class="table">
-                    <ranking-card *ngFor="let user of usersRep" (click)="setUser(user.userHash)" [globalSelection]="globalSelected" [ranking]="user" class="{{user.ranked ? 'ranked' : 'not-ranked' }}"></ranking-card>
+                    <ranking-card *ngFor="let user of usersRep" (click)="setUser(user.userHash)"
+                        [globalSelection]="globalSelected" [ranking]="user"
+                        class="{{user.ranked ? 'ranked' : 'not-ranked' }}"></ranking-card>
                 </ion-grid>
             </ion-row>
         </ion-col>
@@ -50,7 +61,7 @@
             </ion-row>
             <ion-row padding class="profile-details-container">
                 <ion-col col-auto justify-content-center>
-                        <avatar [avatarUrl]="currentUserObs | async" [isBig]="true"></avatar>
+                    <avatar [avatarUrl]="currentUserObs | async" [isBig]="true"></avatar>
                 </ion-col>
                 <ion-col col-3 padding justify-content-center center class="vert-separator">
                     <ion-row class="text-title">
@@ -62,16 +73,36 @@
                 </ion-col>
                 <ion-col class="vert-separator">
                     <ion-row justify-content-center>
-                        <ion-col no-padding>
-                            <ion-row justify-content-center class="text-title ranking-details">{{ "app.reviews" | translate }}</ion-row>
+                        <ion-col *ngIf="userRankDetails.ranked; else notRankedReview" no-padding>
+                            <ion-row justify-content-center class="text-title ranking-details">
+                                {{ "app.reviews" | translate }}</ion-row>
                             <ion-row justify-content-center class="text-title">{{ userRankDetails.reviews }}</ion-row>
                         </ion-col>
-                        <ion-col no-padding>
-                            <ion-row justify-content-center class="text-title ranking-details">{{ "app.commits" | translate }}</ion-row>
+                        <ng-template #notRankedReview>
+                            <ion-col no-padding>
+                                <ion-row justify-content-center class="text-title ranking-details">
+                                    {{ "app.reviews" | translate }}</ion-row>
+                                <ion-row justify-content-center class="text-title">
+                                    {{ "ranking.reviewOutOf" | translate: reviewParams }}</ion-row>
+                            </ion-col>
+                        </ng-template>
+                        <ion-col *ngIf="userRankDetails.ranked; else notRankedCommit" no-padding>
+                            <ion-row justify-content-center class="text-title ranking-details">
+                                {{ "app.commits" | translate }}</ion-row>
                             <ion-row justify-content-center class="text-title">{{ userRankDetails.commits }}</ion-row>
                         </ion-col>
+                        <ng-template #notRankedCommit>
+                            <ion-col no-padding>
+                                <ion-row justify-content-center class="text-title ranking-details">
+                                    {{ "app.commits" | translate }}</ion-row>
+                                <ion-row justify-content-center class="text-title">
+                                    {{ "ranking.commitOutOf" | translate: commitParams }}
+                                </ion-row>
+                            </ion-col>
+                        </ng-template>
                         <ion-col no-padding>
-                            <ion-row justify-content-center class="text-title ranking-details">{{ "ranking.agreed" | translate }}</ion-row>
+                            <ion-row justify-content-center class="text-title ranking-details">
+                                {{ "ranking.agreed" | translate }}</ion-row>
                             <ion-row justify-content-center class="text-title"> {{ userRankDetails.agreed }}%</ion-row>
                         </ion-col>
                     </ion-row>
@@ -79,7 +110,8 @@
                 <ion-col col-3 no-padding>
                     <ion-row *ngIf="globalSelected; else globalNotSelectedBlockTwo">
                         <ion-col class="text-title">
-                            <ion-row justify-content-center class="ranking-details no-wrap">{{ "ranking.engagementIndex" | translate }}</ion-row>
+                            <ion-row justify-content-center class="ranking-details no-wrap">
+                                {{ "ranking.engagementIndex" | translate }}</ion-row>
                             <ion-row justify-content-center>
                                 <img src="../../assets/imgs/chains.svg">
                                 <span class="ranking-score">{{ userRankDetails.engagementIndexString }}</span>
@@ -90,23 +122,31 @@
                         <ion-row justify-content-center padding>
                             <ion-col no-padding class="no-wrap">
                                 <div>
-                                    <span *ngIf="userRankDetails.ranked; else detailNotRanked" class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
+                                    <span *ngIf="userRankDetails.ranked; else detailNotRanked"
+                                        class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
                                     <ng-template #detailNotRanked>
-                                        <span class="ranking-details-text text-title--grey">{{ "ranking.noReputation" | translate }}</span>
+                                        <span
+                                            class="ranking-details-text text-title--grey">{{ "ranking.noReputation" | translate }}</span>
                                     </ng-template>
                                     <img class="btn--img" src="../../assets/imgs/star-icon.svg">
                                 </div>
-                            </ion-col> 
+                            </ion-col>
                         </ion-row>
                     </ng-template>
                 </ion-col>
+            </ion-row>
+            <ion-row *ngIf="!globalSelected && !userRankDetails.ranked" justify-content-center padding>
+                    <ion-col class="not-qualified-display-info" col-8>
+                        <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:tooltipParams"></div>
+                    </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
             <ion-row *ngIf="globalSelected && isPageLoaded" padding class="achievement-box-style">
                 <ion-col class="box-height">
                     <ion-row *ngFor="let rowIndex of [0,1,2,3]" padding>
                         <ion-col *ngFor="let i of [(rowIndex*4),(rowIndex*4)+1,(rowIndex*4)+2,(rowIndex*4)+3]">
-                            <achievement [isEmpty]="achievementsUnlocked[i].isEmpty" [achievementInfo]="achievementsUnlocked[i]" ></achievement>
+                            <achievement [isEmpty]="achievementsUnlocked[i].isEmpty"
+                                [achievementInfo]="achievementsUnlocked[i]"></achievement>
                         </ion-col>
                     </ion-row>
                 </ion-col>
