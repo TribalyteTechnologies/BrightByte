@@ -2,8 +2,9 @@
 
 #### v 0.5.6
 
-- Added season qualifying functionality.
-- Visual mods on ranking page for qualifying functionality.
+- Added season qualifying feature (Requires the users to have a minimum number of commits and reviews 
+    to be qualified to be present on the season ranking).
+- Visual mods on ranking page for qualifying feature.
 - Browser compatiblity refactor.
 - Solved minor bugs.
 
@@ -11,7 +12,7 @@
 
 #### v 0.5.5
 
-- Hided review card reputation after reviewing the commit.
+- Hid review card reputation after reviewing the commit.
 - Added new use analytics tool.
 - Refactored avatar component.
 - Minor visual fixes.

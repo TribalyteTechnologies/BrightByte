@@ -28,7 +28,7 @@ This is the BrightByte webapp project.
 
 #### Other config variables
 
-In latest BrightByte versions (^0.5.6) there is a qualifying feature that allows to have a minimum number of commits and reviews to be ranked on a season.
+Since BrightByte v0.5.6+ there is feature that requires the users to have a minimum number of commits and reviews to be qualified to be present on the season ranking.
 This changes part of the ranking style and hides reputation for non-ranked users. To config this feature:
 1. Go to `src/app.config.ts` edit the variable `FIRST_QUALIFYING_SEASON` and set it to the first season on which qualifying feature will be available. If you want to disable this feature set it to -1.
 2. Go to `src/app.config.ts` edit the variables `MIN_REVIEW_QUALIFY` and `MIN_COMMIT_QUALIFY` to the minimum number of reviews and commits needed to be qualified.
