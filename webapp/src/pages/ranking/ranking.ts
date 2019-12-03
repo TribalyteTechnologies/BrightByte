@@ -27,7 +27,7 @@ class UserRankDetails {
     public scoreString = "";
     public engagementIndexString = "";
     public hash = "";
-    public ranked = true;
+    public isRanked = true;
 }
 
 @Component({
@@ -36,6 +36,8 @@ class UserRankDetails {
 })
 export class RankingPage {
 
+    public static readonly minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
+    public static readonly minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
     public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
@@ -60,8 +62,6 @@ export class RankingPage {
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
     public currentUserObs: Observable<string>;
-    public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
-    public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
     public tooltipParams: { pendingCommits: number; pendingReviews: number; };
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
@@ -134,7 +134,7 @@ export class RankingPage {
                         return (b.numberOfCommits + b.finishedReviews) - (a.numberOfCommits + a.finishedReviews);
                     });
                     if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON) {
-                        unRankedUsers.forEach(user => user.ranked = false);
+                        unRankedUsers.forEach(user => user.isRanked = false);
                     }
                     this.usersRep = rankedUsers.concat(unRankedUsers);
 
@@ -173,20 +173,20 @@ export class RankingPage {
             this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
             this.userRankDetails.hash = userDetails.userHash;
-            this.userRankDetails.ranked = userDetails.ranked;
+            this.userRankDetails.isRanked = userDetails.isRanked;
             this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
             this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {
-                pendingCommits: Math.max(0, this.minNumberCommit - this.userRankDetails.commits),
-                pendingReviews: Math.max(0, this.minNumberReview - this.userRankDetails.reviews)
+                pendingCommits: Math.max(0, RankingPage.minNumberCommit - this.userRankDetails.commits),
+                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.reviews)
             };
             this.commitParams = {
                 numCommits: this.userRankDetails.commits,
-                minNumberCommit : this.minNumberCommit 
+                minNumberCommit : RankingPage.minNumberCommit 
             };
             this.reviewParams = {
                 numReviews: this.userRankDetails.reviews,
-                minNumberReview : this.minNumberReview
+                minNumberReview : RankingPage.minNumberReview
             };
         }
     }
@@ -256,6 +256,6 @@ export class RankingPage {
     }
 
     private filterRankedUser(user: UserReputation): boolean {
-        return user.numberOfCommits >= this.minNumberCommit && user.finishedReviews >= this.minNumberReview;
+        return user.numberOfCommits >= RankingPage.minNumberCommit && user.finishedReviews >= RankingPage.minNumberReview;
     }
 }

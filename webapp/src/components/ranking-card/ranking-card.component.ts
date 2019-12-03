@@ -33,7 +33,7 @@ export class RankingCard {
     public reputationString = "";
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
-    public ranked = false;
+    public isRanked = false;
     public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
     public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
     public tooltipParams: { pendingCommits: number; pendingReviews: number; };
@@ -58,7 +58,7 @@ export class RankingCard {
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.engagementIndex.toFixed(2);
         this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
-        this.ranked = val.ranked;
+        this.isRanked = val.isRanked;
         this.tooltipParams = {
             pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
             pendingReviews: Math.max(0, this.minNumberReview - this.numReviews)
@@ -71,8 +71,8 @@ export class RankingCard {
             numReviews: this.numReviews,
             minNumberReview : this.minNumberReview
         };
-        this.isRankedByReviews = this.ranked || this.numReviews >= this.minNumberReview;
-        this.isRankedByCommits = this.ranked || this.numCommits >= this.minNumberCommit;
+        this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
+        this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
     }
 
     @Input()

@@ -51,7 +51,7 @@
                 <ion-grid no-padding class="table">
                     <ranking-card *ngFor="let user of usersRep" (click)="setUser(user.userHash)"
                         [globalSelection]="globalSelected" [ranking]="user"
-                        class="{{user.ranked ? 'ranked' : 'not-ranked' }}"></ranking-card>
+                        [ngClass]="user.isRanked ? 'ranked' : 'not-ranked'"></ranking-card>
                 </ion-grid>
             </ion-row>
         </ion-col>
@@ -73,33 +73,22 @@
                 </ion-col>
                 <ion-col class="vert-separator">
                     <ion-row justify-content-center>
-                        <ion-col *ngIf="userRankDetails.ranked; else notRankedReview" no-padding>
+                        <ion-col no-padding>
                             <ion-row justify-content-center class="text-title ranking-details">
-                                {{ "app.reviews" | translate }}</ion-row>
-                            <ion-row justify-content-center class="text-title">{{ userRankDetails.reviews }}</ion-row>
+                                {{ "app.reviews" | translate }}
+                            </ion-row>
+                            <ion-row justify-content-center class="text-title">
+                                {{ userRankDetails.isRanked ? userRankDetails.reviews : ("ranking.reviewOutOf" | translate: reviewParams) }}
+                            </ion-row>
                         </ion-col>
-                        <ng-template #notRankedReview>
-                            <ion-col no-padding>
-                                <ion-row justify-content-center class="text-title ranking-details">
-                                    {{ "app.reviews" | translate }}</ion-row>
-                                <ion-row justify-content-center class="text-title">
-                                    {{ "ranking.reviewOutOf" | translate: reviewParams }}</ion-row>
-                            </ion-col>
-                        </ng-template>
-                        <ion-col *ngIf="userRankDetails.ranked; else notRankedCommit" no-padding>
+                        <ion-col no-padding>
                             <ion-row justify-content-center class="text-title ranking-details">
-                                {{ "app.commits" | translate }}</ion-row>
-                            <ion-row justify-content-center class="text-title">{{ userRankDetails.commits }}</ion-row>
+                                {{ "app.commits" | translate }}
+                            </ion-row>
+                            <ion-row justify-content-center class="text-title">
+                                {{ userRankDetails.isRanked ? userRankDetails.commits : ("ranking.commitOutOf" | translate: commitParams) }}
+                            </ion-row>
                         </ion-col>
-                        <ng-template #notRankedCommit>
-                            <ion-col no-padding>
-                                <ion-row justify-content-center class="text-title ranking-details">
-                                    {{ "app.commits" | translate }}</ion-row>
-                                <ion-row justify-content-center class="text-title">
-                                    {{ "ranking.commitOutOf" | translate: commitParams }}
-                                </ion-row>
-                            </ion-col>
-                        </ng-template>
                         <ion-col no-padding>
                             <ion-row justify-content-center class="text-title ranking-details">
                                 {{ "ranking.agreed" | translate }}</ion-row>
@@ -122,7 +111,7 @@
                         <ion-row justify-content-center padding>
                             <ion-col no-padding class="no-wrap">
                                 <div>
-                                    <span *ngIf="userRankDetails.ranked; else detailNotRanked"
+                                    <span *ngIf="userRankDetails.isRanked; else detailNotRanked"
                                         class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
                                     <ng-template #detailNotRanked>
                                         <span
@@ -135,7 +124,7 @@
                     </ng-template>
                 </ion-col>
             </ion-row>
-            <ion-row *ngIf="!globalSelected && !userRankDetails.ranked" justify-content-center padding>
+            <ion-row *ngIf="!globalSelected && !userRankDetails.isRanked" justify-content-center padding>
                     <ion-col class="not-qualified-display-info" col-8>
                         <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:tooltipParams"></div>
                     </ion-col>
