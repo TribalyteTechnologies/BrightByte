@@ -22,8 +22,7 @@ export class BackendConfig {
     public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:8100";
     public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT || 3000;
     public static readonly BRIGHT_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Bright.json";
-    public static readonly IMAGE_STORAGE_PATH = "./public/";
-
+    public static readonly IMAGE_STORAGE_PATH = process.env.PERSISTENCE_PATH || "./public/";
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {
