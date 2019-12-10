@@ -121,7 +121,8 @@ export class RankingPage {
                     if(this.globalSelected) {
                         ret = b.engagementIndex - a.engagementIndex;
                     } else {
-                        ret = b.reputation - a.reputation || b.numberOfCommits + b.finishedReviews - a.numberOfCommits + a.finishedReviews;
+                        ret = (b.reputation - a.reputation) || 
+                            (b.numberOfCommits + b.finishedReviews - (a.numberOfCommits + a.finishedReviews));
                     }
                     return ret;
                 });
