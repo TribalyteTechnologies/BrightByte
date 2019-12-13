@@ -6,9 +6,11 @@ export class BackendConfig {
     public static readonly USER_COLLECTION = "users";
     public static readonly ACHIEVEMENT_COLLECTION = "achievements";
     public static readonly EVENT_COLLECTION = "events";
+    public static readonly AUTHENTICATION_COLLECTION = "authentication";
     public static readonly ACHIEVEMENT_DB_JSON = "brightbyte-achievement-db.json";
     public static readonly USER_DB_JSON = "brightbyte-user-db.json";
     public static readonly EVENT_DB_JSON = "brightbyte-event-db.json";
+    public static readonly AUTHENTICATION_DB_JSON = "brightbyte-authentication-db.json";
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
@@ -17,12 +19,14 @@ export class BackendConfig {
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
     public static readonly ACH_TIMED_TROPHY_PATH = "../../assets/imgs/trophys/timedAchievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
-    public static readonly INITIALIZE_USER_DATABASE = false;
+    public static readonly INITIALIZE_USER_DATABASE = true;
     public static readonly NODE_CONFIG_URL = NodeConfig.NODE_WEBSOCKET_URL;
-    public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:8100";
+    public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://brightbytepilot1.tribalyte.eu";
     public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT || 3000;
     public static readonly BRIGHT_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Bright.json";
     public static readonly IMAGE_STORAGE_PATH = process.env.PERSISTENCE_PATH || "./public/";
+    public static readonly BITBUCKET_KEY = "yjEu85RPMWCwJsGQvN";
+    public static readonly BITBUCKET_SECRET = "hEzNKVdtZex42nnfUBXdg5npstHsCpKE";
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {

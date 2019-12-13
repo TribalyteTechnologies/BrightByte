@@ -27,6 +27,7 @@
 		"@types/lokijs": "1.5.2",
 		"jest": "24.9.0",
 		"lokijs": "1.5.6",
+		"querystring": "0.2.0",
 		"reflect-metadata": "0.1.13",
 		"rxjs": "6.3.3",
 		"ts-jest": "24.1.0",
