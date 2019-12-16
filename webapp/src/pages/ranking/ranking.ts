@@ -117,7 +117,7 @@ export class RankingPage {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
             .then((usersRep: UserReputation[]) => {
                 this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
-                    let ret = -1;
+                    let ret: number;
                     if(this.globalSelected) {
                         ret = b.engagementIndex - a.engagementIndex;
                     } else {

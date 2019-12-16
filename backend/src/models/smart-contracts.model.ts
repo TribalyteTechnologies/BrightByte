@@ -4,5 +4,5 @@ export interface ITrbSmartContact {
 
 export interface ITrbSmartContractJson {
     abi: Array<Object>;
-    networks: Array<any>;
+    networks: { [key: string]: { address: string } };
 }
