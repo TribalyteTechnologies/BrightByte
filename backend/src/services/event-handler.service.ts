@@ -79,13 +79,12 @@ export class EventHandlerService {
             }
         };
 
+        this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
         switch (type) {
             case this.COMMIT:
-                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
                 this.contract.events.UserNewCommit({ fromBlock: "latest" }, callback);
                 break;
             case this.REVIEW:
-                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
                 this.contract.events.UserNewReview({ fromBlock: "latest" }, callback);
                 break;
             case this.SEASON:

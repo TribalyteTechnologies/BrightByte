@@ -24,17 +24,17 @@ export class CollectDataService {
     public startCollection(): Promise<boolean> {
         return this.getContractsJson().then(() => {
             this.brightNew = new this.web3Websocket.eth.Contract(this.contractBright.abi, this.brightAddress);
-            return this.getDataSource();
+            return this.fetchUserData();
         })
     }
 
-    public getUsersData(): User[] {
+    public getUsersData(): Array<User> {
         return this.users;
     }
 
-    private getDataSource(): Promise<boolean>{
+    private fetchUserData(): Promise<boolean>{
     
-        let usersHash = new Array<string>();
+        let userAddresses = new Array<string>();
 
         let seasonNumber: number;
         let seasonEndsTimestamps = new Array<number>();
@@ -42,7 +42,7 @@ export class CollectDataService {
 
         return this.brightNew.methods.getUsersAddress().call()
         .then((addresses: Array<string>) => {
-            usersHash = addresses;
+            userAddresses = addresses;
             let promises = addresses.map(userAddress => this.brightNew.methods.getUser(userAddress).call());
             return Promise.all(promises);
         }).then(usersData => {
@@ -52,9 +52,9 @@ export class CollectDataService {
                 newUser.email = user[1];
                 newUser.globalStats.reputation = user[5];
                 newUser.globalStats.agreedPercentage = user[6];
-                newUser.hash = usersHash[index];
+                newUser.hash = userAddresses[index];
                 this.users.push(newUser);
-                return this.brightNew.methods.getUserCommits(usersHash[index]).call();
+                return this.brightNew.methods.getUserCommits(userAddresses[index]).call();
             });
             return Promise.all(promises);
         }).then(usersCommits => {
@@ -62,21 +62,21 @@ export class CollectDataService {
                 this.users[index].globalStats = new UserStats();
                 this.users[index].globalStats.reviewsMade = userCommit[1].length;
                 this.users[index].globalStats.numberOfCommits = userCommit[2].length;
-                return this.brightNew.methods.getVotes(usersHash[index], true, 0).call();
+                return this.brightNew.methods.getVotes(userAddresses[index], true, 0).call();
             });
             return Promise.all(promises);
         }).then(usersVotes => {
             let promises = usersVotes.map((userVotes, index) => {
                 this.users[index].globalStats.positiveVotes = userVotes[0];
                 this.users[index].globalStats.negativeVotes = userVotes[1];
-                return this.brightNew.methods.getUserGlobalReputation(usersHash[index]).call()
+                return this.brightNew.methods.getUserGlobalReputation(userAddresses[index]).call()
             });
             return Promise.all(promises);
 
         }).then(reputation => {
-            for (let i = 0; i < usersHash.length; i++) {
+            for (let i = 0; i < userAddresses.length; i++) {
                 for (let j = 0; j < reputation.length; j++) {
-                    if (usersHash[i] === reputation[j][7]) {
+                    if (userAddresses[i] === reputation[j][7]) {
                         this.users[i].globalStats.numberOfTimesReview = reputation[i][2];
                     }
                 }
@@ -92,7 +92,7 @@ export class CollectDataService {
                 });
             }
             let promises = new Array<Promise<any>>();
-            usersHash.forEach(userHash => {
+            userAddresses.forEach(userHash => {
                 for (let i = 0; i <= seasonNumber; i++) {
                     let promise = this.brightNew.methods.getUserSeasonReputation(userHash, i).call();
                     promises.push(promise);
@@ -111,7 +111,7 @@ export class CollectDataService {
                     userSeason.seasonStats.numberOfCommits = Number(seasonReputation[counter][5]);
                     userSeason.seasonStats.reviewsMade = Number(seasonReputation[counter][6]);
                     user.seasonData[i] = userSeason;
-                    promises.push(this.brightNew.methods.getVotes(usersHash[index], false, i).call());
+                    promises.push(this.brightNew.methods.getVotes(userAddresses[index], false, i).call());
                     counter++;
                 }
             });

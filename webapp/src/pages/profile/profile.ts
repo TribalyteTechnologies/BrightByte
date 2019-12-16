@@ -25,7 +25,7 @@ export class Profile {
     public uploadForm: FormGroup;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload";
-    private readonly UPLOAD_TYPE = "image";
+    private readonly IMAGE_FIELD_NAME = "image";
 
     private noImageError: string;
     private uploadError: string;
@@ -63,7 +63,7 @@ export class Profile {
         let target = <HTMLInputElement>event.target;
         let uploadedFiles = <FileList>target.files;
         let input = uploadedFiles[0];
-        this.uploadForm.get(this.UPLOAD_TYPE).setValue(input);
+        this.uploadForm.get(this.IMAGE_FIELD_NAME).setValue(input);
         this.getBase64(input).then((data: string) => {
             this.avatarData = data;
             this.imageSelected = true;
@@ -107,7 +107,7 @@ export class Profile {
     public saveProfileImage() {
         if (this.imageSelected) {
             let formData = new FormData();
-            formData.append(this.UPLOAD_TYPE, this.uploadForm.get(this.UPLOAD_TYPE).value);
+            formData.append(this.IMAGE_FIELD_NAME, this.uploadForm.get(this.IMAGE_FIELD_NAME).value);
 
             this.http.post(this.UPDATE_IMAGE_URL + "?userHash=" + this.userAddress, formData)
                 .subscribe(

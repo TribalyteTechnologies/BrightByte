@@ -128,9 +128,8 @@ export class RankingPage {
                 });
                 if (!this.globalSelected) {
                     this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
-
-                    let rankedUsers = this.usersRep.filter(user => this.filterRankedUser(user));
-                    let unRankedUsers = this.usersRep.filter(user => !this.filterRankedUser(user));
+                    let rankedUsers = this.usersRep.filter(user => this.isRankedUser(user));
+                    let unRankedUsers = this.usersRep.filter(user => !this.isRankedUser(user));
                     unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
                         return (b.numberOfCommits + b.finishedReviews) - (a.numberOfCommits + a.finishedReviews);
                     });
@@ -138,7 +137,6 @@ export class RankingPage {
                         unRankedUsers.forEach(user => user.isRanked = false);
                     }
                     this.usersRep = rankedUsers.concat(unRankedUsers);
-
                 }
 
                 this.usersRep.forEach((user, i) => {
@@ -256,7 +254,7 @@ export class RankingPage {
         return +ind.match(/\d+/)[0];
     }
 
-    private filterRankedUser(user: UserReputation): boolean {
-        return user.numberOfCommits >= RankingPage.minNumberCommit && user.finishedReviews >= RankingPage.minNumberReview;
+    private isRankedUser(user: UserReputation): boolean {
+        return user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY;
     }
 }
