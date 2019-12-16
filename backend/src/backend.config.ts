@@ -21,12 +21,12 @@ export class BackendConfig {
     public static readonly ACH_IMG_FORMAT = ".svg";
     public static readonly INITIALIZE_USER_DATABASE = true;
     public static readonly NODE_CONFIG_URL = NodeConfig.NODE_WEBSOCKET_URL;
-    public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://brightbytepilot1.tribalyte.eu";
+    public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:3000";
     public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT || 3000;
     public static readonly BRIGHT_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Bright.json";
-    public static readonly IMAGE_STORAGE_PATH = process.env.PERSISTENCE_PATH || "./public/";
-    public static readonly BITBUCKET_KEY = "yjEu85RPMWCwJsGQvN";
-    public static readonly BITBUCKET_SECRET = "hEzNKVdtZex42nnfUBXdg5npstHsCpKE";
+    public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
+    public static readonly BITBUCKET_KEY = "xxxxxxxxxxxxxxxxxx";
+    public static readonly BITBUCKET_SECRET = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {

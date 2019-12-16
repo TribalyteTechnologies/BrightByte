@@ -14,6 +14,7 @@ This is the BrightByte backend project.
 - Set the node websocket url by running `WEBSOCKET_URL=ws://localhost:7545`
 - Set backend allow-origins direction if needed `ORIGIN_URL=http://localhost:8100`
 - Set backend port `BACKEND_PORT=3000`
-- Set backend persintance path for the avatars `PERSISTENCE_PATH=./public/`
-- Set the volume directories `HOST_DIRECTORY=/home/ubuntu/brightbyte-volume` and `DOCKER_DIRECTORY="/brightbyte/$PERSISTENCE_PATH`
-- Create and run de container `docker run -e "NODE_WEBSOCKET_URL=${WEBSOCKET_URL}" -e "WEBAPP_URL=${ORIGIN_URL}"  -e "PORT=${BACKEND_PORT}" -e "IMAGE_STORAGE_PATH=${PERSISTENCE_PATH}" -p ${BACKEND_PORT}:${BACKEND_PORT}/udp -p  ${BACKEND_PORT}:${BACKEND_PORT}/tcp -d -v ${HOST_DIRECTORY}:${DOCKER_DIRECTORY} brightbyte/backend:latest` ('latest' can be changed for the tag of any version available at https://cloud.docker.com/u/brightbyte/repository/docker/brightbyte/backend)
+- In order to keep avatar persistance we use volumes, using the following variables `BACKEND_STORAGE_PATH`, `CONTAINER_PERSISTENCE_PATH` and `HOST_DIRECTORY`
+- Set backend persintance path for the avatars `BACKEND_STORAGE_PATH=./public/`
+- Set the volume directories `HOST_DIRECTORY=/home/ubuntu/brightbyte-volume` and `CONTAINER_PERSISTENCE_PATH="/brightbyte/$BACKEND_STORAGE_PATH`
+- Create and run de container `docker run -e "NODE_WEBSOCKET_URL=${WEBSOCKET_URL}" -e "WEBAPP_URL=${ORIGIN_URL}"  -e "PORT=${BACKEND_PORT}" -e "IMAGE_STORAGE_PATH=${BACKEND_STORAGE_PATH}" -p ${BACKEND_PORT}:${BACKEND_PORT}/udp -p  ${BACKEND_PORT}:${BACKEND_PORT}/tcp -d -v ${HOST_DIRECTORY}:${CONTAINER_PERSISTENCE_PATH} brightbyte/backend:latest` ('latest' can be changed for the tag of any version available at https://cloud.docker.com/u/brightbyte/repository/docker/brightbyte/backend)
