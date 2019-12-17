@@ -10,6 +10,16 @@
         </ion-col>
     </ion-row>
      -->
+    <ion-toolbar>
+        <ion-segment>
+          <ion-segment-button (click) = "setUploadMethod('url')">
+            {{ "addCommit.tabSelection1" | translate }}
+          </ion-segment-button>
+          <ion-segment-button (click) = "setUploadMethod('batch')">
+            {{ "addCommit.tabSelection2" | translate }}
+          </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
     <ion-row padding *ngIf="commitMethod === 'url'" class="form-container">
         <form class="form-style" id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(formUrl, formTitle)" novalidate>
             <ion-row class="text-details text-details--bold">
@@ -31,6 +41,26 @@
             </ion-row>
             <ion-spinner [hidden]="!isTxOngoing"></ion-spinner>
         </form>
+    </ion-row>
+
+    <ion-row padding *ngIf="commitMethod === 'batch'" class="form-container">
+        <ion-col *ngIf="(logged); else notLogged">
+            <ion-list radio-group [(ngModel)]="repoSelection">
+                <ion-item-divider>
+                    <ion-label class="text-title text-details--bold">Select one repository to upload:</ion-label>
+                </ion-item-divider>
+                <ion-item *ngFor="let selectedRepo of selectedRepotories">
+                    <ion-radio item-left value="{{ selectedRepo.name }}"></ion-radio>
+                    <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}</ion-label>
+                    <ion-label item-right class="text-details text-details--bold">{{ selectedRepo.numCommits }} commits pending to upload</ion-label>                
+                </ion-item>
+            </ion-list>
+        </ion-col>
+        <ng-template #notLogged>
+            <ion-col>
+                <ion-label> {{ "addCommit.repositoriesMissingInfo" | translate }} </ion-label>
+            </ion-col>
+        </ng-template>
     </ion-row>
 
     <ion-row padding *ngIf="commitMethod === 'bitbucket'" class="form-container">
@@ -108,7 +138,7 @@
     </ion-row>
     <ion-row>
         <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-        <button *ngIf="commitMethod === 'bitbucket'" class="btn btn--full btn__blue" type="submit" [disabled]="!(selectedCommit)" (click)="addCommit(formUrl, formTitle)">{{ "addCommit.title" | translate }}</button>
+        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection)" (click)="addRepo(repoSelection)">{{ "addCommit.title" | translate }}</button>
     </ion-row>
 
 

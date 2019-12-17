@@ -50,7 +50,10 @@
         "ownEmail": "You can't review your own commit",
         "emptyInput": "You must choose at least one reviewer",
         "unknownEmail": "You have introduced an unknown email. Please, select a valid one.",
-        "errorResponse": "Error: addcommit response is undefined"
+        "errorResponse": "Error: addcommit response is undefined",
+        "tabSelection1": "Simple Upload",
+        "tabSelection2": "Batch Upload",
+        "repositoriesMissingInfo": "Repositories missing. Please, check if your bitbucket account is linked."
     },
     "commits": {
         "add": "Contribute",
