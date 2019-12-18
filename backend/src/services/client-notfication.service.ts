@@ -34,16 +34,15 @@ export class ClientNotificationService {
         return this.sessions.delete(userSession);
     }
 
+    public getSession(userAddress: string): string {
+        let userSession = this.getSession(userAddress);
+        return userSession;
+    }
+
     public sendNewAchievement(userAddress: string, achievements: Array<AchievementDto>) {
         let isDbInitOngoing = this.sessions.size <= 0;
         if (!isDbInitOngoing) {
-            let userSession = null;
-            for (let [key, value] of this.sessions.entries()) {
-                if (value === userAddress) {
-                    userSession = key;
-                    break;
-                }
-            }
+            let userSession = this.findKey(userAddress);
             try {
                 this.log.d("Sending achievements: ", achievements);
                 this.sockets[userSession].emit("newAchievement", achievements);
@@ -51,5 +50,31 @@ export class ClientNotificationService {
                 this.log.e("Cannot send achievement to client", error);
             }
         }
+    }
+
+    public sendToken(userAddress: string, token: string) {
+        let isDbInitOngoing = this.sessions.size <= 0;
+        if (!isDbInitOngoing) {
+            let userSession = this.findKey(userAddress);
+            try {
+                this.log.d("Sending token to user: ", userAddress);
+                this.sockets[userSession].emit("newToken", token);
+            } catch (error) {
+                this.log.e("Cannot send achievement to client", error);
+            }
+        }
+    }
+
+    private findKey(userAddress: string): string {
+        let userSession: string;
+        if (this.sessions.size > 0) {
+            for (let [key, value] of this.sessions.entries()) {
+                if (value === userAddress) {
+                    userSession = key;
+                    break;
+                }
+            }
+        }
+        return userSession;
     }
 }

@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavController } from "ionic-angular";
+import { NavController, NavParams } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { LoginService } from "../../core/login.service";
 import { ViewController } from "ionic-angular";
@@ -60,7 +60,8 @@ export class AddCommitPopover {
         private contractManagerService: ContractManagerService,
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
-        private bitbucketSrv: BitbucketService
+        private bitbucketSrv: BitbucketService,
+        private navParams: NavParams
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -92,6 +93,16 @@ export class AddCommitPopover {
             }).catch((e) => {
                 this.showGuiMessage("addCommit.errorEmails", e);
             });
+
+        if(this.navParams.data) {
+            if(this.navParams.data.authenticationVerified) {
+                this.commitMethod = "batch";
+                this.bitbucketSrv.getUsername().then((user) => {
+                    this.bitbucketUser = user;
+                    this.getRepoByUser();
+                });
+            }
+        }
     }
 
     public addCommit(url: string, title: string) {
@@ -218,15 +229,11 @@ export class AddCommitPopover {
     }
 
     public loginBitbucket() {
-        this.bitbucketSrv.loginBitbucket().then((authUrl) => {
-            return authUrl["data"];
-        }).then(val => {
-            if (val != null) {
-                window.open(val);
-                this.bitbucketSrv.getUsername().then((user) => {
-                    this.bitbucketUser = user;
-                    this.getRepoByUser();
-                });
+        let userAddress = this.loginService.getAccountAddress();
+        this.bitbucketSrv.loginBitbucket(userAddress).then((authUrl) => {
+            if(authUrl) {
+                window.open(authUrl);
+                this.viewCtrl.dismiss();
             }
         });
     }

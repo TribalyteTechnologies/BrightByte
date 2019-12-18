@@ -5,12 +5,14 @@ import { Achievement } from "../models/achievement.model";
 import { AchievementService } from "./achievement.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { LoginService } from "../core/login.service";
+import { BitbucketService } from "./bitbucket.service";
 
 @Injectable()
 export class BackendApiService {
 
     private readonly ADD_USER = "addUser";
     private readonly NEW_ACHIEVEMENT = "newAchievement";
+    private readonly NEW_TOKEN = "newToken";
     private readonly CONNECTION = "connect";
 
     private socket: Socket;
@@ -20,6 +22,7 @@ export class BackendApiService {
         private websocketSrv: WebSocketService,
         private achievementSrv: AchievementService,
         private loginSrv: LoginService,
+        private bitbucketService: BitbucketService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("BackendApiService");
@@ -31,6 +34,7 @@ export class BackendApiService {
         this.socket.emit(this.ADD_USER, userAddress);
         this.log.d("Backend connection established");
         this.registerNewAchievementListener();
+        this.registerTokenListener();
         this.registerConnectionListener();
     }
 
@@ -44,6 +48,12 @@ export class BackendApiService {
                 this.log.d("New achievement recieved" + newAchievement);
             });
             this.achievementSrv.checkAchievementStack();
+        });
+    }
+
+    private registerTokenListener() {
+        this.socket.on(this.NEW_TOKEN, (token) => {
+            this.bitbucketService.setUserToken(token);
         });
     }
 

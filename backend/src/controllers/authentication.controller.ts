@@ -8,13 +8,15 @@ import { map, catchError, flatMap } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { AuthenticationDatabaseService } from "src/services/authentication-database.service";
 import * as querystring from "querystring";
+import { ClientNotificationService } from "src/services/client-notfication.service";
 
 @Controller("authentication")
 export class AuthenticationController {
 
     private readonly RESPONSE_TYPE = "code";
     private readonly BITBUCKET_OAUTH_URL = "https://bitbucket.org/site/oauth2/authorize?client_id=";
-    private readonly AUTHORIZE_CALLBACK = this.BITBUCKET_OAUTH_URL + BackendConfig.BITBUCKET_KEY + "&response_type=" + this.RESPONSE_TYPE;
+    private readonly AUTHORIZE_AUX = this.BITBUCKET_OAUTH_URL + BackendConfig.BITBUCKET_KEY + "&response_type=" + this.RESPONSE_TYPE;
+    private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
     private readonly GET_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
     private readonly GRANT_TYPE = "authorization_code";
 
@@ -22,7 +24,8 @@ export class AuthenticationController {
     public constructor(
         loggerSrv: LoggerService,
         private httpSrv: HttpService,
-        private authenticationDatabaseService: AuthenticationDatabaseService
+        private authenticationDatabaseService: AuthenticationDatabaseService,
+        private clientNotificationService: ClientNotificationService
     ) {
         this.log = loggerSrv.get("AuthenticationController");
     }
@@ -30,12 +33,14 @@ export class AuthenticationController {
 
     @Get("authorize/:userCode")
     public getAuthCallback(@Param("userCode") code): ResponseDto {
-        return new SuccessResponseDto(this.AUTHORIZE_CALLBACK);
+        this.log.d("The user requesting authentication is: " + code);
+        return new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code);
     }
 
     @Get("oauth-callback")
     public getProviderToken(@Req() req): Observable<ResponseDto> {
         let code = req.query.code;
+        let userIdentifier = req.query.state;
         let digested = new Buffer(BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET).toString("base64");
         let accessTokenOptions = { grant_type: this.GRANT_TYPE, code: code };
         let accessTokenConfig = {
@@ -51,9 +56,12 @@ export class AuthenticationController {
             flatMap(response => {
                 userToken = response.data.access_token;
                 this.log.d("Response: ", response.data);
-                return this.authenticationDatabaseService.setUserToken(code, userToken);
+                return this.authenticationDatabaseService.setUserToken(userIdentifier, userToken);
             }),
-            map(res => new SuccessResponseDto(userToken)),
+            map(res => {
+                this.clientNotificationService.sendToken(userIdentifier, userToken);
+                return new SuccessResponseDto(userToken);
+            }),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Can not get user token")))
         );
     }

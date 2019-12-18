@@ -2,24 +2,29 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
+import { AddCommitPopover } from "../pages/addcommit/addcommit";
+import { PopoverController } from "ionic-angular";
+import { IResponse } from "../models/response.model";
 
 @Injectable()
 export class BitbucketService {
+
+    public readonly AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
+
     public userDetails = {};
     private bearHash = "";
 
-    constructor(private http: HttpClient, private storageSrv: LocalStorageService) {
+    constructor(
+        private http: HttpClient,
+        private storageSrv: LocalStorageService,
+        private popoverCtrl: PopoverController
+    ) {
         this.bearHash = this.storageSrv.get("bearHash");
     }
 
-    public loginBitbucket(): Promise<any> {
-        let usercode = Math.random().toString(36).substr(2, 9);
-        let URL = AppConfig.SERVER_BASE_URL + "/authentication/authorize/" + usercode;
-        return new Promise((resolve, reject) => {
-            this.http.get(URL).subscribe((resp) => {
-                resolve(resp);
-            });
-        });
+    public loginBitbucket(userAddress: string): Promise<string> {
+        return this.http.get(this.AUTHENTICATION_URL + userAddress).toPromise()
+        .then((response: IResponse) => response.data);
     }
 
     public getUsername(): Promise<any> {
@@ -69,5 +74,11 @@ export class BitbucketService {
                 resolve(val);
             });
         });
+    }
+
+    public setUserToken(userToken: string) {
+        this.bearHash = userToken;
+        let popover = this.popoverCtrl.create(AddCommitPopover, { authenticationVerified: true }, { cssClass: "add-commit-popover" });
+        popover.present();
     }
 }
