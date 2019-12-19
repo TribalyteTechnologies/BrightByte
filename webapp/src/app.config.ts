@@ -20,6 +20,11 @@ export class AppConfig {
     }];
     public static readonly SERVER_BASE_URL = "http://localhost:3000";
     public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
+    public static readonly SERVER_BITBUCKET_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
+
+    public static readonly BITBUCKET_BASE_URL = "https://bitbucket.org/tribalyte/";
+    public static readonly BITBUCKET_USER_URL = "https://api.bitbucket.org/2.0/user/";
+    public static readonly BITBUCKET_REPOSITORIES_URL = "https://api.bitbucket.org/2.0/repositories/tribalyte/";
     
     public static readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
     public static readonly AVATAR_STATUS_PATH = "/status/";

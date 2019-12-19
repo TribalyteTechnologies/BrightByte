@@ -38,11 +38,11 @@ export class AddCommitPopover {
     public formTitle = "";
     public currentProject = "";
     public commitMethod = "url";
-    public selectedCommit: any;
+    public currentSeasonStartDate: Date;
 
-    public selectedRepotories: Repository[];
+    public selectedRepotories: Array<Repository>;
     public repoSelection: String;
-    public logged = false;
+    public isBatchLogged = false;
 
     private allEmails = new Array<string>();
     private searchInput = "";
@@ -94,8 +94,8 @@ export class AddCommitPopover {
                 this.showGuiMessage("addCommit.errorEmails", e);
             });
 
-        if(this.navParams.data) {
-            if(this.navParams.data.authenticationVerified) {
+        if (this.navParams.data) {
+            if (this.navParams.data.authenticationVerified) {
                 this.commitMethod = "batch";
                 this.bitbucketSrv.getUsername().then((user) => {
                     this.bitbucketUser = user;
@@ -195,7 +195,6 @@ export class AddCommitPopover {
         this.arraySearch = array;
     }
 
-
     public refreshSearchbar(ev: any) {
         let val = ev.target.value;
         this.searchInput = val;
@@ -228,138 +227,112 @@ export class AddCommitPopover {
         this.setUpList(this.searchInput);
     }
 
-    public loginBitbucket() {
+    public loginToBitbucket() {
         let userAddress = this.loginService.getAccountAddress();
-        this.bitbucketSrv.loginBitbucket(userAddress).then((authUrl) => {
-            if(authUrl) {
+        this.bitbucketSrv.loginToBitbucket(userAddress).then((authUrl) => {
+            if (authUrl) {
                 window.open(authUrl);
                 this.viewCtrl.dismiss();
             }
         });
     }
 
-    public getProjectCommits(project: string) {
-        this.currentProject = project;
-        this.bitbucketSrv.getReposlug(project).then((val) => {
-            let commits: Array<any> = val["values"];
-            let filteredList = commits.filter((com) => {
-                let author: any = com["author"]["user"]["nickname"];
-                return author === this.bitbucketUser["username"];
-            });
-            filteredList.forEach((com, idx) => {
-                let titulo = com["message"].split("\n");
-                let object = {
-                    "title": titulo[0],
-                    "hash": com["hash"]
-                };
-                this.commitList.push(object);
-            });
-        });
-    }
-
-    public setFromBitbucket(commit: any) {
-        this.selectedCommit = commit;
-        this.formTitle = commit["title"];
-        this.formUrl = "https://bitbucket.org/tribalyte/" + this.currentProject + "/commits/" + commit["hash"];
-    }
-
     public setUploadMethod(method: string) {
         this.commitMethod = method;
         if (method === "batch") {
-            this.loginBitbucket();
+            this.loginToBitbucket();
         }
     }
 
-    public getRepoByUser() {
-        let commitsFirstPage;
+    public getRepoByUser(): Promise<void> {
         this.selectedRepotories = new Array<Repository>();
-        this.contractManagerService.getCommits().then(commits => {
-            let blockchainCommits = new Array<String>();
-            commits.forEach(com => {
-                blockchainCommits.push(com["urlHash"]);
-            });
-            return blockchainCommits;
-        }).then(blockchainCommits => {
-            this.bitbucketSrv.getRepositories().then((results) => {
-                results.map((res) => {
-                    let repo: Repository = new Repository();
-                    repo.name = res["name"];
-                    repo.slug = res["slug"];
-                    repo.numCommits = 0;
-                    repo.commits = new Array<string>();
-                    commitsFirstPage = this.bitbucketSrv.getReposlug(repo.slug).then((commits) => {
-                        commits["values"].forEach(com => {
-                            let comDate = new Date(com["date"]);
-                            let seasonDate = new Date("2019-11-01");
-                            if (com["author"]["user"]["nickname"] === this.bitbucketUser["username"]
-                                && comDate >= seasonDate && blockchainCommits.indexOf(com["hash"]) < 0) {
-                                repo.commits.push(com["hash"]);
-                                repo.numCommits++;
-                            }
-                        });
-                        let nextCommits = commits["next"];
-                        if (nextCommits == null) {
-                            this.logged = true;
-                            this.selectedRepotories.push(repo);
-                        }
-                        return nextCommits;
-                    });
-                    Promise.all([commitsFirstPage]).then(([nextCommits]) => {
-                        if (nextCommits != null) {
-                            this.nextCommitsPage(repo, nextCommits, blockchainCommits);
-                            this.logged = true;
+
+        let contractManagerResult = this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
+            let seasonDate = new Date(1000 * seasonEndDate[1]);
+            seasonDate.setMonth(seasonDate.getMonth() - 4);
+            return seasonDate;
+        }).then(seasonDate => {
+            this.currentSeasonStartDate = seasonDate;
+            return this.contractManagerService.getCommits();
+        }).then(commits => {
+            return commits.map<string>(com => com.urlHash);
+        });
+
+        let repositoriesResults = this.bitbucketSrv.getRepositories().then(results => {
+            return results;
+        });
+
+        return Promise.all([contractManagerResult, repositoriesResults]).then(([contractManagerCommits, repositories]) => {
+            let blockChainCommits = contractManagerCommits as Array<string>;
+            repositories.forEach((res) => {
+                let repo: Repository = new Repository();
+                repo.name = res["name"];
+                repo.slug = res["slug"];
+                repo.numCommits = 0;
+                repo.commits = new Array<string>();
+                this.bitbucketSrv.getReposlug(repo.slug).then((commits) => {
+                    commits["values"].forEach(com => {
+                        let comDate = new Date(com.date);
+                        if (com.author.user.nickname === this.bitbucketUser["nickname"]
+                            && comDate >= this.currentSeasonStartDate && blockChainCommits.indexOf(com.hash) < 0) {
+                            repo.commits.push(com.hash);
+                            repo.numCommits++;
                         }
                     });
+                    let nextCommits = commits["next"];
+                    if (nextCommits == null) {
+                        this.isBatchLogged = true;
+                        this.selectedRepotories.push(repo);
+                    }
+                    return nextCommits;
+                }).then((nextCommits) => {
+                    if (nextCommits != null) {
+                        this.getCommitsInNextPage(repo, nextCommits, blockChainCommits);
+                        this.isBatchLogged = true;
+                    }
                 });
             });
         });
     }
 
-    public nextCommitsPage(repo: Repository, url: any, blockchainCommits: String[]) {
+    public addRepo(repoSelection: string) {
+        this.selectedRepotories.filter((repo) => {
+            if (repo != null && repoSelection === repo.name) {
+                repo.commits.forEach((comHash) => {
+                    let comUrl = AppConfig.BITBUCKET_BASE_URL + repoSelection + "/commits/" + comHash;
+                    this.addCommit(comUrl, comHash);
+                });
+            }
+        });
+    }
+
+    private getCommitsInNextPage(repo: Repository, url: string, blockchainCommits: String[]) {
         let auxUrl = url;
         this.bitbucketSrv.getNextReposlug(auxUrl).then((nextCommits) => {
-            nextCommits["values"].forEach(com => {
-                let comDate = new Date(com["date"]);
-                let seasonDate = new Date("2019-11-01");
+            nextCommits["values"].every((com) => {
+                let comDate = new Date(com.date);
 
-                if (comDate < seasonDate) {
+                if (comDate < this.currentSeasonStartDate) {
                     auxUrl = null;
-                    return;
+                    return false;
                 }
 
-                if (com["author"]["user"]["nickname"] === this.bitbucketUser["username"]
-                    && blockchainCommits.indexOf(com["hash"]) < 0) {
-                    repo.commits.push(com["hash"]);
+                if (com.author.user.nickname === this.bitbucketUser["nickname"]
+                    && blockchainCommits.indexOf(com.hash) < 0) {
+                    repo.commits.push(com.hash);
                     repo.numCommits++;
                 }
+                return true;
             });
 
             if (auxUrl == null) {
                 this.selectedRepotories.push(repo);
             } else {
                 auxUrl = nextCommits["next"];
-                this.nextCommitsPage(repo, auxUrl, blockchainCommits);
+                this.getCommitsInNextPage(repo, auxUrl, blockchainCommits);
             }
         });
     }
-
-    public addRepo(repoSelection: string) {
-        let filteredList = new Array<string>();
-        this.selectedRepotories.filter((repo) => {
-            if (repo != null && repoSelection === repo.name) {
-                filteredList = repo.commits.filter((com) => {
-                    let author: any = com["author"]["user"]["nickname"];
-                    return author === this.bitbucketUser["username"];
-                });
-            }
-        });
-        filteredList.forEach((com, idx) => {
-            let title = com["title"];
-            let comUrl = "https://bitbucket.org/tribalyte/" + repoSelection + "/commits/" + com["hash"];
-            this.addCommit(comUrl, title);
-        });
-    }
-
 
     private showGuiMessage(txtId, e?: any) {
         this.translateService.get(txtId)
