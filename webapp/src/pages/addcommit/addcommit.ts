@@ -229,12 +229,19 @@ export class AddCommitPopover {
 
     public loginToBitbucket() {
         let userAddress = this.loginService.getAccountAddress();
-        this.bitbucketSrv.loginToBitbucket(userAddress).then((authUrl) => {
-            if (authUrl) {
-                window.open(authUrl);
-                this.viewCtrl.dismiss();
-            }
-        });
+        let userToken = this.bitbucketSrv.getToken();
+        if (userToken) {
+            this.commitMethod = "batch";
+            this.bitbucketUser = this.bitbucketSrv.getUserDetails();
+            this.getRepoByUser();
+        } else {
+            this.bitbucketSrv.loginToBitbucket(userAddress).then((authUrl) => {
+                if (authUrl) {
+                    window.open(authUrl);
+                    this.viewCtrl.dismiss();
+                }
+            });
+        }
     }
 
     public setUploadMethod(method: string) {

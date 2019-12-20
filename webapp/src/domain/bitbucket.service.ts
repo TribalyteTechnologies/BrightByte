@@ -11,6 +11,7 @@ export class BitbucketService {
 
     public userDetails = {};
     private bearHash = "";
+    private userIdentifier: string;
 
     constructor(
         private http: HttpClient,
@@ -21,8 +22,13 @@ export class BitbucketService {
     }
 
     public loginToBitbucket(userAddress: string): Promise<string> {
+        this.userIdentifier = userAddress;
         return this.http.get(AppConfig.SERVER_BITBUCKET_AUTHENTICATION_URL + userAddress).toPromise()
-            .then((response: IResponse) => response.data);
+        .then((response: IResponse) => response.data);
+    }
+
+    public getToken(): string {
+        return this.storageSrv.get(AppConfig.StorageKey.USERTOKEN);
     }
 
     public getUsername(): Promise<Object> {
@@ -30,10 +36,14 @@ export class BitbucketService {
             "Authorization": "Bearer " + this.bearHash
         });
         return this.http.get(AppConfig.BITBUCKET_USER_URL, { headers }).toPromise()
-            .then(val => {
-                this.userDetails = val;
-                return val;
-            });
+        .then(val => {
+            this.userDetails = val;
+            return val;
+        });
+    }
+
+    public getUserDetails(): Object {
+        return this.userDetails;
     }
 
     public getRepositories(): Promise<Array<Object>> {
@@ -69,6 +79,7 @@ export class BitbucketService {
 
     public setUserToken(userToken: string) {
         this.bearHash = userToken;
+        this.storageSrv.set(AppConfig.StorageKey.USERTOKEN, userToken);
         let popover = this.popoverCtrl.create(AddCommitPopover, { authenticationVerified: true }, { cssClass: "add-commit-popover" });
         popover.present();
     }
