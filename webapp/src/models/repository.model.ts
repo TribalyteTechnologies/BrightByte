@@ -1,6 +1,8 @@
+import { CommitInfo } from "./commit-info.model";
+
 export class Repository {
     public slug: string;
     public name: string;
-    public commits: Array<string>;
+    public commitsInfo: Array<CommitInfo>;
     public numCommits: number;
 }

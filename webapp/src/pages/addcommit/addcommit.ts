@@ -14,6 +14,8 @@ import { BitbucketService } from "../../domain/bitbucket.service";
 import { FormatUtils } from "../../core/format-utils";
 import { UserCommit } from "../../models/user-commit.model";
 import { Repository } from "../../models/repository.model";
+import { CommitInfo } from "../../models/commit-info.model";
+import { SpinnerService } from "../../core/spinner.service";
 
 @Component({
     selector: "popover-addcommit",
@@ -61,7 +63,8 @@ export class AddCommitPopover {
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
         private bitbucketSrv: BitbucketService,
-        private navParams: NavParams
+        private navParams: NavParams,
+        private spinnerSrv: SpinnerService
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -105,12 +108,12 @@ export class AddCommitPopover {
         }
     }
 
-    public addCommit(url: string, title: string) {
+    public addCommit(url: string, title: string): Promise<void> {
         this.isTxOngoing = true;
         this.clearGuiMessage();
         let errMsgId = null;
         let newCommit: UserCommit;
-        this.userDetailsProm.then(userDetails => {
+        return this.userDetailsProm.then(userDetails => {
             for (let userEmail of this.userAdded) {
                 if (this.userAdded.indexOf(userEmail) < 0) {
                     errMsgId = "addCommit.unknownEmail";
@@ -276,13 +279,16 @@ export class AddCommitPopover {
                 repo.name = res["name"];
                 repo.slug = res["slug"];
                 repo.numCommits = 0;
-                repo.commits = new Array<string>();
+                repo.commitsInfo = new Array<CommitInfo>();
                 this.bitbucketSrv.getReposlug(repo.slug).then((commits) => {
                     commits["values"].forEach(com => {
                         let comDate = new Date(com.date);
                         if (com.author.user && com.author.user.nickname === this.bitbucketUser["nickname"]
                             && comDate >= this.currentSeasonStartDate && blockChainCommits.indexOf(com.hash) < 0) {
-                            repo.commits.push(com.hash);
+                            let commitInfo = new CommitInfo();
+                            commitInfo.hash = com.hash;
+                            commitInfo.name = com.message;
+                            repo.commitsInfo.push(commitInfo);
                             repo.numCommits++;
                         }
                     });
@@ -303,11 +309,19 @@ export class AddCommitPopover {
     }
 
     public addRepo(repoSelection: string) {
+        this.spinnerSrv.showLoader();
         this.selectedRepotories.filter((repo) => {
             if (repo != null && repoSelection === repo.name) {
-                repo.commits.forEach((comHash) => {
-                    let comUrl = AppConfig.BITBUCKET_BASE_URL + repoSelection + "/commits/" + comHash;
-                    this.addCommit(comUrl, comHash);
+                repo.commitsInfo.reduce(
+                    (prevVal, commit) => {
+                        return prevVal.then(() => {
+                            let comUrl = AppConfig.BITBUCKET_BASE_URL + repoSelection + "/commits/" + commit.hash;
+                            return this.addCommit(comUrl, commit.name);
+                        });
+                    },
+                    Promise.resolve()
+                ).then(() => {
+                    this.spinnerSrv.hideLoader();
                 });
             }
         });
@@ -326,7 +340,10 @@ export class AddCommitPopover {
 
                 if (com.author.user && com.author.user.nickname === this.bitbucketUser["nickname"]
                     && blockchainCommits.indexOf(com.hash) < 0) {
-                    repo.commits.push(com.hash);
+                    let commitInfo = new CommitInfo();
+                    commitInfo.name = com.message;
+                    commitInfo.hash = com.hash;
+                    repo.commitsInfo.push(commitInfo);
                     repo.numCommits++;
                 }
                 return true;
