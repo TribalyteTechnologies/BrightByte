@@ -273,7 +273,7 @@ export class AddCommitPopover {
                 this.bitbucketSrv.getReposlug(repo.slug).then((commits) => {
                     commits["values"].forEach(com => {
                         let comDate = new Date(com.date);
-                        if (com.author.user.nickname === this.bitbucketUser["nickname"]
+                        if (com.author.user && com.author.user.nickname === this.bitbucketUser["nickname"]
                             && comDate >= this.currentSeasonStartDate && blockChainCommits.indexOf(com.hash) < 0) {
                             repo.commits.push(com.hash);
                             repo.numCommits++;
@@ -317,7 +317,7 @@ export class AddCommitPopover {
                     return false;
                 }
 
-                if (com.author.user.nickname === this.bitbucketUser["nickname"]
+                if (com.author.user && com.author.user.nickname === this.bitbucketUser["nickname"]
                     && blockchainCommits.indexOf(com.hash) < 0) {
                     repo.commits.push(com.hash);
                     repo.numCommits++;
