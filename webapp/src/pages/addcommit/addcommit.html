@@ -78,7 +78,7 @@
     </ion-row>
     <ion-row>
         <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection)" (click)="addRepo(repoSelection)">{{ "addCommit.title" | translate }}</button>
+        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection)" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
     </ion-row>
 
 

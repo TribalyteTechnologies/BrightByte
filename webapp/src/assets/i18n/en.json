@@ -33,6 +33,7 @@
     },
     "addCommit": {
         "title": "Add commit",
+        "importCommits": "Import commits",
         "add": "Add your commit or PR",
         "description": "Make sure you pushed your commit the remote repository and paste here the URL of the commit or pull reuest",
         "project": "Project",
