@@ -10,7 +10,7 @@ import { IResponse } from "../models/response.model";
 export class BitbucketService {
 
     public userDetails = {};
-    private bearHash = "";
+    private bearHash: string;
     private userIdentifier: string;
 
     constructor(
@@ -18,7 +18,7 @@ export class BitbucketService {
         private storageSrv: LocalStorageService,
         private popoverCtrl: PopoverController
     ) {
-        this.bearHash = this.storageSrv.get("bearHash");
+        this.bearHash = this.storageSrv.get(AppConfig.StorageKey.USERTOKEN);
     }
 
     public loginToBitbucket(userAddress: string): Promise<string> {
