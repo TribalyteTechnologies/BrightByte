@@ -3,13 +3,14 @@ import { ILogger, LoggerService } from "../core/logger.service";
 import { Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../app.config";
-import { map, catchError, share } from "rxjs/operators";
+import { map, catchError, shareReplay, merge} from "rxjs/operators";
 import { IResponse } from "../models/response.model";
 
 @Injectable()
 export class AvatarService {
 
     private readonly ANONYMOUS_ADDRESS = "0x0";
+    private readonly BUFFER_SIZE = 1;
 
     private log: ILogger;
     private avatarObsMap = new Map<string, Observable<string>>();
@@ -20,7 +21,7 @@ export class AvatarService {
         private http: HttpClient
     ) {
         this.log = loggerSrv.get("AvatarService");
-        //This null is added for the anonymous users to be recognise
+        //This null is added for the anonymous users to be recognised
         this.addUser(null);
     }
 
@@ -38,8 +39,8 @@ export class AvatarService {
                     AppConfig.SERVER_BASE_URL + response.data : this.createIdenticonUrl(hash);
                     return imageUrl;
                 }),
-                share());
-            avatarObs = Observable.merge(avatarObs, avatarSubj);
+                merge(avatarSubj),
+                shareReplay(this.BUFFER_SIZE));
             this.avatarObsMap.set(hash, avatarObs);
             this.avatarSubjMap.set(hash, avatarSubj);
         }else if (!hash) {
