@@ -41,8 +41,9 @@ export class AddCommitPopover {
     public currentProject = "";
     public commitMethod = "url";
     public currentSeasonStartDate: Date;
+    public hasNewCommits = true;
 
-    public selectedRepotories: Array<Repository>;
+    public selectedRepositories: Array<Repository>;
     public repoSelection: String;
     public isBatchLogged = false;
 
@@ -255,7 +256,7 @@ export class AddCommitPopover {
     }
 
     public getRepoByUser(): Promise<void> {
-        this.selectedRepotories = new Array<Repository>();
+        this.selectedRepositories = new Array<Repository>();
 
         let contractManagerResult = this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
             let seasonDate = new Date(1000 * seasonEndDate[1]);
@@ -295,7 +296,7 @@ export class AddCommitPopover {
                     let nextCommits = commits["next"];
                     if (nextCommits == null) {
                         this.isBatchLogged = true;
-                        this.selectedRepotories.push(repo);
+                        this.selectedRepositories.push(repo);
                     }
                     return nextCommits;
                 }).then((nextCommits) => {
@@ -305,12 +306,13 @@ export class AddCommitPopover {
                     }
                 });
             });
+            this.hasNewCommits = this.selectedRepositories.some(repo => repo.numCommits !== 0);
         });
     }
 
     public addRepo(repoSelection: string) {
         this.spinnerSrv.showLoader();
-        this.selectedRepotories.filter((repo) => {
+        this.selectedRepositories.filter((repo) => {
             if (repo != null && repoSelection === repo.name) {
                 repo.commitsInfo.reduce(
                     (prevVal, commit) => {
@@ -350,7 +352,7 @@ export class AddCommitPopover {
             });
 
             if (auxUrl == null) {
-                this.selectedRepotories.push(repo);
+                this.selectedRepositories.push(repo);
             } else {
                 auxUrl = nextCommits["next"];
                 this.getCommitsInNextPage(repo, auxUrl, blockchainCommits);
