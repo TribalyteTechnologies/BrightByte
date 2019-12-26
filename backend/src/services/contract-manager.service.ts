@@ -5,7 +5,7 @@ import { Web3Service } from "../services/web3.service";
 import Web3 from "web3";
 import { UserDetailsDto } from "../dto/user-details.dto";
 import { Observable, from, forkJoin } from "rxjs";
-import { flatMap, map, tap, share } from "rxjs/operators";
+import { flatMap, map, tap, shareReplay } from "rxjs/operators";
 import { AxiosResponse } from "axios";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
 
@@ -66,6 +66,6 @@ export class ContractManagerService {
             this.contractAddressBright = this.brightContractAbi.networks[BackendConfig.NET_ID].address;
             this.contracts.push(new this.web3.eth.Contract(this.brightContractAbi.abi, this.contractAddressBright));
         }),
-        share());
+        shareReplay(BackendConfig.BUFFER_SIZE));
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { Observable, throwError, of  } from "rxjs";
-import { flatMap, tap, map, first, catchError, share } from "rxjs/operators";
+import { flatMap, tap, map, first, catchError, shareReplay } from "rxjs/operators";
 import { UserAuthenticationDto } from "../dto/user-authentication.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
@@ -60,7 +60,7 @@ export class AuthenticationDatabaseService {
             //first() is neccessary so that NestJS controllers can answer Http Requests.
             first(),
             tap(collection => this.initObs = of(collection)),
-            share()
+            shareReplay(BackendConfig.BUFFER_SIZE)
         );
     }
 }

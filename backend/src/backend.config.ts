@@ -27,6 +27,7 @@ export class BackendConfig {
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY || "xxxxxxxxxxxxxxxxxx";
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET || "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    public static readonly BUFFER_SIZE = 1;
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {

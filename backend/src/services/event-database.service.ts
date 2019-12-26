@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { Observable, throwError, of } from "rxjs";
-import { flatMap, tap, map, first, catchError, share } from "rxjs/operators";
+import { flatMap, tap, map, first, catchError, shareReplay, share } from "rxjs/operators";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
@@ -55,8 +55,7 @@ export class EventDatabaseService {
             flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION)),
             //first() is neccessary so that NestJS controllers can answer Http Requests.
             first(),
-            tap(collection => this.initObs = of(collection)),
-            share()
+            shareReplay(BackendConfig.BUFFER_SIZE)
         );
     }
 }
