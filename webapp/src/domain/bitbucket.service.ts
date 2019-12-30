@@ -5,20 +5,24 @@ import { AppConfig } from "../app.config";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { PopoverController } from "ionic-angular";
 import { IResponse } from "../models/response.model";
+import { LoggerService, ILogger } from "../core/logger.service";
 
 @Injectable()
 export class BitbucketService {
 
     public userDetails = {};
-    private bearHash: string;
+    private userToken: string;
     private userIdentifier: string;
+    private log: ILogger;
 
     constructor(
         private http: HttpClient,
         private storageSrv: LocalStorageService,
-        private popoverCtrl: PopoverController
+        private popoverCtrl: PopoverController,
+        loggerSrv: LoggerService
     ) {
-        this.bearHash = this.storageSrv.get(AppConfig.StorageKey.USERTOKEN);
+        this.log = loggerSrv.get("BitbucketService");
+        this.userToken = this.getToken();
     }
 
     public loginToBitbucket(userAddress: string): Promise<string> {
@@ -27,13 +31,13 @@ export class BitbucketService {
         .then((response: IResponse) => response.data);
     }
 
-    public getToken(): string {
-        return this.storageSrv.get(AppConfig.StorageKey.USERTOKEN);
+    public setUserAddress(userAddress: string) {
+        this.userIdentifier = userAddress;
     }
 
     public getUsername(): Promise<Object> {
         const headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.bearHash
+            "Authorization": "Bearer " + this.userToken
         });
         return this.http.get(AppConfig.BITBUCKET_USER_URL, { headers }).toPromise()
         .then(val => {
@@ -48,7 +52,7 @@ export class BitbucketService {
 
     public getRepositories(): Promise<Array<Object>> {
         const headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.bearHash
+            "Authorization": "Bearer " + this.userToken
         });
         return this.http.get(AppConfig.BITBUCKET_REPOSITORIES_URL, { headers }).toPromise()
             .then(val => {
@@ -58,7 +62,7 @@ export class BitbucketService {
 
     public getReposlug(repo_slug: string): Promise<Object> {
         const headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.bearHash
+            "Authorization": "Bearer " + this.userToken
         });
 
         let url = AppConfig.BITBUCKET_REPOSITORIES_URL + repo_slug + "/commits";
@@ -70,16 +74,20 @@ export class BitbucketService {
 
     public getNextReposlug(url: string): Promise<Object> {
         const headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.bearHash
+            "Authorization": "Bearer " + this.userToken
         });
         return this.http.get(url, { headers }).toPromise().then(val => {
             return val;
         });
     }
 
+    public getToken(): string {
+        return this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
+    }
+
     public setUserToken(userToken: string) {
-        this.bearHash = userToken;
-        this.storageSrv.set(AppConfig.StorageKey.USERTOKEN, userToken);
+        this.userToken = userToken;
+        this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
         let popover = this.popoverCtrl.create(AddCommitPopover, { authenticationVerified: true }, { cssClass: "add-commit-popover" });
         popover.present();
     }

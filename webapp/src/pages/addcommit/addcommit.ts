@@ -23,6 +23,7 @@ import { SpinnerService } from "../../core/spinner.service";
 })
 export class AddCommitPopover {
 
+    public readonly BATCH_TAB = "batch";
     public isTxOngoing = false;
     public msg: string;
     public usersMail = new Array<string>();
@@ -80,7 +81,8 @@ export class AddCommitPopover {
             username: ["", [Validators.required]],
             password: ["", [Validators.required]]
         });
-        this.userDetailsProm = this.contractManagerService.getUserDetails(this.loginService.getAccountAddress());
+        let userAddress = this.loginService.getAccountAddress();
+        this.userDetailsProm = this.contractManagerService.getUserDetails(userAddress);
         this.contractManagerService.getAllUserReputation(0, true)
             .then(allReputations => {
                 this.log.d("All user reputations: ", allReputations);
@@ -98,9 +100,11 @@ export class AddCommitPopover {
                 this.showGuiMessage("addCommit.errorEmails", e);
             });
 
+        this.bitbucketSrv.setUserAddress(userAddress);
+
         if (this.navParams.data) {
             if (this.navParams.data.authenticationVerified) {
-                this.commitMethod = "batch";
+                this.commitMethod = this.BATCH_TAB;
                 this.bitbucketSrv.getUsername().then((user) => {
                     this.bitbucketUser = user;
                     this.getRepoByUser();
@@ -235,7 +239,7 @@ export class AddCommitPopover {
         let userAddress = this.loginService.getAccountAddress();
         let userToken = this.bitbucketSrv.getToken();
         if (userToken) {
-            this.commitMethod = "batch";
+            this.commitMethod = this.BATCH_TAB;
             this.bitbucketUser = this.bitbucketSrv.getUserDetails();
             this.getRepoByUser();
         } else {
@@ -250,7 +254,7 @@ export class AddCommitPopover {
 
     public setUploadMethod(method: string) {
         this.commitMethod = method;
-        if (method === "batch") {
+        if (method === this.BATCH_TAB) {
             this.loginToBitbucket();
         }
     }
@@ -270,6 +274,7 @@ export class AddCommitPopover {
         });
 
         let repositoriesResults = this.bitbucketSrv.getRepositories().then(results => {
+            this.log.d("The result are", results);
             return results;
         });
 
