@@ -120,7 +120,7 @@ export class UserDatabaseService {
         );
     }
 
-    public initializeNewUser(userIdentifier: string, numberOfCommits: number, numberOfReviews: number): any {
+    public initializeNewUser(userIdentifier: string, numberOfCommits: number, numberOfReviews: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 this.log.d("First Find the user with id " + userIdentifier);
@@ -129,13 +129,15 @@ export class UserDatabaseService {
                 if (!user) {
                     user = collection.insert(new UserDto(userIdentifier, numberOfReviews, numberOfCommits, []));
                 } else {
-                    user.reviewCount = user.finishedReviews;
-                    user.commitCount = user.numberOfCommits;
-                    user.obtainedAchievements = new Array<String>();
+                    user.reviewCount = numberOfReviews;
+                    user.commitCount = numberOfCommits;
+                    user.obtainedAchievements = user.obtainedAchievements;
                 }
                 ret = this.databaseSrv.save(this.database, collection, user);
                 return ret;
-            })
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
         );
     }
 
@@ -157,9 +159,10 @@ export class UserDatabaseService {
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);
                 }
+                this.log.d("New achivement saved for user", userIdentifier);
                 return ret;
             }),
-            map(created => new SuccessResponseDto()),
+            map(created => new SuccessResponseDto("New achivement saved for user " + userIdentifier)),
             catchError(error => of(new FailureResponseDto(error)))
         );
     }

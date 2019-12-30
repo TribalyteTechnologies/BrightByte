@@ -5,13 +5,16 @@ import { AchievementEventDto } from "../dto/events/achievement-event.dto";
 import { EventDatabaseService } from "./event-database.service";
 import { UserDatabaseService } from "../services/user-database.service";
 import { ClientNotificationService } from "./client-notfication.service";
-import { filter, map, flatMap, tap } from "rxjs/operators";
-import { Observable, from, combineLatest } from "rxjs";
+import { map, flatMap, tap } from "rxjs/operators";
+import { Observable, combineLatest, of } from "rxjs";
 import { BackendConfig } from "../backend.config";
 import { AchievementDatabaseService } from "./achievement-database.service";
 import { CommitAchievementProcessor } from "../achievement-processor/commit-achievement-processor";
 import { ReviewAchievementProcessor } from "../achievement-processor/review-achievement-processor";
 import { TimedReviewAchievementProcessor } from "../achievement-processor/timed-review-achievement-processor";
+import { SuccessResponseDto } from "src/dto/response/success-response.dto";
+import { ResponseDto } from "src/dto/response/response.dto";
+import { AchievementDto } from "src/dto/achievement.dto";
 
 @Injectable()
 export class DispatcherService {
@@ -30,31 +33,38 @@ export class DispatcherService {
         this.init();
     }
 
-    public dispatch(event: AchievementEventDto) {
+    public dispatch(event: AchievementEventDto): Observable<ResponseDto> {
         this.log.d("New event received:", event);
-        this.eventDbSrv.setEvent(event).pipe(
-            flatMap(res => this.userDbSrv.createUser(event.userHash)),
-            flatMap(res => this.achievementStack.map(achievementProcessor => achievementProcessor.process(event))),
-            flatMap(obs => combineLatest(obs)),
-            map(achievements => achievements.filter(value => !!value)),
-            tap(obtainedAchievements => {
-                obtainedAchievements.forEach(achievement => {
-                    this.userDbSrv.setObtainedAchievement(event.userHash, achievement.id).subscribe(response => {
-                        if (response.status === BackendConfig.STATUS_SUCCESS) {
-                            this.log.d("Achievement saved for ", event.userHash, ": ", achievement);
-                        } else {
-                            this.log.w("Couldn't save achievement for ", event.userHash, ": ", achievement);
-                        }
-                    });
-                });
+        return this.eventDbSrv.setEvent(event).pipe(
+            flatMap((res: ResponseDto) => this.userDbSrv.createUser(event.userHash)),
+            flatMap((res: ResponseDto) => {
+                let obs = this.achievementStack.map(achievementProcessor => achievementProcessor.process(event));
+                return combineLatest(obs);
             }),
-            map(obtainedAchievements => {
+            map(achievements => achievements.filter(value => !!value)),
+            tap((obtainedAchievements: Array<AchievementDto>) => {
                 if (obtainedAchievements.length > 0) {
+                    this.log.d("The obtained achivements for the event are: ", obtainedAchievements);
                     this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
                 }
+            }),
+            flatMap((obtainedAchievements: Array<AchievementDto>) => {
+                let ret = new Observable<Array<ResponseDto>>();
+                if (obtainedAchievements.length > 0) {
+                    let obs = obtainedAchievements.map(achivement => this.userDbSrv.setObtainedAchievement(event.userHash, achivement.id));
+                    ret = combineLatest(obs);
+                } else {
+                    let aux = new Array<ResponseDto>();
+                    aux.push(new SuccessResponseDto("No new achievement obtained for the event"));
+                    ret = of(aux);
+                }
+                return ret;
+            }),
+            map(res => {
+                this.log.d("The event has been dispatched ", res);
+                return new SuccessResponseDto();
             })
-        ).subscribe();
-        //TODO: NotifyFrontService stack new achievements notifications.
+        );
     }
 
     private init() {

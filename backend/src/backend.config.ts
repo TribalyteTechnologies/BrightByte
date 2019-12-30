@@ -19,7 +19,6 @@ export class BackendConfig {
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
     public static readonly ACH_TIMED_TROPHY_PATH = "../../assets/imgs/trophys/timedAchievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
-    public static readonly INITIALIZE_USER_DATABASE = true;
     public static readonly NODE_CONFIG_URL = NodeConfig.NODE_WEBSOCKET_URL;
     public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:8100";
     public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT || 3000;

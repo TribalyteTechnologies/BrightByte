@@ -22,7 +22,7 @@ export class EventDatabaseService {
         private databaseSrv: CoreDatabaseService
     ) {
         this.log = loggerSrv.get("EventDatabaseService");
-        this.init();
+        this.initObs = this.init();
     }
     public getCurrentSeason(): Observable<ResponseDto> {
         return this.initObs.pipe(
@@ -40,6 +40,7 @@ export class EventDatabaseService {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let event = collection.insert(eventDto);
                 if (event) {
+                    this.log.d("Saving new event for user: ", eventDto.userHash);
                     ret = this.databaseSrv.save(this.database, collection, event);
                 }
                 return ret;
@@ -50,7 +51,7 @@ export class EventDatabaseService {
     }
 
     private init() {
-        this.initObs = this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
+        return this.databaseSrv.initDatabase(BackendConfig.EVENT_DB_JSON).pipe(
             tap(database => this.database = database),
             flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.EVENT_COLLECTION)),
             //first() is neccessary so that NestJS controllers can answer Http Requests.

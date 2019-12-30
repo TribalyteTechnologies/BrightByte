@@ -75,7 +75,7 @@ export class EventHandlerService {
                     default:
                         this.log.e("The parameter 'type' is not valid");
                 }
-                this.dispatcher.dispatch(newEvent);
+                this.dispatcher.dispatch(newEvent).subscribe(res => this.log.d("New event processed"));
             }
         };
 
