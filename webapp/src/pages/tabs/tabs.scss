@@ -1,5 +1,8 @@
 page-tabs {
     .menu-container {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         display: flex;
         flex-direction: column;
         height: 100%;
