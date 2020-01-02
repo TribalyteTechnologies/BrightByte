@@ -56,8 +56,8 @@
         "tabSelection1": "Simple Upload",
         "tabSelection2": "Batch Upload",
         "batchUploadTitle": "Select one repository to upload:",
-        "batchUploadPendingCommitsText": "{{ numCommits }} commits pending to upload",
-        "repositoriesMissingInfo": "Repositories missing. Please, check if your Bitbucket account is linked."
+        "batchUploadPendingCommitsText": "{{ numCommits }} commits pending to uploaded",
+        "repositoriesMissingInfo": "Remote repositories not accessible. Please check that your BitBucket account is linked properly."
     },
     "commits": {
         "add": "Contribute",
