@@ -19,6 +19,7 @@ export class AuthenticationController {
     private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
     private readonly GET_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
     private readonly GRANT_TYPE = "authorization_code";
+    private readonly CLOSE_POP_UP = "<script>window.close()</script>";
 
     private log: ILogger;
     public constructor(
@@ -38,7 +39,7 @@ export class AuthenticationController {
     }
 
     @Get("oauth-callback")
-    public getProviderToken(@Req() req): Observable<ResponseDto> {
+    public getProviderToken(@Req() req): Observable<string | ResponseDto> {
         let code = req.query.code;
         let userIdentifier = req.query.state;
         let digested = new Buffer(BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET).toString("base64");
@@ -60,7 +61,7 @@ export class AuthenticationController {
             }),
             map(res => {
                 this.clientNotificationService.sendToken(userIdentifier, userToken);
-                return new SuccessResponseDto(userToken);
+                return this.CLOSE_POP_UP;
             }),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Can not get user token")))
         );
