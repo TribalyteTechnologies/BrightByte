@@ -305,10 +305,10 @@ export class AddCommitPopover {
                 if (nextCommits == null && repo.numCommits > 0) {
                     this.hasNewCommits = true;
                     this.selectedRepositories.push(repo);
+                    return Promise.resolve();
                 }
-                const nextCommits_1 = nextCommits;
-                if (nextCommits_1) {
-                    this.getCommitsInNextPage(repo, nextCommits_1, blockChainCommits);
+                if (nextCommits) {
+                    return this.getCommitsInNextPage(repo, nextCommits, blockChainCommits);
                 }
             });
         });
@@ -357,9 +357,10 @@ export class AddCommitPopover {
             if (auxUrl == null && repo.numCommits > 0) {
                 this.hasNewCommits = true;
                 this.selectedRepositories.push(repo);
-            } else {
+                return Promise.resolve();
+            } else if (auxUrl != null) {
                 auxUrl = nextCommits.next;
-                this.getCommitsInNextPage(repo, auxUrl, blockchainCommits);
+                return this.getCommitsInNextPage(repo, auxUrl, blockchainCommits);
             }
         });
     }

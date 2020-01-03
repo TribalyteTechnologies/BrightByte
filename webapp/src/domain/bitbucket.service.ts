@@ -82,6 +82,9 @@ export class BitbucketService {
 
     public setUserToken(userToken: string) {
         this.userToken = userToken;
+        this.headers = new HttpHeaders({
+            "Authorization": "Bearer " + this.userToken
+        });
         this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
         let popover = this.popoverCtrl.create(AddCommitPopover, { authenticationVerified: true }, { cssClass: "add-commit-popover" });
         popover.present();
