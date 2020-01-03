@@ -12,7 +12,6 @@ import { BitbucketCommitResponse } from "../models/commit-info.model";
 @Injectable()
 export class BitbucketService {
 
-    private bearHash: string;
     private userToken: string;
     private userIdentifier: string;
     private headers: HttpHeaders;
@@ -27,7 +26,7 @@ export class BitbucketService {
         this.log = loggerSrv.get("BitbucketService");
         this.userToken = this.getToken();
         this.headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.bearHash
+            "Authorization": "Bearer " + this.userToken
         });
     }
 
@@ -77,8 +76,8 @@ export class BitbucketService {
     }
 
     public getToken(): string {
-        this.bearHash = this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
-        return this.bearHash;
+        this.userToken = this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
+        return this.userToken;
     }
 
     public setUserToken(userToken: string) {
