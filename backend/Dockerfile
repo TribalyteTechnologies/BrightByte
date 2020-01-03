@@ -3,5 +3,5 @@ WORKDIR /brightbyte
 COPY package*.json ./
 RUN npm install
 COPY dist ./
-EXPOSE ${PORT}/tcp ${PORT}/udp
+#EXPOSE ${PORT}/tcp ${PORT}/udp
 CMD [ "node" , "main.js"]
