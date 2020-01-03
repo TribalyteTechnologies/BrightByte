@@ -27,7 +27,17 @@ export class ClientNotificationService {
     }
 
     public addSession(sessionId: string, userAddress: string) {
+        let previousSession;
+        this.sessions.forEach((value: string, key: string) => {
+            if (!previousSession && value === userAddress) {
+                previousSession = key;
+            }
+        })
         this.sessions.set(sessionId, userAddress);
+        if (previousSession) {
+            this.sessions.delete(previousSession);
+            this.log.d("User " + userAddress + "has updated session to " + sessionId);
+        }
     }
 
     public removeSession(userSession: string): boolean {
