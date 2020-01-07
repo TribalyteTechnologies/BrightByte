@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { NavController, NavParams } from "ionic-angular";
+import { Component, EventEmitter } from "@angular/core";
+import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { LoginService } from "../../core/login.service";
 import { ViewController } from "ionic-angular";
@@ -23,7 +23,7 @@ import { SpinnerService } from "../../core/spinner.service";
 })
 export class AddCommitPopover {
 
-    public readonly BATCH_TAB = "batch";
+    public readonly BATCH_METHOD = "batch";
     public isTxOngoing = false;
     public msg: string;
     public usersMail = new Array<string>();
@@ -53,6 +53,7 @@ export class AddCommitPopover {
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private userDetailsProm: Promise<UserDetails>;
     private log: ILogger;
+    private loginSubscription: EventEmitter<boolean>;
 
     constructor(
         public navCtrl: NavController,
@@ -65,7 +66,6 @@ export class AddCommitPopover {
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
         private bitbucketSrv: BitbucketService,
-        private navParams: NavParams,
         private spinnerSrv: SpinnerService
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
@@ -101,17 +101,20 @@ export class AddCommitPopover {
             });
 
         this.bitbucketSrv.setUserAddress(userAddress);
+    }
 
-        if (this.navParams.data) {
-            if (this.navParams.data.authenticationVerified) {
-                this.commitMethod = this.BATCH_TAB;
-                this.bitbucketSrv.getUsername().then((user) => {
-                    this.bitbucketUser = user;
-                    this.isBatchLogged = true;
-                    this.getRepoByUser();
-                });
-            }
-        }
+    public ngOnInit() {
+        this.log.d("Subscribing to event emitter");
+        this.loginSubscription = this.bitbucketSrv.getLoginEmitter()
+        .subscribe(res => {
+            this.log.d("Provider authentication completed", res);
+            this.commitMethod = this.BATCH_METHOD;
+            this.bitbucketSrv.getUsername().then((user) => {
+                this.bitbucketUser = user;
+                this.isBatchLogged = true;
+                this.getRepoByUser();
+            });
+        });
     }
 
     public addCommit(url: string, title: string): Promise<void> {
@@ -240,7 +243,7 @@ export class AddCommitPopover {
         let userAddress = this.loginService.getAccountAddress();
         let userToken = this.bitbucketSrv.getToken();
         if (userToken) {
-            this.commitMethod = this.BATCH_TAB;
+            this.commitMethod = this.BATCH_METHOD;
             this.bitbucketSrv.getUsername().then((user) => {
                 this.bitbucketUser = user;
                 this.isBatchLogged = true;
@@ -248,17 +251,15 @@ export class AddCommitPopover {
             });
         } else {
             this.bitbucketSrv.loginToBitbucket(userAddress).then((authUrl) => {
-                if (authUrl) {
-                    window.open(authUrl);
-                    this.viewCtrl.dismiss();
-                }
+                this.log.d("Waiting for the user to introduce their credentials");
+                this.commitMethod = this.BATCH_METHOD;
             });
         }
     }
 
     public setUploadMethodAndProceed(method: string) {
         this.commitMethod = method;
-        if (method === this.BATCH_TAB) {
+        if (method === this.BATCH_METHOD) {
             this.loginToBitbucket();
         }
     }

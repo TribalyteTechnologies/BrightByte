@@ -1,9 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
-import { AddCommitPopover } from "../pages/addcommit/addcommit";
-import { PopoverController } from "ionic-angular";
 import { IResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
 import { Repository } from "../models/repository.model";
@@ -16,24 +14,32 @@ export class BitbucketService {
     private userIdentifier: string;
     private headers: HttpHeaders;
     private log: ILogger;
+    private windowInstance: Window;
+    private eventEmitter = new EventEmitter<boolean>();
 
     constructor(
         private http: HttpClient,
         private storageSrv: LocalStorageService,
-        private popoverCtrl: PopoverController,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("BitbucketService");
         this.userToken = this.getToken();
-        this.headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.userToken
-        });
+        this.setNewTokenHeader(this.userToken);
+    }
+
+    public getLoginEmitter(): EventEmitter<boolean> {
+        return this.eventEmitter;
     }
 
     public loginToBitbucket(userAddress: string): Promise<string> {
         this.userIdentifier = userAddress;
         return this.http.get(AppConfig.SERVER_BITBUCKET_AUTHENTICATION_URL + userAddress).toPromise()
-        .then((response: IResponse) => response.data);
+        .then((response: IResponse) => {
+            let url = response.data;
+            this.log.d("Opening bitbucket pop-up");
+            this.windowInstance = window.open(url);
+            return response.data;
+        });
     }
 
     public setUserAddress(userAddress: string) {
@@ -42,8 +48,14 @@ export class BitbucketService {
 
     public async getUsername(): Promise<string> {
         const params = new HttpParams().set("fields", "nickname");
-        const val = await this.http.get(AppConfig.BITBUCKET_USER_URL, { params: params, headers: this.headers }).toPromise();
-        return val["nickname"];
+        this.log.d("The user token is", this.userToken);
+        return this.http.get(AppConfig.BITBUCKET_USER_URL, { params: params, headers: this.headers }).toPromise()
+        .then(result => {
+            return result["nickname"];
+        }).catch(err => {
+            this.log.e("Error getting user details from provider :", err);
+            return this.refreshToken();
+        });
     }
 
     public getRepositories(seasonStartDate: Date): Promise<Array<Repository>> {
@@ -53,6 +65,7 @@ export class BitbucketService {
     
         return this.http.get(AppConfig.BITBUCKET_REPOSITORIES_URL, { params: params, headers: this.headers }).toPromise()
             .then(val => {
+                this.log.d("The values are", val);
                 return val["values"];
             });
     }
@@ -64,6 +77,7 @@ export class BitbucketService {
 
         return this.http.get(url, { params: params, headers: this.headers }).toPromise()
             .then((val: BitbucketCommitResponse) => {
+                this.log.d("The values are from resposlug", val);
                 return val;
             });
     }
@@ -71,6 +85,7 @@ export class BitbucketService {
     public getNextReposlug(url: string): Promise<BitbucketCommitResponse> {
         return this.http.get(url, { headers: this.headers }).toPromise()
             .then((val: BitbucketCommitResponse) => {
+                this.log.d("The values are from next reposlug", val);
                 return val;
             });
     }
@@ -86,7 +101,25 @@ export class BitbucketService {
             "Authorization": "Bearer " + this.userToken
         });
         this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
-        let popover = this.popoverCtrl.create(AddCommitPopover, { authenticationVerified: true }, { cssClass: "add-commit-popover" });
-        popover.present();
+        if(this.windowInstance) {
+            this.windowInstance.close();
+        }
+        this.setNewTokenHeader(this.userToken);
+        this.eventEmitter.emit(true);
+    }
+
+    private refreshToken(): Promise<string> {
+        this.log.d("Token experied, getting a new one for user: " + this.userIdentifier);
+        return this.loginToBitbucket(this.userIdentifier)
+        .then(authUrl => {
+            this.log.d("Refreshing token");
+            return authUrl;
+        });
+    }
+
+    private setNewTokenHeader(userToken: string) {
+        this.headers = new HttpHeaders({
+            "Authorization": "Bearer " + userToken
+        });
     }
 }

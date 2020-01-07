@@ -55,7 +55,7 @@ export class AppConfig {
     public static readonly StorageKey = {
         USERNAME: "brightUser",
         PASSWORD: "brightPassword",
-        BITBUCKETUSERTOKEN: "brightUserToken",
+        BITBUCKETUSERTOKEN: "brightBitbucketUserToken",
         USERMAILS: "brightEmails",
         LASTPAGE: "brightPage",
         MIGRATION: "brightMigration",

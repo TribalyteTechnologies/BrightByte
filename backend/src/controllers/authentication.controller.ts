@@ -19,7 +19,6 @@ export class AuthenticationController {
     private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
     private readonly GET_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
     private readonly GRANT_TYPE = "authorization_code";
-    private readonly CLOSE_POP_UP = "<script>window.close()</script>";
 
     private log: ILogger;
     public constructor(
@@ -61,7 +60,7 @@ export class AuthenticationController {
             }),
             map(res => {
                 this.clientNotificationService.sendToken(userIdentifier, userToken);
-                return this.CLOSE_POP_UP;
+                return new SuccessResponseDto("The provider confirmed the user" + userIdentifier);
             }),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Can not get user token")))
         );

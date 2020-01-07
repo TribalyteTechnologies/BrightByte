@@ -32,7 +32,7 @@ export class ClientNotificationService {
             if (!previousSession && value === userAddress) {
                 previousSession = key;
             }
-        })
+        });
         this.sessions.set(sessionId, userAddress);
         if (previousSession) {
             this.sessions.delete(previousSession);
