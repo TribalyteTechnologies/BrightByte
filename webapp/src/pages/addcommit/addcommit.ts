@@ -47,6 +47,7 @@ export class AddCommitPopover {
     public selectedRepositories = new Array<Repository>();
     public repoSelection: String;
     public isBatchLogged = false;
+    public showSpinner = false;
 
     private allEmails = new Array<string>();
     private searchInput = "";
@@ -262,6 +263,7 @@ export class AddCommitPopover {
             this.currentSeasonStartDate = seasonDate;
             return this.bitbucketSrv.getRepositories(seasonDate);
         }).then(results => {
+            this.showSpinner = true;
             repositories = results;
             this.log.d("The repositories from Bitbucket are: ", results);
             return this.contractManagerService.getCommits();
@@ -273,6 +275,7 @@ export class AddCommitPopover {
             });
             return Promise.all(promises);
         }).then(result => {
+            this.showSpinner = false;
             this.log.d("All the commits from the respos", this.selectedRepositories);
             return Promise.resolve();
         });

@@ -49,6 +49,9 @@
                         <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}</ion-label>
                         <ion-label  item-right class="text-details text-details--bold"> {{ "addCommit.batchUploadPendingCommitsText" | translate: selectedRepo }}</ion-label>                                        
                     </ion-item>
+                    <div class="custom-spinner" *ngIf="showSpinner">
+                        <ion-spinner name="bubbles"></ion-spinner>
+                    </div>
                 </div>
                 <ng-template #noNewCommits>
                     <ion-label item-right> {{ "addCommit.noNewCommits" | translate }}</ion-label>                
@@ -83,6 +86,9 @@
     <ion-row *ngIf="msg">
         <div class="label label__error">{{ msg }}</div>
     </ion-row>
+    <div class="custom-spinner" *ngIf="isTxOngoing">
+        <ion-spinner name="bubbles"></ion-spinner>
+    </div>
     <ion-row>
         <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
         <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection)" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
