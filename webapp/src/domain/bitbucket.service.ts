@@ -31,30 +31,26 @@ export class BitbucketService {
         return this.eventEmitter;
     }
 
-    public loginToBitbucket(userAddress: string): Promise<string> {
+    public checkProviderAvailability(userAddress: string): Promise<boolean> {
+        this.log.d("Checks the api works correctly");
         this.userIdentifier = userAddress;
-        return this.http.get(AppConfig.SERVER_BITBUCKET_AUTHENTICATION_URL + userAddress).toPromise()
-        .then((response: IResponse) => {
-            let url = response.data;
-            this.log.d("Opening bitbucket pop-up");
-            this.windowInstance = window.open(url);
-            return response.data;
+        return this.getUsername().then(name => {
+            this.log.d("The api provider works, the user nickname is:", name);
+            this.eventEmitter.emit(true);
+            return true;
+        }).catch(err => {
+            this.log.e("Error getting with provider api:", err);
+            this.refreshToken();
+            return false;
         });
     }
 
-    public setUserAddress(userAddress: string) {
-        this.userIdentifier = userAddress;
-    }
-
-    public async getUsername(): Promise<string> {
+    public getUsername(): Promise<string> {
         const params = new HttpParams().set("fields", "nickname");
         this.log.d("The user token is", this.userToken);
         return this.http.get(AppConfig.BITBUCKET_USER_URL, { params: params, headers: this.headers }).toPromise()
         .then(result => {
             return result["nickname"];
-        }).catch(err => {
-            this.log.e("Error getting user details from provider :", err);
-            return this.refreshToken();
         });
     }
 
@@ -89,23 +85,31 @@ export class BitbucketService {
                 return val;
             });
     }
-
-    public getToken(): string {
-        this.userToken = this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
-        return this.userToken;
-    }
-
+    
     public setUserToken(userToken: string) {
         this.userToken = userToken;
-        this.headers = new HttpHeaders({
-            "Authorization": "Bearer " + this.userToken
-        });
         this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
         if(this.windowInstance) {
             this.windowInstance.close();
         }
         this.setNewTokenHeader(this.userToken);
         this.eventEmitter.emit(true);
+    }
+
+    private loginToBitbucket(userAddress: string): Promise<string> {
+        this.userIdentifier = userAddress;
+        return this.http.get(AppConfig.SERVER_BITBUCKET_AUTHENTICATION_URL + userAddress).toPromise()
+        .then((response: IResponse) => {
+            let url = response.data;
+            this.log.d("Opening bitbucket pop-up");
+            this.windowInstance = window.open(url);
+            return response.data;
+        });
+    }
+
+    private getToken(): string {
+        this.userToken = this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
+        return this.userToken;
     }
 
     private refreshToken(): Promise<string> {

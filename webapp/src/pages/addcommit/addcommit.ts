@@ -99,8 +99,6 @@ export class AddCommitPopover {
             }).catch((e) => {
                 this.showGuiMessage("addCommit.errorEmails", e);
             });
-
-        this.bitbucketSrv.setUserAddress(userAddress);
     }
 
     public ngOnInit() {
@@ -241,20 +239,10 @@ export class AddCommitPopover {
 
     public loginToBitbucket() {
         let userAddress = this.loginService.getAccountAddress();
-        let userToken = this.bitbucketSrv.getToken();
-        if (userToken) {
+        this.bitbucketSrv.checkProviderAvailability(userAddress).then(user => {
             this.commitMethod = this.BATCH_METHOD;
-            this.bitbucketSrv.getUsername().then((user) => {
-                this.bitbucketUser = user;
-                this.isBatchLogged = true;
-                this.getRepoByUser();
-            });
-        } else {
-            this.bitbucketSrv.loginToBitbucket(userAddress).then((authUrl) => {
-                this.log.d("Waiting for the user to introduce their credentials");
-                this.commitMethod = this.BATCH_METHOD;
-            });
-        }
+            this.log.d("Waiting for the user to introduce their credentials");
+        });
     }
 
     public setUploadMethodAndProceed(method: string) {
