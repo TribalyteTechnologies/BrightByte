@@ -1,16 +1,18 @@
 <ion-content padding>
-    <ion-row padding class="text-title">{{ "addCommit.add" | translate }}</ion-row>
+    <ion-row padding *ngIf="commitMethod === 'url'; else addCommitByBatchTitle" class="text-title">{{ "addCommit.add" | translate }}</ion-row>
+    <ng-template #addCommitByBatchTitle>
+        <ion-row padding class="text-title">{{ "addCommit.addByBatch" | translate }}</ion-row>
+    </ng-template>
+    
+    <div class="tab custom-tab">
+        <button type="button" class="left-button-border" (click) = "setUploadMethodAndProceed('url')">
+          {{ "addCommit.tabSelection1" | translate }}
+        </button>
+        <button type="button" class="right-button-border" (click) = "setUploadMethodAndProceed('batch')">
+          {{ "addCommit.tabSelection2" | translate }}
+        </button>
+    </div>
 
-    <ion-toolbar>
-        <ion-segment>
-          <ion-segment-button (click) = "setUploadMethodAndProceed('url')">
-            {{ "addCommit.tabSelection1" | translate }}
-          </ion-segment-button>
-          <ion-segment-button (click) = "setUploadMethodAndProceed('batch')">
-            {{ "addCommit.tabSelection2" | translate }}
-          </ion-segment-button>
-        </ion-segment>
-    </ion-toolbar>
     <ion-row padding *ngIf="commitMethod === 'url'" class="form-container">
         <form class="form-style" id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(formUrl, formTitle)" novalidate>
             <ion-row class="text-details text-details--bold">
