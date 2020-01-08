@@ -5,4 +5,5 @@ export class Repository {
     public name: string;
     public commitsInfo: Array<CommitInfo>;
     public numCommits: number;
+    public isReadAllCommits: boolean;
 }

@@ -82,7 +82,7 @@ export class BitbucketService {
             });
     }
 
-    public getNextReposlug(url: string): Promise<BitbucketCommitResponse> {
+    public async getNextReposlug(url: string): Promise<BitbucketCommitResponse> {
         return this.http.get(url, { headers: this.headers }).toPromise()
             .then((val: BitbucketCommitResponse) => {
                 this.log.d("The values are from next reposlug", val);
