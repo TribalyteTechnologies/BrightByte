@@ -43,16 +43,25 @@ export class CommitCard {
         this.urlHash = FormatUtils.getHashFromUrl(val.url);
         this.currentNumberReviews = val.reviewers[1].length;
         this.numberReviews = val.reviewers[0].length;
-        this.pendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
+        let updatedPendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
+        let difference = updatedPendingReviewers.filter(pendingRev => !this.pendingReviewers.some(rev => rev === pendingRev));
+        this.pendingReviewers = updatedPendingReviewers;
         this.reviewers = val.reviewers[1].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         let searchUser = val.reviewers[1].filter(user => {
-            if(user.name !== "") {
-                this.reviewersObs.push(this.avatarSrv.getAvatarObs(user.userHash));
-            } else {
-                this.reviewersObs.push(this.avatarSrv.getAvatarObs(this.ANONYMOUS_ADDRESS));
+            if (this.reviewersObs.length !== this.reviewers.length) {
+                if (user.name !== "") {
+                    this.reviewersObs.push(this.avatarSrv.getAvatarObs(user.userHash));
+                } else {
+                    this.reviewersObs.push(this.avatarSrv.getAvatarObs(this.ANONYMOUS_ADDRESS));
+                }
             }
+            this.init = false;
             return user.userHash === this.reviewerAddress;
         });
+        if (difference.length > 0 && !this.init){
+            this.reviewersObs.push(this.avatarSrv.getAvatarObs(this.reviewerAddress));
+        }
+
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;
@@ -69,6 +78,7 @@ export class CommitCard {
     private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
     private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
     private _commit: UserCommit;
+    private init = true;
 
     public constructor(
         public translateService: TranslateService,
