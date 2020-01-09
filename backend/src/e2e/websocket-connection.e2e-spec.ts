@@ -23,9 +23,9 @@ async function createNestApp(): Promise<INestApplication> {
 describe("Add user address test", () => {
     let app;
 
-    it(`Add user address test`, async () => {
+    it("Add user address test", async () => {
         app = await createNestApp();
-        await app.listenAsync(3000);
+        await app.listenAsync(WS_LISTEN_PORT);
 
         let socket = io.connect(WS_SERVER_ADDRESS);
         socket.on(ADD_ADDRESS, msg => {
@@ -34,9 +34,9 @@ describe("Add user address test", () => {
         socket.emit(ADD_USER, USER_ADDRESS);
     });
 
-    it(`Add and remove user address test`, async () => {
+    it("Add and remove user address test", async () => {
         app = await createNestApp();
-        await app.listenAsync(3000);
+        await app.listenAsync(WS_LISTEN_PORT);
 
         let socket = io.connect(WS_SERVER_ADDRESS);
         
