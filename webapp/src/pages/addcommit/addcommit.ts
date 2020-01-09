@@ -116,6 +116,10 @@ export class AddCommitPopover {
         });
     }
 
+    public ionViewDidLeave() {
+        this.loginSubscription.unsubscribe();
+    }
+
     public addCommit(url: string, title: string): Promise<void> {
         this.isTxOngoing = true;
         this.clearGuiMessage();
