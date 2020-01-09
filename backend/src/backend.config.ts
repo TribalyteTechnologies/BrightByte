@@ -1,4 +1,5 @@
 import { default as NodeConfig } from "./backend.config.custom";
+import { join } from "path";
 
 export class BackendConfig {
     public static readonly LOG_DEBUG = true;
@@ -26,6 +27,8 @@ export class BackendConfig {
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
     public static readonly STATIC_FILES_PATH = join(__dirname, "../www/");
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
+    public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY || "xxxxxxxxxxxxxxx";
+    public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET || "xxxxxxxxxxxxxxxxxxx";
     public static readonly BUFFER_SIZE = 1;
 }
 export namespace BackendConfig {
