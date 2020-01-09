@@ -1,11 +1,9 @@
-import { Controller, Get, Param, Req, HttpService } from "@nestjs/common";
+import { Controller, Get, Param, Req, HttpService, Res } from "@nestjs/common";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { BackendConfig } from "../backend.config";
-import { FailureResponseDto } from "src/dto/response/failure-response.dto";
-import { map, catchError, flatMap } from "rxjs/operators";
-import { Observable, of } from "rxjs";
+import { map, flatMap } from "rxjs/operators";
 import { AuthenticationDatabaseService } from "src/services/authentication-database.service";
 import * as querystring from "querystring";
 import { ClientNotificationService } from "src/services/client-notfication.service";
@@ -38,7 +36,7 @@ export class AuthenticationController {
     }
 
     @Get("oauth-callback")
-    public getProviderToken(@Req() req): Observable<string | ResponseDto> {
+    public getProviderToken(@Req() req, @Res() response) {
         let code = req.query.code;
         let userIdentifier = req.query.state;
         let digested = new Buffer(BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET).toString("base64");
@@ -52,17 +50,18 @@ export class AuthenticationController {
             }
         };
         let userToken: string;
-        return this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
-            flatMap(response => {
-                userToken = response.data.access_token;
-                this.log.d("Response: ", response.data);
+        this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
+            flatMap(res => {
+                userToken = res.data.access_token;
+                this.log.d("Response: ", res.data);
                 return this.authenticationDatabaseService.setUserToken(userIdentifier, userToken);
             }),
             map(res => {
                 this.clientNotificationService.sendToken(userIdentifier, userToken);
-                return new SuccessResponseDto("The provider confirmed the user" + userIdentifier);
-            }),
-            catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Can not get user token")))
-        );
+                return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+            })
+        ).subscribe(res => {
+            this.log.d("The user has completed the authentication process", res);
+        });
     }
 }

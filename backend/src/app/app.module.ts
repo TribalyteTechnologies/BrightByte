@@ -17,6 +17,7 @@ import {AuthenticationDatabaseService} from "../services/authentication-database
 import { ContractManagerService } from "../services/contract-manager.service";
 import { DatabaseInitializationService } from "../services/database-initialization.service";
 import { MulterModule } from "@nestjs/platform-express";
+import { ServeStaticModule } from "@nestjs/serve-static";
 
 
 @Module({
@@ -25,6 +26,9 @@ import { MulterModule } from "@nestjs/platform-express";
         HttpModule,
         MulterModule.register({
             dest: BackendConfig.IMAGE_STORAGE_PATH
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: BackendConfig.STATIC_FILES_PATH
         })
     ],
     controllers: [

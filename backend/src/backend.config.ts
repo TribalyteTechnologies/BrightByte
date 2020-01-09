@@ -24,8 +24,8 @@ export class BackendConfig {
     public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT || 3000;
     public static readonly BRIGHT_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Bright.json";
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
-    public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY || "xxxxxxxxxxxxxxxxxx";
-    public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET || "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    public static readonly STATIC_FILES_PATH = join(__dirname, "../www/");
+    public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
     public static readonly BUFFER_SIZE = 1;
 }
 export namespace BackendConfig {
