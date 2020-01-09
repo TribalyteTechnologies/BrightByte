@@ -10,7 +10,7 @@ import { IResponse } from "../models/response.model";
 export class AvatarService {
 
     private readonly ANONYMOUS_ADDRESS = "0x0";
-    private readonly BUFFER_SIZE = 1;
+    private readonly LATEST_LOGO_BUFFER_COUNT = 1;
 
     private log: ILogger;
     private avatarObsMap = new Map<string, Observable<string>>();
@@ -40,7 +40,7 @@ export class AvatarService {
                     return imageUrl;
                 }),
                 merge(avatarSubj),
-                shareReplay(this.BUFFER_SIZE));
+                shareReplay(this.LATEST_LOGO_BUFFER_COUNT));
             this.avatarObsMap.set(hash, avatarObs);
             this.avatarSubjMap.set(hash, avatarSubj);
         }else if (!hash) {
