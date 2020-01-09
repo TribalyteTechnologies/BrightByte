@@ -1,5 +1,19 @@
 # Change Log
 
+#### v 0.6.0
+
+- Bitbucket API integration (Automation of commit and pull request upload by repository)
+- Modified season qualifying feature to take into account user participation for clasified users sort.
+- Added new designs for timed achievements.
+- Docker documentation updates.
+- Implemented first websockets tests.
+- Major refactor on ranking page.
+- Major observables refactor.
+- Minor visual improvements.
+- Bug fixes.
+
+`No migration needed from 0.5.6 to 0.6.0`
+
 #### v 0.5.6
 
 - Added season qualifying feature (Requires the users to have a minimum number of commits and reviews 
