@@ -45,7 +45,7 @@ export class AddCommitPopover {
     public currentProject = "";
     public commitMethod = "url";
     public currentSeasonStartDate: Date;
-    public hasNewCommits = false;
+    public hasNewCommits = true;
 
     public selectedRepositories = new Array<Repository>();
     public repoSelection: String;
@@ -247,7 +247,7 @@ export class AddCommitPopover {
 
     public setUploadMethodAndProceed(method: string) {
         this.commitMethod = method;
-        if (method === this.BATCH_METHOD) {
+        if (this.commitMethod === this.BATCH_METHOD) {
             this.loginToBitbucket();
         }
     }

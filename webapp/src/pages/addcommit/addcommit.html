@@ -3,15 +3,15 @@
     <ng-template #addCommitByBatchTitle>
         <ion-row padding class="text-title">{{ "addCommit.addByBatch" | translate }}</ion-row>
     </ng-template>
-    
-    <div class="tab custom-tab">
-        <button type="button" class="left-button-border" (click) = "setUploadMethodAndProceed('url')">
-          {{ "addCommit.tabSelection1" | translate }}
-        </button>
-        <button type="button" class="right-button-border" (click) = "setUploadMethodAndProceed('batch')">
-          {{ "addCommit.tabSelection2" | translate }}
-        </button>
-    </div>
+
+    <ion-segment [(ngModel)]="commitMethod" (ionChange)="setUploadMethodAndProceed($event.value)">
+        <ion-segment-button value="url">
+          <ion-label>{{ "addCommit.tabSelection1" | translate }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="batch">
+          <ion-label>{{ "addCommit.tabSelection2" | translate }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
 
     <ion-row padding *ngIf="commitMethod === 'url'" class="form-container">
         <form class="form-style" id="addform" [formGroup]="myForm" (ngSubmit)="addCommit(formUrl, formTitle)" novalidate>
