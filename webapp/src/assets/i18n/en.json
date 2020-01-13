@@ -58,7 +58,8 @@
         "tabSelection2": "Batch Upload",
         "batchUploadTitle": "Select one repository to upload:",
         "batchUploadPendingCommitsText": "{{ numCommits }} commits and {{ numPRsNotUploaded }} PRs pending to uploaded",
-        "repositoriesMissingInfo": "Remote repositories not accessible. Please check that your BitBucket account is linked properly."
+        "repositoriesMissingInfo": "Remote repositories not accessible. Please check that your BitBucket account is linked properly.",
+        "serviceNotAvailable": "Bitbucket Provider not defined, functionality not available."
     },
     "commits": {
         "add": "Contribute",

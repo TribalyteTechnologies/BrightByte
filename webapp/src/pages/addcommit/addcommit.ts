@@ -51,6 +51,7 @@ export class AddCommitPopover {
     public selectedRepositories = new Array<Repository>();
     public repoSelection: String;
     public isBatchLogged = false;
+    public isServiceAvailable = true;
     public showSpinner = false;
 
     private allEmails = new Array<string>();
@@ -341,9 +342,12 @@ export class AddCommitPopover {
 
     private loginToBitbucket() {
         let userAddress = this.loginService.getAccountAddress();
+        this.commitMethod = this.BATCH_METHOD;
         this.bitbucketSrv.checkProviderAvailability(userAddress).then(user => {
-            this.commitMethod = this.BATCH_METHOD;
             this.log.d("Waiting for the user to introduce their credentials");
+        }).catch(e => {
+            this.log.e("Service not available", e);
+            this.isServiceAvailable = false;
         });
     }
 

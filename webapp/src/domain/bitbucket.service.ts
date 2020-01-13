@@ -56,9 +56,10 @@ export class BitbucketService {
             this.log.d("The api provider works, the user nickname is:", name);
             this.eventEmitter.emit(true);
             return true;
-        }).catch(err => {
-            this.log.e("Error getting with provider api:", err);
-            this.refreshToken();
+        }).catch(async err => {
+            this.log.e("Error getting the provider api:", err);
+            let ret = await this.refreshToken();
+            this.log.d("The refresh response is", ret);
             return false;
         });
     }
@@ -159,9 +160,14 @@ export class BitbucketService {
         this.userIdentifier = userAddress;
         return this.http.get(BitbucketApiConstants.SERVER_AUTHENTICATION_URL + userAddress).toPromise()
         .then((response: IResponse) => {
-            let url = response.data;
-            this.log.d("Opening bitbucket pop-up");
-            this.windowInstance = window.open(url);
+            if (response.status === AppConfig.STATUS_OK) {
+                let url = response.data;
+                this.log.d("Opening bitbucket pop-up");
+                this.windowInstance = window.open(url);
+            } else {
+                this.log.d("Bitbucket Provider not defined, functionality not available", response);
+                throw new Error(response.data);
+            }
             return response.data;
         });
     }
@@ -175,8 +181,11 @@ export class BitbucketService {
         this.log.d("Token experied, getting a new one for user: " + this.userIdentifier);
         return this.loginToBitbucket(this.userIdentifier)
         .then(authUrl => {
-            this.log.d("Refreshing token");
+            this.log.d("Refreshing token", authUrl);
             return authUrl;
+        }).catch(e => {
+            this.log.e("Bitbucket Provider not defined, functionality not available");
+            throw e;
         });
     }
 

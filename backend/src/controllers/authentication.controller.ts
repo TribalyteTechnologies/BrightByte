@@ -7,6 +7,7 @@ import { map, flatMap } from "rxjs/operators";
 import { AuthenticationDatabaseService } from "../services/authentication-database.service";
 import * as querystring from "querystring";
 import { ClientNotificationService } from "../services/client-notfication.service";
+import { FailureResponseDto } from "src/dto/response/failure-response.dto";
 
 @Controller("authentication")
 export class AuthenticationController {
@@ -31,8 +32,14 @@ export class AuthenticationController {
 
     @Get("authorize/:userCode")
     public getAuthCallback(@Param("userCode") code): ResponseDto {
-        this.log.d("The user requesting authentication is: " + code);
-        return new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code);
+        let ret: ResponseDto;
+        if(BackendConfig.BITBUCKET_KEY) {
+            this.log.d("The user requesting authentication is: " + code);
+            ret = new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code);
+        } else {
+            ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Bitbucket provider not defined. Provider service not available");
+        }
+        return ret;
     }
 
     @Get("oauth-callback")
