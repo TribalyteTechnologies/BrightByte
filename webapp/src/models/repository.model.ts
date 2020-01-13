@@ -21,12 +21,17 @@ export class Repository {
     public numPRs: number;
     public numPRsNotUploaded: number;
     public isReadAllCommits: boolean;
+    public workspace: string;
 
-    constructor(slug: string, name: string) {
+    constructor(slug: string, name: string, workspace: string) {
         this.slug = slug;
         this.name = name;
+        this.workspace = workspace;
         this.numCommits = 0;
         this.numPRs = 0;
         this.numPRsNotUploaded = 0;
+        this.commitsInfo = new Array<CommitInfo>();
+        this.pullRequests = new Array<PullRequest>();
+        this.pullRequestsNotUploaded = new Array<PullRequest>();
     }
 }

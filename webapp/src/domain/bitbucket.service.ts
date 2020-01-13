@@ -8,12 +8,11 @@ import { BitbucketRepository, BitbucketRepositoryResponse } from "../models/repo
 import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/commit-info.model";
 import { BitbucketPullRequestResponse, BitbucketPRCommitsResponse } from "../models/pull-request.model";
 
-export class BitbucketApiConstants{
+export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
     public static readonly BASE_URL = "https://bitbucket.org/";
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
-    public static readonly WORKSPACE = "tribalyte/";
     public static readonly SORT_RULE = "-updated_on";
     public static readonly FIELDS_USER = "nickname";
     public static readonly FIELDS_REPO = "values.name,values.slug";
@@ -21,6 +20,10 @@ export class BitbucketApiConstants{
     public static readonly FIELDS_PULLREQUESTS = "next,values.author.nickname,values.title,values.destination.commit.hash,values.links.commits.href,values.updated_on,values.id";
     public static readonly FIELDS_PULLREQUEST_COMMITS = "next,values.hash";
     public static readonly PULLREQUEST_STATE = "MERGED,OPEN";
+}
+
+export class BitbucketApiEnvConfig {
+    public BITBUCKET_WORKSPACES: string;
 }
 
 @Injectable()
@@ -62,6 +65,8 @@ export class BitbucketService {
 
     public getUsername(): Promise<string> {
         const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_USER);
+        this.userToken = this.getToken();
+
         this.log.d("The user token is", this.userToken);
         return this.http.get<BitbucketUserInfo>(BitbucketApiConstants.USER_BASE_URL, { params: params, headers: this.headers }).toPromise()
         .then(result => {
@@ -69,11 +74,11 @@ export class BitbucketService {
         });
     }
 
-    public getRepositories(seasonStartDate: Date): Promise<Array<BitbucketRepository>> {
+    public getRepositories(workspace: string, seasonStartDate: Date): Promise<Array<BitbucketRepository>> {
         const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_REPO)
             .set("updated_on>", seasonStartDate.toISOString())
             .set("sort", BitbucketApiConstants.SORT_RULE);
-        let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + BitbucketApiConstants.WORKSPACE;
+        let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + workspace;
         return this.http.get<BitbucketRepositoryResponse>(url, { params: params, headers: this.headers })
         .toPromise()
             .then(val => {
@@ -82,10 +87,10 @@ export class BitbucketService {
             });
     }
 
-    public getReposlug(repo_slug: string): Promise<BitbucketCommitResponse> {
+    public getReposlug(workspace: string, repo_slug: string): Promise<BitbucketCommitResponse> {
         const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_COMMITS);
 
-        let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + BitbucketApiConstants.WORKSPACE + repo_slug + "/commits";
+        let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + workspace + "/" + repo_slug + "/commits";
 
         return this.http.get<BitbucketCommitResponse>(url, { params: params, headers: this.headers }).toPromise()
             .then(val => {
@@ -110,12 +115,12 @@ export class BitbucketService {
             });
     }
 
-    public getPullRequests(repo_slug: string): Promise<BitbucketPullRequestResponse> {
+    public getPullRequests(workspace: string, repo_slug: string): Promise<BitbucketPullRequestResponse> {
         const params = new HttpParams().set("state", BitbucketApiConstants.PULLREQUEST_STATE)
             .set("sort", BitbucketApiConstants.SORT_RULE)
             .set("fields", BitbucketApiConstants.FIELDS_PULLREQUESTS);
 
-        let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + BitbucketApiConstants.WORKSPACE + repo_slug + "/pullrequests/";
+        let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + workspace + "/" + repo_slug + "/pullrequests/";
 
         return this.http.get<BitbucketPullRequestResponse>(url, { params: params, headers: this.headers }).toPromise()
             .then(val => {
@@ -141,6 +146,13 @@ export class BitbucketService {
         }
         this.setNewTokenHeader(this.userToken);
         this.eventEmitter.emit(true);
+    }
+
+    public getWorkSpaces(): Promise<Array<string>> {
+        let url = AppConfig.SERVER_BASE_URL + "/config";
+        return this.http.get<BitbucketApiEnvConfig>(url).toPromise().then(env => {
+            return env.BITBUCKET_WORKSPACES.split(",");
+        });
     }
 
     private loginToBitbucket(userAddress: string): Promise<string> {

@@ -43,11 +43,13 @@
                 <ion-item-divider>
                     <ion-label class="text-title text-details--bold">{{ "addCommit.batchUploadTitle" | translate }}</ion-label>
                 </ion-item-divider>
-                <ion-item *ngFor="let selectedRepo of selectedRepositories">                        
-                    <ion-radio item-left [value]="selectedRepo.name"></ion-radio>
-                    <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}</ion-label>
-                    <ion-label  item-right class="text-details text-details--bold"> {{ "addCommit.batchUploadPendingCommitsText" | translate: selectedRepo }}</ion-label>                                        
-                </ion-item>
+                <div>
+                    <ion-item *ngFor="let selectedRepo of selectedRepositories">                        
+                        <ion-radio item-left [value]="selectedRepo.name"></ion-radio>
+                        <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}</ion-label>
+                        <ion-label  item-right class="text-details text-details--bold"> {{ "addCommit.batchUploadPendingCommitsText" | translate: selectedRepo }}</ion-label>                                        
+                    </ion-item>
+                </div>
                 <div class="custom-spinner" *ngIf="showSpinner">
                     <ion-spinner name="bubbles"></ion-spinner>
                 </div>
