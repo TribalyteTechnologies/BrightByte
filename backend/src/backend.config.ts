@@ -29,6 +29,10 @@ export class BackendConfig {
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY || "xxxxxxxxxxxxxxx";
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET || "xxxxxxxxxxxxxxxxxxx";
+    public static readonly CONFIG_OBJ = 
+        {
+            BITBUCKET_WORKSPACES: process.env.BITBUCKET_WORKSPACES || "worksapce_1,worksapce_2"
+        };
     public static readonly BUFFER_SIZE = 1;
 }
 export namespace BackendConfig {
