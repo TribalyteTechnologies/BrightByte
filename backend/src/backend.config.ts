@@ -31,7 +31,7 @@ export class BackendConfig {
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
     public static readonly CONFIG_OBJ = 
         {
-            BITBUCKET_WORKSPACES: process.env.BITBUCKET_WORKSPACES || "worksapce_1,worksapce_2"
+            BITBUCKET_WORKSPACES: process.env.BITBUCKET_WORKSPACES || "workspace_1,workspace_2"
         };
     public static readonly BUFFER_SIZE = 1;
 }
