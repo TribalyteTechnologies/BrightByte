@@ -12,9 +12,9 @@ import { AchievementDatabaseService } from "./achievement-database.service";
 import { CommitAchievementProcessor } from "../achievement-processor/commit-achievement-processor";
 import { ReviewAchievementProcessor } from "../achievement-processor/review-achievement-processor";
 import { TimedReviewAchievementProcessor } from "../achievement-processor/timed-review-achievement-processor";
-import { SuccessResponseDto } from "src/dto/response/success-response.dto";
-import { ResponseDto } from "src/dto/response/response.dto";
-import { AchievementDto } from "src/dto/achievement.dto";
+import { SuccessResponseDto } from "../dto/response/success-response.dto";
+import { ResponseDto } from "../dto/response/response.dto";
+import { AchievementDto } from "../dto/achievement.dto";
 
 @Injectable()
 export class DispatcherService {

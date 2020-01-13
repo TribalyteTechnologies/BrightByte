@@ -4,9 +4,9 @@ import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { BackendConfig } from "../backend.config";
 import { map, flatMap } from "rxjs/operators";
-import { AuthenticationDatabaseService } from "src/services/authentication-database.service";
+import { AuthenticationDatabaseService } from "../services/authentication-database.service";
 import * as querystring from "querystring";
-import { ClientNotificationService } from "src/services/client-notfication.service";
+import { ClientNotificationService } from "../services/client-notfication.service";
 
 @Controller("authentication")
 export class AuthenticationController {

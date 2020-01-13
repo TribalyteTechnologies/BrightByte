@@ -9,9 +9,9 @@ import { ReviewEventDto } from "../dto/events/review-event.dto";
 import { CommitEventDto } from "../dto/events/commit-event.dto";
 import { DispatcherService } from "./dispatcher.service";
 import { UserDetailsDto } from "../dto/user-details.dto";
-import { ResponseDto } from "src/dto/response/response.dto";
-import { SuccessResponseDto } from "src/dto/response/success-response.dto";
-import { FailureResponseDto } from "src/dto/response/failure-response.dto";
+import { ResponseDto } from "../dto/response/response.dto";
+import { SuccessResponseDto } from "../dto/response/success-response.dto";
+import { FailureResponseDto } from "../dto/response/failure-response.dto";
 
 @Injectable()
 export class DatabaseInitializationService {
