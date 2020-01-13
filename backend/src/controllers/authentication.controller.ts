@@ -7,7 +7,7 @@ import { map, flatMap } from "rxjs/operators";
 import { AuthenticationDatabaseService } from "../services/authentication-database.service";
 import * as querystring from "querystring";
 import { ClientNotificationService } from "../services/client-notfication.service";
-import { FailureResponseDto } from "src/dto/response/failure-response.dto";
+import { FailureResponseDto } from "../dto/response/failure-response.dto";
 
 @Controller("authentication")
 export class AuthenticationController {

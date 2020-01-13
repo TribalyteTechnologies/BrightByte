@@ -32,7 +32,7 @@ export class BitbucketService {
     private userIdentifier: string;
     private headers: HttpHeaders;
     private log: ILogger;
-    private windowInstance: Window;
+    private authWindow: Window;
     private eventEmitter = new EventEmitter<boolean>();
 
     constructor(
@@ -66,13 +66,9 @@ export class BitbucketService {
 
     public getUsername(): Promise<string> {
         const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_USER);
-        this.userToken = this.getToken();
-
         this.log.d("The user token is", this.userToken);
         return this.http.get<BitbucketUserInfo>(BitbucketApiConstants.USER_BASE_URL, { params: params, headers: this.headers }).toPromise()
-        .then(result => {
-            return result.nickname;
-        });
+        .then(result => result.nickname);
     }
 
     public getRepositories(workspace: string, seasonStartDate: Date): Promise<Array<BitbucketRepository>> {
@@ -142,8 +138,9 @@ export class BitbucketService {
     public setUserToken(userToken: string) {
         this.userToken = userToken;
         this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
-        if(this.windowInstance) {
-            this.windowInstance.close();
+        if(this.authWindow) {
+            this.authWindow.close();
+            this.authWindow = null;
         }
         this.setNewTokenHeader(this.userToken);
         this.eventEmitter.emit(true);
@@ -163,7 +160,7 @@ export class BitbucketService {
             if (response.status === AppConfig.STATUS_OK) {
                 let url = response.data;
                 this.log.d("Opening bitbucket pop-up");
-                this.windowInstance = window.open(url);
+                this.authWindow = window.open(url);
             } else {
                 this.log.d("Bitbucket Provider not defined, functionality not available", response);
                 throw new Error(response.data);
@@ -173,8 +170,7 @@ export class BitbucketService {
     }
 
     private getToken(): string {
-        this.userToken = this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
-        return this.userToken;
+        return  this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
     }
 
     private refreshToken(): Promise<string> {
