@@ -34,7 +34,7 @@
     "addCommit": {
         "title": "Add commit",
         "importCommits": "Import commits",
-        "noNewCommits": "You don't have any new commits to import.",
+        "noNewCommits": "You don't have any new commits or PRs to import.",
         "add": "Add your commit or PR",
         "addByBatch": "Upload your commits and/or PRs by batch",
         "description": "Make sure you pushed your commit the remote repository and paste here the URL of the commit or pull reuest",

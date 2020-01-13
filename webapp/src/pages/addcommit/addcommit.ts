@@ -45,7 +45,8 @@ export class AddCommitPopover {
     public currentProject = "";
     public commitMethod = "url";
     public currentSeasonStartDate: Date;
-    public hasNewCommits = true;
+    public hasNewCommits = false;
+    public finishedLoadingRepo = false;
 
     public selectedRepositories = new Array<Repository>();
     public repoSelection: String;
@@ -280,6 +281,7 @@ export class AddCommitPopover {
             return Promise.all(promises);
         }).then(() => {
             this.showSpinner = false;
+            this.finishedLoadingRepo = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
             return Promise.resolve();
         });
@@ -368,6 +370,7 @@ export class AddCommitPopover {
                 });
                 this.selectedRepositories.push(repo);
             }
+
             if (nextCommits && (repo.numCommits > 0 || repo.numPRsNotUploaded > 0)) {
                 repo = await this.getNextPages(repo, nextCommits, blockChainCommits, prCommits);
             }
