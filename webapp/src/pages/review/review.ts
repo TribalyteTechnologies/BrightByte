@@ -134,6 +134,7 @@ export class ReviewPage {
                         this.log.e(msg, e);
                     });
                 this.spinnerService.hideLoader();
+                throw e;
             });
     }
 
@@ -177,6 +178,7 @@ export class ReviewPage {
             }).catch(err => {
                 this.spinnerService.hideLoader();
                 this.log.e(err);
+                throw err;
             });
 
     }

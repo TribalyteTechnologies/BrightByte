@@ -73,6 +73,7 @@ export class SetProfileForm {
                     this.msg = msg;
                     this.log.e(msg, e);
                 });
+            throw e;
         });
     }
 }

@@ -96,6 +96,7 @@ export class CommitPage {
                         this.log.e(msg, e);
                         this.spinnerService.hideLoader();
                     });
+                throw e;
             });
     }
 
@@ -130,6 +131,7 @@ export class CommitPage {
                     }
                 );
                 this.spinnerService.hideLoader();
+                throw e;
             });
     }
 
@@ -210,6 +212,7 @@ export class CommitPage {
             }).catch((err) => {
                 this.log.e(err);
                 this.spinnerService.hideLoader();
+                throw err;
             });
     }
 

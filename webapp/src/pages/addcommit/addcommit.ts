@@ -160,7 +160,10 @@ export class AddCommitPopover {
                 let ret;
                 if (!detailsCommits || !detailsCommits.url) {
                     ret = this.contractManagerService.addCommit(url, title, this.userAdded)
-                        .catch(err => Promise.reject({ msg: "addCommit.addingCommit", err: err }));
+                    .catch(err => {
+                        Promise.reject({ msg: "addCommit.addingCommit", err: err });
+                        throw err;
+                    });
                 } else {
                     ret = Promise.reject({ msg: "addCommit.urlDuplicated" });
                 }
@@ -184,6 +187,7 @@ export class AddCommitPopover {
             }).catch(e => {
                 this.showGuiMessage(e.msg, e.err);
                 this.isTxOngoing = false;
+                throw e;
             });
     }
 
@@ -284,7 +288,7 @@ export class AddCommitPopover {
             this.finishedLoadingRepo = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
             return Promise.resolve();
-        });
+        }).catch(err => { throw err; });
     }
 
     public addRepo(repoSelection: string) {
