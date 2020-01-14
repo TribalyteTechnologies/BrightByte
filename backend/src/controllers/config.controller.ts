@@ -1,5 +1,5 @@
 import { Controller, Get } from "@nestjs/common";
-import { BackendConfig } from "src/backend.config";
+import { BackendConfig } from "../backend.config";
 
 @Controller("config")
 export class ConfigController {
