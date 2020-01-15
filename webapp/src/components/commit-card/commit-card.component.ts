@@ -41,19 +41,17 @@ export class CommitCard {
     public set commit(val: UserCommit){
         this._commit = val;
         this.urlHash = FormatUtils.getHashFromUrl(val.url);
-        this.currentNumberReviews = val.reviewers[1].length;
-        this.numberReviews = val.reviewers[0].length;
-        let updatedPendingReviewers = val.reviewers[0].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
+        let reviewsDone = val.reviewers[1];
+        this.currentNumberReviews = reviewsDone.length;
+        let reviewsPending = val.reviewers[0];
+        this.numberReviews = reviewsPending.length;
+        let updatedPendingReviewers = reviewsPending.map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
         let difference = updatedPendingReviewers.filter(pendingRev => !this.pendingReviewers.some(rev => rev === pendingRev));
         this.pendingReviewers = updatedPendingReviewers;
-        this.reviewers = val.reviewers[1].map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
-        let searchUser = val.reviewers[1].filter(user => {
+        this.reviewers = reviewsDone.map(userval => ((userval.name === "") ? this.ANONYMOUS : userval.name));
+        let searchUser = reviewsDone.filter(user => {
             if (this.reviewersObs.length !== this.reviewers.length) {
-                if (user.name !== "") {
-                    this.reviewersObs.push(this.avatarSrv.getAvatarObs(user.userHash));
-                } else {
-                    this.reviewersObs.push(this.avatarSrv.getAvatarObs(this.ANONYMOUS_ADDRESS));
-                }
+                this.reviewersObs.push(this.avatarSrv.getAvatarObs(user.name ? user.userHash : this.ANONYMOUS_ADDRESS));
             }
             this.init = false;
             return user.userHash === this.reviewerAddress;
@@ -78,12 +76,16 @@ export class CommitCard {
     private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
     private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
     private _commit: UserCommit;
-    private init = true;
+    private init: boolean;
 
     public constructor(
         public translateService: TranslateService,
         private avatarSrv: AvatarService
         ){
+    }
+
+    public ngOnInit(){
+        this.init = true;
     }
 
     public ngDoCheck() {
