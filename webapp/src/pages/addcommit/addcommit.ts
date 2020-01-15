@@ -15,7 +15,6 @@ import { FormatUtils } from "../../core/format-utils";
 import { UserCommit } from "../../models/user-commit.model";
 import { Repository } from "../../models/repository.model";
 import { CommitInfo, BitbucketCommitInfo } from "../../models/commit-info.model";
-import { SpinnerService } from "../../core/spinner.service";
 import { BitbucketRepository } from "../../models/repository.model";
 import { PullRequest, BitbucketPullResquest } from "../../models/pull-request.model";
 
@@ -53,6 +52,8 @@ export class AddCommitPopover {
     public isBatchLogged = false;
     public isServiceAvailable = true;
     public showSpinner = false;
+    public isUpdatingByBatch = false;
+    public updatingProgress: number = 0;
 
     private allEmails = new Array<string>();
     private searchInput = "";
@@ -71,8 +72,7 @@ export class AddCommitPopover {
         private contractManagerService: ContractManagerService,
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
-        private bitbucketSrv: BitbucketService,
-        private spinnerSrv: SpinnerService
+        private bitbucketSrv: BitbucketService
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -184,7 +184,9 @@ export class AddCommitPopover {
             }).then((reviewers) => {
                 newCommit.reviewers = reviewers;
                 this.isTxOngoing = false;
-                this.viewCtrl.dismiss(newCommit);
+                if (this.commitMethod === "url"){
+                    this.viewCtrl.dismiss(newCommit);
+                }
             }).catch(e => {
                 this.showGuiMessage(e.msg, e.err);
                 this.isTxOngoing = false;
@@ -296,12 +298,15 @@ export class AddCommitPopover {
     }
 
     public addRepo(repoSelection: string) {
-        this.spinnerSrv.showLoader();
-        this.selectedRepositories.filter((repo) => {
+        this.updatingProgress = 0;
+        this.isUpdatingByBatch = true;
+        this.selectedRepositories.forEach((repo) => {
             if (repo != null && repoSelection === repo.name) {
+                let percentage = Math.floor(10000 / (repo.numCommits + repo.numPRs)) / 100;
                 repo.commitsInfo.reduce(
                     (prevVal, commit) => {
                         return prevVal.then(() => {
+                            this.updatingProgress += percentage;
                             let comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
                                 + repoSelection.toLowerCase() + "/commits/" + commit.hash;
                             return this.addCommit(comUrl, commit.name);
@@ -312,6 +317,7 @@ export class AddCommitPopover {
                     return repo.pullRequestsNotUploaded.reduce(
                         (prevVal, pullrequest) => {
                             return prevVal.then(() => {
+                                this.updatingProgress += percentage;
                                 let prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
                                     + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
                                 return this.addCommit(prUrl, pullrequest.title);
@@ -320,7 +326,8 @@ export class AddCommitPopover {
                         Promise.resolve()
                     );
                 }).then(() => {
-                    this.spinnerSrv.hideLoader();
+                    this.isUpdatingByBatch = false;
+                    this.viewCtrl.dismiss();
                 });
             }
         });

@@ -61,6 +61,7 @@ import { WebSocketService } from "../core/websocket.service";
 import { AvatarComponent } from "../components/avatar/avatar.component";
 import { Profile } from "../pages/profile/profile";
 import { AvatarService } from "../domain/avatar.service";
+import { ProgressBarComponent } from "../components/progress-bar/progress-bar.component";
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -88,7 +89,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         SetProfileForm,
         FilterComponent,
         CustomRating,
-        RankingCard
+        RankingCard,
+        ProgressBarComponent
     ],
     imports: [
         BrowserModule,
@@ -125,7 +127,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         SetProfileForm,
         FilterComponent,
         CustomRating,
-        RankingCard
+        RankingCard,
+        ProgressBarComponent
     ],
     providers: [
         AppConfig,

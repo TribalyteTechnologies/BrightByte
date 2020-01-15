@@ -3,7 +3,6 @@
     <ng-template #addCommitByBatchTitle>
         <ion-row padding class="text-title">{{ "addCommit.addByBatch" | translate }}</ion-row>
     </ng-template>
-
     <ion-segment [(ngModel)]="commitMethod" (ionChange)="setUploadMethodAndProceed($event.value)">
         <ion-segment-button *ngFor="let upMethod of [ 'url', 'batch']" [value]="upMethod">
           <ion-label>{{ "addCommit.tabSelection-" + upMethod | translate }}</ion-label>
@@ -86,13 +85,12 @@
     <ion-row *ngIf="msg">
         <div class="label label__error">{{ msg }}</div>
     </ion-row>
-    <div class="custom-spinner" *ngIf="isTxOngoing">
+    <div class="custom-spinner" *ngIf="isTxOngoing && commitMethod === 'url'">
         <ion-spinner name="bubbles"></ion-spinner>
     </div>
+    <progress-bar *ngIf="isUpdatingByBatch" [progress] = "updatingProgress"></progress-bar> 
     <ion-row>
         <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection)" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
+        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection) || isUpdatingByBatch" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
     </ion-row>
-
-
 </ion-content>
