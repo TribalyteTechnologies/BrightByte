@@ -5,11 +5,8 @@
     </ng-template>
 
     <ion-segment [(ngModel)]="commitMethod" (ionChange)="setUploadMethodAndProceed($event.value)">
-        <ion-segment-button value="url">
-          <ion-label>{{ "addCommit.tabSelection1" | translate }}</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="batch">
-          <ion-label>{{ "addCommit.tabSelection2" | translate }}</ion-label>
+        <ion-segment-button *ngFor="let upMethod of [ 'url', 'batch']" [value]="upMethod">
+          <ion-label>{{ "addCommit.tabSelection-" + upMethod | translate }}</ion-label>
         </ion-segment-button>
       </ion-segment>
 
