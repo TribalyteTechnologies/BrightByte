@@ -2,7 +2,7 @@
 
 #### v 0.6.0
 
-- Bitbucket API integration (Automation of commit and pull request upload by repository)
+- Support for integration with Bitbucket API (import commits and pull requests from the user account).
 - Modified season qualifying feature to take into account user participation for clasified users sort.
 - Added new designs for timed achievements.
 - Docker documentation updates.
