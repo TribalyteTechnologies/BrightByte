@@ -18,8 +18,8 @@ export class Repository {
     public numCommits: number;
     public pullRequests: Array<PullRequest>;
     public pullRequestsNotUploaded: Array<PullRequest>;
-    public numPRs: number;
-    public numPRsNotUploaded: number;
+    public numPrs: number;
+    public numPrsNotUploaded: number;
     public isReadAllCommits: boolean;
     public workspace: string;
 
@@ -28,8 +28,8 @@ export class Repository {
         this.name = name;
         this.workspace = workspace;
         this.numCommits = 0;
-        this.numPRs = 0;
-        this.numPRsNotUploaded = 0;
+        this.numPrs = 0;
+        this.numPrsNotUploaded = 0;
         this.commitsInfo = new Array<CommitInfo>();
         this.pullRequests = new Array<PullRequest>();
         this.pullRequestsNotUploaded = new Array<PullRequest>();

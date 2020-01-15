@@ -13,10 +13,10 @@ import { LocalStorageService } from "../../core/local-storage.service";
 import { BitbucketService, BitbucketApiConstants } from "../../domain/bitbucket.service";
 import { FormatUtils } from "../../core/format-utils";
 import { UserCommit } from "../../models/user-commit.model";
-import { Repository } from "../../models/repository.model";
-import { CommitInfo, BitbucketCommitInfo } from "../../models/commit-info.model";
-import { BitbucketRepository } from "../../models/repository.model";
-import { PullRequest, BitbucketPullResquest } from "../../models/pull-request.model";
+import { Repository } from "../../models/bitbucket/repository.model";
+import { CommitInfo, BitbucketCommitInfo } from "../../models/bitbucket/commit-info.model";
+import { BitbucketRepository } from "../../models/bitbucket/repository.model";
+import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket/pull-request.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -54,6 +54,7 @@ export class AddCommitPopover {
     public showSpinner = false;
     public isUpdatingByBatch = false;
     public updatingProgress: number = 0;
+    public sortByDate: any;
 
     private allEmails = new Array<string>();
     private searchInput = "";
@@ -110,15 +111,16 @@ export class AddCommitPopover {
     public ngOnInit() {
         this.log.d("Subscribing to event emitter");
         this.loginSubscription = this.bitbucketSrv.getLoginEmitter()
-            .subscribe(res => {
-                this.log.d("Provider authentication completed", res);
-                this.commitMethod = this.BATCH_METHOD;
-                this.bitbucketSrv.getUsername().then((user) => {
-                    this.bitbucketUser = user;
-                    this.isBatchLogged = true;
-                    this.loadUserPendingCommitsAndPR();
-                });
+        .subscribe(res => {
+            this.log.d("Provider authentication completed", res);
+            this.commitMethod = this.BATCH_METHOD;
+            this.sortByDate = (comA, comB) => (comA.date >= comB.date) ? 1 : -1;
+            this.bitbucketSrv.getUsername().then((user) => {
+                this.bitbucketUser = user;
+                this.isBatchLogged = true;
+                this.loadUserPendingCommitsAndPr();
             });
+        });
     }
 
     public ionViewDidLeave() {
@@ -260,7 +262,7 @@ export class AddCommitPopover {
         }
     }
 
-    public loadUserPendingCommitsAndPR(): Promise<void> {
+    public loadUserPendingCommitsAndPr(): Promise<void> {
         this.selectedRepositories = new Array<Repository>();
         let blockChainCommits = new Array<string>();
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
@@ -302,7 +304,7 @@ export class AddCommitPopover {
         this.isUpdatingByBatch = true;
         this.selectedRepositories.forEach((repo) => {
             if (repo != null && repoSelection === repo.name) {
-                let percentage = Math.floor(10000 / (repo.numCommits + repo.numPRs)) / 100;
+                let percentage = Math.floor(10000 / (repo.numCommits + repo.numPrs)) / 100;
                 repo.commitsInfo.reduce(
                     (prevVal, commit) => {
                         return prevVal.then(() => {
@@ -361,10 +363,9 @@ export class AddCommitPopover {
     private handleRepository(workspace: string, repository: BitbucketRepository, blockChainCommits: Array<string>): Promise<void> {
         let repo: Repository = new Repository(repository.slug, repository.name, workspace);
         return this.bitbucketSrv.getPullRequests(workspace, repo.slug).then(pr => {
-            let promise = this.manageProviderPullRequests(workspace, repo, pr.values, blockChainCommits);
-            return Promise.all([promise]).then(() => {
-                return this.getNextPullrequests(workspace, repo, pr.next, blockChainCommits);
-            });
+            return this.processProviderPullRequests(workspace, repo, pr, blockChainCommits);
+        }).then(nextUrl => {
+            return this.getNextPullrequests(workspace, repo, nextUrl, blockChainCommits);
         }).then(() => {
             return this.bitbucketSrv.getReposlug(workspace, repo.slug);
         }).then(async commits => {
@@ -375,52 +376,47 @@ export class AddCommitPopover {
 
             repo = this.manageProviderCommits(repo, commits.values, blockChainCommits, prCommits);
             let nextCommits = commits.next;
-            if (nextCommits == null && (repo.numCommits > 0 || repo.numPRsNotUploaded > 0)) {
+            if (nextCommits == null && (repo.numCommits > 0 || repo.numPrsNotUploaded > 0)) {
                 this.hasNewCommits = true;
-                repo.commitsInfo.sort((comA, comB) => {
-                    return (comA.date >= comB.date) ? 1 : -1;
-                });
-                repo.pullRequestsNotUploaded.sort((comA, comB) => {
-                    return (comA.date >= comB.date) ? 1 : -1;
-                });
+                repo.commitsInfo.sort(this.sortByDate);
+                repo.pullRequestsNotUploaded.sort(this.sortByDate);
                 this.selectedRepositories.push(repo);
             }
 
-            if (nextCommits && (repo.numCommits > 0 || repo.numPRsNotUploaded > 0)) {
+            if (nextCommits && (repo.numCommits > 0 || repo.numPrsNotUploaded > 0)) {
                 repo = await this.getNextPages(repo, nextCommits, blockChainCommits, prCommits);
             }
             return Promise.resolve();
         });
     }  
 
-    private manageProviderPullRequests(workspace: string, repo: Repository, pullrequestsResponse: Array<BitbucketPullResquest>,
-                                       blockChainCommits: Array<string>): Promise<void> {
-        let promises = pullrequestsResponse.map(pullrequest => {
+    private processProviderPullRequests(workspace: string, repo: Repository, pullrequestsResponse: BitbucketPullRequestResponse,
+                                        blockChainCommits: Array<string>): Promise<string> {
+        let promises = pullrequestsResponse.values.map(async pullrequest => {
             let prDate = new Date(pullrequest.updated_on);
             let pr = new PullRequest(pullrequest.id, pullrequest.title, pullrequest.author, prDate, pullrequest.destination.commit.hash);
             if (pullrequest.author.nickname === this.bitbucketUser && prDate >= this.currentSeasonStartDate) {
-                return this.bitbucketSrv.getPRCommits(pullrequest.links.commits.href).then(async PRCommits => {
-                    pr.commitsHash = PRCommits.values.map(com => com.hash);
-                    let nextUrl = PRCommits.next;
-                    return nextUrl;
-                }).then(async nextUrl => {
-                    while (nextUrl) {
-                        let nextPRCommits = await this.bitbucketSrv.getNextReposlug(nextUrl);
-                        let filtedHashes = nextPRCommits.values.map(com => com.hash);
-                        pr.commitsHash = pr.commitsHash.concat(filtedHashes);
-                        nextUrl = nextPRCommits.next;
-                    }
-                    repo.numPRs = repo.pullRequests.push(pr);
-                    let partialUrl = workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
-                    if (blockChainCommits.indexOf(partialUrl) < 0) {
-                        repo.numPRsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
-                    }
-                });
+                const prCommits = await this.bitbucketSrv.getPrCommits(pullrequest.links.commits.href);
+                pr.commitsHash = prCommits.values.map(com => com.hash);
+                let nextUrl = prCommits.next;
+
+                while (nextUrl) {
+                    let nextPrCommits = await this.bitbucketSrv.getNextReposlug(nextUrl);
+                    let filtedHashes = nextPrCommits.values.map(com => com.hash);
+                    pr.commitsHash = pr.commitsHash.concat(filtedHashes);
+                    nextUrl = nextPrCommits.next;
+                }
+
+                repo.numPrs = repo.pullRequests.push(pr);
+                let partialUrl = workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
+                if (blockChainCommits.indexOf(partialUrl) < 0) {
+                        repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
+                }
             }
-            return Promise.resolve();
         });
+
         return Promise.all(promises).then(() => {
-            return Promise.resolve();
+            return pullrequestsResponse.next;
         });
     }
 
@@ -428,11 +424,10 @@ export class AddCommitPopover {
                                       blockChainCommits: Array<string>): Promise<void> {
         let auxUrl = nextCommitsUrl;
         while (auxUrl) {
-            let nextCommits = await this.bitbucketSrv.getNextPullrequest(auxUrl);
-            await this.manageProviderPullRequests(workspace, repository, nextCommits.values, blockChainCommits);
-            auxUrl = nextCommits.next;
+            let nextPr = await this.bitbucketSrv.getNextPullrequest(auxUrl);
+            await this.processProviderPullRequests(workspace, repository, nextPr, blockChainCommits);
+            auxUrl = nextPr.next;
         }
-        return Promise.resolve();
     }
 
     private manageProviderCommits(repo: Repository, commits: Array<BitbucketCommitInfo>, blockChainCommits: Array<string>,
@@ -459,14 +454,11 @@ export class AddCommitPopover {
             let nextCommits = await this.bitbucketSrv.getNextReposlug(auxUrl);
             repository = this.manageProviderCommits(repository, nextCommits.values, blockChainCommits, prCommits);
             auxUrl = repository.isReadAllCommits ? null : nextCommits.next;
-            if (auxUrl == null && (repository.numCommits > 0 || repository.numPRsNotUploaded > 0)) {
+            if (auxUrl == null && (repository.numCommits > 0 || repository.numPrsNotUploaded > 0)) {
                 this.hasNewCommits = true;
-                repository.commitsInfo.sort((comA, comB) => {
-                    return (comA.date >= comB.date) ? 1 : -1;
-                });
-                repository.pullRequestsNotUploaded.sort((comA, comB) => {
-                    return (comA.date >= comB.date) ? 1 : -1;
-                });
+                
+                repository.commitsInfo.sort(this.sortByDate);
+                repository.pullRequestsNotUploaded.sort(this.sortByDate);
                 this.selectedRepositories.push(repository);
             } else if (auxUrl) {
                 auxUrl = nextCommits.next;

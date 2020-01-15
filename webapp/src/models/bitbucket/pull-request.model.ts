@@ -6,41 +6,41 @@ export class BitbucketPullRequestResponse {
 export class BitbucketPullResquest {
     public id: number;
     public title: string;
-    public author: BitbucketPRAuthor;
-    public destination: BitbucketPRDestination;
-    public links: BitbucketPRLinks;
+    public author: BitbucketPrAuthor;
+    public destination: BitbucketPrDestination;
+    public links: BitbucketPrLinks;
     public updated_on: string;
 }
 
-export class BitbucketPRAuthor {
+export class BitbucketPrAuthor {
     public nickname: string;
 }
 
-export class BitbucketPRDestination {
-    public commit: BitbucketPRCommitDestination;
+export class BitbucketPrDestination {
+    public commit: BitbucketPrCommitDestination;
 }
 
-export class BitbucketPRCommitDestination {
+export class BitbucketPrCommitDestination {
     public hash: string;
 }
 
-export class BitbucketPRLinks {
-    public commits: BitbucketPRCommitsLinks;
+export class BitbucketPrLinks {
+    public commits: BitbucketPrCommitsLinks;
 }
 
-export class BitbucketPRCommitsLinks {
+export class BitbucketPrCommitsLinks {
     public href: string;
 }
 
 export class PullRequest {
     public id: number;
     public title: string;
-    public author: BitbucketPRAuthor;
+    public author: BitbucketPrAuthor;
     public commitsHash: Array<string>;
     public destHash: string;
     public date: Date;
 
-    constructor(id: number, title: string, author: BitbucketPRAuthor, date: Date, destHash: string){
+    constructor(id: number, title: string, author: BitbucketPrAuthor, date: Date, destHash: string){
         this.id = id;
         this.title = title;
         this.author = author;
@@ -50,11 +50,11 @@ export class PullRequest {
     }
 }
 
-export class BitbucketPRCommitsResponse {
+export class BitbucketPrCommitsResponse {
     public next: string;
-    public values: Array<PRCommits>;
+    public values: Array<PrCommits>;
 }
 
-export class PRCommits {
+export class PrCommits {
     public hash: string;
 }

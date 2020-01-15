@@ -4,22 +4,26 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
 import { IResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
-import { BitbucketRepository, BitbucketRepositoryResponse } from "../models/repository.model";
-import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/commit-info.model";
-import { BitbucketPullRequestResponse, BitbucketPRCommitsResponse } from "../models/pull-request.model";
+import { BitbucketRepository, BitbucketRepositoryResponse } from "../models/bitbucket/repository.model";
+import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket/commit-info.model";
+import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../models/bitbucket/pull-request.model";
 
 export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
     public static readonly BASE_URL = "https://bitbucket.org/";
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
-    public static readonly SORT_RULE = "-updated_on";
+    public static readonly SORT_BY_DATE_QUERY = "-updated_on";
     public static readonly FIELDS_USER = "nickname";
     public static readonly FIELDS_REPO = "values.name,values.slug";
     public static readonly FIELDS_COMMITS = "next,values.author.user,values.date,values.hash,values.message,values.parents.hash";
     public static readonly FIELDS_PULLREQUESTS = "next,values.author.nickname,values.title,values.destination.commit.hash,values.links.commits.href,values.updated_on,values.id";
     public static readonly FIELDS_PULLREQUEST_COMMITS = "next,values.hash";
     public static readonly PULLREQUEST_STATE = "MERGED,OPEN";
+    public static readonly TAG_FIELDS = "fields";
+    public static readonly TAG_SORT = "sort";
+    public static readonly TAG_STATE = "state";
+    public static readonly TAG_SORT_BY_UPDATE_DATE = "updated_on>";
 }
 
 export class BitbucketApiEnvConfig {
@@ -65,74 +69,73 @@ export class BitbucketService {
     }
 
     public getUsername(): Promise<string> {
-        const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_USER);
+        const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_USER);
         this.log.d("The user token is", this.userToken);
         return this.http.get<BitbucketUserInfo>(BitbucketApiConstants.USER_BASE_URL, { params: params, headers: this.headers }).toPromise()
         .then(result => result.nickname);
     }
 
     public getRepositories(workspace: string, seasonStartDate: Date): Promise<Array<BitbucketRepository>> {
-        const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_REPO)
-            .set("updated_on>", seasonStartDate.toISOString())
-            .set("sort", BitbucketApiConstants.SORT_RULE);
+        const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_REPO)
+            .set(BitbucketApiConstants.TAG_SORT_BY_UPDATE_DATE, seasonStartDate.toISOString())
+            .set(BitbucketApiConstants.TAG_SORT, BitbucketApiConstants.SORT_BY_DATE_QUERY);
         let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + workspace;
-        return this.http.get<BitbucketRepositoryResponse>(url, { params: params, headers: this.headers })
-        .toPromise()
-            .then(val => {
-                this.log.d("The values are", val);
-                return val.values;
-            });
+        return this.http.get<BitbucketRepositoryResponse>(url, { params: params, headers: this.headers }).toPromise()
+        .then(val => {
+            this.log.d("The values are", val);
+            return val.values;
+        });
     }
 
     public getReposlug(workspace: string, repo_slug: string): Promise<BitbucketCommitResponse> {
-        const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_COMMITS);
+        const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_COMMITS);
 
         let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + workspace + "/" + repo_slug + "/commits";
 
         return this.http.get<BitbucketCommitResponse>(url, { params: params, headers: this.headers }).toPromise()
-            .then(val => {
-                this.log.d("The values are from resposlug", val);
-                return val;
-            });
+        .then(val => {
+            this.log.d("The values are from resposlug", val);
+            return val;
+        });
     }
 
     public getNextReposlug(url: string): Promise<BitbucketCommitResponse> {
         return this.http.get<BitbucketCommitResponse>(url, { headers: this.headers }).toPromise()
-            .then(val => {
-                this.log.d("The values are from next reposlug", val);
-                return val;
-            });
+        .then(val => {
+            this.log.d("The values are from next reposlug", val);
+            return val;
+        });
     }
 
     public getNextPullrequest(url: string): Promise<BitbucketPullRequestResponse> {
         return this.http.get<BitbucketPullRequestResponse>(url, { headers: this.headers }).toPromise()
-            .then(val => {
-                this.log.d("The values are from next pull request page", val);
-                return val;
-            });
+        .then(val => {
+            this.log.d("The values are from next pull request page", val);
+            return val;
+        });
     }
 
     public getPullRequests(workspace: string, repo_slug: string): Promise<BitbucketPullRequestResponse> {
-        const params = new HttpParams().set("state", BitbucketApiConstants.PULLREQUEST_STATE)
-            .set("sort", BitbucketApiConstants.SORT_RULE)
-            .set("fields", BitbucketApiConstants.FIELDS_PULLREQUESTS);
+        const params = new HttpParams().set(BitbucketApiConstants.TAG_STATE, BitbucketApiConstants.PULLREQUEST_STATE)
+            .set(BitbucketApiConstants.TAG_SORT, BitbucketApiConstants.SORT_BY_DATE_QUERY)
+            .set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_PULLREQUESTS);
 
         let url = BitbucketApiConstants.REPOSITORIES_BASE_URL + workspace + "/" + repo_slug + "/pullrequests/";
 
         return this.http.get<BitbucketPullRequestResponse>(url, { params: params, headers: this.headers }).toPromise()
-            .then(val => {
-                this.log.d("The values are from pull request", val);
-                return val;
-            });
+        .then(val => {
+            this.log.d("The values are from pull request", val);
+            return val;
+        });
     }
 
-    public getPRCommits(url: string): Promise<BitbucketPRCommitsResponse> {
-        const params = new HttpParams().set("fields", BitbucketApiConstants.FIELDS_PULLREQUEST_COMMITS);
-        return this.http.get<BitbucketPRCommitsResponse>(url, { params: params, headers: this.headers }).toPromise()
-            .then(val => {
-                this.log.d("The values are from PR commits", val);
-                return val;
-            });
+    public getPrCommits(url: string): Promise<BitbucketPrCommitsResponse> {
+        const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_PULLREQUEST_COMMITS);
+        return this.http.get<BitbucketPrCommitsResponse>(url, { params: params, headers: this.headers }).toPromise()
+        .then(val => {
+            this.log.d("The values are from PR commits", val);
+            return val;
+        });
     }
 
     public setUserToken(userToken: string) {
