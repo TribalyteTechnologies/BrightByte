@@ -45,7 +45,7 @@ export class AddCommitPopover {
     public commitMethod = "url";
     public currentSeasonStartDate: Date;
     public hasNewCommits = false;
-    public finishedLoadingRepo = false;
+    public isFinishedLoadingRepo = false;
 
     public selectedRepositories = new Array<Repository>();
     public repoSelection: String;
@@ -266,6 +266,7 @@ export class AddCommitPopover {
         this.selectedRepositories = new Array<Repository>();
         let blockChainCommits = new Array<string>();
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
+            this.isFinishedLoadingRepo = false;
             let seasonDate = new Date(1000 * seasonEndDate[1]);
             seasonDate.setMonth(seasonDate.getMonth() - this.SEASON_IN_MONTHS);
             return seasonDate;
@@ -275,8 +276,7 @@ export class AddCommitPopover {
             return this.contractManagerService.getCommits();
         }).then(commits => {           
             blockChainCommits = commits.map(com => {
-                return com.url.includes("pull-requests") ? 
-                       com.url.substring(BitbucketApiConstants.BASE_URL.length, com.url.length) : com.urlHash;
+                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
             });
             this.log.d("The commits from the blockchain", blockChainCommits);
             return this.bitbucketSrv.getWorkSpaces();
@@ -293,7 +293,7 @@ export class AddCommitPopover {
             return Promise.all(promisesWorkspaces);
         }).then(() => {
             this.showSpinner = false;
-            this.finishedLoadingRepo = true;
+            this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
             return Promise.resolve();
         }).catch(err => { throw err; });
@@ -408,7 +408,7 @@ export class AddCommitPopover {
                 }
 
                 repo.numPrs = repo.pullRequests.push(pr);
-                let partialUrl = workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
+                let partialUrl = BitbucketApiConstants.BASE_URL + workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
                 if (blockChainCommits.indexOf(partialUrl) < 0) {
                         repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
                 }

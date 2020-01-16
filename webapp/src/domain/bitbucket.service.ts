@@ -10,6 +10,7 @@ import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../mod
 
 export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
+    public static readonly SERVER_LOAD_WORKSPACES_URL = AppConfig.SERVER_BASE_URL + "/config";
     public static readonly BASE_URL = "https://bitbucket.org/";
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
@@ -27,7 +28,7 @@ export class BitbucketApiConstants {
 }
 
 export class BitbucketApiEnvConfig {
-    public BITBUCKET_WORKSPACES: string;
+    public bitbucket: { workspaces: Array<string> };
 }
 
 @Injectable()
@@ -150,9 +151,8 @@ export class BitbucketService {
     }
 
     public getWorkSpaces(): Promise<Array<string>> {
-        let url = AppConfig.SERVER_BASE_URL + "/config";
-        return this.http.get<BitbucketApiEnvConfig>(url).toPromise().then(env => {
-            return env.BITBUCKET_WORKSPACES.split(",");
+        return this.http.get<BitbucketApiEnvConfig>(BitbucketApiConstants.SERVER_LOAD_WORKSPACES_URL).toPromise().then(env => {
+            return env.bitbucket.workspaces;
         });
     }
 

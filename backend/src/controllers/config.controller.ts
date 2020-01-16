@@ -6,6 +6,6 @@ export class ConfigController {
 
     @Get("/")
     public getConfigObj(): Object {
-        return BackendConfig.CONFIG_OBJ;
+        return BackendConfig.SYSTEM_CONFIGURATION;
     }
 }
