@@ -16,7 +16,7 @@ export class BitbucketCommitAuthor {
 }
 
 export class BitbucketUserInfo {
-    public nickname: string;
+    public uuid: string;
 }
 
 export class ParentInfo {

@@ -16,10 +16,10 @@ export class BitbucketApiConstants {
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
     public static readonly SORT_BY_DATE_QUERY = "-updated_on";
-    public static readonly FIELDS_USER = "nickname";
+    public static readonly FIELDS_USER = "uuid";
     public static readonly FIELDS_REPO = "values.name,values.slug";
-    public static readonly FIELDS_COMMITS = "next,values.author.user,values.date,values.hash,values.message,values.parents.hash";
-    public static readonly FIELDS_PULLREQUESTS = "next,values.author.nickname,values.title,values.destination.commit.hash,values.links.commits.href,values.updated_on,values.id";
+    public static readonly FIELDS_COMMITS = "next,values.author.user.uuid,values.date,values.hash,values.message,values.parents.hash";
+    public static readonly FIELDS_PULLREQUESTS = "next,values.author.uuid,values.title,values.destination.commit.hash,values.links.commits.href,values.updated_on,values.id";
     public static readonly FIELDS_PULLREQUEST_COMMITS = "next,values.hash";
     public static readonly PULLREQUEST_STATE = "MERGED,OPEN";
     public static readonly TAG_FIELDS = "fields";
@@ -70,7 +70,7 @@ export class BitbucketService {
         const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_USER);
         this.log.d("The user token is", this.userToken);
         return this.http.get<BitbucketUserInfo>(BitbucketApiConstants.USER_BASE_URL, { params: params, headers: this.headers }).toPromise()
-        .then(result => result.nickname);
+        .then(result => result.uuid);
     }
 
     public getRepositories(workspace: string, seasonStartDate: Date): Promise<Array<BitbucketRepository>> {

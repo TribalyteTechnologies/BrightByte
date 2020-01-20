@@ -399,7 +399,7 @@ export class AddCommitPopover {
         let promises = pullrequestsResponse.values.map(async pullrequest => {
             let prDate = new Date(pullrequest.updated_on);
             let pr = new PullRequest(pullrequest.id, pullrequest.title, pullrequest.author, prDate, pullrequest.destination.commit.hash);
-            if (pullrequest.author.nickname === this.bitbucketUser && prDate >= this.currentSeasonStartDate) {
+            if (pullrequest.author.uuid === this.bitbucketUser && prDate >= this.currentSeasonStartDate) {
                 const prCommits = await this.bitbucketSrv.getPrCommits(pullrequest.links.commits.href);
                 pr.commitsHash = prCommits.values.map(com => com.hash);
                 let nextUrl = prCommits.next;
@@ -441,10 +441,10 @@ export class AddCommitPopover {
             if (comDate < this.currentSeasonStartDate) {
                 repo.isReadAllCommits = true;
             }
-            if (commit.author.user && commit.author.user.nickname === this.bitbucketUser
+            if (commit.author.user && commit.author.user.uuid === this.bitbucketUser
                 && comDate >= this.currentSeasonStartDate && blockChainCommits.indexOf(commit.hash) < 0
                 && prCommits.indexOf(commit.hash) < 0 && commit.parents.length < 2) {
-                let commitInfo = new CommitInfo(commit.hash, commit.message, comDate);
+                let commitInfo = new CommitInfo(commit.hash, commit.message.split("\n")[0], comDate);
                 repo.numCommits = repo.commitsInfo.push(commitInfo);
             }
         });

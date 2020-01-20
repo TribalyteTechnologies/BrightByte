@@ -13,7 +13,7 @@ export class BitbucketPullResquest {
 }
 
 export class BitbucketPrAuthor {
-    public nickname: string;
+    public uuid: string;
 }
 
 export class BitbucketPrDestination {
