@@ -1,4 +1,4 @@
-
+progress-bar {
     .progress-outer {
         width: 96%;
         margin: 10px 2%;
@@ -18,3 +18,4 @@
         border-radius: 20px;
         background-color: map-get($colors, primary);
     }
+}

@@ -54,12 +54,13 @@ export class AddCommitPopover {
     public isServiceAvailable = true;
     public showSpinner = false;
     public isUpdatingByBatch = false;
-    public updatingProgress: number = 0;
-    public sortByDate: any;
+    public updatingProgress = 0;
 
     private allEmails = new Array<string>();
     private searchInput = "";
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
+    private readonly PERCENTAGE_RANGE = 100;
+    private readonly FACTOR_PERCENTAGE_DECIMALS = 100; 
     private userDetailsProm: Promise<UserDetails>;
     private log: ILogger;
     private loginSubscription: EventEmitter<boolean>;
@@ -115,7 +116,6 @@ export class AddCommitPopover {
         .subscribe(res => {
             this.log.d("Provider authentication completed", res);
             this.commitMethod = this.BATCH_METHOD;
-            this.sortByDate = (comA, comB) => (comA.date >= comB.date) ? 1 : -1;
             this.bitbucketSrv.getUsername().then((user) => {
                 this.isServiceAvailable = true;
                 this.bitbucketUser = user;
@@ -268,8 +268,8 @@ export class AddCommitPopover {
         this.selectedRepositories = new Array<Repository>();
         let blockChainCommits = new Array<string>();
         let seasonDate;
+        this.isFinishedLoadingRepo = false;
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
-            this.isFinishedLoadingRepo = false;
             seasonDate = new Date(1000 * seasonEndDate[1]);
             return seasonDate;
         }).then(() => {
@@ -308,7 +308,8 @@ export class AddCommitPopover {
         this.isUpdatingByBatch = true;
         this.selectedRepositories.forEach((repo) => {
             if (repo != null && repoSelection === repo.name) {
-                let percentage = Math.floor(10000 / (repo.numCommits + repo.numPrs)) / 100;
+                let percentage = Math.floor(this.PERCENTAGE_RANGE * this.FACTOR_PERCENTAGE_DECIMALS / (repo.numCommits + repo.numPrs)) 
+                                / this.FACTOR_PERCENTAGE_DECIMALS;
                 repo.commitsInfo.reduce(
                     (prevVal, commit) => {
                         return prevVal.then(() => {
@@ -334,10 +335,14 @@ export class AddCommitPopover {
                 }).then(() => {
                     this.isUpdatingByBatch = false;
                     this.viewCtrl.dismiss();
+                }).catch(() => {
+                    this.isUpdatingByBatch = false;
                 });
             }
         });
     }
+
+    private readonly SORT_BY_DATE_FN = (comA, comB) => comA.date - comB.date;
 
     private showGuiMessage(txtId, e?: any) {
         this.translateService.get(txtId)
@@ -382,8 +387,8 @@ export class AddCommitPopover {
             let nextCommits = commits.next;
             if (nextCommits == null && (repo.numCommits > 0 || repo.numPrsNotUploaded > 0)) {
                 this.hasNewCommits = true;
-                repo.commitsInfo.sort(this.sortByDate);
-                repo.pullRequestsNotUploaded.sort(this.sortByDate);
+                repo.commitsInfo.sort(this.SORT_BY_DATE_FN);
+                repo.pullRequestsNotUploaded.sort(this.SORT_BY_DATE_FN);
                 this.selectedRepositories.push(repo);
             }
 
@@ -461,8 +466,8 @@ export class AddCommitPopover {
             if (auxUrl == null && (repository.numCommits > 0 || repository.numPrsNotUploaded > 0)) {
                 this.hasNewCommits = true;
                 
-                repository.commitsInfo.sort(this.sortByDate);
-                repository.pullRequestsNotUploaded.sort(this.sortByDate);
+                repository.commitsInfo.sort(this.SORT_BY_DATE_FN);
+                repository.pullRequestsNotUploaded.sort(this.SORT_BY_DATE_FN);
                 this.selectedRepositories.push(repository);
             } else if (auxUrl) {
                 auxUrl = nextCommits.next;
