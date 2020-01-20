@@ -31,8 +31,13 @@ export class BackendConfig {
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
     public static readonly SYSTEM_CONFIGURATION = 
         {
-            bitbucket: {
+            bitbucket: 
+            {
                 workspaces: (process.env.BITBUCKET_WORKSPACES || "workspace_1,workspace_2").split(",")
+            },
+            season:
+            {
+                durationInMonths: +process.env.DURATION_IN_MONTHS || 3
             }
         };
     public static readonly BUFFER_SIZE = 1;
@@ -50,4 +55,3 @@ export namespace BackendConfig {
         Season
     }
 }
-

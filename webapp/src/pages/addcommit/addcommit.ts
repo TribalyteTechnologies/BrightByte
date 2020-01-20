@@ -17,6 +17,7 @@ import { Repository } from "../../models/bitbucket/repository.model";
 import { CommitInfo, BitbucketCommitInfo } from "../../models/bitbucket/commit-info.model";
 import { BitbucketRepository } from "../../models/bitbucket/repository.model";
 import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket/pull-request.model";
+import { BackendConfig } from "../../models/backend-config.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -266,22 +267,24 @@ export class AddCommitPopover {
     public loadUserPendingCommitsAndPr(): Promise<void> {
         this.selectedRepositories = new Array<Repository>();
         let blockChainCommits = new Array<string>();
+        let seasonDate;
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
             this.isFinishedLoadingRepo = false;
-            let seasonDate = new Date(1000 * seasonEndDate[1]);
-            seasonDate.setMonth(seasonDate.getMonth() - this.SEASON_IN_MONTHS);
+            seasonDate = new Date(1000 * seasonEndDate[1]);
             return seasonDate;
-        }).then(seasonDate => {
+        }).then(() => {
             this.showSpinner = true;
-            this.currentSeasonStartDate = seasonDate;
             return this.contractManagerService.getCommits();
         }).then(commits => {           
             blockChainCommits = commits.map(com => {
                 return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
             });
             this.log.d("The commits from the blockchain", blockChainCommits);
-            return this.bitbucketSrv.getWorkSpaces();
-        }).then(workspaces => {
+            return this.bitbucketSrv.getBackendConfig();
+        }).then((config: BackendConfig) => {
+            seasonDate.setMonth(seasonDate.getMonth() - config.season.durationInMonths);
+            this.currentSeasonStartDate = seasonDate;
+            let workspaces = config.bitbucket.workspaces;
             let promisesWorkspaces = workspaces.map(workspace => {
                 return this.bitbucketSrv.getRepositories(workspace, this.currentSeasonStartDate).then(repositories => {
                     this.log.d("The repositories from Bitbucket are: ", repositories);

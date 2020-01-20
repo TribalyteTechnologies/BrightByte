@@ -7,10 +7,11 @@ import { LoggerService, ILogger } from "../core/logger.service";
 import { BitbucketRepository, BitbucketRepositoryResponse } from "../models/bitbucket/repository.model";
 import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket/commit-info.model";
 import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../models/bitbucket/pull-request.model";
+import { BackendConfig } from "../models/backend-config.model";
 
 export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
-    public static readonly SERVER_LOAD_WORKSPACES_URL = AppConfig.SERVER_BASE_URL + "/config";
+    public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/config";
     public static readonly BASE_URL = "https://bitbucket.org/";
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
@@ -25,10 +26,6 @@ export class BitbucketApiConstants {
     public static readonly TAG_SORT = "sort";
     public static readonly TAG_STATE = "state";
     public static readonly TAG_SORT_BY_UPDATE_DATE = "updated_on>";
-}
-
-export class BitbucketApiEnvConfig {
-    public bitbucket: { workspaces: Array<string> };
 }
 
 @Injectable()
@@ -150,10 +147,8 @@ export class BitbucketService {
         this.eventEmitter.emit(true);
     }
 
-    public getWorkSpaces(): Promise<Array<string>> {
-        return this.http.get<BitbucketApiEnvConfig>(BitbucketApiConstants.SERVER_LOAD_WORKSPACES_URL).toPromise().then(env => {
-            return env.bitbucket.workspaces;
-        });
+    public getBackendConfig(): Promise<BackendConfig> {
+        return this.http.get<BackendConfig>(BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL).toPromise();
     }
 
     private loginToBitbucket(userAddress: string): Promise<string> {

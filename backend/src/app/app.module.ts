@@ -18,7 +18,7 @@ import { ContractManagerService } from "../services/contract-manager.service";
 import { DatabaseInitializationService } from "../services/database-initialization.service";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { ConfigController } from "../controllers/config.controller";
+import { SystemConfigController } from "../controllers/system-config.controller";
 
 
 @Module({
@@ -36,7 +36,7 @@ import { ConfigController } from "../controllers/config.controller";
         UserDatabaseController,
         ProfileImageController,
         AuthenticationController,
-        ConfigController
+        SystemConfigController
     ],
     providers: [
         UserDatabaseService,
