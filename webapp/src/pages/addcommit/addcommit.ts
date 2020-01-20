@@ -116,6 +116,7 @@ export class AddCommitPopover {
             this.commitMethod = this.BATCH_METHOD;
             this.sortByDate = (comA, comB) => (comA.date >= comB.date) ? 1 : -1;
             this.bitbucketSrv.getUsername().then((user) => {
+                this.isServiceAvailable = true;
                 this.bitbucketUser = user;
                 this.isBatchLogged = true;
                 this.loadUserPendingCommitsAndPr();
@@ -124,7 +125,9 @@ export class AddCommitPopover {
     }
 
     public ionViewDidLeave() {
-        this.loginSubscription.unsubscribe();
+        if (this.loginSubscription) {
+            this.loginSubscription.unsubscribe();
+        }
     }
 
     public addCommit(url: string, title: string): Promise<void> {
