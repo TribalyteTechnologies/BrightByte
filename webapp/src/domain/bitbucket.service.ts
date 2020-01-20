@@ -165,7 +165,7 @@ export class BitbucketService {
                 this.log.d("Opening bitbucket pop-up");
                 this.authWindow = window.open(url);
             } else {
-                this.log.d("Bitbucket Provider not defined, feature not available", response);
+                this.log.w("Bitbucket Provider not defined, feature not available", response);
                 throw new Error(response.data);
             }
             return response.data;
