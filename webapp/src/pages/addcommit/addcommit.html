@@ -49,7 +49,7 @@
                 <div class="custom-spinner" *ngIf="showSpinner">
                     <ion-spinner name="bubbles"></ion-spinner>
                 </div>
-                <div *ngIf="!hasNewCommits && !showSpinner && finishedLoadingRepo">
+                <div *ngIf="!hasNewCommits && !showSpinner && isFinishedLoadingRepo">
                     <ion-label item-right> {{ "addCommit.noNewCommits" | translate }}</ion-label>                
                 </div>
             </ion-list>
@@ -70,7 +70,7 @@
         <ion-col>
             <ion-row class="text-details text-details--bold">{{ "addCommit.users" | translate }}:</ion-row>
             <ion-row>
-                <input class="dropdown dropdown__search" (change)="refreshSearchbar($event)" placeholder="email@example.com">
+                <input [(ngModel)]="searchInput" type="text" class="dropdown dropdown__search" (ngModelChange)="refreshSearchbar()" placeholder="email@example.com">
             </ion-row>
             <ion-row class="text-description list-card" *ngFor="let item of arraySearch" (click)="setEmailFromList(item)">
                 {{ item }}

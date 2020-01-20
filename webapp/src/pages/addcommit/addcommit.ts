@@ -226,12 +226,10 @@ export class AddCommitPopover {
         this.arraySearch = array;
     }
 
-    public refreshSearchbar(ev: any) {
-        let val = ev.target.value;
-        this.searchInput = val;
-        this.setUpList(val);
+    public refreshSearchbar() {
+        this.setUpList(this.searchInput);
     }
-
+    
     public setEmailFromList(item: string) {
         let isDuplicated = false;
 
