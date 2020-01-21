@@ -18,6 +18,11 @@ Run `npm install` in each directory for installing all the dependencies.
 Each change of version where the smart contracts have been modified will be necessary to do a migration in order to
 keep the data. For more information about Migrations please see [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/webapp/MIGRATIONS.md)
 
+ #### Integration with version control systems
+
+Since version v0.6.0 it is available a new optional feature that allows the users to use their favorites systems for version control, for more information about how to apply this feature please check it [here](https://github.com/TribalyteTechnologies/BrightByte/blob/master/backend/README.md) 
+
+
  #### Terms and conditions
 This project comes with a default terms and conditions text. This text can be modified by adding HTML in the file `src/pages/termsandconditions/termsandconditions.html` or in `src/assets/i18n/[language].json` to the variable `app.termsDescrition`.
 
