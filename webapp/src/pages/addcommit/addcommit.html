@@ -49,8 +49,18 @@
                 <div class="custom-spinner" *ngIf="showSpinner">
                     <ion-spinner name="bubbles"></ion-spinner>
                 </div>
-                <div *ngIf="!hasNewCommits && !showSpinner && isFinishedLoadingRepo">
-                    <ion-label item-right> {{ "addCommit.noNewCommits" | translate }}</ion-label>                
+                <div *ngIf="!hasNewCommits && isFinishedLoadingRepo">
+                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.noNewCommits" | translate }} </ion-label>                
+                </div>
+                <div *ngIf="!showNextReposOption && hasNewCommits && isFinishedLoadingRepo" class="custom-container-next-repos">
+                    <ion-label item-center class="text-details text-details--bold text-opacity"> {{ "addCommit.noMoreRepo" | translate }} </ion-label>                
+                </div>
+                <div *ngIf="hasNewCommits && showNextReposOption" class="custom-container-next-repos">
+                    <ion-label item-center class="text-details text-details--bold"> {{ "addCommit.loadMoreRepositoriesMessage" | translate }} </ion-label>
+                    <button ion-button class="btn btn__blue" [disabled]="showSpinner" (click)="loadNextRepos()">
+                        <span class="custom-text-next-repos"> {{ "addCommit.loadMoreRepositoriesButtonText" | translate }} </span>
+                        <ion-icon name="refresh"></ion-icon>
+                    </button>
                 </div>
             </ion-list>
         </ion-col>
@@ -91,6 +101,6 @@
     <progress-bar *ngIf="isUpdatingByBatch" [progress] = "updatingProgress"></progress-bar> 
     <ion-row>
         <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection) || isUpdatingByBatch" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
+        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection) || isUpdatingByBatch || showSpinner" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
     </ion-row>
 </ion-content>

@@ -59,7 +59,10 @@
         "batchUploadTitle": "Select one repository to upload:",
         "batchUploadPendingCommitsText": "{{ numCommits }} commits and {{ numPrsNotUploaded }} PRs pending to uploaded",
         "repositoriesMissingInfo": "Remote repositories not accessible. Please check that your BitBucket account is linked properly.",
-        "bitbucketServiceNotAvailable": "Bitbucket Provider not defined, feature not available. Please contact your BrightByte administrator to enable it."
+        "bitbucketServiceNotAvailable": "Bitbucket Provider not defined, feature not available. Please contact your BrightByte administrator to enable it.",
+        "loadMoreRepositoriesMessage": "Repository not found? Try load more repositories",
+        "loadMoreRepositoriesButtonText": "Load more",
+        "noMoreRepo": "No more repositories to load"
     },
     "commits": {
         "add": "Contribute",
