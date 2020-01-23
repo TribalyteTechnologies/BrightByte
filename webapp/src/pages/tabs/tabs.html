@@ -19,14 +19,16 @@
             </button>
         </div>
         <div class="logout">
-            <button class="tab tooltip">
-                <img class="button-icon tooltip-text-open" src="../../assets/imgs/menu/share.svg">
-                <div class="tooltip-text">
-                    <linkedin-share url="{{ 'social.url' | translate }}" class="tooltip-content"></linkedin-share>
-                    <tweet url="{{ 'social.url' | translate }}"  text="{{ 'social.generalShareText' | translate }}" class="tooltip-content tweet"></tweet>
-                    <fb-like url="{{ 'social.url' | translate }}" class="tooltip-content"></fb-like>
-                </div>
-            </button>
+            <ion-fab item-right vertical="top" horizontal="end" slot="fixed" class="fab-button">
+                <button ion-fab class="share-button">
+                    <ion-icon name="share"></ion-icon>
+                </button>
+                <ion-fab-list side="right">
+                    <linkedin-share url="{{ 'social.url' | translate }}" class="social-button"></linkedin-share>
+                    <tweet url="{{ 'social.url' | translate }}"  text="{{ 'social.generalShareText' | translate }}" class="social-button tweet"></tweet>
+                    <fb-like url="{{ 'social.url' | translate }}" class="social-button"></fb-like>
+                </ion-fab-list>
+            </ion-fab>
             <button class="tab" (click)="logout()">
                 <img class="button-icon" src="../../assets/imgs/menu/logout.svg">
             </button>
