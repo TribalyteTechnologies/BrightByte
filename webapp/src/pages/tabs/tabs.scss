@@ -49,13 +49,13 @@ page-tabs {
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             text-align: center;
             top: -10%;
-            left: 200%;
+            left: -600%;
             margin-left: -80px;
             font-size: 12px;
             position: absolute;
             z-index: 1;
-            transition-property: visibility;
-            transition-duration: 2s;
+            transition-property: all;
+            transition-delay: 2s;
         }
 
         .tooltip .tooltip-text::after {
@@ -73,8 +73,10 @@ page-tabs {
         .tooltip:active .tooltip-text,
         .tooltip-text:hover {
             visibility: visible;
+            left: 200%;
             transition-property: visibility;
             transition-duration: 0s;
+            transition-delay: 0s;
         }
 
         .tooltip:active .tooltip-content,
