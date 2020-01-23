@@ -4,23 +4,33 @@
             <img class="logo-icon" src="../../assets/imgs/logo_icon.svg">
         </div>
         <div class="avatar-container">
-                <avatar [avatarUrl]="avatarObs | async" [isClickable]="true"></avatar>
+            <avatar [avatarUrl]="avatarObs | async" [isClickable]="true"></avatar>
         </div>
         <div>
             <button (click)="openAddCommitDialog()" class="tab">
                 <img class="button-icon" [src]="'../../assets/imgs/menu/'+ contribute.icon">
-                <p class="tab-text">{{ contribute.pagName }}</p>
+                <p class="tab-text">{{ contribute.pagName | translate }}</p>
             </button>
         </div>
-        <div *ngFor="let page of menuArray" >
+        <div *ngFor="let page of menuArray">
             <button (click)="goTo(page.url)" [ngClass]="page.url === currentPage ? 'tab tab__selected' : 'tab'">
                 <img class="button-icon" [src]="'../../assets/imgs/menu/'+ page.icon">
-                <p class="tab-text">{{ page.pagName }}</p>
+                <p class="tab-text">{{ page.pagName | translate }}</p>
             </button>
         </div>
-        <button class="tab logout" (click)="logout()">
-            <img class="button-icon" src="../../assets/imgs/menu/logout.svg">
-        </button>
+        <div class="logout">
+            <button class="tab tooltip">
+                <img class="button-icon tooltip-text-open" src="../../assets/imgs/menu/share.svg">
+                <div class="tooltip-text">
+                    <linkedin-share url="{{ 'social.url' | translate }}" class="tooltip-content"></linkedin-share>
+                    <tweet url="{{ 'social.url' | translate }}"  text="{{ 'social.generalShareText' | translate }}" class="tooltip-content tweet"></tweet>
+                    <fb-like url="{{ 'social.url' | translate }}" class="tooltip-content"></fb-like>
+                </div>
+            </button>
+            <button class="tab" (click)="logout()">
+                <img class="button-icon" src="../../assets/imgs/menu/logout.svg">
+            </button>
+        </div>
     </div>
     <ion-nav [root]="currentPage" main></ion-nav>
 </ion-split-pane>

@@ -42,7 +42,7 @@ import { UserCacheService } from "../domain/user-cache.service";
 
 
 //Modules
-
+import { JwSocialButtonsModule } from "jw-angular-social-buttons";
 
 
 // Components
@@ -97,6 +97,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         IonicModule.forRoot(BrightByteApp),
         SocketIoModule.forRoot(AppConfig.SERVER_NETWORK_CONFIG),
         HttpClientModule,
+        JwSocialButtonsModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

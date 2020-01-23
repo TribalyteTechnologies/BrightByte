@@ -1,6 +1,5 @@
 page-tabs {
     .menu-container {
-        overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         display: flex;
@@ -27,6 +26,83 @@ page-tabs {
         }
         .logout {
             margin-top: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            justify-content: center;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 340px;
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+            background-color: rgba(255, 255, 255, 1);
+            color: black;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            text-align: center;
+            top: -10%;
+            left: 200%;
+            margin-left: -80px;
+            font-size: 12px;
+            position: absolute;
+            z-index: 1;
+            transition-property: visibility;
+            transition-duration: 2s;
+        }
+
+        .tooltip .tooltip-text::after {
+            content: " ";
+            position: absolute;
+            bottom: 40%;
+            left: -4%;
+            margin-left: 0px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
+            transform: rotate(-90deg);
+        }
+
+        .tooltip:active .tooltip-text,
+        .tooltip-text:hover {
+            visibility: visible;
+            transition-property: visibility;
+            transition-duration: 0s;
+        }
+
+        .tooltip:active .tooltip-content,
+        .tooltip-text:hover .tooltip-content {
+            opacity: 1;
+            align-self: center;
+            margin: 10px;
+            transition-property: opacity;
+            transition-duration: 0s;
+            transition-delay: 0s;
+        }
+
+        .tooltip .tooltip-content {
+            opacity: 0;
+            align-self: center;
+            margin: 10px;
+            transition-property: opacity;
+            transition-delay: 2s;
+        }
+
+        .tweet {
+            padding-top: 3px;
+        }
+
+        .tooltip-text-open {
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 11px;
+            text-align: center;
         }
     }
 }
