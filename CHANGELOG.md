@@ -1,5 +1,15 @@
 # Change Log
 
+#### v 0.6.1
+
+- New blockchain events initialization for achievement database.
+- New endpoint for system configuration on backend.
+- Added progress bar in batch import dialog.
+- Added load more repositories feature on batch import dialog.
+- Minor bitbucket integration bug fixes.
+
+`No migration needed from 0.6.0 to 0.6.1`
+
 #### v 0.6.0
 
 - Support for integration with Bitbucket API (import commits and pull requests from the user account).
