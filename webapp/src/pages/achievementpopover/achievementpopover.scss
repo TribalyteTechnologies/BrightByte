@@ -19,7 +19,20 @@ achievement-popover {
     }
 
     .home-button {
-        margin-top: 60px;
+        margin-top: 12px;
+        margin-left: 400px;
+    }
+
+    .share-button {
+        margin-left: 30px;
+    }
+
+    .social-button {
+        margin: 0px 5px;
+    }
+
+    .tweet {
+        padding-top: 3px;
     }
 
 }
@@ -28,12 +41,12 @@ achievement-popover {
 
     .popover-md {
         top: 60px;
-        width: 400px;
+        width: 1024px;
     }
 
     .popover-content {
         top: 60px;
-        width: 400px;
+        width: 1024px;
         background: transparent;
         background-color: transparent;
         -webkit-box-shadow: none;
@@ -49,3 +62,5 @@ achievement-popover {
         }
     }
 }
+
+
