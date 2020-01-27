@@ -287,7 +287,7 @@ export class AddCommitPopover {
             this.log.d("The commits from the blockchain", this.blockChainCommits);
             return this.bitbucketSrv.getBackendConfig();
         }).then((config: BackendConfig) => {
-            seasonDate.setMonth(seasonDate.getMonth() - config.season.durationInMonths);
+            seasonDate.setDate(seasonDate.getDate() - config.season.durationInDays);
             this.currentSeasonStartDate = seasonDate;
             let workspaces = config.bitbucket.workspaces;
             let promisesWorkspaces = workspaces.map(workspace => {

@@ -37,7 +37,7 @@ export class BackendConfig {
             },
             season:
             {
-                durationInMonths: +process.env.DURATION_IN_MONTHS || 3
+                durationInDays: + process.env.DURATION_IN_DAYS || 90
             }
         };
     public static readonly BUFFER_SIZE = 1;

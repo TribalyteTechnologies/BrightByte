@@ -3,7 +3,7 @@ interface IBitbucketConfig {
 }
 
 interface ISeasonConfig {
-    durationInMonths: number;
+    durationInDays: number;
 }
 
 export class BackendConfig { 
