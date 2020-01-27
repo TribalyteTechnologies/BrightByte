@@ -6,11 +6,12 @@ import { BrightModels } from "./BrightModels.sol";
 
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
-    uint256 private constant SEASON_LENGTH_SECS = 90 * 24 * 60 * 60;
+    uint256 private constant DAY_LENGTH_SECS = 24 * 60 * 60;
     Root private root;
     uint256 private deploymentTimestamp;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
+    uint256 private seasonLengthSecs;
     BrightModels.HashUserMap private hashUserMap;
     BrightModels.EmailUserMap private emailUserMap;
     address[] private allUsersArray;
@@ -44,13 +45,14 @@ contract Bright {
         _;
     }
 
-    function init(address _root, uint256 seasonIndex, uint256 initialTimestamp) public {
+    function init(address _root, uint256 seasonIndex, uint256 initialTimestamp, uint256 seasonLengthDays) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
         currentSeasonIndex = seasonIndex;
         initialSeasonTimestamp = initialTimestamp;
         deploymentTimestamp = block.timestamp;
+        seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -303,10 +305,10 @@ contract Bright {
         }
     }
 
-    function getCurrentSeason() public onlyDapp view returns (uint256, uint256) {
-        uint256 totalTimeSeasons = currentSeasonIndex * SEASON_LENGTH_SECS;
+    function getCurrentSeason() public onlyDapp view returns (uint256, uint256, uint256) {
+        uint256 totalTimeSeasons = currentSeasonIndex * seasonLengthSecs;
         uint256 seasonFinaleTime = initialSeasonTimestamp + totalTimeSeasons;
-        return (currentSeasonIndex, seasonFinaleTime);
+        return (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs);
     }
 
     function getAllUserSeasonUrls(uint256 seasonIndex, address userAddr) public onlyDapp view returns (bytes32[]) {
@@ -315,7 +317,7 @@ contract Bright {
     }
 
     function checkSeason() private {
-        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * SEASON_LENGTH_SECS);
+        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
         if(block.timestamp > seasonFinale) {
             currentSeasonIndex++;
             emit SeasonEnds(currentSeasonIndex);

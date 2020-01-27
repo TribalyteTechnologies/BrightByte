@@ -8,6 +8,7 @@ var scVersionObj = require("../../version.json");
 
 const INITIAL_SEASON_INDEX = 3;
 const INITIAL_SEASON_TIMESTAMP = 1550047598;
+const SEASON_LENGTH_DAYS = 7;
 var currentVersion = scVersionObj.version;
 
 module.exports = function(deployer) {
@@ -34,6 +35,6 @@ module.exports = function(deployer) {
         return deployer.deploy(Reputation);
     }).then(function() {
         deployer.link(Reputation, Root);
-        return deployer.deploy(Root, Bright.address, Commits.address, INITIAL_SEASON_INDEX, INITIAL_SEASON_TIMESTAMP, currentVersion);
+        return deployer.deploy(Root, Bright.address, Commits.address, INITIAL_SEASON_INDEX, INITIAL_SEASON_TIMESTAMP, SEASON_LENGTH_DAYS, currentVersion);
     });
 };
