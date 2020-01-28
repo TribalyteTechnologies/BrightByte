@@ -475,8 +475,6 @@ export class ContractManagerService {
 
                 let raw = "0x" + tx.serialize().toString("hex");
                 this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv is 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
                 this.log.d("Raw: ", raw);
                 this.log.d("tx unsign: ", tx);
                 return this.web3.eth.sendSignedTransaction(raw);
