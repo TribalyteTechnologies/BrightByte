@@ -1,7 +1,9 @@
 import { CollectDataService } from "./collect-data.service";
 import { TransformDataService } from "./transfor-data.service";
 import { UserDataCsv } from "./season-analytics.model";
+import { SeasonAnalyticsConfig } from "./season-analytics.config";
 
+const SEASON = "Season ";
 const allData = "allData.csv";
 const lastSeason = "lastSeason.csv";
 
@@ -30,7 +32,7 @@ collectorSrv.startCollection().then(res => {
         });
     });
     transformDataService.newFile(usersCsv, allData);
-    const lastSeasonData = usersCsv.filter(user => user.from === "Season 3");
+    const lastSeasonData = usersCsv.filter(user => user.from === SEASON + SeasonAnalyticsConfig.SEASONS_TO_MIGRATE);
     transformDataService.newFile(lastSeasonData, lastSeason);
     console.log("Finished the proccess of writing analytics");
 });
