@@ -1,6 +1,6 @@
 <ion-grid *ngIf="!isEmpty; else unknownAchievement" no-margin>
     <ion-row [ngClass]="(isBig ? 'text-details-big ' : 'text-details ') + 'text-details--bold'" justify-content-center>
-        {{ achievementInfo.title }}
+        <span class="text-ellipsis"> {{ achievementInfo.title }} </span>
     </ion-row>
     <ion-row justify-content-center>
         <img class="ico-trophy" [ngClass]="{ 'big' : isBig }" [src]="achievementInfo.iconPath">
