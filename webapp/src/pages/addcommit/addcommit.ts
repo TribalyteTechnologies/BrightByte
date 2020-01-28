@@ -199,7 +199,9 @@ export class AddCommitPopover {
             }).catch(e => {
                 this.showGuiMessage(e.msg, e.err);
                 this.isTxOngoing = false;
-                throw e;
+                if (this.commitMethod === this.BATCH_METHOD) {
+                    throw e;
+                }
             });
     }
 
@@ -262,6 +264,7 @@ export class AddCommitPopover {
 
     public setUploadMethodAndProceed(method: string) {
         this.commitMethod = method;
+        this.clearGuiMessage();
         if (this.commitMethod === this.BATCH_METHOD) {
             this.loginToBitbucket();
         }
@@ -314,30 +317,32 @@ export class AddCommitPopover {
         }).catch(err => { throw err; });
     }
 
-    public addRepo(repoSelection: string) {
-        this.updatingProgress = 0;
+    public addRepoStartingFrom(repoSelection: string, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
+        this.updatingProgress = updatedProgress;
         this.isUpdatingByBatch = true;
         this.selectedRepositories.forEach((repo) => {
             if (repo != null && repoSelection === repo.name) {
                 let percentage = Math.floor(this.PERCENTAGE_RANGE * this.FACTOR_PERCENTAGE_DECIMALS / (repo.numCommits + repo.numPrs)) 
                                 / this.FACTOR_PERCENTAGE_DECIMALS;
-                repo.commitsInfo.reduce(
+                repo.commitsInfo.slice(commitIndex).reduce(
                     (prevVal, commit) => {
                         return prevVal.then(() => {
                             this.updatingProgress += percentage;
                             let comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
                                 + repoSelection.toLowerCase() + "/commits/" + commit.hash;
+                            commitIndex++;
                             return this.addCommit(comUrl, commit.name);
                         });
                     },
                     Promise.resolve()
                 ).then(() => {
-                    return repo.pullRequestsNotUploaded.reduce(
+                    return repo.pullRequestsNotUploaded.slice(prIndex).reduce(
                         (prevVal, pullrequest) => {
                             return prevVal.then(() => {
                                 this.updatingProgress += percentage;
                                 let prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
                                     + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
+                                prIndex++;
                                 return this.addCommit(prUrl, pullrequest.title);
                             });
                         },
@@ -347,7 +352,11 @@ export class AddCommitPopover {
                     this.isUpdatingByBatch = false;
                     this.viewCtrl.dismiss();
                 }).catch(() => {
-                    this.isUpdatingByBatch = false;
+                    if (commitIndex < repo.commitsInfo.length || prIndex < repo.pullRequestsNotUploaded.length) {
+                        this.addRepoStartingFrom(repoSelection, commitIndex, prIndex, this.updatingProgress);
+                    } else {
+                        this.isUpdatingByBatch = false;
+                    }
                 });
             }
         });
@@ -430,7 +439,7 @@ export class AddCommitPopover {
                 this.selectedRepositories.push(repo);
             }
 
-            if (nextCommits && (repo.numCommits > 0 || repo.numPrsNotUploaded > 0)) {
+            if (nextCommits) {
                 repo = await this.getNextPages(repo, nextCommits, prCommits);
             }
             return Promise.resolve();
@@ -487,6 +496,7 @@ export class AddCommitPopover {
             if (comDate < this.currentSeasonStartDate) {
                 repo.isReadAllCommits = true;
             }
+
             if (commit.author.user && commit.author.user.uuid === this.bitbucketUser
                 && comDate >= this.currentSeasonStartDate && this.blockChainCommits.indexOf(commit.hash) < 0
                 && prCommits.indexOf(commit.hash) < 0 && commit.parents.length < 2) {
