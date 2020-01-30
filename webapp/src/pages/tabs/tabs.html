@@ -24,9 +24,8 @@
                     <ion-icon name="share"></ion-icon>
                 </button>
                 <ion-fab-list side="right">
-                    <linkedin-share url="{{ 'social.url' | translate }}" class="social-button"></linkedin-share>
-                    <tweet url="{{ 'social.url' | translate }}"  text="{{ 'social.generalShareText' | translate }}" class="social-button tweet"></tweet>
-                    <fb-like url="{{ 'social.url' | translate }}" class="social-button"></fb-like>
+                    <twitter-share url="{{ 'social.url' | translate }}"  text="{{ 'social.generalShareText' | translate }}" hashtag="{{ 'social.hashtags' | translate}}" class="tweet-in-tabs"></twitter-share>
+                    <facebook-share url="{{ 'social.url' | translate }}"  text="{{ 'social.generalShareText' | translate }}"></facebook-share>
                 </ion-fab-list>
             </ion-fab>
             <button class="tab" (click)="logout()">

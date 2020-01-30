@@ -30,7 +30,8 @@ page-tabs {
             flex-direction: column;
         }
 
-        .tweet {
+        .tweet-in-tabs {
+            margin: 0px 10px;
             padding-top: 3px;
         }
 
@@ -44,10 +45,6 @@ page-tabs {
         .fab-button {
             bottom: 50px;
             left: 6px;
-        }
-
-        .social-button {
-            margin: 0px 5px;
         }
     }
 }

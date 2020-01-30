@@ -62,6 +62,9 @@ import { AvatarComponent } from "../components/avatar/avatar.component";
 import { Profile } from "../pages/profile/profile";
 import { AvatarService } from "../domain/avatar.service";
 import { ProgressBarComponent } from "../components/progress-bar/progress-bar.component";
+import { TwitterComponent } from "../components/twitter/twitter.component";
+import { FacebookComponent } from "../components/facebook/facebook.component";
+
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
@@ -90,7 +93,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         FilterComponent,
         CustomRating,
         RankingCard,
-        ProgressBarComponent
+        ProgressBarComponent,
+        TwitterComponent,
+        FacebookComponent
     ],
     imports: [
         BrowserModule,
@@ -129,7 +134,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         FilterComponent,
         CustomRating,
         RankingCard,
-        ProgressBarComponent
+        ProgressBarComponent,
+        TwitterComponent,
+        FacebookComponent
     ],
     providers: [
         AppConfig,

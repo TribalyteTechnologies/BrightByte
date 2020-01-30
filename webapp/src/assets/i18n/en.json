@@ -242,9 +242,10 @@
         "backendOffline": "Can't connect to BrightByte servers. Please try again later or contact your deployment administrator."
     },
     "social": {
-        "generalShareText": "I'm using BrightByte a social network for code developers. Go check it out! #BrightByte",
+        "generalShareText": "I'm using BrightByte a social network for code developers. Go check it out!",
         "url": "https://tribalyte.com",
-        "hastags": "BrightByte",
-        "achievementText": "I've just got \"{{title}}\" achievement in BrightByte. Go check it out! #BrightByte"
+        "hashtags": "BrightByte",
+        "achievementText": "I've just got \"{{title}}\" achievement in BrightByte. Go check it out!",
+        "shareButtonText": "Share"
     }
 }
