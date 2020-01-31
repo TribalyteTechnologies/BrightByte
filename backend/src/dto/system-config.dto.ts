@@ -1,5 +1,5 @@
 interface IBitbucketConfig {
-    workspaces: string[];
+    workspaces: Array<string>;
 }
 
 interface ISeasonConfig {
