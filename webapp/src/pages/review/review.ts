@@ -284,7 +284,6 @@ export class ReviewPage {
                 (commit.reviewers[0].indexOf(userDetails), 1);
             commit.reviewers[1].push(userDetails);
 
-            this.applyFilters(this.displayCommitsToReview);
             let url = new URLSearchParams(document.location.search);
             if (url.has(AppConfig.UrlKey.REVIEWID)) {
                 let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
