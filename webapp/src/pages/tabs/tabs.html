@@ -19,7 +19,7 @@
             </button>
         </div>
         <div class="logout">
-            <ion-fab item-right vertical="top" horizontal="end" slot="fixed" class="fab-button">
+            <ion-fab *ngIf="isSharing" item-right vertical="top" horizontal="end" slot="fixed" class="fab-button">
                 <button ion-fab class="share-button">
                     <ion-icon name="share"></ion-icon>
                 </button>

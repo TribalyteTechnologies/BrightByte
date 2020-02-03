@@ -26,6 +26,7 @@ import { AvatarService } from "../../domain/avatar.service";
 export class TabsPage {
 
     public isVisible = true;
+    public isSharing = AppConfig.IS_SHARING;
     public currentPage: any;
     public tabContent: any;
 

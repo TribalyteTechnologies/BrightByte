@@ -13,11 +13,11 @@
     <ion-col>
         <ion-row justify-content-center margin class="button-space">
             <ion-col col-6>
-                <button item-center ion-button round class="home-button button-lowercase" (click)="hidePopover()">
+                <button item-center ion-button round [ngClass]="(isSharing? 'home-button-sharing button-lowercase' : 'home-button-not-sharing button-lowercase')" (click)="hidePopover()">
                     {{ "achievements.continue" | translate }}
                 </button>
             </ion-col>
-            <ion-col col-6>
+            <ion-col col-6 *ngIf="isSharing">
                 <ion-fab item-right vertical="top" horizontal="end" slot="fixed" class="share-button">
                     <button ion-fab>
                         <ion-icon name="share"></ion-icon>
