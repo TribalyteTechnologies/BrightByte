@@ -9,6 +9,7 @@
     "posttruffle:migrate": "npm run copy:contracts",
     "truffle:custom-deploy": "truffle migrate --network custom --reset",
     "posttruffle:custom-deploy": "npm run copy:contracts",
+    "truffle:compile": "truffle compile",
     "remix:start": "remix-ide",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build"
   },
