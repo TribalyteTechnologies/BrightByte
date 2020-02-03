@@ -57,7 +57,7 @@ export class RankingCard {
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.engagementIndex.toFixed(2);
-        this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
+        this.reputationString = (Math.floor(this.reputation * 100 / AppConfig.REPUTATION_DIVISION_FACTOR) / 100).toFixed(2);
         this.isRanked = val.isRanked;
         this.tooltipParams = {
             pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
