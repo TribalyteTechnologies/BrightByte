@@ -105,7 +105,7 @@ export class RankingPage {
                             / AppConfig.SECS_TO_MS);
                     },
                     AppConfig.SECS_TO_MS);
-                this.seasons.push("Ranking Global");
+                this.seasons.push(this.translateService.instant("ranking.global"));
                 for (let i = this.numberOfSeasons; i >= 0; i--) {
                     this.seasons.push("Season " + i);
                 }
