@@ -294,6 +294,7 @@ export class ReviewPage {
         }).catch((error) => {
             this.spinnerService.hideLoader();
             this.log.e("Catched error " + error);
+            throw error;
         });
     }
 

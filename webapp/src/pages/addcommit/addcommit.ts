@@ -171,7 +171,6 @@ export class AddCommitPopover {
                 if (!detailsCommits || !detailsCommits.url) {
                     ret = this.contractManagerService.addCommit(url, title, this.userAdded)
                     .catch(err => {
-                        Promise.reject({ msg: "addCommit.addingCommit", err: err });
                         throw err;
                     });
                 } else {
@@ -197,11 +196,9 @@ export class AddCommitPopover {
                     this.viewCtrl.dismiss(newCommit);
                 }
             }).catch(e => {
-                this.showGuiMessage(e.msg, e.err);
+
                 this.isTxOngoing = false;
-                if (this.commitMethod === this.BATCH_METHOD) {
-                    throw e;
-                }
+                throw e;
             });
     }
 
