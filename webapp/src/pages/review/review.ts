@@ -283,6 +283,9 @@ export class ReviewPage {
             commit.reviewers[0].splice
                 (commit.reviewers[0].indexOf(userDetails), 1);
             commit.reviewers[1].push(userDetails);
+            if (this.filterValue === this.INCOMPLETE) {
+                this.filterArrayCommits.splice(this.filterArrayCommits.indexOf(commit), 1);
+            }
 
             let url = new URLSearchParams(document.location.search);
             if (url.has(AppConfig.UrlKey.REVIEWID)) {
