@@ -1,5 +1,13 @@
 # Change Log
 
+#### v 0.6.2
+
+- Added social sharing features (Facebook and twitter).
+- Performance improve on reviews page.
+- Some bug fixes.
+
+`No migration needed from 0.6.1 to 0.6.2`
+
 #### v 0.6.1
 
 - New blockchain events initialization for achievement database.
