@@ -1,8 +1,8 @@
 import { BackendConfig } from "../backend.config";
 
 export class UserDetailsDto { 
+    public name: string;
     public email: string;
-    public reputation: number; 
     public numReviews: number;
     public agreedPercentage: number;
     public numberOfCommits: number;
@@ -11,13 +11,12 @@ export class UserDetailsDto {
 
     public static fromSmartContract(userVals: Array<any>): UserDetailsDto{ 
         let user = new UserDetailsDto(); 
-        user.email = userVals[0]; 
-        user.reputation = userVals[1] / BackendConfig.SCORE_DIVISION_FACTOR; 
-        user.numReviews = userVals[2];
+        user.name = userVals[0];
+        user.email = userVals[1];
+        user.numberOfCommits = parseInt(userVals[2]);
+        user.finishedReviews = parseInt(userVals[3]);
         user.agreedPercentage = userVals[4];
-        user.numberOfCommits = parseInt(userVals[5]);
-        user.finishedReviews = parseInt(userVals[6]);
-        user.userHash = userVals[7];
+        user.userHash = userVals[5];
         return user; 
     } 
 } 
