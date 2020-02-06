@@ -120,11 +120,11 @@ contract Root{
         return remoteBright.checkCommitSeason(url,author);
     }
 
-    function getNumberOfReviews(bytes32 url) public view returns (uint) {
+    function getNumberOfReviews(bytes32 url) public view returns (uint, uint) {
         uint pending;
         uint finish;
         (pending, finish) = remoteCommits.getNumbersNeedUrl(url);
-        return finish;
+        return (pending, finish);
     }
 
     function deleteCommit(bytes32 url) public {
