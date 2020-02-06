@@ -37,7 +37,7 @@ export class ContractManagerService {
             flatMap(() => this.getUsersAddress()),
             flatMap((usersAddresses: Array<String>) => {
                 let observables = usersAddresses.map(userAddress => from(
-                    this.contracts[0].methods.getUserGlobalReputation(userAddress).call()
+                    this.contracts[0].methods.getUser(userAddress).call()
                 ).pipe(
                     map((userData: any[]) => UserDetailsDto.fromSmartContract(userData))
                 ));
