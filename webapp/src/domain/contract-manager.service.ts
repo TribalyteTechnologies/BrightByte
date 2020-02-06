@@ -308,7 +308,7 @@ export class ContractManagerService {
                 this.log.d("Contract artifact", bright);
                 return bright.methods.getUser(hash).call();
             }).then((userVals: Array<any>) => {
-                userVals[7] = hash;
+                userVals[6] = hash;
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
                 return userValsToUSerDetails;
@@ -361,10 +361,10 @@ export class ContractManagerService {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
-                let promise = contractArtifact.methods.getUserGlobalReputation(userAddress).call()
+                let promise = contractArtifact.methods.getUser(userAddress).call()
                     .then((commitsVals: Array<any>) => {
                         this.log.d("User reputation: ", commitsVals);
-                        return UserReputation.fromSmartContract(commitsVals);
+                        return UserReputation.fromSmartContractGlobalReputation(commitsVals);
                     });
                 if (!global) {
                     promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
