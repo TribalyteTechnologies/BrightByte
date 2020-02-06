@@ -6,10 +6,6 @@ library BrightModels {
         string name;
         string email;
         address hash;
-        bytes32[] pendingCommits;
-        bytes32[] finishedReviews;
-        bytes32[] pendingReviews;
-        bytes32[] toRead;
         UserStats globalStats;
         mapping (uint256 => UserSeason) seasonData;
     }
@@ -22,12 +18,16 @@ library BrightModels {
         uint256 positeVotes;
         uint256 negativeVotes;
         uint256 reviewsMade;
+        uint256 commitsMade;
     }
     
     struct UserSeason {
         UserStats seasonStats;
         mapping (bytes32 => bool) seasonCommits;
         bytes32[] urlSeasonCommits;
+        bytes32[] finishedReviews;
+        bytes32[] pendingReviews;
+        bytes32[] toRead;
     }
     
     struct HashUserMap {
