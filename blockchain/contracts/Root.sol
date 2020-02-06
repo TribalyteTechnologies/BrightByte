@@ -1,4 +1,4 @@
-pragma solidity 0.4.21;
+pragma solidity 0.4.22;
 import "./Bright.sol";
 import "./Commits.sol";
 
@@ -36,7 +36,7 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    function Root (address bright, address commits, uint256 seasonIndex, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
+    constructor (address bright, address commits, uint256 seasonIndex, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;

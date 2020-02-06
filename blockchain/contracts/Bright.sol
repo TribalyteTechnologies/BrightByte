@@ -1,4 +1,4 @@
-pragma solidity 0.4.21;
+pragma solidity 0.4.22;
 import "./Root.sol";
 
 import { MigrationLib } from "./MigrationLib.sol";
@@ -24,9 +24,9 @@ contract Bright {
     event UserNewReview (address userHash, uint256 numberOfReviews);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event SeasonEnds (uint256 currentSeason);
-    event deletedCommit (address userHash, bytes32 url);
+    event DeletedCommit (address userHash, bytes32 url);
 
-    function Bright() public {
+    constructor() public {
         owner = msg.sender;
     }
 

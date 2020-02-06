@@ -1,4 +1,4 @@
-pragma solidity 0.4.21;
+pragma solidity 0.4.22;
 
 import "./Root.sol";
 import { MigrationLib } from "./MigrationLib.sol";
@@ -44,7 +44,7 @@ contract Commits {
     }
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    function Commits() public {
+    constructor() public {
         owner = msg.sender;
     }
     modifier onlyOwner() {
