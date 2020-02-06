@@ -50,8 +50,8 @@ export class RankingCard {
         this.name = ((val.name === "") ? this.ANONYMOUS : val.name);
         this.level = Math.round(val.reputation * 3);
         this.email = val.email;
-        this.numReviews = val.finishedReviews;
-        this.numCommits = val.numberOfCommits,
+        this.numReviews = val.numberReviewsMade;
+        this.numCommits = val.numberCommitsMade,
             this.agreed = val.agreedPercentage;
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;

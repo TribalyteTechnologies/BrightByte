@@ -122,16 +122,16 @@ export class RankingPage {
                         ret = b.engagementIndex - a.engagementIndex;
                     } else {
                         ret = (b.reputation - a.reputation) || 
-                            (b.numberOfCommits + b.finishedReviews - (a.numberOfCommits + a.finishedReviews));
+                            (b.numberCommitsMade + b.numberReviewsMade - (a.numberCommitsMade + a.numberReviewsMade));
                     }
                     return ret;
                 });
                 if (!this.globalSelected) {
-                    this.usersRep = this.usersRep.filter(user => user.finishedReviews > 0 || user.numberOfCommits > 0);
+                    this.usersRep = this.usersRep.filter(user => user.numberReviewsMade > 0 || user.numberCommitsMade > 0);
                     let rankedUsers = this.usersRep.filter(user => this.isRankedUser(user));
                     let unRankedUsers = this.usersRep.filter(user => !this.isRankedUser(user));
                     unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
-                        return (b.numberOfCommits + b.finishedReviews) - (a.numberOfCommits + a.finishedReviews);
+                        return (b.numberCommitsMade + b.numberReviewsMade) - (a.numberCommitsMade + a.numberReviewsMade);
                     });
                     if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON) {
                         unRankedUsers.forEach(user => user.isRanked = false);
@@ -162,8 +162,8 @@ export class RankingPage {
         if (userDetails) {
             this.userRankDetails.name = userDetails.name;
             this.userRankDetails.email = userDetails.email;
-            this.userRankDetails.reviews = userDetails.finishedReviews;
-            this.userRankDetails.commits = userDetails.numberOfCommits;
+            this.userRankDetails.reviews = userDetails.numberReviewsMade;
+            this.userRankDetails.commits = userDetails.numberCommitsMade;
             this.userRankDetails.agreed = userDetails.agreedPercentage;
             this.userRankDetails.score = userDetails.reputation;
             this.userRankDetails.rank = this.rankingTitle[Math.round(userDetails.reputation)];
@@ -255,6 +255,6 @@ export class RankingPage {
     }
 
     private isRankedUser(user: UserReputation): boolean {
-        return user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY;
+        return user.numberCommitsMade >= AppConfig.MIN_COMMIT_QUALIFY && user.numberReviewsMade >= AppConfig.MIN_REVIEW_QUALIFY;
     }
 }
