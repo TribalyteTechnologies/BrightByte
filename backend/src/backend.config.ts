@@ -46,7 +46,8 @@ export namespace BackendConfig {
     export enum EventTypeEnum {
         Commit = "CommitEvent",
         Review = "ReviewEvent",
-        Season = "SeasonEvent"
+        Season = "SeasonEvent",
+        Delete = "DeleteEvent"
     }
     export enum AchievementTypeEnum{
         Commit,
