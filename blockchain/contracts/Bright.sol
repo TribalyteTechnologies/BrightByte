@@ -194,11 +194,12 @@ contract Bright {
     }
 
     
-    function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[]) { //añadir un ind para que devuelva los de cada temporada
+    function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[]) {
         BrightModels.UserProfile storage user = hashUserMap.map[userHash];
         return (user.seasonData[currentSeasonIndex].pendingReviews,
                 user.seasonData[currentSeasonIndex].finishedReviews,
-                user.seasonData[currentSeasonIndex].urlSeasonCommits
+                user.seasonData[currentSeasonIndex].urlSeasonCommits,
+                user.seasonData[currentSeasonIndex].toRead
         );
     }
 
