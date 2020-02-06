@@ -335,19 +335,15 @@ contract Bright {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
     
-    function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public onlyDapp {
-        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail,hash, perct, tmRw, pos, neg, rep, rev);
+    function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev, uint256 comMade) public onlyDapp {
+        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail,hash, perct, tmRw, pos, neg, rep, rev,comMade);
     }
 
     function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint tmRw, uint posVotes, uint negVotes, uint reputation, uint rev, uint complexity) public onlyDapp {
         MigrationLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, tmRw, posVotes, negVotes, reputation, rev, complexity, deploymentTimestamp);
     }
 
-    function setAllUserDataTwo(address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp { 
-        MigrationLib.setAllUserDataTwo(hashUserMap, deploymentTimestamp, h, pendCom,  finRev, pendRev, toRd);
-    }
-
-    function setUrlsSeason(uint256 seasonIndex, address userAddr, bytes32[] urls) public onlyDapp {
-        MigrationLib.setUrlsSeason(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls);
+    function setUrlsSeason(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp {
+        MigrationLib.setUrlsSeason(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd);
     }
 }

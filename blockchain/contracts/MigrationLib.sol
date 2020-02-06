@@ -6,11 +6,11 @@ library MigrationLib {
     
     uint256 public constant TIME_TO_MIGRATE_SECS = 60 * 60 * 8;
 
-    function getTimeToMigrate() view returns (uint256) {
+    function getTimeToMigrate() public view returns (uint256) {
         return TIME_TO_MIGRATE_SECS;
     }
 
-    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint256 deploymentTimestamp, string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev) public {
+    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint256 deploymentTimestamp, string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev, uint256 comMade) public {
         require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
         require (bytes(hashUserMap.map[hash].name).length == 0 && bytes(hashUserMap.map[hash].email).length == 0);
         BrightModels.UserProfile storage user = hashUserMap.map[hash];
@@ -23,6 +23,7 @@ library MigrationLib {
         user.globalStats.negativeVotes = neg;
         user.globalStats.reputation = rep;
         user.globalStats.reviewsMade = rev;
+        user.globalStats.commitsMade = comMade;
         bytes32 emailId = keccak256(mail);
         emailUserMap.map[emailId] = hash;
         allUsersArray.push(hash);
@@ -41,30 +42,22 @@ library MigrationLib {
         season.seasonStats.cumulativeComplexity = complexity;
     }
     
-    function setAllUserDataTwo(BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp, address h, bytes32[] pendCom,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public { 
-        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
-        BrightModels.UserProfile storage user = hashUserMap.map[h];
-        for(uint j = 0; j < pendCom.length; j++) {
-            user.pendingCommits.push(pendCom[j]);
-        }
-        for(uint x = 0; x < finRev.length; x++) {
-            user.finishedReviews.push(finRev[x]);
-        }
-        for(uint y = 0; y < pendRev.length; y++) {
-            user.pendingReviews.push(pendRev[y]);
-        }
-        for(uint m = 0; m < toRd.length; m++) {
-            user.toRead.push(toRd[m]);
-        }
-    }
-    
-    function setUrlsSeason(BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp, uint256 seasonIndex, address userAddr, bytes32[] urls) public {
+    function setUrlsSeason(BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp, uint256 seasonIndex, address userAddr, bytes32[] urls, bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public {
         require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
         for(uint256 i = 0; i < urls.length; i++) {
             season.seasonCommits[urls[i]] = true;
             season.urlSeasonCommits.push(urls[i]);
+        }
+        for(uint256 x = 0; x < finRev.length; x++) {
+            season.finishedReviews.push(finRev[x]);
+        }
+        for(uint256 y = 0; y < pendRev.length; y++) {
+            season.pendingReviews.push(pendRev[y]);
+        }
+        for(uint256 m = 0; m < toRd.length; m++) {
+            season.toRead.push(toRd[m]);
         }
     }
 }
