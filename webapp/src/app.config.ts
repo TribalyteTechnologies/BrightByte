@@ -14,9 +14,9 @@ export class AppConfig {
 
     public static readonly NETWORK_CONFIG_LOCALHOST = [{
         gasLimit: 2000000,
-        gasPrice: 10,
-        netId: 4447,
-        urlNode: "HTTP://127.0.0.1:9545"
+        gasPrice: 0,
+        netId: 5777,
+        urlNode: "HTTP://127.0.0.1:7545"
     }];
     public static readonly SERVER_BASE_URL = "http://localhost:3000";
     public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
