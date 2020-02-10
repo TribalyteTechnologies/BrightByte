@@ -10,14 +10,17 @@
     "truffle:custom-deploy": "truffle migrate --network custom --reset",
     "posttruffle:custom-deploy": "npm run copy:contracts",
     "truffle:compile": "truffle compile",
+    "truffle:ganache:deploy": "npm run ganache & npm run truffle:migrate",
+    "ganache": "ganache-cli -p 7545 -i 5777",
     "remix:start": "remix-ide",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build"
   },
   "author": "Tribalyte Technologies",
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
-    "truffle": "5.0.39",
-    "remix-ide": "0.8.8"
+    "ganache-cli": "6.9.0",
+    "remix-ide": "0.8.8",
+    "truffle": "5.0.39"
   },
   "devDependencies": {
     "shx": "0.3.2"

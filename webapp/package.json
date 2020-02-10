@@ -20,8 +20,7 @@
         "prepush": "npm run linters-ci",
         "preinstall": "rm -fr node_modules/*/node_modules/*/.git/",
         "postinstall": "cd ../backend; npm install --unsafe-perm",
-        "postlinters-ci": "cd ../backend; npm run linters-ci",
-        "contractscompile": "cd ../blockchain; npm i; npm run truffle:compile"
+        "postlinters-ci": "cd ../backend; npm run linters-ci"
     },
     "dependencies": {
         "@angular/common": "5.2.11",

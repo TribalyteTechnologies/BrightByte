@@ -16,7 +16,10 @@ pipelines:
           - npm install --unsafe-perm
           - npm run build
           - npm run linters-ci
-          - npm run contractscompile
+          - cd ../blockchain
+          - npm install
+          - npm run truffle:compile
+          - npm run truffle:ganache:deploy
 definitions:
   caches:
     backendnode: backend/node_modules
