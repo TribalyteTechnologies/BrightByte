@@ -13,7 +13,6 @@ import { EventDatabaseService } from "../services/event-database.service";
 import { ClientGateway } from "../gateways/client-gateway";
 import { ClientNotificationService } from "../services/client-notfication.service";
 import { CoreDatabaseService } from "../services/core-database.service";
-import {AuthenticationDatabaseService} from "../services/authentication-database.service";
 import { ContractManagerService } from "../services/contract-manager.service";
 import { DatabaseInitializationService } from "../services/database-initialization.service";
 import { MulterModule } from "@nestjs/platform-express";
@@ -42,7 +41,6 @@ import { SystemConfigController } from "../controllers/system-config.controller"
         UserDatabaseService,
         AchievementDatabaseService,
         EventDatabaseService,
-        AuthenticationDatabaseService,
         CoreDatabaseService,
         Web3Service,
         DispatcherService,
