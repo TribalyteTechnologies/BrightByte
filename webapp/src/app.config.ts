@@ -40,14 +40,14 @@ export class AppConfig {
     public static readonly HOUR_TO_SECS = AppConfig.MIN_TO_SECS * 60;
     public static readonly DAY_TO_SECS = AppConfig.HOUR_TO_SECS * 24;
     public static readonly REPUTATION_FACTOR = 1000;
-    public static readonly MIN_REVIEW_QUALIFY = 35;
-    public static readonly MIN_COMMIT_QUALIFY = 30;
+    public static readonly MIN_REVIEW_QUALIFY = 45;
+    public static readonly MIN_COMMIT_QUALIFY = 35;
     public static readonly FIRST_QUALIFYING_SEASON = 4;
     
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
 
-    public static readonly IS_SHARING = true;
+    public static readonly IS_SHARING = false;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",
