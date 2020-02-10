@@ -363,13 +363,11 @@ export class ContractManagerService {
             let promises = usersAddress.map(userAddress => {
                 let promise = contractArtifact.methods.getUserGlobalReputation(userAddress).call()
                     .then((commitsVals: Array<any>) => {
-                        this.log.d("User reputation: ", commitsVals);
                         return UserReputation.fromSmartContract(commitsVals);
                     });
                 if (!global) {
                     promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
                         .then((commitsVals: Array<any>) => {
-                            this.log.d("Users reputation in season " + season + ": ", commitsVals);
                             return UserReputation.fromSmartContract(commitsVals);
                         });
                 }
