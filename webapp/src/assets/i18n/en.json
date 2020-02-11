@@ -88,7 +88,6 @@
         "qualityDescription": "<h6>Quality of Code</h6> This criterion measures how much the code complies with the software development principles and best practices (e.g. simplicity, cleanliness, readability, maintainability)",
         "difficultyDescription": "<h6>Difficulty</h6>How much complex is the problem which this code solves?",
         "confidenceDescription": "<h6>Reviewer confidence</h6>How much expertise do you consider to have in the technologies used in this commit?"
-
     },
     "home": {
         "title": "Welcome,",
@@ -146,7 +145,8 @@
         "noReputation": "?.??",
         "reviewOutOf": "{{numReviews}} out of {{minNumberReview}}",
         "commitOutOf": "{{numCommits}} out of {{minNumberCommit}}",
-        "notQualified": "<h6>Not qualified yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season"
+        "notQualified": "<h6>Not qualified yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season. Your agreed percentage is {{agreedPercentage}}%",
+        "agreedPercentage": "<h6>Already qualified</h6>Your agreed percentage is {{agreedPercentage}}%"
     },
     "review": {
         "getCommits": "Error getting commits to review",
@@ -168,7 +168,6 @@
         "confidence": "Confidence",
         "reviewCommentError": "Empty comment",
         "reviewEmptyRatingError": "One or more star ratings are empty"
-
     },
     "setProfile": {
         "title": "Welcome",

@@ -62,7 +62,7 @@ export class RankingPage {
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
     public currentUserObs: Observable<string>;
-    public tooltipParams: { pendingCommits: number; pendingReviews: number; };
+    public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
     private log: ILogger;
@@ -122,7 +122,7 @@ export class RankingPage {
                         ret = b.engagementIndex - a.engagementIndex;
                     } else {
                         ret = (b.reputation - a.reputation) || 
-                            (b.numberOfCommits + b.finishedReviews - (a.numberOfCommits + a.finishedReviews));
+                            (b.engagementIndex - a.engagementIndex);
                     }
                     return ret;
                 });
@@ -178,7 +178,8 @@ export class RankingPage {
             this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {
                 pendingCommits: Math.max(0, RankingPage.minNumberCommit - this.userRankDetails.commits),
-                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.reviews)
+                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.reviews),
+                agreedPercentage: userDetails.agreedPercentage
             };
             this.commitParams = {
                 numCommits: this.userRankDetails.commits,

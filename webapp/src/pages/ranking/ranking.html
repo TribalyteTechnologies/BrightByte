@@ -60,10 +60,10 @@
                 <span class="text-details text-details--bold">{{ "ranking.details" | translate }}:</span>
             </ion-row>
             <ion-row padding class="profile-details-container">
-                <ion-col col-auto justify-content-center>
+                <ion-col col-1 justify-content-center>
                     <avatar [avatarUrl]="currentUserObs | async" [isBig]="true"></avatar>
                 </ion-col>
-                <ion-col col-3 padding justify-content-center center class="vert-separator">
+                <ion-col col-2 padding justify-content-center center class="vert-separator">
                     <ion-row class="text-title">
                         {{ userRankDetails.name }}
                     </ion-row>
@@ -71,7 +71,7 @@
                         {{ userRankDetails.email }}
                     </ion-row>
                 </ion-col>
-                <ion-col class="vert-separator">
+                <ion-col col-4 class="vert-separator">
                     <ion-row justify-content-center>
                         <ion-col no-padding>
                             <ion-row justify-content-center class="text-title ranking-details">
@@ -89,14 +89,14 @@
                                 {{ userRankDetails.isRanked ? userRankDetails.commits : ("ranking.commitOutOf" | translate: commitParams) }}
                             </ion-row>
                         </ion-col>
-                        <ion-col no-padding>
+                        <ion-col *ngIf="globalSelected" no-padding>
                             <ion-row justify-content-center class="text-title ranking-details">
                                 {{ "ranking.agreed" | translate }}</ion-row>
                             <ion-row justify-content-center class="text-title"> {{ userRankDetails.agreed }}%</ion-row>
                         </ion-col>
                     </ion-row>
                 </ion-col>
-                <ion-col col-3 no-padding>
+                <ion-col col-5 no-padding>
                     <ion-row *ngIf="globalSelected; else globalNotSelectedBlockTwo">
                         <ion-col class="text-title">
                             <ion-row justify-content-center class="ranking-details no-wrap">
@@ -108,8 +108,8 @@
                         </ion-col>
                     </ion-row>
                     <ng-template #globalNotSelectedBlockTwo>
-                        <ion-row justify-content-center padding>
-                            <ion-col no-padding class="no-wrap">
+                        <ion-row no-padding>
+                            <ion-col class="no-wrap, reputation">
                                 <div>
                                     <span *ngIf="userRankDetails.isRanked; else detailNotRanked"
                                         class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
@@ -120,20 +120,34 @@
                                     <img class="btn--img" src="../../assets/imgs/star-icon.svg">
                                 </div>
                             </ion-col>
+                            <ion-col no-padding no-margin class="text-title">
+                                <ion-row justify-content-center class="ranking-details no-wrap">
+                                    {{ "ranking.engagementIndex" | translate }}</ion-row>
+                                <ion-row justify-content-center>
+                                    <img src="../../assets/imgs/chains.svg">
+                                    <span class="ranking-score">{{ userRankDetails.engagementIndexString }}</span>
+                                </ion-row>
+                            </ion-col>
                         </ion-row>
                     </ng-template>
                 </ion-col>
             </ion-row>
             <ion-row *ngIf="!globalSelected && !userRankDetails.isRanked" justify-content-center padding>
-                    <ion-col class="not-qualified-display-info" col-8>
-                        <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:tooltipParams"></div>
-                    </ion-col>
+                <ion-col class="not-qualified-display-info" col-8>
+                    <div class="tooltip-text" [innerHTML]=" 'ranking.notQualified' | translate:tooltipParams"></div>
+                </ion-col>
+            </ion-row>
+            <ion-row *ngIf="!globalSelected && userRankDetails.isRanked" justify-content-center padding>
+                <ion-col class="not-qualified-display-info" col-8>
+                    <div class="tooltip-text" [innerHTML]=" 'ranking.agreedPercentage' | translate:tooltipParams"></div>
+                </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
             <ion-row *ngIf="globalSelected && isPageLoaded" padding class="achievement-box-style">
                 <ion-col class="box-height">
                     <ion-row *ngFor="let rowIndex of [0,1,2,3]" padding>
-                        <ion-col class="achievement-grid-style" *ngFor="let i of [(rowIndex*4),(rowIndex*4)+1,(rowIndex*4)+2,(rowIndex*4)+3]">
+                        <ion-col class="achievement-grid-style"
+                            *ngFor="let i of [(rowIndex*4),(rowIndex*4)+1,(rowIndex*4)+2,(rowIndex*4)+3]">
                             <achievement [isEmpty]="achievementsUnlocked[i].isEmpty"
                                 [achievementInfo]="achievementsUnlocked[i]"></achievement>
                         </ion-col>
