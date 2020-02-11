@@ -203,6 +203,15 @@ contract Bright {
         );
     }
 
+    function getUserSeasonCommits(address userHash, uint256 indSeason) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
+        BrightModels.UserProfile storage user = hashUserMap.map[userHash];
+        return (user.seasonData[indSeason].pendingReviews,
+                user.seasonData[indSeason].finishedReviews,
+                user.seasonData[indSeason].urlSeasonCommits,
+                user.seasonData[indSeason].toRead
+        );
+    }
+
     function getNumbers() public onlyDapp view returns(uint){
         return allUsersArray.length;
     }
