@@ -63,7 +63,7 @@ export class CommitCard {
         this.title = val.title;
         this.project = val.project;
         this.isPending = val.isReadNeeded;
-        this.score = (this.isReviewPage && !searchUser[0]) ? 0 : val.score;
+        this.score = (this.isReviewPage && !searchUser[0]) ? 0 : val.score / AppConfig.REPUTATION_FACTOR;
         this.creationDateMs = val.creationDateMs;
         this.urlLink = val.url;
         this.stateFinished = val.currentNumberReviews !== val.numberReviews ? true : false;
