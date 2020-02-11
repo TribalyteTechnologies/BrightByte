@@ -246,21 +246,21 @@ contract Bright {
 
     function getFeedback(bytes32 url) public onlyDapp view returns (bool){
         address sender = tx.origin;
-        BrightModels.UserProfile storage userSeason = hashUserMap.map[sender].seasonData[currentSeasonIndex];
+        BrightModels.UserSeason storage userSeason = hashUserMap.map[sender].seasonData[currentSeasonIndex];
         bool read = false;
-        for (uint i = 0; i < user.toRead.length; i++){
-            if(user.toRead[i] == url){
+        for (uint i = 0; i < userSeason.toRead.length; i++){
+            if(userSeason.toRead[i] == url){
                 read = true;
             }
         }
         return read;
     }
 
-    function setFeedback(bytes32 url, address user, bool value, uint256 vote) public onlyRoot{
-        address sender = user;
+    function setFeedback(bytes32 url, address userAddr, bool value, uint256 vote) public onlyRoot{
+        address sender = userAddr;
         address maker = tx.origin;
         BrightModels.UserProfile storage user = hashUserMap.map[sender];
-        BrightModels.UserProfile storage userSeason = user.seasonData[currentSeasonIndex];
+        BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
         checkSeason();
         if(value){
             userSeason.toRead.push(url);
@@ -272,7 +272,7 @@ contract Bright {
             }
             user.globalStats.agreedPercentage = (user.globalStats.positeVotes * FEEDBACK_MULTIPLER) / (user.globalStats.positeVotes + user.globalStats.negativeVotes);
             if(hashUserMap.map[maker].seasonData[currentSeasonIndex].seasonCommits[url]) {
-                setSeasonFeedback(user, vote);
+                setSeasonFeedback(sender, vote);
             }
         }
         else{
