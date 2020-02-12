@@ -29,7 +29,6 @@ export class RankingCard {
     public userHash = "";
     public accountHash = "";
     public engagementIndex = 0;
-    public globalSelected = true;
     public reputationString = "";
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
@@ -41,6 +40,9 @@ export class RankingCard {
     public reviewParams: { numReviews: number; minNumberReview: number; };
     public isRankedByReviews: boolean;
     public isRankedByCommits: boolean;
+
+    @Input()
+    public globalSelected: boolean;
 
     @Input()
     public set ranking(val: UserReputation) {
@@ -56,8 +58,8 @@ export class RankingCard {
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
-        this.engagementIndexString = this.engagementIndex.toFixed(2);
-        this.reputationString = (Math.floor(this.reputation * 100 / AppConfig.REPUTATION_DIVISION_FACTOR) / 100).toFixed(2);
+        this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
+        this.reputationString = (this.reputation / AppConfig.REPUTATION_DIVISION_FACTOR).toFixed(2);
         this.isRanked = val.isRanked;
         this.tooltipParams = {
             pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
@@ -73,11 +75,6 @@ export class RankingCard {
         };
         this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
         this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
-    }
-
-    @Input()
-    public set globalSelection(global: boolean) {
-        this.globalSelected = global;
     }
 
     constructor(

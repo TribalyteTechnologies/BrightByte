@@ -116,6 +116,12 @@ export class RankingPage {
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
             .then((usersRep: UserReputation[]) => {
+                usersRep = usersRep
+                .map(user => {
+                    user.reputation = Math.round(user.reputation / 10) * 10;
+                    return user;
+                });
+
                 this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
                     let ret: number;
                     if(this.globalSelected) {

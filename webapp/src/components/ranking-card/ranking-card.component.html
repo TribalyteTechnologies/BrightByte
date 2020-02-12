@@ -1,4 +1,4 @@
-<ion-row class="block-padding" >
+<ion-row class="block-padding">
     <ion-col col-1 padding class="text-details text-details--bold"> {{ userPosition }} </ion-col>
     <ion-col col-1>
         <ion-row justify-content-center>
@@ -40,16 +40,21 @@
                     </div>
                 </ion-col>
             </ng-template>
-            
-            <ion-col col-3 *ngIf="!globalSelected" class="remove-vertical-padding">
-                <div class="criterial-center">
+            <ion-col col-1 *ngIf="!globalSelected" class="remove-vertical-padding">
+                <div>
                     <img class="ico ico__big" src="../../assets/imgs/chains.svg">
-                    <span class="text-title ranking-score">{{ engagementIndexString }}</span>
                 </div>
             </ion-col>
+            <ion-col col-1 *ngIf="!globalSelected" class="remove-vertical-padding margin-right">
+                <ion-row justify-content-center>
+                    <div class="engagement-index">
+                        <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+                    </div>
+                </ion-row>
+            </ion-col>
             <ion-col col-3 class="remove-vertical-padding">
-                <ion-row *ngIf="isRankedByReviews; else toQualifyReview" justify-content-center
-                    class="text-title">{{ numReviews }}</ion-row>
+                <ion-row *ngIf="isRankedByReviews; else toQualifyReview" justify-content-center class="text-title">
+                    {{ numReviews }}</ion-row>
                 <ng-template #toQualifyReview>
                     <ion-row justify-content-center class="text-title">
                         {{ "ranking.reviewOutOf" | translate: reviewParams }}</ion-row>
@@ -57,8 +62,8 @@
                 <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
             </ion-col>
             <ion-col col-3 class="remove-vertical-padding">
-                <ion-row *ngIf="isRankedByCommits; else toQualifyCommit" justify-content-center
-                    class="text-title">{{ numCommits }}</ion-row>
+                <ion-row *ngIf="isRankedByCommits; else toQualifyCommit" justify-content-center class="text-title">
+                    {{ numCommits }}</ion-row>
                 <ng-template #toQualifyCommit>
                     <ion-row justify-content-center class="text-title">
                         {{ "ranking.commitOutOf" | translate: commitParams }}</ion-row>

@@ -50,7 +50,7 @@
             <ion-row>
                 <ion-grid no-padding class="table">
                     <ranking-card *ngFor="let user of usersRep" (click)="setUser(user.userHash)"
-                        [globalSelection]="globalSelected" [ranking]="user"
+                        [globalSelected]="globalSelected" [ranking]="user"
                         [ngClass]="user.isRanked ? 'ranked' : 'not-ranked'"></ranking-card>
                 </ion-grid>
             </ion-row>
