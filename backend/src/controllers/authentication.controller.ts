@@ -55,12 +55,12 @@ export class AuthenticationController {
             }
         };
         this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
-        flatMap(res => {
-            let userToken = res.data.access_token;
-            this.log.d("Response: ", res.data);
-            this.clientNotificationService.sendToken(userIdentifier, userToken);
-            return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
-        })
+            map(res => {
+                let userToken = res.data.access_token;
+                this.log.d("Response: ", res.data);
+                this.clientNotificationService.sendToken(userIdentifier, userToken);
+                return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+            })
         ).subscribe(res => {
             this.log.d("The user has completed the authentication process", res);
         });
