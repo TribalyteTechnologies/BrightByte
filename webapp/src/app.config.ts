@@ -30,6 +30,7 @@ export class AppConfig {
         AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
     public static CURRENT_NODE_INDEX = 0;
     public static readonly MAX_REVIEWER_COUNT = 4;
+    public static readonly OPTIMISTIC_SCORE_MULTIPLY_FACTOR = 10;
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly REPUTATION_DIVISION_FACTOR = 1000;    
     public static readonly SECS_TO_MS = 1000;

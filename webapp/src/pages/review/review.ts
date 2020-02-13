@@ -276,7 +276,7 @@ export class ReviewPage {
 
             let commitSearch = this.displayCommitsToReview.filter(comm => comm.url === urlCom);
             let commit = commitSearch[0];
-            commit.score = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
+            commit.score = point[0] * AppConfig.OPTIMISTIC_SCORE_MULTIPLY_FACTOR;
             commit.lastModificationDateMs = Date.now();
             commit.isReadNeeded = false;
             commit.isPending = false;
