@@ -35,7 +35,7 @@ export class RankingCard {
     public isRanked = false;
     public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
     public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
-    public tooltipParams: { pendingCommits: number; pendingReviews: number; };
+    public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
     public isRankedByReviews: boolean;
@@ -63,7 +63,8 @@ export class RankingCard {
         this.isRanked = val.isRanked;
         this.tooltipParams = {
             pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
-            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews)
+            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
+            agreedPercentage: val.agreedPercentage
         };
         this.commitParams = {
             numCommits: this.numCommits,
