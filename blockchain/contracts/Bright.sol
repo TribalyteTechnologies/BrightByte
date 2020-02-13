@@ -192,9 +192,8 @@ contract Bright {
         emit UserNewCommit(userHash, user.globalStats.commitsMade);
         emit DeletedCommit(userHash, url);
     }
-
     
-    function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[]) {
+    function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
         BrightModels.UserProfile storage user = hashUserMap.map[userHash];
         return (user.seasonData[currentSeasonIndex].pendingReviews,
                 user.seasonData[currentSeasonIndex].finishedReviews,
@@ -345,12 +344,12 @@ contract Bright {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
     
-    function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev, uint256 comMade) public onlyDapp {
-        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail,hash, perct, tmRw, pos, neg, rep, rev,comMade);
+    function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 pos, uint256 neg, uint256 rev, uint256 comMade) public onlyDapp {
+        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail, hash, perct, pos, neg, rev,comMade);
     }
 
-    function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint tmRw, uint posVotes, uint negVotes, uint reputation, uint rev, uint complexity) public onlyDapp {
-        MigrationLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, tmRw, posVotes, negVotes, reputation, rev, complexity, deploymentTimestamp);
+    function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint posVotes, uint negVotes, uint reputation, uint rev, uint256 comMade, uint complexity) public onlyDapp {
+        MigrationLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, posVotes, negVotes, reputation, rev, comMade, complexity, deploymentTimestamp);
     }
 
     function setUrlsSeason(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp {

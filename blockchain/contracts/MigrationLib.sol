@@ -10,7 +10,7 @@ library MigrationLib {
         return TIME_TO_MIGRATE_SECS;
     }
 
-    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint256 deploymentTimestamp, string name, string mail, address hash, uint256 perct, uint256 tmRw, uint256 pos, uint256 neg, uint256 rep, uint256 rev, uint256 comMade) public {
+    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint256 deploymentTimestamp, string name, string mail, address hash, uint256 perct, uint256 pos, uint256 neg, uint256 rev, uint256 comMade) public {
         require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
         require (bytes(hashUserMap.map[hash].name).length == 0 && bytes(hashUserMap.map[hash].email).length == 0);
         BrightModels.UserProfile storage user = hashUserMap.map[hash];
@@ -18,10 +18,8 @@ library MigrationLib {
         user.email = mail;
         user.hash = hash;
         user.globalStats.agreedPercentage = perct;
-        user.globalStats.numberOfTimesReview = tmRw;
         user.globalStats.positeVotes = pos;
         user.globalStats.negativeVotes = neg;
-        user.globalStats.reputation = rep;
         user.globalStats.reviewsMade = rev;
         user.globalStats.commitsMade = comMade;
         bytes32 emailId = keccak256(mail);
