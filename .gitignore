@@ -49,3 +49,4 @@ build/
 public/
 
 tools/ReputationAlgorithmTest/contracts
+blockchain/database
