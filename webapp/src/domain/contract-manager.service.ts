@@ -363,13 +363,11 @@ export class ContractManagerService {
             let promises = usersAddress.map(userAddress => {
                 let promise = contractArtifact.methods.getUser(userAddress).call()
                     .then((commitsVals: Array<any>) => {
-                        this.log.d("User reputation: ", commitsVals);
-                        return UserReputation.fromSmartContractGlobalReputation(commitsVals);
+                        return UserReputation.fromSmartContract(commitsVals);
                     });
                 if (!global) {
                     promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
                         .then((commitsVals: Array<any>) => {
-                            this.log.d("Users reputation in season " + season + ": ", commitsVals);
                             return UserReputation.fromSmartContract(commitsVals);
                         });
                 }
@@ -475,8 +473,6 @@ export class ContractManagerService {
 
                 let raw = "0x" + tx.serialize().toString("hex");
                 this.log.d("Rawtx: ", rawtx);
-                this.log.d("Priv is 0x: ", priv);
-                this.log.d("privatekey: ", privateKey);
                 this.log.d("Raw: ", raw);
                 this.log.d("tx unsign: ", tx);
                 return this.web3.eth.sendSignedTransaction(raw);

@@ -4,7 +4,6 @@ import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { BackendConfig } from "../backend.config";
 import { map, flatMap } from "rxjs/operators";
-import { AuthenticationDatabaseService } from "../services/authentication-database.service";
 import * as querystring from "querystring";
 import { ClientNotificationService } from "../services/client-notfication.service";
 import { FailureResponseDto } from "../dto/response/failure-response.dto";
@@ -23,7 +22,6 @@ export class AuthenticationController {
     public constructor(
         loggerSrv: LoggerService,
         private httpSrv: HttpService,
-        private authenticationDatabaseService: AuthenticationDatabaseService,
         private clientNotificationService: ClientNotificationService
     ) {
         this.log = loggerSrv.get("AuthenticationController");
@@ -56,14 +54,10 @@ export class AuthenticationController {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         };
-        let userToken: string;
         this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
-            flatMap(res => {
-                userToken = res.data.access_token;
-                this.log.d("Response: ", res.data);
-                return this.authenticationDatabaseService.setUserToken(userIdentifier, userToken);
-            }),
             map(res => {
+                let userToken = res.data.access_token;
+                this.log.d("Response: ", res.data);
                 this.clientNotificationService.sendToken(userIdentifier, userToken);
                 return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
             })

@@ -1,5 +1,24 @@
 # Change Log
 
+#### v 0.6.3
+
+- Added queue service for reviews. Improves performance when reviewing multiple commits.
+- Added season engagement index.
+- Modified ranking sort to take in account season engagement index.
+- Solved reputation precission error (Frontend only).
+- Backend minor refactor.
+- Some bug fixes.
+
+`No migration needed from 0.6.2 to 0.6.3`
+
+#### v 0.6.2
+
+- Added social sharing features (Facebook and twitter).
+- Performance improve on reviews page.
+- Some bug fixes.
+
+`No migration needed from 0.6.1 to 0.6.2`
+
 #### v 0.6.1
 
 - New blockchain events initialization for achievement database.

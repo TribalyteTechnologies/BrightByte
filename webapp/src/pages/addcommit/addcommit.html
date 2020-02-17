@@ -101,6 +101,6 @@
     <progress-bar *ngIf="isUpdatingByBatch" [progress] = "updatingProgress"></progress-bar> 
     <ion-row>
         <button *ngIf="commitMethod === 'url'" class="btn btn--full btn__blue" type="submit" form="addform" [disabled]="myForm.invalid || isTxOngoing">{{ "addCommit.title" | translate }}</button>
-        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection) || isUpdatingByBatch || showSpinner" (click)="addRepo(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
+        <button *ngIf="commitMethod === 'batch'" class="btn btn--full btn__blue" type="submit" [disabled]="!(repoSelection) || isUpdatingByBatch || showSpinner" (click)="addRepoStartingFrom(repoSelection)">{{ "addCommit.importCommits" | translate }}</button>
     </ion-row>
 </ion-content>

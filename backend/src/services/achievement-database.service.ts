@@ -123,7 +123,7 @@ export class AchievementDatabaseService {
         ),
         new AchievementDto(
             "Timed Review Bullets",
-            "Few time, many bullets",
+            "Short time, many bullets",
             "Reviews",
             [20, 900],
             "3" ,

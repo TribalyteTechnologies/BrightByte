@@ -29,18 +29,20 @@ export class RankingCard {
     public userHash = "";
     public accountHash = "";
     public engagementIndex = 0;
-    public globalSelected = true;
     public reputationString = "";
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
     public isRanked = false;
     public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
     public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
-    public tooltipParams: { pendingCommits: number; pendingReviews: number; };
+    public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
     public isRankedByReviews: boolean;
     public isRankedByCommits: boolean;
+
+    @Input()
+    public globalSelected: boolean;
 
     @Input()
     public set ranking(val: UserReputation) {
@@ -56,12 +58,13 @@ export class RankingCard {
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
-        this.engagementIndexString = this.engagementIndex.toFixed(2);
-        this.reputationString = (this.reputation / AppConfig.REPUTATION_FACTOR).toFixed(2);
+        this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
+        this.reputationString = (this.reputation / AppConfig.REPUTATION_DIVISION_FACTOR).toFixed(2);
         this.isRanked = val.isRanked;
         this.tooltipParams = {
             pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
-            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews)
+            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
+            agreedPercentage: val.agreedPercentage
         };
         this.commitParams = {
             numCommits: this.numCommits,
@@ -73,11 +76,6 @@ export class RankingCard {
         };
         this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
         this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
-    }
-
-    @Input()
-    public set globalSelection(global: boolean) {
-        this.globalSelected = global;
     }
 
     constructor(

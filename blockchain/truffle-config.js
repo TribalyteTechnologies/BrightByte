@@ -4,9 +4,9 @@ var truffleCustomConfig = require("./truffle-config.custom.js");
 module.exports = {
   networks: {
     development: {
-      host: "127.0.0.1",
+      host: "localhost",
       port: 7545,
-      network_id: "*",
+      network_id: 5777,
     },
     custom: truffleCustomConfig
   },

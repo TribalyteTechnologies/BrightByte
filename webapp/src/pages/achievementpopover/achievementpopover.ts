@@ -3,6 +3,7 @@ import { ViewController, NavParams } from "ionic-angular";
 import { Achievement } from "../../models/achievement.model";
 import { LoggerService, ILogger } from "../../core/logger.service";
 import { AchievementService } from "../../domain/achievement.service";
+import { AppConfig } from "../../app.config";
 
 
 @Component({
@@ -11,6 +12,7 @@ import { AchievementService } from "../../domain/achievement.service";
 })
 export class AchievementPopOver {
 
+    public isSharing = AppConfig.IS_SHARING;
     public achievement: Achievement;
     
     private log: ILogger;

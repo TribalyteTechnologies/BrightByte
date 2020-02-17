@@ -12,9 +12,22 @@
     </ion-col>
     <ion-col>
         <ion-row justify-content-center margin class="button-space">
-            <button ion-button round class="home-button button-lowercase" (click)="hidePopover()">
-                {{ "achievements.continue" | translate }}
-            </button>  
-        </ion-row>  
+            <ion-col col-6>
+                <button item-center ion-button round [ngClass]="(isSharing? 'home-button-sharing button-lowercase' : 'home-button-not-sharing button-lowercase')" (click)="hidePopover()">
+                    {{ "achievements.continue" | translate }}
+                </button>
+            </ion-col>
+            <ion-col col-6 *ngIf="isSharing">
+                <ion-fab item-right vertical="top" horizontal="end" slot="fixed" class="share-button">
+                    <button ion-fab>
+                        <ion-icon name="share"></ion-icon>
+                    </button>
+                    <ion-fab-list side="right">
+                        <twitter-share url="{{ 'social.url' | translate }}"  text="{{ 'social.achievementText' | translate: achievement }}" hashtag="{{ 'social.hashtags' | translate }}" class="tweet"></twitter-share>
+                        <facebook-share url="{{ 'social.url' | translate }}" text="{{ 'social.achievementText' | translate: achievement }}"></facebook-share>
+                    </ion-fab-list>
+                </ion-fab>
+            </ion-col>
+        </ion-row>
     </ion-col> 
 </ion-content>

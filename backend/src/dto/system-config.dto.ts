@@ -1,9 +1,9 @@
 interface IBitbucketConfig {
-    workspaces: string[];
+    workspaces: Array<string>;
 }
 
 interface ISeasonConfig {
-    durationInMonths: number;
+    durationInDays: number;
 }
 
 export class SystemConfigDto {

@@ -1,0 +1,30 @@
+facebook-share {
+    .fb-share-button {
+        background: #3b5998;
+        border-radius: 3px;
+        font-weight: 600;
+        width: 60px;
+        height: 20px;
+    }
+
+    .fb-share-button:hover {
+        cursor: pointer;
+        background: #213A6F;
+    }
+
+    .fb-share-button img {
+        width: 18px;
+        fill: white;
+        border-radius: 3px;
+        padding: 3px 0px 0px 3px;
+    }
+
+    .fb-share-button a {
+        color: white;
+        font-size: 12px;
+        width: 36px;
+        text-decoration: none;
+        padding: 4px 0px 0px 4px;
+        position: absolute;
+    }
+}

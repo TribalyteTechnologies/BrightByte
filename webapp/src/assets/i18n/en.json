@@ -88,7 +88,6 @@
         "qualityDescription": "<h6>Quality of Code</h6> This criterion measures how much the code complies with the software development principles and best practices (e.g. simplicity, cleanliness, readability, maintainability)",
         "difficultyDescription": "<h6>Difficulty</h6>How much complex is the problem which this code solves?",
         "confidenceDescription": "<h6>Reviewer confidence</h6>How much expertise do you consider to have in the technologies used in this commit?"
-
     },
     "home": {
         "title": "Welcome,",
@@ -129,7 +128,7 @@
         "retrieve": "Find me",
         "rating": "Rating",
         "getSeasonNumbers": "Error getting season numbers",
-        "global": "Ranking Global",
+        "global": "Global Ranking",
         "season": "Season",
         "current": "Current",
         "retrieveToSeason": "Show Current season",
@@ -146,7 +145,8 @@
         "noReputation": "?.??",
         "reviewOutOf": "{{numReviews}} out of {{minNumberReview}}",
         "commitOutOf": "{{numCommits}} out of {{minNumberCommit}}",
-        "notQualified": "<h6>Not qualified yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season"
+        "notQualified": "<h6>Not qualified yet</h6>Still need to make {{pendingReviews}} reviews and {{pendingCommits}} commits to participate in the season. Your agreed percentage is {{agreedPercentage}}%",
+        "agreedPercentage": "<h6>Already qualified</h6>Your agreed percentage is {{agreedPercentage}}%"
     },
     "review": {
         "getCommits": "Error getting commits to review",
@@ -168,7 +168,6 @@
         "confidence": "Confidence",
         "reviewCommentError": "Empty comment",
         "reviewEmptyRatingError": "One or more star ratings are empty"
-
     },
     "setProfile": {
         "title": "Welcome",
@@ -242,8 +241,10 @@
         "backendOffline": "Can't connect to BrightByte servers. Please try again later or contact your deployment administrator."
     },
     "social": {
-        "generalShareText": "I'm using BrightByte a social network for code developers. Go check it out! #BrightByte",
+        "generalShareText": "I'm using BrightByte a social network for code developers. Go check it out!",
         "url": "https://tribalyte.com",
-        "hastags": "BrightByte"
+        "hashtags": "BrightByteApp",
+        "achievementText": "I've just got \"{{title}}\" achievement in BrightByte. Go check it out!",
+        "shareButtonText": "Share"
     }
 }

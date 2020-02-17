@@ -1,4 +1,4 @@
-<ion-row class="block-padding" >
+<ion-row class="block-padding">
     <ion-col col-1 padding class="text-details text-details--bold"> {{ userPosition }} </ion-col>
     <ion-col col-1>
         <ion-row justify-content-center>
@@ -13,16 +13,16 @@
             <span class="user-info text-description no-wrap"> {{ email }} </span>
         </ion-row>
     </ion-col>
-    <ion-col col-6 class="tooltip-block">
+    <ion-col col-7 class="tooltip-block">
         <ion-row class="remove-vertical-padding">
-            <ion-col col-4 class="remove-vertical-padding" *ngIf="globalSelected; else notGlobalSelectedBlock">
+            <ion-col col-3 class="remove-vertical-padding" *ngIf="globalSelected; else notGlobalSelectedBlock">
                 <div class="criterial-center">
                     <img class="ico ico__big" src="../../assets/imgs/chains.svg">
                     <span class="text-title ranking-score">{{ engagementIndexString }}</span>
                 </div>
             </ion-col>
             <ng-template #notGlobalSelectedBlock>
-                <ion-col col-4 class="remove-vertical-padding">
+                <ion-col col-3 class="remove-vertical-padding">
                     <div class="criterial-center">
                         <div *ngIf="isRanked; else notRanked">
                             <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
@@ -40,29 +40,40 @@
                     </div>
                 </ion-col>
             </ng-template>
-
-            <ion-col col-4 class="remove-vertical-padding">
-                <ion-row *ngIf="isRankedByReviews; else toQualifyReview" justify-content-center
-                    class="text-title">{{ numReviews }}</ion-row>
+            <ion-col col-1 *ngIf="!globalSelected" class="remove-vertical-padding">
+                <div>
+                    <img class="ico ico__big" src="../../assets/imgs/chains.svg">
+                </div>
+            </ion-col>
+            <ion-col col-1 *ngIf="!globalSelected" class="remove-vertical-padding margin-right">
+                <ion-row justify-content-center>
+                    <div class="engagement-index">
+                        <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+                    </div>
+                </ion-row>
+            </ion-col>
+            <ion-col col-3 class="remove-vertical-padding">
+                <ion-row *ngIf="isRankedByReviews; else toQualifyReview" justify-content-center class="text-title">
+                    {{ numReviews }}</ion-row>
                 <ng-template #toQualifyReview>
                     <ion-row justify-content-center class="text-title">
                         {{ "ranking.reviewOutOf" | translate: reviewParams }}</ion-row>
                 </ng-template>
                 <ion-row justify-content-center class="text-description">{{ "app.reviews" | translate }}</ion-row>
             </ion-col>
-            <ion-col col-4 class="remove-vertical-padding">
-                <ion-row *ngIf="isRankedByCommits; else toQualifyCommit" justify-content-center
-                    class="text-title">{{ numCommits }}</ion-row>
+            <ion-col col-3 class="remove-vertical-padding">
+                <ion-row *ngIf="isRankedByCommits; else toQualifyCommit" justify-content-center class="text-title">
+                    {{ numCommits }}</ion-row>
                 <ng-template #toQualifyCommit>
                     <ion-row justify-content-center class="text-title">
                         {{ "ranking.commitOutOf" | translate: commitParams }}</ion-row>
                 </ng-template>
                 <ion-row justify-content-center class="text-description">{{ "app.commits" | translate }}</ion-row>
             </ion-col>
+            <ion-col *ngIf="globalSelected" col-3 class="remove-vertical-padding remove-horizontal-padding">
+                <ion-row justify-content-center class="text-title">{{ agreed }}%</ion-row>
+                <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }} </ion-row>
+            </ion-col>
         </ion-row>
-    </ion-col>
-    <ion-col col-1 class="remove-horizontal-padding">
-        <ion-row justify-content-center class="text-title">{{ agreed }}%</ion-row>
-        <ion-row justify-content-center class="text-description">{{ "ranking.agreed" | translate }} </ion-row>
     </ion-col>
 </ion-row>

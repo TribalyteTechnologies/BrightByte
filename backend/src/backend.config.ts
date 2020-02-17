@@ -7,11 +7,9 @@ export class BackendConfig {
     public static readonly USER_COLLECTION = "users";
     public static readonly ACHIEVEMENT_COLLECTION = "achievements";
     public static readonly EVENT_COLLECTION = "events";
-    public static readonly AUTHENTICATION_COLLECTION = "authentication";
     public static readonly ACHIEVEMENT_DB_JSON = "brightbyte-achievement-db.json";
     public static readonly USER_DB_JSON = "brightbyte-user-db.json";
     public static readonly EVENT_DB_JSON = "brightbyte-event-db.json";
-    public static readonly AUTHENTICATION_DB_JSON = "brightbyte-authentication-db.json";
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
@@ -37,7 +35,7 @@ export class BackendConfig {
             },
             season:
             {
-                durationInMonths: +process.env.DURATION_IN_MONTHS || 3
+                durationInDays: + process.env.DURATION_IN_DAYS || 90
             }
         };
     public static readonly BUFFER_SIZE = 1;

@@ -30,10 +30,16 @@ page-tabs {
             flex-direction: column;
         }
 
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            justify-content: center;
+        .tweet-in-tabs {
+            margin: 0px 10px;
+            padding-top: 3px;
+        }
+
+        .share-button {
+            opacity: 0.25;
+            background-color: #282f3a;
+            box-shadow: none;
+            -webkit-box-shadow: none;
         }
 
         .tooltip .tooltip-text {
@@ -58,16 +64,9 @@ page-tabs {
             transition-delay: 2s;
         }
 
-        .tooltip .tooltip-text::after {
-            content: " ";
-            position: absolute;
-            bottom: 40%;
-            left: -4%;
-            margin-left: 0px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
-            transform: rotate(-90deg);
+        .fab-button {
+            bottom: 50px;
+            left: 6px;
         }
 
         .tooltip:active .tooltip-text,

@@ -8,8 +8,9 @@ import { LoginService } from "../../core/login.service";
 import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
+import { TransactionQueueService} from "../../domain/transaction-queue.service";
 import { AppConfig } from "../../app.config";
-
+import { Observable } from "rxjs";
 
 @Component({
     selector: "page-review",
@@ -35,6 +36,7 @@ export class ReviewPage {
     public filterIsReviewed = false;
     public openedComments = false;
     public needReview = false;
+    public isSpinnerLoading: Observable<boolean>;
     public numCriteria = 3;
     public stars = [["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
         , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
@@ -64,6 +66,7 @@ export class ReviewPage {
         public storageSrv: SessionStorageService,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
+        private transactionQueueService: TransactionQueueService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
@@ -71,6 +74,10 @@ export class ReviewPage {
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === "true";
         this.userAdress = this.loginService.getAccountAddress();
 
+    }
+
+    public ngOnInit() {
+        this.isSpinnerLoading = this.transactionQueueService.getStatus();
     }
 
     public ionViewWillEnter(): void {
@@ -246,8 +253,7 @@ export class ReviewPage {
 
     public setReview(urlCom: string, text: string, points: number[]) {
         let point: number[] = points;
-        this.spinnerService.showLoader();
-        this.contractManagerService.setReview(urlCom, text, points)
+        this.transactionQueueService.enqueue(this.contractManagerService.setReview(urlCom, text, points))
         .then((response) => {
             this.log.d("Received response " + point);
             this.log.d("Received response " + response);
@@ -266,25 +272,23 @@ export class ReviewPage {
             for (let i = 0; i < this.numCriteria; i++) {
                 this.setReputation(-1, i);
             }
-            this.spinnerService.hideLoader();
             this.textComment = "";
 
-            return this.contractManagerService.getCommitDetails(urlCom);
-        }).then((commitUpdated: UserCommit) => {
             let commitSearch = this.displayCommitsToReview.filter(comm => comm.url === urlCom);
             let commit = commitSearch[0];
-            commit.score = commitUpdated.score;
-            commit.lastModificationDateMs = commitUpdated.lastModificationDateMs;
+            commit.score = point[0] * AppConfig.OPTIMISTIC_SCORE_MULTIPLY_FACTOR;
+            commit.lastModificationDateMs = Date.now();
             commit.isReadNeeded = false;
             commit.isPending = false;
-            commit.numberReviews = commitUpdated.numberReviews;
             let userDetailsSearch = commit.reviewers[0].filter(user => user.userHash === this.userAdress);
             let userDetails = userDetailsSearch[0];
             commit.reviewers[0].splice
                 (commit.reviewers[0].indexOf(userDetails), 1);
             commit.reviewers[1].push(userDetails);
+            if (this.filterValue === this.INCOMPLETE) {
+                this.filterArrayCommits.splice(this.filterArrayCommits.indexOf(commit), 1);
+            }
 
-            this.applyFilters(this.displayCommitsToReview);
             let url = new URLSearchParams(document.location.search);
             if (url.has(AppConfig.UrlKey.REVIEWID)) {
                 let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
@@ -293,8 +297,8 @@ export class ReviewPage {
             }
             this.numberOfReviews++;
         }).catch((error) => {
-            this.spinnerService.hideLoader();
             this.log.e("Catched error " + error);
+            throw error;
         });
     }
 

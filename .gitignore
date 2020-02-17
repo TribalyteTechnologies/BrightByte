@@ -47,3 +47,6 @@ backend/src/backend.config.custom.ts
 build/
 
 public/
+
+tools/ReputationAlgorithmTest/contracts
+blockchain/database

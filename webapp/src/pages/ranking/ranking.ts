@@ -62,7 +62,7 @@ export class RankingPage {
     public achievementsUnlocked = new Array<Achievement>();
     public isPageLoaded = false;
     public currentUserObs: Observable<string>;
-    public tooltipParams: { pendingCommits: number; pendingReviews: number; };
+    public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
     private log: ILogger;
@@ -105,7 +105,7 @@ export class RankingPage {
                             / AppConfig.SECS_TO_MS);
                     },
                     AppConfig.SECS_TO_MS);
-                this.seasons.push("Ranking Global");
+                this.seasons.push(this.translateService.instant("ranking.global"));
                 for (let i = this.numberOfSeasons; i >= 0; i--) {
                     this.seasons.push("Season " + i);
                 }
@@ -116,13 +116,19 @@ export class RankingPage {
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
             .then((usersRep: UserReputation[]) => {
+                usersRep = usersRep
+                .map(user => {
+                    user.reputation = Math.round(user.reputation / 10) * 10;
+                    return user;
+                });
+
                 this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
                     let ret: number;
                     if(this.globalSelected) {
                         ret = b.engagementIndex - a.engagementIndex;
                     } else {
                         ret = (b.reputation - a.reputation) || 
-                            (b.numberCommitsMade + b.numberReviewsMade - (a.numberCommitsMade + a.numberReviewsMade));
+                            (b.engagementIndex - a.engagementIndex);
                     }
                     return ret;
                 });
@@ -169,7 +175,8 @@ export class RankingPage {
             this.userRankDetails.rank = this.rankingTitle[Math.round(userDetails.reputation)];
             this.userRankDetails.level = Math.round(userDetails.reputation * 3);
             this.userRankDetails.engagementIndex = userDetails.engagementIndex;
-            this.userRankDetails.scoreString = (this.userRankDetails.score / AppConfig.REPUTATION_FACTOR).toFixed(2);
+            this.userRankDetails.scoreString = (Math.floor(this.userRankDetails.score * 100 / AppConfig.REPUTATION_DIVISION_FACTOR) / 100)
+                                                .toFixed(2);
             this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
             this.userRankDetails.hash = userDetails.userHash;
             this.userRankDetails.isRanked = userDetails.isRanked;
@@ -177,7 +184,8 @@ export class RankingPage {
             this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {
                 pendingCommits: Math.max(0, RankingPage.minNumberCommit - this.userRankDetails.commits),
-                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.reviews)
+                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.reviews),
+                agreedPercentage: userDetails.agreedPercentage
             };
             this.commitParams = {
                 numCommits: this.userRankDetails.commits,
