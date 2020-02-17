@@ -272,10 +272,12 @@ export class AddCommitPopover {
         this.blockChainCommits = new Array<string>();
         this.nextRepositoriesUrl = new Map<string, string>();
         let seasonDate;
+        let seasonLengthIndays;
         this.isFinishedLoadingRepo = false;
         this.showNextReposOption = false;
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
             seasonDate = new Date(1000 * seasonEndDate[1]);
+            seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
             return seasonDate;
         }).then(() => {
             this.showSpinner = true;
@@ -287,7 +289,7 @@ export class AddCommitPopover {
             this.log.d("The commits from the blockchain", this.blockChainCommits);
             return this.bitbucketSrv.getBackendConfig();
         }).then((config: BackendConfig) => {
-            seasonDate.setDate(seasonDate.getDate() - config.season.durationInDays);
+            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
             this.currentSeasonStartDate = seasonDate;
             let workspaces = config.bitbucket.workspaces;
             let promisesWorkspaces = workspaces.map(workspace => {

@@ -31,11 +31,7 @@ export class BackendConfig {
         {
             bitbucket: 
             {
-                workspaces: (process.env.BITBUCKET_WORKSPACES || "workspace_1,workspace_2").split(",")
-            },
-            season:
-            {
-                durationInDays: + process.env.DURATION_IN_DAYS || 90
+                workspaces: (process.env.BITBUCKET_WORKSPACES || "tribalyte").split(",")
             }
         };
     public static readonly BUFFER_SIZE = 1;
