@@ -137,7 +137,10 @@ export class RankingPage {
                     let rankedUsers = this.usersRep.filter(user => this.isRankedUser(user));
                     let unRankedUsers = this.usersRep.filter(user => !this.isRankedUser(user));
                     unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
-                        return (b.numberOfCommits + b.finishedReviews) - (a.numberOfCommits + a.finishedReviews);
+                        return  (this.calculateDistanceToQualified(a.numberOfCommits, DistaceType.Commits) + 
+                        this.calculateDistanceToQualified(a.finishedReviews, DistaceType.Reviews))
+                        - (this.calculateDistanceToQualified(b.numberOfCommits, DistaceType.Commits) + 
+                        this.calculateDistanceToQualified(b.finishedReviews, DistaceType.Reviews));
                     });
                     if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON) {
                         unRankedUsers.forEach(user => user.isRanked = false);
@@ -265,4 +268,26 @@ export class RankingPage {
     private isRankedUser(user: UserReputation): boolean {
         return user.numberOfCommits >= AppConfig.MIN_COMMIT_QUALIFY && user.finishedReviews >= AppConfig.MIN_REVIEW_QUALIFY;
     }
+
+    private calculateDistanceToQualified(currentValue: number, distanceType: DistaceType): number{
+        let minValueToQualify;
+        switch (distanceType) {
+            case DistaceType.Commits:
+                minValueToQualify = AppConfig.MIN_COMMIT_QUALIFY;
+                break;
+            case DistaceType.Reviews:
+                minValueToQualify = AppConfig.MIN_REVIEW_QUALIFY;
+                break;
+            default:
+                minValueToQualify = 0;
+        }
+
+        let distanceToBeQualified = minValueToQualify -  currentValue;
+        return distanceToBeQualified < 0 ? 0 : distanceToBeQualified;
+    }
+}
+
+export enum DistaceType {
+    Commits,
+    Reviews
 }
