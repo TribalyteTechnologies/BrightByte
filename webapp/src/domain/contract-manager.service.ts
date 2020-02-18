@@ -361,17 +361,15 @@ export class ContractManagerService {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
-                let promise = contractArtifact.methods.getUser(userAddress).call()
+                let globalReputationPromise = contractArtifact.methods.getUser(userAddress).call()
+                    .then((commitsVals: Array<any>) => {
+                        return UserReputation.fromSmartContractGlobalReputation(commitsVals);
+                    });
+                let seasonReutationpromise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
                     .then((commitsVals: Array<any>) => {
                         return UserReputation.fromSmartContract(commitsVals);
                     });
-                if (!global) {
-                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
-                        .then((commitsVals: Array<any>) => {
-                            return UserReputation.fromSmartContract(commitsVals);
-                        });
-                }
-                return promise;
+                return global ? globalReputationPromise : seasonReutationpromise;
             });
             return Promise.all(promises);
         }).catch(err => {
