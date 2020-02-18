@@ -354,22 +354,26 @@ export class ContractManagerService {
 
     public getAllUserReputation(season: number, global: boolean): Promise<Array<UserReputation>> {
         let contractArtifact;
-        return this.initProm.then(([bright, commit, root]) => {
+        return this.initProm.then(([bright]) => {
             contractArtifact = bright;
             return contractArtifact.methods.getUsersAddress().call();
         }).then((usersAddress: String[]) => {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
-                let globalReputationPromise = contractArtifact.methods.getUser(userAddress).call()
+                let promise: Promise<any>;
+                if (global) {
+                    promise = contractArtifact.methods.getUser(userAddress).call()
                     .then((commitsVals: Array<any>) => {
                         return UserReputation.fromSmartContractGlobalReputation(commitsVals);
                     });
-                let seasonReutationpromise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
+                } else {
+                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
                     .then((commitsVals: Array<any>) => {
                         return UserReputation.fromSmartContract(commitsVals);
                     });
-                return global ? globalReputationPromise : seasonReutationpromise;
+                } 
+                return promise;
             });
             return Promise.all(promises);
         }).catch(err => {
