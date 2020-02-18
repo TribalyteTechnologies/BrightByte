@@ -357,7 +357,7 @@ contract Bright {
         MigrationLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, posVotes, negVotes, reputation, rev, comMade, complexity, deploymentTimestamp);
     }
 
-    function setUrlsSeason(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp {
-        MigrationLib.setUrlsSeason(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd);
+    function setSeasonUrls(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public onlyDapp {
+        MigrationLib.setSeasonUrls(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd);
     }
 }

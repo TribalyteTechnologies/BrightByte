@@ -359,7 +359,7 @@ export class MigrationService {
                                                 i = sum;
                                                 let byteCodeData = brightNew
                                                     .methods
-                                                    .setUrlsSeason(
+                                                    .setSeasonUrls(setSeasonUrls
                                                         index,
                                                         user.hash,
                                                         seasonCommits,
