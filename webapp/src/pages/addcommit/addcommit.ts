@@ -409,6 +409,7 @@ export class AddCommitPopover {
         this.commitMethod = this.BATCH_METHOD;
         this.bitbucketSrv.checkProviderAvailability(userAddress).then(user => {
             this.log.d("Waiting for the user to introduce their credentials");
+            this.isServiceAvailable = true;
         }).catch(e => {
             this.log.w("Service not available", e);
             this.isServiceAvailable = false;
