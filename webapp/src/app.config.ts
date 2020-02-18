@@ -44,6 +44,7 @@ export class AppConfig {
     public static readonly MIN_REVIEW_QUALIFY = 45;
     public static readonly MIN_COMMIT_QUALIFY = 35;
     public static readonly FIRST_QUALIFYING_SEASON = 4;
+    public static readonly COMMITS_BLOCK_SIZE = 20;
     
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";

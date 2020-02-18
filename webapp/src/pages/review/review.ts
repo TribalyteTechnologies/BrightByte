@@ -30,6 +30,7 @@ export class ReviewPage {
     public projectSelected = this.ALL;
     public isFeedback = {} as { [key: string]: boolean };
 
+    public disabledInfiniteScroll = false;
     public filterValue = "";
     public filterIsPending = false;
     public filterIsIncompleted = false;
@@ -57,6 +58,7 @@ export class ReviewPage {
     private log: ILogger;
     private numberOfReviews = -1;
     private isNewReview = false;
+    private loadedCommits: number;
 
     constructor(
         public popoverCtrl: PopoverController,
@@ -81,14 +83,15 @@ export class ReviewPage {
     }
 
     public ionViewWillEnter(): void {
+        this.loadedCommits = 0;
         this.refresh();
     }
 
-    public refresh() {
+    public refresh(event?) {
         this.log.d("Refreshing page");
         this.spinnerService.showLoader();
         let commits: Array<UserCommit>;
-        this.contractManagerService.getCommitsToReview()
+        this.contractManagerService.getSeasonCommitsToReview(this.loadedCommits)
             .then((commitConcat: Array<UserCommit>[]) => {
                 commits = commitConcat[0].concat(commitConcat[1]);
                 if (this.numberOfReviews !== commitConcat[1].length) {
@@ -119,9 +122,16 @@ export class ReviewPage {
             }).then((rsp) => {
                 commits = rsp;
                 this.log.d("Response received: " + rsp);
-                this.displayCommitsToReview = commits;
+                if(this.loadedCommits > 0) {
+                    this.disabledInfiniteScroll = (commits == null || commits.length === 0) ? true : false;
+                    this.displayCommitsToReview.push(...commits);
+                    event.complete();
+                }else {
+                    this.displayCommitsToReview = commits;
+                }
                 let projects = commits.map(commit => commit.project);
                 this.projects = projects.filter((value, index, array) => array.indexOf(value) === index);
+                this.loadedCommits += AppConfig.COMMITS_BLOCK_SIZE;
                 this.spinnerService.hideLoader();
                 return this.contractManagerService.getUserDetails(this.userAdress);
             }).then((ud) => {

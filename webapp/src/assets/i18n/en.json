@@ -220,7 +220,8 @@
         "showAllAssignedCommits": "Showing all your assigned commits",
         "details": "Details",
         "setReview": "Set Review",
-        "setYourReview": "Set your review"
+        "setYourReview": "Set your review",
+        "loadMoreCommits": "Loading more commits..."
     },
     "migration": {
         "migrationTitle": "Migration",

@@ -3,6 +3,7 @@ import "./Root.sol";
 
 import { MigrationLib } from "./MigrationLib.sol";
 import { BrightModels } from "./BrightModels.sol";
+import { BrightLib } from "./BrightLib.sol";
 
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
@@ -202,12 +203,12 @@ contract Bright {
         );
     }
 
-    function getUserSeasonCommits(address userHash, uint256 indSeason) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
-        BrightModels.UserSeason memory userSeason = hashUserMap.map[userHash].seasonData[indSeason];
-        return (userSeason.pendingReviews,
-                userSeason.finishedReviews,
-                userSeason.urlSeasonCommits,
-                userSeason.toRead
+    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
+        BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
+        return (BrightLib.getPendingReviews(userSeason, start, end),
+                BrightLib.getFinishedReviews(userSeason, start, end),
+                BrightLib.getUrlSeasonCommits(userSeason, start, end),
+                BrightLib.getToRead(userSeason, start, end)
         );
     }
 

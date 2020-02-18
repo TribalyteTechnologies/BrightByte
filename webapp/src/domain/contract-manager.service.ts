@@ -214,6 +214,31 @@ export class ContractManagerService {
         });
     }
 
+    public getSeasonCommitsToReview(startIndex: number): Promise<UserCommit[][]> {
+        return this.initProm
+        .then(([bright, commit]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", bright);
+            return bright.methods.getCurrentSeason().call().then(seasonData => {
+                return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, 
+                                                           (startIndex + AppConfig.COMMITS_BLOCK_SIZE)).call();
+            }).then((allUserCommits: Array<any>) => {
+                let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    .then((commitVals: any) => {
+                        return UserCommit.fromSmartContract(commitVals, true);
+                    }));
+                let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    .then((commitVals: any) => {
+                        return UserCommit.fromSmartContract(commitVals, false);
+                    }));
+                return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
+            });
+        }).catch(err => {
+            this.log.e("Error obtaining commits to review :", err);
+            throw err;
+        });
+    }
+
     public getAllUserAddresses(): Promise<Array<string>> {
         return this.initProm
             .then(([bright]) => {

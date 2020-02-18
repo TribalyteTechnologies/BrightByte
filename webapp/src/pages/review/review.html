@@ -18,11 +18,18 @@
     </ion-row>
     <ion-row no-padding class="scroll-dimensions">
         <ion-col no-padding [attr.col-6]="currentCommit" class="main-style scroll-y">
-            <div class="scrollable-content">
-                <div [ngClass]="commit === currentCommit ? 'card card__selected' : 'card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
+            <ion-list class="scrollable-content">
+                <ion-item no-padding [ngClass]="commit === currentCommit ? 'item-height card card__selected' : 'item-height card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
                     <commit-card [isReviewPage]="true" [reviewerAddress]="userAdress" [commit]="commit"></commit-card>
-                </div>
-            </div>
+                </ion-item>
+            </ion-list>
+
+            <ion-infinite-scroll (ionInfinite)="refresh($event)" *ngIf="!disabledInfiniteScroll">
+                <ion-infinite-scroll-content
+                  loadingSpinner="bubbles"
+                  loadingText="{{ 'commitReview.loadMoreCommits' | translate }}">
+                </ion-infinite-scroll-content>
+            </ion-infinite-scroll>
         </ion-col>
         <ion-col col-6 *ngIf="currentCommit" class="scroll-y">
             <div class="scrollable-content">

@@ -4,6 +4,7 @@ var Root = artifacts.require("./Root.sol");
 var Reputation = artifacts.require("./Reputation.sol");
 var MigrationLib = artifacts.require("./MigrationLib.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
+var BrightLib = artifacts.require("./BrightLib.sol");
 var scVersionObj = require("../../version.json");
 
 const INITIAL_SEASON_INDEX = 3;
@@ -20,10 +21,19 @@ module.exports = function(deployer) {
         return deployer.deploy(MigrationLib);
     })
     .then(function(){
+        return deployer.link(BrightModels, BrightLib);
+    })
+    .then(function(){
+        return deployer.deploy(BrightLib);
+    })
+    .then(function(){
         return deployer.link(BrightModels, Bright);
     })
     .then(function(){
         return deployer.link(MigrationLib, Bright);
+    })
+    .then(function(){
+        return deployer.link(BrightLib, Bright);
     })
     .then(function(){
         return deployer.deploy(Bright);

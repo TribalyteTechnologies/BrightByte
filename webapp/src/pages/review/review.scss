@@ -27,4 +27,10 @@ page-review {
     .padding-bottom-set-review {
         padding-bottom: 40px;
     }
+
+    ion-item .label {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
 }
