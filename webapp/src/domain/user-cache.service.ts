@@ -20,5 +20,12 @@ export class UserCacheService {
     public set(hash: string, userDetails: UserDetails){
         this.users.set(hash, userDetails);
     }
- 
+
+    public setUserName(hash: string, userName: string) {
+        let user = this.users.get(hash);
+        if (user) {
+            user.name = userName;
+            this.users.set(hash, user);
+        }
+    }
 }

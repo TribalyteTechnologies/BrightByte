@@ -445,6 +445,21 @@ export class ContractManagerService {
         });
     }
 
+    public setUserName(name: string): Promise<any> {
+        return this.initProm.then(([bright]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", bright);
+            let bytecodeData = bright.methods.setUserName(name).encodeABI();
+            this.log.d("DATA: ", bytecodeData);
+            return this.sendTx(bytecodeData, this.contractAddressBright);
+        }).then(() => {
+            this.userCacheSrv.setUserName(this.currentUser.address, name);
+        }).catch(e => {
+            this.log.e("Error setting new user name: ", e);
+            throw e;
+        });
+    }
+    
     public getContracts(): Promise<Array<ITrbSmartContact>> {
         return this.initProm;
     }

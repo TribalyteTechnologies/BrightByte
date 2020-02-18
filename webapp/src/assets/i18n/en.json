@@ -186,10 +186,12 @@
         "noImageError": "Please, select an image to save.",
         "uploadError": "Cannot upload the image. Please contact the service provider",
         "defaultError": "You already have the default avatar image",
+        "noChangesError": "Please, change you user name or select an image to save.",
         "removeImage": "Remove Image",
         "removeConfirmation": "Are you sure you want to remove your avatar image?",
         "remove": "Remove",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "userName": "User Name"
     },
     "commitDetails": {
         "author": "Author",

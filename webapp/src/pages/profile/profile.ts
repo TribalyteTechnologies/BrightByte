@@ -10,6 +10,8 @@ import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
 import { IResponse } from "../../models/response.model";
 import { LoginService } from "../../core/login.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
+import { SpinnerService } from "../../core/spinner.service";
 
 @Component({
     selector: "profile",
@@ -21,6 +23,8 @@ export class Profile {
     public avatarObs: Observable<string>;
     public avatarData: string;
     public imageSelected = false;
+    public userName: string;
+    public userNamePlaceholder: string;
     public errorMsg: string;
     public uploadForm: FormGroup;
 
@@ -28,6 +32,7 @@ export class Profile {
     private readonly IMAGE_FIELD_NAME = "image";
 
     private noImageError: string;
+    private noChangesError: string;
     private uploadError: string;
     private defaultError: string;
     private userAddress: string;
@@ -41,7 +46,9 @@ export class Profile {
         private viewCtrl: ViewController,
         private avatarSrv: AvatarService,
         private formBuilder: FormBuilder,
-        private alertCtrl: AlertController
+        private alertCtrl: AlertController,
+        private contractManagerService: ContractManagerService,
+        private spinnerService: SpinnerService
     ) {
         this.log = loggerSrv.get("ProfilePage");
     }
@@ -49,14 +56,23 @@ export class Profile {
     public ngOnInit() {
         this.userAddress = this.loginSrv.getAccountAddress();
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
-        this.translateSrv.get(["setProfile.noImageError", "setProfile.uploadError", "setProfile.defaultError"]).subscribe(translation => {
+        this.translateSrv.get(["setProfile.noImageError", "setProfile.uploadError", "setProfile.defaultError", "setProfile.noChangesError"])
+        .subscribe(translation => {
             this.noImageError = translation["setProfile.noImageError"];
             this.uploadError = translation["setProfile.uploadError"];
             this.defaultError = translation["setProfile.defaultError"];
+            this.noChangesError = translation["setProfile.noChangesError"];
         });
         this.uploadForm = this.formBuilder.group({
-            image: [""]
+            image: [""],
+            userName: ""
         });
+
+        this.contractManagerService.getUserDetails(this.userAddress)
+        .then(user => {
+            this.userNamePlaceholder = user.name;
+        });
+    
     }
 
     public openFile(event: Event) {
@@ -104,8 +120,15 @@ export class Profile {
         );
     }
 
-    public saveProfileImage() {
-        if (this.imageSelected) {
+    public saveProfileChange() {
+        if (this.userName && this.userName !== this.userNamePlaceholder) {
+            this.spinnerService.showLoader();
+            this.contractManagerService.setUserName(this.userName).then(() => {
+                this.log.d("The user has set a new name");
+                this.spinnerService.hideLoader();
+                this.dismiss();
+            });
+        } else if (this.imageSelected) {
             let formData = new FormData();
             formData.append(this.IMAGE_FIELD_NAME, this.uploadForm.get(this.IMAGE_FIELD_NAME).value);
 
@@ -122,7 +145,7 @@ export class Profile {
                 });
 
         } else {
-            this.errorMsg = this.noImageError;
+            this.errorMsg = this.noChangesError;
         }
     }
 

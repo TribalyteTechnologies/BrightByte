@@ -22,12 +22,17 @@
                     </ng-template>
                 </ion-row>
             </ion-col>
-            <ion-col padding align-self-end>
-                <form [formGroup]="uploadForm" (ngSubmit)="saveProfileImage()">
-                    <ion-row class="upload-form">
-                        <input type="file" (change)="openFile($event)">
-
-                    </ion-row>
+            <ion-col col-9 padding align-self-end>
+                <form [formGroup]="uploadForm" (ngSubmit)="saveProfileChange(userName)">
+                    <ion-list lines="full" class="ion-no-margin ion-no-padding">
+                       <ion-item>
+                            <ion-label color="dark">{{ "setProfile.userName" | translate }}: </ion-label>
+                            <ion-input  formControlName="userName" type="text" [placeholder]="userNamePlaceholder" [(ngModel)]="userName" ></ion-input>
+                       </ion-item>
+                       <ion-item>
+                            <input type="file" (change)="openFile($event)">
+                       </ion-item>
+                    </ion-list>
                     <ion-row *ngIf="errorMsg" class="error-body">
                         {{ errorMsg }}
                     </ion-row>
