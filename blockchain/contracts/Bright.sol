@@ -194,20 +194,20 @@ contract Bright {
     }
     
     function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
-        BrightModels.UserProfile storage user = hashUserMap.map[userHash];
-        return (user.seasonData[currentSeasonIndex].pendingReviews,
-                user.seasonData[currentSeasonIndex].finishedReviews,
-                user.seasonData[currentSeasonIndex].urlSeasonCommits,
-                user.seasonData[currentSeasonIndex].toRead
+        BrightModels.UserSeason memory userSeason = hashUserMap.map[userHash].seasonData[currentSeasonIndex];
+        return (userSeason.pendingReviews,
+                userSeason.finishedReviews,
+                userSeason.urlSeasonCommits,
+                userSeason.toRead
         );
     }
 
     function getUserSeasonCommits(address userHash, uint256 indSeason) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
-        BrightModels.UserProfile storage user = hashUserMap.map[userHash];
-        return (user.seasonData[indSeason].pendingReviews,
-                user.seasonData[indSeason].finishedReviews,
-                user.seasonData[indSeason].urlSeasonCommits,
-                user.seasonData[indSeason].toRead
+        BrightModels.UserSeason memory userSeason = hashUserMap.map[userHash].seasonData[indSeason];
+        return (userSeason.pendingReviews,
+                userSeason.finishedReviews,
+                userSeason.urlSeasonCommits,
+                userSeason.toRead
         );
     }
 
