@@ -6,7 +6,7 @@ library MigrationLib {
     
     uint256 public constant TIME_TO_MIGRATE_SECS = 60 * 60 * 8;
 
-    function getTimeToMigrate() public view returns (uint256) {
+    function getTimeToMigrate() public pure returns (uint256) {
         return TIME_TO_MIGRATE_SECS;
     }
 
@@ -27,16 +27,16 @@ library MigrationLib {
         allUsersArray.push(hash);
     }
     
-    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint seasonIndex, address userAddr, uint perct, uint tmRw, uint positeVotes, uint negativeVotes, uint reputation, uint rev, uint complexity, uint256 deploymentTimestamp) public {
+    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint seasonIndex, address userAddr, uint perct, uint positeVotes, uint negativeVotes, uint reputation, uint rev, uint comMade, uint complexity, uint256 deploymentTimestamp) public {
         require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
-        season.seasonStats.numberOfTimesReview = tmRw;
         season.seasonStats.agreedPercentage = perct;
         season.seasonStats.positeVotes = positeVotes;
         season.seasonStats.negativeVotes = negativeVotes;
         season.seasonStats.reputation = reputation;
         season.seasonStats.reviewsMade = rev;
+        season.seasonStats.commitsMade = comMade;
         season.seasonStats.cumulativeComplexity = complexity;
     }
     
