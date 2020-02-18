@@ -13,16 +13,19 @@ export class User {
 export class UserStats {
     public reputation = 0;
     public cumulativeComplexity = 0;
-    public numberOfTimesReview = 0;
     public agreedPercentage = 0;
     public positiveVotes = 0;
     public negativeVotes = 0;
     public reviewsMade = 0;
+    public commitsMade = 0;
 }
 
 export class UserSeason {
     public seasonStats: UserStats = new UserStats();
     public urlSeasonCommits = new Array<string>();
+    public finishedReviews = new Array<string>();
+    public pendingReviews = new Array<string>();
+    public toRead = new Array<string>();
 }
 
 export class CommitDataMigraton {

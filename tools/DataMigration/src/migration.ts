@@ -65,7 +65,7 @@ export class MigrationService {
                 newUser.name = user[0];
                 newUser.email = user[1];
                 newUser.globalStats.reputation = user[5];
-                newUser.globalStats.agreedPercentage = user[6];
+                newUser.globalStats.agreedPercentage = parseInt(user[6]);
                 newUser.hash = usersHash[index];
                 users.push(newUser);
                 return brightOld.methods.getUserCommits(usersHash[index]).call();
@@ -75,34 +75,18 @@ export class MigrationService {
             let promises = usersCommits.map((userCommit, index) => {
                 users[index].pendingReviews = userCommit[0];
                 users[index].finishedReviews = userCommit[1];
+                users[index].pendingCommits = userCommit[2];
                 users[index].globalStats = new UserStats();
                 users[index].globalStats.reviewsMade = userCommit[1].length;
-                users[index].pendingCommits = userCommit[2];
-                return brightOld.methods.getToRead(usersHash[index]).call();
-            });
-            return Promise.all(promises);
-        }).then(userToRead => {
-            userToRead.forEach((commitToRead, index) => users[index].toRead = commitToRead);
-            let promises = usersHash.map(userHash => {
-                return brightOld.methods.getVotes(userHash, true, 0).call();
+                users[index].globalStats.commitsMade = userCommit[2].length;
+                return brightOld.methods.getVotes(usersHash[index], true, 0).call();
             });
             return Promise.all(promises);
         }).then(usersVotes => {
-            let promises = usersVotes.map((userVotes, index) => {
-                users[index].globalStats.positiveVotes = userVotes[0];
-                users[index].globalStats.negativeVotes = userVotes[1];
-                return brightOld.methods.getUserGlobalReputation(usersHash[index]).call()
+            usersVotes.forEach((userVotes, index) => {
+                users[index].globalStats.positiveVotes = parseInt(userVotes[0]);
+                users[index].globalStats.negativeVotes = parseInt(userVotes[1]);
             });
-            return Promise.all(promises);
-
-        }).then(reputation => {
-            for (let i = 0; i < usersHash.length; i++) {
-                for (let j = 0; j < reputation.length; j++) {
-                    if (usersHash[i] === reputation[j][7]) {
-                        users[i].globalStats.numberOfTimesReview = reputation[i][2];
-                    }
-                }
-            }
             return brightOld.methods.getCurrentSeason().call();
         }).then((currentSeason) => {
             seasonNumber = currentSeason[0];
@@ -128,10 +112,11 @@ export class MigrationService {
             users.forEach((user, index) => {
                 for (let i = 0; i <= seasonNumber; i++) {
                     let userSeason = new UserSeason();
-                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1] * MigrationConfig.WEIGHT_FACTOR);
-                    userSeason.seasonStats.numberOfTimesReview = Number(seasonReputation[counter][2]);
+                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]);
                     userSeason.seasonStats.agreedPercentage = Number(seasonReputation[counter][4]);
+                    userSeason.seasonStats.commitsMade = Number(seasonReputation[counter][5]);
                     userSeason.seasonStats.reviewsMade = Number(seasonReputation[counter][6]);
+                    userSeason.seasonStats.cumulativeComplexity = Number(seasonReputation[counter][8]);
                     user.seasonData[i] = userSeason;
                     promises.push(brightOld.methods.getVotes(usersHash[index], false, i).call());
                     counter++;
@@ -140,10 +125,10 @@ export class MigrationService {
             return Promise.all(promises);
         }).then((seasonVotes) => {
             let counter = 0;
-            users.forEach((user, index) => {
+            users.forEach(user => {
                 for (let i = 0; i < seasonNumber; i++) {
                     user.seasonData[i].seasonStats.positiveVotes = Number(seasonVotes[counter][0]);
-                    user.seasonData[i].seasonStats.positiveVotes = Number(seasonVotes[counter][1]);
+                    user.seasonData[i].seasonStats.negativeVotes = Number(seasonVotes[counter][1]);
                     counter++;
                 }
             });
@@ -158,7 +143,6 @@ export class MigrationService {
             commitsUrls = commitsUrl;
             let promises = commitsUrl.map(commitUrl => commitOld.methods.getDetailsCommits(commitUrl).call())
             return Promise.all(promises);
-
         }).then((commitsDetails) => {
             let found: boolean;
             let promises = commitsDetails.map((commitData, index) => {
@@ -231,7 +215,7 @@ export class MigrationService {
 
             users.forEach(user => {
                 user.seasonData.forEach((seasonData, index) => {
-                    if (index === 3) {
+                    if (index >= MigrationConfig.INITIAL_SEASON_MULTIPLE_CRITERIA) {
                         let seasonReputation = 0;
                         let seasonCumulativeComplexity = 0;
                         seasonData.urlSeasonCommits.forEach(commitHash => {
@@ -259,9 +243,41 @@ export class MigrationService {
             });
             users = users.filter(user => MigrationConfig.EXCLUDED_USERS_ADDRESS.indexOf(user.hash) < 0);
 
-            console.log("Setting Users" + users);
-            console.log("Setting Commits" + commits);
-            console.log("Setting Comments" + comments);
+            users.forEach(user => {
+                let agreed = Math.floor(user.globalStats.positiveVotes * MigrationConfig.PERCENTAGE / (user.globalStats.positiveVotes + user.globalStats.negativeVotes));
+                user.globalStats.agreedPercentage = agreed ? agreed : 0;
+                user.finishedReviews.forEach(urlCommit => {
+                    let userCommit = commits.find(commit => this.web3.utils.keccak256(commit.url) === urlCommit);
+                    if(userCommit) {
+                        seasonEndsTimestamps.some((seasonEnd, index) => {
+                            let asignedUrl = false;
+                            if (userCommit.creationDate < seasonEnd) {
+                                asignedUrl = true;
+                                user.seasonData[index].finishedReviews.push(urlCommit);
+                            }
+                            return asignedUrl;
+                        });
+                    }
+                });
+
+                user.pendingReviews.forEach(urlCommit => {
+                    let userCommit = commits.find(commit => this.web3.utils.keccak256(commit.url) === urlCommit);
+                    if (userCommit) {
+                        seasonEndsTimestamps.some((seasonEnd, index) => {
+                            let asignedUrl = false;
+                            if (userCommit.creationDate < seasonEnd) {
+                                asignedUrl = true;
+                                user.seasonData[index].pendingReviews.push(urlCommit);
+                            }
+                            return asignedUrl;
+                        });
+                    }
+                });
+            })
+
+            console.log("Setting Users" + JSON.stringify(users));
+            console.log("Setting Commits" + JSON.stringify(commits));
+            console.log("Setting Comments" + JSON.stringify(comments));
 
             this.numberOfSets = users.length + commits.length + comments.length;
             this.currentNumberOfSets = this.numberOfSets;
@@ -276,9 +292,8 @@ export class MigrationService {
                                 user.email,
                                 user.hash,
                                 user.globalStats.agreedPercentage,
-                                user.globalStats.numberOfTimesReview, user.globalStats.positiveVotes,
-                                user.globalStats.negativeVotes, user.globalStats.reputation,
-                                user.globalStats.reviewsMade).encodeABI(); // Reviews made
+                                user.globalStats.positiveVotes, user.globalStats.negativeVotes, 
+                                user.globalStats.reviewsMade, user.globalStats.commitsMade).encodeABI();
                         this.decreaseCount();
                         return this.sendTx(byteCodeData, this.brightNewAddress);
                     });
@@ -298,9 +313,9 @@ export class MigrationService {
                                             index,
                                             user.hash,
                                             data.seasonStats.agreedPercentage,
-                                            data.seasonStats.numberOfTimesReview, data.seasonStats.positiveVotes,
-                                            data.seasonStats.negativeVotes, data.seasonStats.reputation,
-                                            data.seasonStats.reviewsMade, data.seasonStats.cumulativeComplexity).encodeABI(); // Reviews made
+                                            data.seasonStats.positiveVotes, data.seasonStats.negativeVotes, 
+                                            data.seasonStats.reputation, data.seasonStats.reviewsMade,
+                                            data.seasonStats.commitsMade, data.seasonStats.cumulativeComplexity).encodeABI();
                                     return this.sendTx(byteCodeData, this.brightNewAddress);
                                 });
                             },
@@ -317,24 +332,40 @@ export class MigrationService {
                         return user.seasonData.reduce(
                             (prevVal2, data, index) => {
                                 return prevVal2.then(() => {
-                                    let totalCycles = data.urlSeasonCommits.length / MigrationConfig.NUMBER_SET_SEASON_COMMITS;
-                                    let auxArray = new Array<number>();
-                                    for (let t = 0; t < totalCycles; t++) {
-                                        auxArray.push(t);
+                                    let arrayMax = data.urlSeasonCommits;
+                                    let arrayToCount = new Array<number>();
+                                    if (arrayMax.length < data.finishedReviews.length) {
+                                        arrayMax = user.finishedReviews;
+                                    }
+                                    if (arrayMax.length < data.pendingReviews.length) {
+                                        arrayMax = user.pendingReviews;
+                                    }
+                                    if (arrayMax.length < data.toRead.length) {
+                                        arrayMax = user.toRead;
+                                    }
+                                    let timesToRepeat = (arrayMax.length / MigrationConfig.NUMBER_SET_COMMITS) + 1;
+                                    for (let p = 0; p < timesToRepeat; p++) {
+                                        arrayToCount.push(p);
                                     }
                                     let i = 0;
-                                    return auxArray.reduce(
+                                    return arrayToCount.reduce(
                                         (prevVal3, actual) => {
                                             return prevVal3.then(() => {
-                                                let sum = i + MigrationConfig.NUMBER_SET_SEASON_COMMITS;
-                                                let seasonCommitsSliced = data.urlSeasonCommits.slice(i, sum);
+                                                let sum = i + MigrationConfig.NUMBER_SET_COMMITS;
+                                                let seasonCommits = data.urlSeasonCommits.slice(i, sum);
+                                                let finS = data.finishedReviews.slice(i, sum);
+                                                let pendS = data.pendingReviews.slice(i, sum);
+                                                let toReadS = data.toRead.slice(i, sum);
                                                 i = sum;
                                                 let byteCodeData = brightNew
                                                     .methods
                                                     .setUrlsSeason(
                                                         index,
                                                         user.hash,
-                                                        seasonCommitsSliced).encodeABI();
+                                                        seasonCommits,
+                                                        finS,
+                                                        pendS,
+                                                        toReadS).encodeABI();
                                                 return this.sendTx(byteCodeData, this.brightNewAddress);
                                             });
                                         },
@@ -348,54 +379,6 @@ export class MigrationService {
                 },
                 Promise.resolve()
             );
-        }).then(trxResponse => {
-            return users.reduce(
-                (prevVal, user) => {
-                    return prevVal.then(() => {
-                        let arrayMax = user.pendingCommits;
-                        let arrayToCount = [];
-                        if (arrayMax.length < user.finishedReviews.length) {
-                            arrayMax = user.finishedReviews;
-                        }
-                        if (arrayMax.length < user.pendingReviews.length) {
-                            arrayMax = user.pendingReviews;
-                        }
-                        if (arrayMax.length < user.toRead.length) {
-                            arrayMax = user.toRead;
-                        }
-                        let timesToRepeat = (arrayMax.length / MigrationConfig.NUMBER_SET_COMMITS) + 1;
-                        for (let p = 0; p < timesToRepeat; p++) {
-                            arrayToCount.push(p);
-                        }
-                        let i: number = 0;
-                        return arrayToCount.reduce(
-                            (prevVal2, actual) => {
-                                return prevVal2.then(() => {
-                                    let sum: number = i + MigrationConfig.NUMBER_SET_COMMITS;
-                                    let comS = user.pendingCommits.slice(i, sum);
-                                    let finS = user.finishedReviews.slice(i, sum);
-                                    let pendS = user.pendingReviews.slice(i, sum);
-                                    let toReadS = user.toRead.slice(i, sum);
-                                    i = sum;
-
-                                    let byteCodeData = brightNew
-                                        .methods
-                                        .setAllUserDataTwo(
-                                            user.hash,
-                                            comS,
-                                            finS,
-                                            pendS,
-                                            toReadS).encodeABI();
-                                    return this.sendTx(byteCodeData, this.brightNewAddress);
-                                });
-                            },
-                            Promise.resolve()
-                        );
-                    });
-                },
-                Promise.resolve()
-            );
-
         }).then(trx => {
             console.log("Setting commits");
             return commits.reduce(
