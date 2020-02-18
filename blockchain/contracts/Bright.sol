@@ -239,6 +239,11 @@ contract Bright {
         emit UserNewReview(sender, reviewer.globalStats.reviewsMade);
     }
 
+    function setUserName(string name) public onlyDapp {
+        address userHash = tx.origin;
+        hashUserMap.map[userHash].name = name;
+    }
+
     function getUserName(address userHash) public onlyDapp view returns (string) {
         return (hashUserMap.map[userHash].name);
     }
