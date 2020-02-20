@@ -246,5 +246,8 @@
         "hashtags": "BrightByteApp",
         "achievementText": "I've just got \"{{title}}\" achievement in BrightByte. Go check it out!",
         "shareButtonText": "Share"
+    },
+    "tutorialSlides": {
+        "registerTutorialTitle": "Register tutorial"
     }
 }

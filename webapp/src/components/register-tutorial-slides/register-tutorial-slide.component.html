@@ -1,0 +1,37 @@
+<ion-header text-right no-border>
+    <button margin-top margin-right class="blue-dismiss-button" (click)="hideSlides()">
+        <ion-icon name="close"></ion-icon>
+    </button>
+</ion-header>
+<ion-content>
+    <img class="logo slide-logo" src="../../assets/imgs/bright_logo.svg">
+    <h2 class="slide-title">
+        <span>{{ "tutorialSlides.registerTutorialTitle" | translate }}</span>
+    </h2> 
+    <ion-slides class="slides" pager="true">
+        <ion-slide *ngFor="let slide of slidesContent">
+                <ion-row>
+                    <ion-col col-1 class="arrow" *ngIf="slide.id != 1">
+                        <img (click)="goPrev()" src="../../assets/imgs/Flecha-anterior.svg">
+                    </ion-col>
+                    <ion-col class="slide-container-outside-padding">
+                        <div [ngClass]="{'slide-first':slide.id == slidesContent[0].id, 'slide-last':slide.id == slidesContent[slidesContent.length-1].id}">
+                            <div class="slide-container">
+                                <ion-row class="slide-white-space slide-subtitle">
+                                    <h2 class="slide-subtitle-font-color">
+                                        {{ slide.title }}
+                                    </h2>
+                                </ion-row>
+                                <ion-row>
+                                    <img class="slide-img slide-white-space" src="{{ slide.picture }}">
+                                </ion-row>
+                            </div>
+                        </div>
+                    </ion-col>
+                    <ion-col col-1 class="arrow" *ngIf="slide.id != 3">
+                        <img (click)="goNext()" class="arrow-next" src="../../assets/imgs/Flecha-anterior.svg">    
+                    </ion-col>
+                </ion-row>
+        </ion-slide>
+    </ion-slides>
+</ion-content>
