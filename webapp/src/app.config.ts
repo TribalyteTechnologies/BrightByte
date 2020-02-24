@@ -62,7 +62,7 @@ export class AppConfig {
         COMMITFILTER: "brightCommitFilter",
         COMMITPENDINGFILTER: "brightCommitPendingFilter",
         LOCALSTORAGEVERSION: "brightLocalStorageVerison",
-        REGISTERTUTORIALVISITED: "registerTutorialVisited"
+        REGISTERTUTORIALVISITED: "brightRegisterTutorialVisited"
     };
 
     public static readonly UrlKey = {

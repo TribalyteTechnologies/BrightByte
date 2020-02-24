@@ -10,15 +10,9 @@ import { AppConfig } from "../../app.config";
 })
 export class RegisterSlidePopover {
   @ViewChild(Slides) public slides: Slides;
-  public slidesContent: any;
+  public readonly slidesContentIds = [1, 2, 3];
   
   constructor(private viewCtrl: ViewController, private storageSrv: LocalStorageService){
-
-    this.slidesContent = [
-      {title: "Step 1", id: 1, picture: "../../assets/imgs/Paso1.png"},
-      {title: "Step 2", id: 2, picture: "../../assets/imgs/Paso2.png"},
-      {title: "Step 3", id: 3, picture: "../../assets/imgs/Paso3.png"}
-    ];
   }
 
   public ngAfterViewInit() {

@@ -34,14 +34,19 @@
             
             <ion-footer no-border>
                 <ion-row>
-                    <ion-col col-6>
+                    <ion-col col-8>
                         <div class="tribalyte-logo">
                             <img class="logo" src="../../assets/imgs/tribalytetech.png">
                         </div>
                     </ion-col>
-                    <ion-col col-6>
-                        <div class="terms-conditions">
-                            <a (click)="showTerms()"><ion-label >{{ "app.terms" | translate }}</ion-label></a>
+                    <ion-col col-2>
+                        <div class="page-bottom-tag">
+                            <ion-label (click)="showRegisterTutorialSlide()" text-center no-padding>{{ "app.registerTutorial" | translate }}</ion-label>
+                        </div>
+                    </ion-col>
+                    <ion-col col-2>
+                        <div class="page-bottom-tag">
+                            <ion-label (click)="showTerms()" text-left no-padding>{{ "app.terms" | translate }}</ion-label>
                         </div>
                     </ion-col>
                 </ion-row>

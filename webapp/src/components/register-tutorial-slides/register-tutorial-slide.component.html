@@ -9,26 +9,26 @@
         <span>{{ "tutorialSlides.registerTutorialTitle" | translate }}</span>
     </h2> 
     <ion-slides class="slides" pager="true">
-        <ion-slide *ngFor="let slide of slidesContent">
+        <ion-slide *ngFor="let contentId of slidesContentIds">
                 <ion-row>
-                    <ion-col col-1 class="arrow" *ngIf="slide.id != 1">
+                    <ion-col col-1 class="arrow" *ngIf="contentId != 1">
                         <img (click)="goPrev()" src="../../assets/imgs/Flecha-anterior.svg">
                     </ion-col>
                     <ion-col class="slide-container-outside-padding">
-                        <div [ngClass]="{'slide-first':slide.id == slidesContent[0].id, 'slide-last':slide.id == slidesContent[slidesContent.length-1].id}">
+                        <div [ngClass]="{'slide-first':contentId == slidesContentIds[0], 'slide-last':contentId == slidesContentIds[slidesContentIds.length-1]}">
                             <div class="slide-container">
                                 <ion-row class="slide-white-space slide-subtitle">
                                     <h2 class="slide-subtitle-font-color">
-                                        {{ slide.title }}
+                                        {{ "tutorialSlides.registerTutorialSubtitleText" | translate }} {{ contentId }}
                                     </h2>
                                 </ion-row>
                                 <ion-row>
-                                    <img class="slide-img slide-white-space" src="{{ slide.picture }}">
+                                    <img class="slide-img slide-white-space" [src]="'tutorialSlides.registerTutorialImgPath' | translate:{id: contentId}">
                                 </ion-row>
                             </div>
                         </div>
                     </ion-col>
-                    <ion-col col-1 class="arrow" *ngIf="slide.id != 3">
+                    <ion-col col-1 class="arrow" *ngIf="contentId != 3">
                         <img (click)="goNext()" class="arrow-next" src="../../assets/imgs/Flecha-anterior.svg">    
                     </ion-col>
                 </ion-row>

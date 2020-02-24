@@ -29,7 +29,8 @@
         "commits": "Commits",
         "reviews": "Reviews",
         "ranking": "Ranking",
-        "versionOutdated": "Your BrightBight version is outdated. The page is going to refresh."
+        "versionOutdated": "Your BrightBight version is outdated. The page is going to refresh.",
+        "registerTutorial": "Register Tutorial"
     },
     "addCommit": {
         "title": "Add commit",
@@ -248,6 +249,8 @@
         "shareButtonText": "Share"
     },
     "tutorialSlides": {
-        "registerTutorialTitle": "Register tutorial"
+        "registerTutorialTitle": "Register tutorial",
+        "registerTutorialSubtitleText": "Step",
+        "registerTutorialImgPath": "../../assets/imgs/Step{{id}}.png"
     }
 }
