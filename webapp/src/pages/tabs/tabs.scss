@@ -43,9 +43,21 @@ page-tabs {
         }
 
         .fab-button {
-            bottom: 50px;
+            bottom: 95px;
             left: 6px;
         }
+
+        .icon-help-slide {
+            height: 30px;
+            width: 30px;
+            max-height: 36px;
+            max-width: 36px;
+        }
+
+        .tab-resize {
+            height: 50px;
+        }
+
     }
 }
 

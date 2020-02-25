@@ -28,7 +28,10 @@
                     <facebook-share [url]="'social.url' | translate"  [text]="'social.generalShareText' | translate"></facebook-share>
                 </ion-fab-list>
             </ion-fab>
-            <button class="tab" (click)="logout()">
+            <button class="tab tab-resize" no-margin (click)="openAfterLoginTutorialDialog()">
+                <img class="button-icon icon-help-slide" src="../../assets/imgs/slide_icon.png">
+            </button>
+            <button class="tab tab-resize" no-margin (click)="logout()">
                 <img class="button-icon" src="../../assets/imgs/menu/logout.svg">
             </button>
         </div>
