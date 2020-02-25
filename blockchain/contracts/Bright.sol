@@ -3,7 +3,7 @@ import "./Root.sol";
 
 import { MigrationLib } from "./MigrationLib.sol";
 import { BrightModels } from "./BrightModels.sol";
-import { BrightLib } from "./BrightLib.sol";
+import { UtilsLib } from "./UtilsLib.sol";
 
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
@@ -168,6 +168,7 @@ contract Bright {
         }
         if (!done && saved){
             reviewerSeason.pendingReviews.push(url);
+            reviewerSeason.allReviews.push(url);
         }
     }
 
@@ -203,12 +204,23 @@ contract Bright {
         );
     }
 
-    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
+    function getUserSeasonState(address userHash, uint256 indSeason) public onlyDapp view returns(uint256, uint256, uint256, uint256, uint256) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
-        return (BrightLib.getPendingReviews(userSeason, start, end),
-                BrightLib.getFinishedReviews(userSeason, start, end),
-                BrightLib.getUrlSeasonCommits(userSeason, start, end),
-                BrightLib.getToRead(userSeason, start, end)
+        return (userSeason.pendingReviews.length,
+                userSeason.finishedReviews.length,
+                userSeason.urlSeasonCommits.length,
+                userSeason.toRead.length,
+                userSeason.allReviews.length
+        );
+    }
+
+    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[], bytes32[]) {
+        BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
+        return (UtilsLib.splitArray(userSeason.pendingReviews, start, end),
+                UtilsLib.splitArray(userSeason.finishedReviews, start, end),
+                UtilsLib.splitArray(userSeason.urlSeasonCommits, start, end),
+                UtilsLib.splitArray(userSeason.toRead, start, end),
+                UtilsLib.splitArray(userSeason.allReviews, start, end)
         );
     }
 
@@ -317,11 +329,6 @@ contract Bright {
         uint256 totalTimeSeasons = currentSeasonIndex * seasonLengthSecs;
         uint256 seasonFinaleTime = initialSeasonTimestamp + totalTimeSeasons;
         return (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs);
-    }
-
-    function getAllUserSeasonUrls(uint256 seasonIndex, address userAddr) public onlyDapp view returns (bytes32[], bytes32[], bytes32[], bytes32[]) {
-        BrightModels.UserSeason memory season = hashUserMap.map[userAddr].seasonData[seasonIndex];
-        return (season.urlSeasonCommits, season.finishedReviews, season.pendingReviews, season.toRead);
     }
 
     function checkSeason() private {

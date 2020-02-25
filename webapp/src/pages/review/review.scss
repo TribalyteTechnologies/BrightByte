@@ -33,4 +33,16 @@ page-review {
         padding: 0;
         margin: 0;
     }
+
+    ion-content .scroll-content {
+        overflow-y: auto;
+        --padding-top: 0px;
+        --padding-bottom: 0px;
+        --padding-start: 0px;
+        --padding-end: 0px;
+    }
+
+    ion-col .scrollable-content {
+        overflow-y: auto;
+    }
 }

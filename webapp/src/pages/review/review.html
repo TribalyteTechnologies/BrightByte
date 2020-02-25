@@ -6,8 +6,9 @@
     </ion-row>
 </ion-header>
 
-<ion-content padding class="main-container">
-    <filter-selection [projects]="projects" [parentFilterValue]="filterValue" [parentPendingFilter]="filterIsPending" (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
+<ion-content no-padding class="main-container">
+    <filter-selection [projects]="projects" [parentFilterValue]="filterValue" [parentPendingFilter]="filterIsPending"
+        (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
     <ion-row no-padding>
         <ion-col col-6 padding class="text-details text-details--bold">
             {{ "commitReview.showAllAssignedCommits" | translate }}
@@ -18,44 +19,51 @@
     </ion-row>
     <ion-row no-padding class="scroll-dimensions">
         <ion-col no-padding [attr.col-6]="currentCommit" class="main-style scroll-y">
-            <ion-list class="scrollable-content">
-                <ion-item no-padding [ngClass]="commit === currentCommit ? 'item-height card card__selected' : 'item-height card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
-                    <commit-card [isReviewPage]="true" [reviewerAddress]="userAdress" [commit]="commit"></commit-card>
-                </ion-item>
-            </ion-list>
+            <ion-content>
+                <ion-list>
+                    <ion-item no-padding
+                        [ngClass]="commit === currentCommit ? 'item-height card card__selected' : 'item-height card'"
+                        *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
+                        <commit-card [isReviewPage]="true" [reviewerAddress]="userAdress" [commit]="commit">
+                        </commit-card>
+                    </ion-item>
+                </ion-list>
 
-            <ion-infinite-scroll (ionInfinite)="refresh($event)" *ngIf="!disabledInfiniteScroll">
-                <ion-infinite-scroll-content
-                  loadingSpinner="bubbles"
-                  loadingText="{{ 'commitReview.loadMoreCommits' | translate }}">
-                </ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+                <ion-infinite-scroll (ionInfinite)="refresh($event)" *ngIf="!disabledInfiniteScroll">
+                    <ion-infinite-scroll-content loadingSpinner="bubbles"
+                        loadingText="{{ 'commitReview.loadMoreCommits' | translate }}">
+                    </ion-infinite-scroll-content>
+                </ion-infinite-scroll>
+            </ion-content>
         </ion-col>
         <ion-col col-6 *ngIf="currentCommit" class="scroll-y">
             <div class="scrollable-content">
                 <ion-row padding class="main-style">
                     <ion-col col-11>
-                        <ion-row >  
+                        <ion-row>
                             <div class="text-title text-ellipsis">{{ currentCommit.title }}</div>
                         </ion-row>
                         <ion-row align-items-center class="text-description">
                             <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
-                            <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
+                            <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg">
+                            {{ currentCommitName }} ( {{ currentCommitEmail }} )
                         </ion-row>
                         <ion-row>
-                            <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url)">  #{{ currentCommit.urlHash }}</div>
+                            <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url)">
+                                #{{ currentCommit.urlHash }}</div>
                         </ion-row>
                     </ion-col>
                     <ion-col col-1 *ngIf="(isSpinnerLoading | async)">
                         <ion-spinner name="bubbles"></ion-spinner>
                     </ion-col>
                 </ion-row>
-                <ion-row  *ngIf="needReview" padding class="title-left text-details text-details--bold">
+                <ion-row *ngIf="needReview" padding class="title-left text-details text-details--bold">
                     {{ "commitReview.setReview" | translate }}
                 </ion-row>
-                
+
                 <div *ngIf="needReview">
-                    <comment [isReviewNeeded]="true" [isReviewPage]="true" (submitReview)=setReview(currentCommit.url,$event.txt,$event.points)></comment>
+                    <comment [isReviewNeeded]="true" [isReviewPage]="true"
+                        (submitReview)=setReview(currentCommit.url,$event.txt,$event.points)></comment>
                 </div>
                 <ion-row padding *ngIf="userCommitComment[0]" class="text-details text-details--bold">
                     {{ "review.youReview" | translate }}
@@ -65,7 +73,9 @@
                     {{ "review.otherReview" | translate }}
                 </ion-row>
                 <ion-col no padding *ngIf="!needReview">
-                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="false" [isReviewPage]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)" (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
+                    <comment *ngFor="let comment of commitComments; let j=index " [isReviewNeeded]="false"
+                        [isReviewPage]="true" [review]="comment" (thumbsUp)="setThumbs(currentCommit.url,j, 1)"
+                        (thumbsDown)="setThumbs(currentCommit.url,j, 2)"></comment>
                     <ion-row padding></ion-row>
                 </ion-col>
             </div>

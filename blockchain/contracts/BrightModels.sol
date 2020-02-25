@@ -25,6 +25,7 @@ library BrightModels {
         UserStats seasonStats;
         mapping (bytes32 => bool) seasonCommits;
         bytes32[] urlSeasonCommits;
+        bytes32[] allReviews;
         bytes32[] finishedReviews;
         bytes32[] pendingReviews;
         bytes32[] toRead;

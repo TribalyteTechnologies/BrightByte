@@ -8,7 +8,7 @@ import { LoginService } from "../../core/login.service";
 import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
-import { TransactionQueueService} from "../../domain/transaction-queue.service";
+import { TransactionQueueService } from "../../domain/transaction-queue.service";
 import { AppConfig } from "../../app.config";
 import { Observable } from "rxjs";
 
@@ -22,6 +22,9 @@ export class ReviewPage {
     public readonly ALL = "all";
     public readonly INCOMPLETE = "incomplete";
     public readonly COMPLETE = "complete";
+    public readonly PENDING = "pending";
+    public readonly TRUE_STRING = "true";
+
     public userAdress: string;
     public displayCommitsToReview: Array<UserCommit>;
     public arrayCommits: Array<UserCommit>;
@@ -54,11 +57,13 @@ export class ReviewPage {
 
     public submitError = "";
 
-    private readonly ANONYMOUS_ADDRESS = "0x0000000000000000000000000000000000000000";
     private log: ILogger;
     private numberOfReviews = -1;
     private isNewReview = false;
     private loadedCommits: number;
+    private maxReviews: number;
+    private initializing: boolean;
+    private currentReviewFilterState: ReviewStateFilterTypes;
 
     constructor(
         public popoverCtrl: PopoverController,
@@ -72,87 +77,104 @@ export class ReviewPage {
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
-        this.filterValue = this.storageSrv.get(AppConfig.StorageKey.REVIEWFILTER);
-        this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === "true";
-        this.userAdress = this.loginService.getAccountAddress();
-
     }
 
     public ngOnInit() {
+        this.filterValue = this.storageSrv.get(AppConfig.StorageKey.REVIEWFILTER);
+        switch (this.filterValue)  {
+            case this.INCOMPLETE:
+                this.currentReviewFilterState = ReviewStateFilterTypes.pending;
+                break;
+            case this.COMPLETE:
+                this.currentReviewFilterState = ReviewStateFilterTypes.finished;
+                break;
+            default:
+                this.currentReviewFilterState = ReviewStateFilterTypes.all;
+        }
+        this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === this.TRUE_STRING;
+        this.userAdress = this.loginService.getAccountAddress();
+        this.initializing = true;
         this.isSpinnerLoading = this.transactionQueueService.getStatus();
-    }
-
-    public ionViewWillEnter(): void {
-        this.loadedCommits = 0;
         this.refresh();
     }
 
     public refresh(event?) {
         this.log.d("Refreshing page");
-        this.spinnerService.showLoader();
+        if (this.initializing) {
+            this.spinnerService.showLoader();
+        }
         let commits: Array<UserCommit>;
-        this.contractManagerService.getSeasonCommitsToReview(this.loadedCommits)
-            .then((commitConcat: Array<UserCommit>[]) => {
-                commits = commitConcat[0].concat(commitConcat[1]);
-                if (this.numberOfReviews !== commitConcat[1].length) {
-                    if (this.numberOfReviews !== -1) {
-                        this.isNewReview = true;
-                    }
-                    this.numberOfReviews = commitConcat[1].length;
+        this.contractManagerService.getSeasonState()
+        .then(state => {
+            if (!event){
+                this.loadedCommits = state[this.currentReviewFilterState];
+            }
+            if (this.initializing){
+                this.initializing = false;
+                this.maxReviews = this.loadedCommits;
+            }
+            return this.contractManagerService.getSeasonCommitsToReview(this.loadedCommits);
+        })
+        .then((commitConcat: Array<UserCommit>[]) => {
+            commits = commitConcat[this.currentReviewFilterState];
+            if (this.numberOfReviews !== commitConcat[1].length) {
+                if (this.numberOfReviews !== -1) {
+                    this.isNewReview = true;
                 }
-                commits = commits.filter(commit => {
-                    return commit.url !== "";
-                });
-                let reviewers = commits.map((commit) => {
-                    return this.contractManagerService.getReviewersName(commit.url);
-                });
-                return Promise.all(reviewers);
-            }).then((reviewers) => {
-                commits.forEach((com, idx) => {
-                    com.reviewers = reviewers[idx];
-                });
-                let commitsPromises = commits.map((com) => {
-                    return this.contractManagerService.getFeedback(com.url)
+                this.numberOfReviews = commitConcat[1].length;
+            }
+            commits = commits.filter(commit => {
+                return commit.url !== "";
+            });
+            let reviewers = commits.map((commit) => {
+                return this.contractManagerService.getReviewersName(commit.url);
+            });
+            return Promise.all(reviewers);
+        }).then((reviewers) => {
+            commits.forEach((com, idx) => {
+                com.reviewers = reviewers[idx];
+            });
+            let commitsPromises = commits.map((com) => {
+                return this.contractManagerService.getFeedback(com.url)
                     .then((rsp) => {
                         com.isReadNeeded = rsp;
                         return com;
                     });
-                });
-                return Promise.all(commitsPromises);
-            }).then((rsp) => {
-                commits = rsp;
-                this.log.d("Response received: " + rsp);
-                if(this.loadedCommits > 0) {
-                    this.disabledInfiniteScroll = (commits == null || commits.length === 0) ? true : false;
-                    this.displayCommitsToReview.push(...commits);
-                    event.complete();
-                }else {
-                    this.displayCommitsToReview = commits;
-                }
-                let projects = commits.map(commit => commit.project);
-                this.projects = projects.filter((value, index, array) => array.indexOf(value) === index);
-                this.loadedCommits += AppConfig.COMMITS_BLOCK_SIZE;
-                this.spinnerService.hideLoader();
-                return this.contractManagerService.getUserDetails(this.userAdress);
-            }).then((ud) => {
-                this.name = ud.name;
-                this.applyFilters(this.displayCommitsToReview);
-                this.filterArrayCommits = this.displayCommitsToReview;
-                let url = new URLSearchParams(document.location.search);
-                if (url.has(AppConfig.UrlKey.REVIEWID)) {
-                    let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
-                    let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
-                    this.shouldOpen(filteredCommit[0]);
-                }
-            }).catch((e) => {
-                this.translateService.get("commits.getCommits").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-                this.spinnerService.hideLoader();
-                throw e;
             });
+            return Promise.all(commitsPromises);
+        }).then((rsp) => {
+            commits = rsp;
+            this.log.d("Response received: " + rsp);
+            if (this.loadedCommits < this.maxReviews) {
+                this.displayCommitsToReview.push(...commits);
+                event.complete();
+            } else {
+                this.displayCommitsToReview = commits;
+            }
+            this.disabledInfiniteScroll = this.loadedCommits - AppConfig.COMMITS_BLOCK_SIZE < 0;
+            let projects = commits.map(commit => commit.project);
+            this.projects = projects.filter((value, index, array) => array.indexOf(value) === index);
+            this.loadedCommits -= AppConfig.COMMITS_BLOCK_SIZE;
+            this.spinnerService.hideLoader();
+            return this.contractManagerService.getUserDetails(this.userAdress);
+        }).then((ud) => {
+            this.name = ud.name;
+            this.applyFilters(this.displayCommitsToReview);
+            let url = new URLSearchParams(document.location.search);
+            if (url.has(AppConfig.UrlKey.REVIEWID)) {
+                let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
+                let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
+                this.shouldOpen(filteredCommit[0]);
+            }
+        }).catch((e) => {
+            this.translateService.get("commits.getCommits").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+            this.spinnerService.hideLoader();
+            throw e;
+        });
     }
 
     public openUrl(url: string) {
@@ -161,43 +183,44 @@ export class ReviewPage {
     }
 
     public shouldOpen(commit: UserCommit) {
-        this.spinnerService.showLoader();
+        if (this.loadedCommits === this.maxReviews) {
+            this.spinnerService.showLoader();
+        }
         commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
-            .then((comments: Array<CommitComment>) => {
-                this.openedComments = true;
-                this.commitComments = comments;
-                let allComments = comments;
-                this.userCommitComment = allComments.filter((commitUR) => {
-                    return commitUR.user === this.userAdress;
-                });
-                let idx = allComments.indexOf(this.userCommitComment[0]);
-                if (idx !== -1) {
-                    allComments.splice(idx, 1);
-                    this.commitComments = allComments;
-                    this.needReview = false;
-                } else {
-                    this.commitComments = allComments;
-                    this.needReview = true;
-                }
-                this.currentCommit = commit;
-                this.openedComments = true;
-                this.spinnerService.hideLoader();
-                return this.getReviewerName(commit);
-            }).then((name) => {
-                this.currentCommitName = name[0];
-                this.currentCommitEmail = name[1];
-                return this.contractManagerService.setFeedback(commit.url);
-            }).then((val) => {
-                this.log.d("Feedback response: " + val);
-                let idx = this.filterArrayCommits.indexOf(commit);
-                this.filterArrayCommits[idx].isReadNeeded = false;
-            }).catch(err => {
-                this.spinnerService.hideLoader();
-                this.log.e(err);
-                throw err;
+        .then((comments: Array<CommitComment>) => {
+            this.openedComments = true;
+            this.commitComments = comments;
+            let allComments = comments;
+            this.userCommitComment = allComments.filter((commitUR) => {
+                return commitUR.user === this.userAdress;
             });
-
+            let idx = allComments.indexOf(this.userCommitComment[0]);
+            if (idx !== -1) {
+                allComments.splice(idx, 1);
+                this.commitComments = allComments;
+                this.needReview = false;
+            } else {
+                this.commitComments = allComments;
+                this.needReview = true;
+            }
+            this.currentCommit = commit;
+            this.openedComments = true;
+            this.spinnerService.hideLoader();
+            return this.getReviewerName(commit);
+        }).then((name) => {
+            this.currentCommitName = name[0];
+            this.currentCommitEmail = name[1];
+            return this.contractManagerService.setFeedback(commit.url);
+        }).then((val) => {
+            this.log.d("Feedback response: " + val);
+            let idx = this.filterArrayCommits.indexOf(commit);
+            this.filterArrayCommits[idx].isReadNeeded = false;
+        }).catch(err => {
+            this.spinnerService.hideLoader();
+            this.log.e(err);
+            throw err;
+        });
     }
 
     public setReputation(value: number, starNum: number) {
@@ -211,30 +234,25 @@ export class ReviewPage {
 
     public applyFilters(usercommits: Array<UserCommit>) {
         let projectFilter = this.setProjectFilter(usercommits);
-        this.spinnerService.showLoader();
-        this.setStatusFilter(projectFilter)
-            .then((filteredCommits) => {
-                let pendingFilter = this.setPendingFilter(filteredCommits);
-                this.filterArrayCommits = pendingFilter.sort((c1, c2) => {
-                    return (c2.creationDateMs - c1.creationDateMs);
-                });
-                this.spinnerService.hideLoader();
-            }).catch((error) => {
-                this.log.e("Error: " + error);
-                this.spinnerService.hideLoader();
-            });
+        let pendingFilter = this.setPendingFilter(projectFilter);
+        this.filterArrayCommits = pendingFilter.sort((c1, c2) => {
+            return (c2.creationDateMs - c1.creationDateMs);
+        });
     }
 
     public setFilter(name: string) {
         switch (name) {
             case this.INCOMPLETE:
                 this.filterValue === this.INCOMPLETE ? this.filterValue = "" : this.filterValue = this.INCOMPLETE;
+                this.applyStateFilter(ReviewStateFilterTypes.pending);
                 break;
             case this.COMPLETE:
                 this.filterValue === this.COMPLETE ? this.filterValue = "" : this.filterValue = this.COMPLETE;
+                this.applyStateFilter(ReviewStateFilterTypes.finished);
                 break;
-            case "pending":
+            case this.PENDING:
                 this.filterIsPending = !this.filterIsPending;
+                this.applyFilters(this.displayCommitsToReview);
                 break;
             default:
                 this.filterValue = "";
@@ -243,9 +261,11 @@ export class ReviewPage {
         this.openedComments = false;
         if (this.filterValue !== null) {
             this.storageSrv.set(AppConfig.StorageKey.REVIEWFILTER, this.filterValue.toString());
+            if (this.filterValue === "") {
+                this.applyStateFilter(ReviewStateFilterTypes.all);
+            }
         }
         this.storageSrv.set(AppConfig.StorageKey.REVIEWPENDINGFILTER, this.filterIsPending.toString());
-        this.applyFilters(this.displayCommitsToReview);
     }
 
     public setProject(name: string) {
@@ -324,7 +344,7 @@ export class ReviewPage {
     }
 
     private setProjectFilter(userCommits: Array<UserCommit>): Array<UserCommit> {
-        if (!(this.projectSelected === this.ALL)) {
+        if (this.projectSelected !== this.ALL) {
             return userCommits.filter(commit => {
                 return (commit.project === this.projectSelected);
             });
@@ -333,49 +353,12 @@ export class ReviewPage {
         }
     }
 
-    private applyIncompleteFilter(userCommits: Array<UserCommit>): Promise<Array<UserCommit>>{
-        let notReviewed = userCommits.filter(commit => {
-            let isReviewed = commit.reviewers[1].some(element => element.userHash === this.userAdress ||
-                element.userHash === this.ANONYMOUS_ADDRESS);
-            return (!isReviewed);
-        });
-
-        let outdatedFilter = new Array<UserCommit>();
-
-        let promises = notReviewed.map(commit => {
-            let promise = this.contractManagerService.checkCommitCurrentSeason(commit.url, commit.author)
-                .then(rsp => {
-                    if (rsp) {
-                        outdatedFilter.push(commit);
-                    }
-                    return rsp;
-                });
-            return promise;
-        });
-
-        return Promise.all(promises).then(() =>  outdatedFilter);
+    private applyStateFilter(state: ReviewStateFilterTypes): void {
+        this.initializing = true;
+        this.currentReviewFilterState = state;
+        this.refresh();
     }
 
-    private applyCompleteFilter(userCommits: Array<UserCommit>): Promise<Array<UserCommit>>{
-        return new Promise(resolve => {
-            let reviewed = userCommits.filter(commit => {
-                let isReviewed = commit.reviewers[1].some(element => element.userHash === this.userAdress);
-                return isReviewed;
-            });
-            resolve(reviewed);
-        });
-    }
-
-    private setStatusFilter(userCommits: Array<UserCommit>): Promise<Array<UserCommit>> {
-        switch (this.filterValue) {
-            case this.INCOMPLETE:
-                return this.applyIncompleteFilter(userCommits);
-            case this.COMPLETE:
-                return this.applyCompleteFilter(userCommits);
-            default:
-                return Promise.resolve(userCommits);
-        }
-    }
     private setPendingFilter(userCommits: Array<UserCommit>): Array<UserCommit> {
         if (this.filterIsPending) {
             return userCommits.filter(commit => {
@@ -385,4 +368,10 @@ export class ReviewPage {
             return userCommits;
         }
     }
+}
+
+enum ReviewStateFilterTypes {
+    pending = 0,
+    finished = 1,
+    all = 2
 }

@@ -193,50 +193,71 @@ export class ContractManagerService {
 
     public getCommitsToReview(): Promise<UserCommit[][]> {
         return this.initProm
-        .then(([bright, commit]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", bright);
-            return bright.methods.getUserCommits(this.currentUser.address).call()
-            .then((allUserCommits: Array<any>) => {
-                let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                    .then((commitVals: any) => {
-                        return UserCommit.fromSmartContract(commitVals, true);
-                    }));
-                let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                    .then((commitVals: any) => {
-                        return UserCommit.fromSmartContract(commitVals, false);
-                    }));
-                return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
+            .then(([bright, commit]) => {
+                this.log.d("Public Address: ", this.currentUser.address);
+                this.log.d("Contract artifact", bright);
+                return bright.methods.getUserCommits(this.currentUser.address).call()
+                    .then((allUserCommits: Array<any>) => {
+                        let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                            .then((commitVals: any) => {
+                                return UserCommit.fromSmartContract(commitVals, true);
+                            }));
+                        let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                            .then((commitVals: any) => {
+                                return UserCommit.fromSmartContract(commitVals, false);
+                            }));
+                        return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
+                    });
+            }).catch(err => {
+                this.log.e("Error obtaining commits to review :", err);
+                throw err;
             });
-        }).catch(err => {
-            this.log.e("Error obtaining commits to review :", err);
-            throw err;
-        });
     }
 
-    public getSeasonCommitsToReview(startIndex: number): Promise<UserCommit[][]> {
+    public getSeasonState(): Promise<number[]> {
+        let brightContract;
         return this.initProm
-        .then(([bright, commit]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", bright);
-            return bright.methods.getCurrentSeason().call().then(seasonData => {
-                return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, 
-                                                           (startIndex + AppConfig.COMMITS_BLOCK_SIZE)).call();
-            }).then((allUserCommits: Array<any>) => {
-                let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                    .then((commitVals: any) => {
-                        return UserCommit.fromSmartContract(commitVals, true);
-                    }));
-                let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                    .then((commitVals: any) => {
-                        return UserCommit.fromSmartContract(commitVals, false);
-                    }));
-                return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
+            .then(([bright]) => {
+                this.log.d("Public Address: ", this.currentUser.address);
+                this.log.d("Contract artifact", bright);
+                brightContract = bright;
+                return bright.methods.getCurrentSeason().call();
+            }).then(seasonData => {
+                return brightContract.methods.getUserSeasonState(this.currentUser.address, seasonData[0]).call();
+            }).then(state => {
+                return [state[0], state[1], state[4]];
             });
-        }).catch(err => {
-            this.log.e("Error obtaining commits to review :", err);
-            throw err;
-        });
+    }
+
+    public getSeasonCommitsToReview(endIndex: number): Promise<UserCommit[][]> {
+        return this.initProm
+            .then(([bright, commit]) => {
+                this.log.d("Public Address: ", this.currentUser.address);
+                this.log.d("Contract artifact", bright);
+                return bright.methods.getCurrentSeason().call()
+                .then(seasonData => {
+                    let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
+                    startIndex = startIndex < 0 ? 0 : startIndex;
+                    return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex).call();
+                }).then((allUserCommits: Array<any>) => {
+                    let promisesAllReviews = allUserCommits[4].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, true);
+                        }));
+                    let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, true);
+                        }));
+                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, false);
+                        }));
+                    return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished), Promise.all(promisesAllReviews)]);
+                });
+            }).catch(err => {
+                this.log.e("Error obtaining commits to review :", err);
+                throw err;
+            });
     }
 
     public getAllUserAddresses(): Promise<Array<string>> {
@@ -274,7 +295,7 @@ export class ContractManagerService {
                     let result;
                     if (returnsUserCommits) {
                         result = UserCommit.fromSmartContract(commitVals, false);
-                    }else{
+                    } else {
                         result = CommitDetails.fromSmartContract(commitVals);
                     }
                     return result;
@@ -389,15 +410,15 @@ export class ContractManagerService {
                 let promise: Promise<any>;
                 if (global) {
                     promise = contractArtifact.methods.getUser(userAddress).call()
-                    .then((commitsVals: Array<any>) => {
-                        return UserReputation.fromSmartContractGlobalReputation(commitsVals);
-                    });
+                        .then((commitsVals: Array<any>) => {
+                            return UserReputation.fromSmartContractGlobalReputation(commitsVals);
+                        });
                 } else {
                     promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
-                    .then((commitsVals: Array<any>) => {
-                        return UserReputation.fromSmartContract(commitsVals);
-                    });
-                } 
+                        .then((commitsVals: Array<any>) => {
+                            return UserReputation.fromSmartContract(commitsVals);
+                        });
+                }
                 return promise;
             });
             return Promise.all(promises);
@@ -486,7 +507,7 @@ export class ContractManagerService {
             throw e;
         });
     }
-    
+
     public getContracts(): Promise<Array<ITrbSmartContact>> {
         return this.initProm;
     }
