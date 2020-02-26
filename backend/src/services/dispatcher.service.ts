@@ -20,7 +20,7 @@ import { AchievementDto } from "../dto/achievement.dto";
 export class DispatcherService {
 
     private readonly TIMESTAMP_DIVISION_FACTOR = 1000;
-    private readonly THRESHOLD_IN_SECS = 10 * 60;
+    private readonly THRESHOLD_IN_SECS = 3 * 60;
     private achievementStack: Array<AchievementProcessor>;
     private log: ILogger;
 
