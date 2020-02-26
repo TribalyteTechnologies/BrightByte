@@ -48,7 +48,6 @@ export class ClientGateway implements OnGatewayInit, OnGatewayDisconnect, OnGate
         return new Observable<WsResponse<boolean>>(observer => {
             if (address) {
                 this.clientNtSrv.addSession(client.id, address);
-                this.log.d("Address " + address + " added");
                 observer.next({ event: "addAddress", data: true });
                 observer.complete();
             } else {

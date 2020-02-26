@@ -7,6 +7,9 @@ import { AchievementDto } from "../dto/achievement.dto";
 @Injectable()
 export class ClientNotificationService {
 
+    private readonly NEW_ACHIEVEMENT = "newAchievement";
+    private readonly NEW_TOKEN = "newToken";
+
     private log: ILogger;
     private server: Server;
     private sockets: { [id: string]: SocketIO.Socket };
@@ -27,17 +30,8 @@ export class ClientNotificationService {
     }
 
     public addSession(sessionId: string, userAddress: string) {
-        let previousSession;
-        this.sessions.forEach((value: string, key: string) => {
-            if (!previousSession && value === userAddress) {
-                previousSession = key;
-            }
-        });
         this.sessions.set(sessionId, userAddress);
-        if (previousSession) {
-            this.sessions.delete(previousSession);
-            this.log.d("User " + userAddress + "has updated session to " + sessionId);
-        }
+        this.log.d("User " + userAddress + "has addedd a new session " + sessionId);
     }
 
     public removeSession(userSession: string): boolean {
@@ -50,41 +44,38 @@ export class ClientNotificationService {
     }
 
     public sendNewAchievement(userAddress: string, achievements: Array<AchievementDto>) {
-        let isDbInitOngoing = this.sessions.size <= 0;
-        if (!isDbInitOngoing) {
-            let userSession = this.findKey(userAddress);
-            try {
-                this.log.d("Sending achievements: ", achievements);
-                this.sockets[userSession].emit("newAchievement", achievements);
-            } catch (error) {
-                this.log.e("Cannot send achievement to client", error);
-            }
-        }
+        this.log.d("Sending achievements: ", achievements);
+        this.send(userAddress, this.NEW_ACHIEVEMENT, achievements);
     }
 
     public sendToken(userAddress: string, token: string) {
+        this.log.d("Sending token to user: ", userAddress);
+        this.send(userAddress, this.NEW_TOKEN, token);
+    }
+
+    private send(userAddress: string, event: string, content: string | Array<AchievementDto>) {
         let isDbInitOngoing = this.sessions.size <= 0;
         if (!isDbInitOngoing) {
-            let userSession = this.findKey(userAddress);
+            let userSessions = this.findKey(userAddress);
             try {
-                this.log.d("Sending token to user: ", userAddress);
-                this.sockets[userSession].emit("newToken", token);
+                userSessions.forEach(session => {
+                    this.sockets[session].emit(event, content);
+                });
             } catch (error) {
-                this.log.e("Cannot send achievement to client", error);
+                this.log.e("Cannot send content to client", error);
             }
         }
     }
 
-    private findKey(userAddress: string): string {
-        let userSession: string;
+    private findKey(userAddress: string): Array<string> {
+        let userSessions = [];
         if (this.sessions.size > 0) {
             for (let [key, value] of this.sessions.entries()) {
                 if (value === userAddress) {
-                    userSession = key;
-                    break;
+                    userSessions.push(key);
                 }
             }
         }
-        return userSession;
+        return userSessions;
     }
 }
