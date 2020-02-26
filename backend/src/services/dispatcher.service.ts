@@ -19,6 +19,8 @@ import { AchievementDto } from "../dto/achievement.dto";
 @Injectable()
 export class DispatcherService {
 
+    private readonly TIMESTAMP_DIVISION_FACTOR = 1000;
+    private readonly THRESHOLD_IN_SECS = 10 * 60;
     private achievementStack: Array<AchievementProcessor>;
     private log: ILogger;
 
@@ -43,7 +45,8 @@ export class DispatcherService {
             }),
             map(achievements => achievements.filter(value => !!value)),
             tap((obtainedAchievements: Array<AchievementDto>) => {
-                if (obtainedAchievements.length > 0) {
+                let currentThresholdedDate = (Date.now() / this.TIMESTAMP_DIVISION_FACTOR) - this.THRESHOLD_IN_SECS;
+                if (obtainedAchievements.length > 0 && event.timestamp > currentThresholdedDate) {
                     this.log.d("The obtained achivements for the event are: ", obtainedAchievements);
                     this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
                 }
