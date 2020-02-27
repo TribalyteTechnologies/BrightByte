@@ -112,7 +112,7 @@ export class MigrationService {
             users.forEach((user, index) => {
                 for (let i = 0; i <= seasonNumber; i++) {
                     let userSeason = new UserSeason();
-                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]);
+                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]) * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
                     userSeason.seasonStats.agreedPercentage = Number(seasonReputation[counter][4]);
                     userSeason.seasonStats.commitsMade = Number(seasonReputation[counter][5]);
                     userSeason.seasonStats.reviewsMade = Number(seasonReputation[counter][6]);
@@ -466,6 +466,7 @@ export class MigrationService {
                 let raw = "0x" + tx.serialize().toString("hex");
                 return this.web3.eth.sendSignedTransaction(raw);
             }).then((transactionHash) => {
+                
                 console.log("Hash transaction: " + transactionHash.transactionHash);
                 return transactionHash;
             }).catch((e) => {
@@ -474,7 +475,7 @@ export class MigrationService {
     }
 
     private calculateCommitPonderation(cleanliness: Array<number>, complexity: Array<number>, revKnowledge: Array<number>): Array<number> {
-        let WEIGHT_FACTOR = 10000;
+        let WEIGHT_FACTOR = 1000000000000;
         let weightedCleanliness = 0;
         let complexityPonderation = 0;
         let totalKnowledge = 0;
@@ -482,7 +483,7 @@ export class MigrationService {
             totalKnowledge += Number(revKnowledge[j]);
         }
         for (let i = 0; i < cleanliness.length; i++) {
-            let userKnowledge = (revKnowledge[i] * MigrationConfig.WEIGHT_FACTOR) / totalKnowledge;
+            let userKnowledge = (revKnowledge[i] * WEIGHT_FACTOR) / totalKnowledge;
             weightedCleanliness += (cleanliness[i] * userKnowledge);
             complexityPonderation += (complexity[i] * userKnowledge);
         }

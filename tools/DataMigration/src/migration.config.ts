@@ -12,6 +12,7 @@ export class MigrationConfig {
     public static readonly NUMBER_SET_COMMITS = 5;
     public static readonly INITIAL_SEASON_TIMESTAMP = 1550047598;
     public static readonly WEIGHT_FACTOR = 10000;
+    public static readonly WEIGHT_REPUTATION_FACTOR = 100000000;
     public static readonly NUMBER_SET_SEASON_COMMITS = 25;
     public static readonly INVALID_USERS_ADDRESS = "0x0000000000000000000000000000000000000000";
     public static readonly EXCLUDED_USERS_ADDRESS = ["0x0000000000000000000000000000000000000000"];
