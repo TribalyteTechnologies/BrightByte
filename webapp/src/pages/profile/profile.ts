@@ -24,17 +24,20 @@ export class Profile {
     public avatarData: string;
     public imageSelected = false;
     public userName: string;
-    public userNamePlaceholder: string;
     public errorMsg: string;
+    public successMsg: string;
     public uploadForm: FormGroup;
 
-    private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload";
+    private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly IMAGE_FIELD_NAME = "image";
+    private readonly USER_NAME_FIELD_NAME = "userName";
 
-    private noImageError: string;
     private noChangesError: string;
     private uploadError: string;
     private defaultError: string;
+    private successMessageName: string;
+    private successMessageAvatar: string;
+    private changeNameError: string;
     private userAddress: string;
     private log: ILogger;
 
@@ -56,23 +59,31 @@ export class Profile {
     public ngOnInit() {
         this.userAddress = this.loginSrv.getAccountAddress();
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
-        this.translateSrv.get(["setProfile.noImageError", "setProfile.uploadError", "setProfile.defaultError", "setProfile.noChangesError"])
+        this.translateSrv.get([
+            "setProfile.uploadError",
+            "setProfile.defaultError",
+            "setProfile.noChangesError",
+            "setProfile.successMessageName", 
+            "setProfile.successMessageAvatar", 
+            "setProfile.changeNameError"])
         .subscribe(translation => {
-            this.noImageError = translation["setProfile.noImageError"];
             this.uploadError = translation["setProfile.uploadError"];
             this.defaultError = translation["setProfile.defaultError"];
             this.noChangesError = translation["setProfile.noChangesError"];
+            this.successMessageName =  translation["setProfile.successMessageName"];
+            this.successMessageAvatar =  translation["setProfile.successMessageAvatar"];
+            this.changeNameError =  translation["setProfile.changeNameError"];
         });
         this.uploadForm = this.formBuilder.group({
             image: [""],
-            userName: ""
+            userName: this.formBuilder.control("")
         });
 
         this.contractManagerService.getUserDetails(this.userAddress)
         .then(user => {
-            this.userNamePlaceholder = user.name;
+            this.userName = user.name;
+            this.uploadForm.get(this.USER_NAME_FIELD_NAME).setValue(user.name);
         });
-    
     }
 
     public openFile(event: Event) {
@@ -121,29 +132,43 @@ export class Profile {
     }
 
     public saveProfileChange() {
-        if (this.userName && this.userName !== this.userNamePlaceholder) {
-            this.spinnerService.showLoader();
-            this.contractManagerService.setUserName(this.userName).then(() => {
+        let userName = this.uploadForm.get(this.USER_NAME_FIELD_NAME).value;
+        let promises = new Array<Promise<any>>();
+        this.errorMsg = null;
+        if (userName && userName !== this.userName) {
+            let promise = this.contractManagerService.setUserName(userName).then(() => {
                 this.log.d("The user has set a new name");
-                this.spinnerService.hideLoader();
-                this.dismiss();
+                this.successMsg = this.successMessageName;
+            }).catch(e => {
+                this.log.e("Error setting the new user name: ", e);
+                this.errorMsg = this.changeNameError;
             });
-        } else if (this.imageSelected) {
+            promises.push(promise);
+        }
+        if (this.imageSelected) {
             let formData = new FormData();
             formData.append(this.IMAGE_FIELD_NAME, this.uploadForm.get(this.IMAGE_FIELD_NAME).value);
-
-            this.http.post(this.UPDATE_IMAGE_URL + "?userHash=" + this.userAddress, formData)
-                .subscribe(
-                (response: IResponse) => {
-                    if (response.status === AppConfig.STATUS_OK) {
-                        this.avatarSrv.updateUrl(this.userAddress, AppConfig.SERVER_BASE_URL + response.data);
-                        this.dismiss();
-                    }
-                },
-                (error) => {
-                    this.errorMsg = this.uploadError;
-                });
-
+            let promise = this.http.post(this.UPDATE_IMAGE_URL + this.userAddress, formData).toPromise()
+            .then((response: IResponse) => {
+                if (response.status === AppConfig.STATUS_OK) {
+                    this.avatarSrv.updateUrl(this.userAddress, AppConfig.SERVER_BASE_URL + response.data);
+                    this.successMsg = this.successMessageAvatar;
+                }
+            }).catch(e => {
+                this.log.e("Error setting the new user avatar: ", e);
+                this.errorMsg = this.uploadError;
+            });
+            promises.push(promise);
+        }
+        if (promises.length > 0) {
+            this.spinnerService.showLoader();
+            Promise.all(promises).then(() => {
+                this.log.d("The user profile changed his profile");
+                this.spinnerService.hideLoader();
+                if(!this.errorMsg) {
+                    this.dismiss();
+                }
+            });
         } else {
             this.errorMsg = this.noChangesError;
         }
