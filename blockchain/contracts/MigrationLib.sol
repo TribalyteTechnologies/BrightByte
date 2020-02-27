@@ -40,7 +40,7 @@ library MigrationLib {
         season.seasonStats.cumulativeComplexity = complexity;
     }
     
-    function setSeasonUrls(BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp, uint256 seasonIndex, address userAddr, bytes32[] urls, bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd) public {
+    function setSeasonUrls(BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp, uint256 seasonIndex, address userAddr, bytes32[] urls, bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd, bytes32[] allRev) public {
         require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
@@ -56,6 +56,9 @@ library MigrationLib {
         }
         for(uint256 m = 0; m < toRd.length; m++) {
             season.toRead.push(toRd[m]);
+        }
+        for(uint256 w = 0; w < allRev.length; w++) {
+            season.allReviews.push(allRev[w]);
         }
     }
 }

@@ -275,10 +275,23 @@ export class MigrationService {
                 });
             })
 
-            console.log("Setting Users" + JSON.stringify(users));
-            console.log("Setting Commits" + JSON.stringify(commits));
-            console.log("Setting Comments" + JSON.stringify(comments));
+            console.log("All information obtained! Starting information sets.");
 
+            for(let i = 0; i < users.length; i++){
+                for (let j = 0; j < users[i].seasonData.length; j++) {
+                    let seasonData = users[i].seasonData[j]
+                    let allReviews = seasonData.finishedReviews.concat(seasonData.pendingReviews);
+                    let detailedReviews = allReviews.map(review =>  {
+                        let commit =  commits.find(commit => this.web3.utils.keccak256(commit.url) === review);
+                        commit.hash = review;
+                        return commit;
+                    })
+                    .sort((a, b) => a.creationDate - b.creationDate)
+                    .map(detRev => detRev.hash);
+                    users[i].seasonData[j].allReviews = detailedReviews;
+                }
+            }
+            
             this.numberOfSets = users.length + commits.length + comments.length;
             this.currentNumberOfSets = this.numberOfSets;
 
@@ -343,6 +356,9 @@ export class MigrationService {
                                     if (arrayMax.length < data.toRead.length) {
                                         arrayMax = user.toRead;
                                     }
+                                    if (arrayMax.length < data.allReviews.length) {
+                                        arrayMax = data.allReviews;
+                                    }
                                     let timesToRepeat = (arrayMax.length / MigrationConfig.NUMBER_SET_COMMITS) + 1;
                                     for (let p = 0; p < timesToRepeat; p++) {
                                         arrayToCount.push(p);
@@ -356,6 +372,7 @@ export class MigrationService {
                                                 let finS = data.finishedReviews.slice(i, sum);
                                                 let pendS = data.pendingReviews.slice(i, sum);
                                                 let toReadS = data.toRead.slice(i, sum);
+                                                let allRev = data.allReviews.slice(i, sum);
                                                 i = sum;
                                                 let byteCodeData = brightNew
                                                     .methods
@@ -365,7 +382,8 @@ export class MigrationService {
                                                         seasonCommits,
                                                         finS,
                                                         pendS,
-                                                        toReadS).encodeABI();
+                                                        toReadS,
+                                                        allRev).encodeABI();
                                                 return this.sendTx(byteCodeData, this.brightNewAddress);
                                             });
                                         },

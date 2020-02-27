@@ -24,11 +24,13 @@ export class UserSeason {
     public seasonStats: UserStats = new UserStats();
     public urlSeasonCommits = new Array<string>();
     public finishedReviews = new Array<string>();
+    public allReviews =  new Array<string>();
     public pendingReviews = new Array<string>();
     public toRead = new Array<string>();
 }
 
 export class CommitDataMigraton {
+    public hash = "";
     public title = "";
     public url = "";
     public author = "";
