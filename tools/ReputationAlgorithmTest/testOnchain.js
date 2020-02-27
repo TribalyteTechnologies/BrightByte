@@ -92,8 +92,9 @@ let onChainTest = async () => {
             cumulativePonderation = globalReputation[1];
             prevScore = currentScore;
             prevComplexity = currentComplexity;
-            console.log("REPUTATION", finalReputation);
-            console.log("PONDERATION", cumulativePonderation);
+            console.log(i + ".- REPUTATION", finalReputation);
+            console.log(i + ".- PONDERATION", cumulativePonderation);
+            console.log();
         }
     }
 

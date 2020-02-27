@@ -70,15 +70,16 @@ for (let i = 0; i < reviews.length; i++) {
         cumulativePonderation = globalReputation[1];
         prevScore = currentScore;
         prevComplexity = currentComplexity;
-        console.log("REPUTATION", finalReputation);
-        console.log("PONDERATION", cumulativePonderation);
+        console.log(i + ".- REPUTATION", finalReputation);
+        console.log(i + ".- PONDERATION", cumulativePonderation);
+        console.log();
     }
 }
 
 
 
 function calculateCommitPonderation(cleanliness, complexity, revKnowledge) {
-    let WEIGHT_FACTOR = 10000;
+    let WEIGHT_FACTOR = 1000000000000;
     let weightedCleanliness = 0;
     let complexityPonderation = 0;
     let totalKnowledge = 0;
@@ -87,6 +88,7 @@ function calculateCommitPonderation(cleanliness, complexity, revKnowledge) {
     }
     for (let i = 0; i < cleanliness.length; i++) {
         let userKnowledge = (revKnowledge[i] * WEIGHT_FACTOR) / totalKnowledge;
+        userKnowledge = Math.trunc(userKnowledge);
         weightedCleanliness += (cleanliness[i] * userKnowledge);
         complexityPonderation += (complexity[i] * userKnowledge);
     }
@@ -94,10 +96,9 @@ function calculateCommitPonderation(cleanliness, complexity, revKnowledge) {
 }
 
 function calculateUserReputation(prevReputation, prevPonderation, commitScore, commitComplexity, prevScore, prevComplexity) {
-    let WEIGHT_FACTOR = 10000;
     let num = (prevReputation * prevPonderation) - (prevScore * prevComplexity) + (commitScore * commitComplexity);
     let cumulativePonderation = prevPonderation - prevComplexity + commitComplexity;
-    let reputation = (num) / cumulativePonderation;
+    let reputation = Math.trunc(num / cumulativePonderation);
     return [reputation, cumulativePonderation];
 }
 
