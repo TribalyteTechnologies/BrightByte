@@ -36,6 +36,7 @@ export class TabsPage {
     public commits = new MenuItem("commits.svg", CommitPage, "commits");
     public reviews = new MenuItem("reviews.svg", ReviewPage, "reviews");
     public ranking = new MenuItem("ranking.svg", RankingPage, "ranking");
+    public readonly brightBytePage = AppConfig.BRIGHTBYTE_LANDING_PAGE;
     
     public menuArray = new Array<MenuItem>();
     public name: string = "";

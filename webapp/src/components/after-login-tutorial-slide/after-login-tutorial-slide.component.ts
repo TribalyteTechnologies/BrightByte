@@ -11,7 +11,7 @@ import { AppConfig } from "../../app.config";
 export class AfterLoginSlidePopover {
   @ViewChild(Slides) public slides: Slides;
   public readonly slidesContentIds = [1, 2, 3, 4];
-  public readonly brightBytePage = "https://www.tribalyte.com/";
+  public readonly brightBytePage = AppConfig.BRIGHTBYTE_LANDING_PAGE;
   
   constructor(private viewCtrl: ViewController,
               private storageSrv: LocalStorageService){
