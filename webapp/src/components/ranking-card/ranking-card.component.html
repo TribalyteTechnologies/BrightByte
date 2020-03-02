@@ -25,7 +25,7 @@
                 <ion-col col-3 class="remove-vertical-padding">
                     <div class="criterial-center">
                         <div *ngIf="isRanked; else notRanked">
-                            <span class="text-title text-title--yellow ranking-score"> {{ reputationString }} </span>
+                            <span class="text-title text-title--yellow ranking-score"> {{ reputation }} </span>
                             <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
                         </div>
                         <ng-template #notRanked no-padding>

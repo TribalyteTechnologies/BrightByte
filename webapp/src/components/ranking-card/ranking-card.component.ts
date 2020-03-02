@@ -15,12 +15,9 @@ import { Observable } from "rxjs";
 export class RankingCard {
 
     public ANONYMOUS = "";
-    public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
-    public userRank = "Undefined";
     public name = "No name";
     public userPosition = 0;
     public reputation = 0;
-    public level = 0;
     public email = "";
     public numReviews = 0;
     public numCommits = 0;
@@ -29,7 +26,6 @@ export class RankingCard {
     public userHash = "";
     public accountHash = "";
     public engagementIndex = 0;
-    public reputationString = "";
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
     public isRanked = false;
@@ -48,9 +44,7 @@ export class RankingCard {
     public set ranking(val: UserReputation) {
         let rankIdx = val.reputation;
         this.reputation = rankIdx;
-        this.userRank = this.rankingTitle[Math.round(rankIdx)];
         this.name = ((val.name === "") ? this.ANONYMOUS : val.name);
-        this.level = Math.round(val.reputation * 3);
         this.email = val.email;
         this.numReviews = val.numberReviewsMade;
         this.numCommits = val.numberCommitsMade,
@@ -59,7 +53,6 @@ export class RankingCard {
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
-        this.reputationString = (this.reputation / AppConfig.REPUTATION_DIVISION_FACTOR).toFixed(2);
         this.isRanked = val.isRanked;
         this.tooltipParams = {
             pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),

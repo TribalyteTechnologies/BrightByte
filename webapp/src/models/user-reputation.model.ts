@@ -16,7 +16,7 @@ export class UserReputation {
         let user = new UserReputation(); 
         user.name = userVals[0];
         user.email = userVals[1]; 
-        user.reputation = userVals[2] / AppConfig.REPUTATION_FACTOR; 
+        user.reputation = Math.round((userVals[2] / AppConfig.WEIGHT_REPUTATION_FACTOR) * 100) / 100;
         user.numberReviewsMade = parseInt(userVals[3]);
         user.numberCommitsMade = parseInt(userVals[4]);
         user.agreedPercentage = parseInt(userVals[5]);

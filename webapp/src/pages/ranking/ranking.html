@@ -78,7 +78,7 @@
                                 {{ "app.reviews" | translate }}
                             </ion-row>
                             <ion-row justify-content-center class="text-title">
-                                {{ userRankDetails.isRanked ? userRankDetails.reviews : ("ranking.reviewOutOf" | translate: reviewParams) }}
+                                {{ userRankDetails.isRanked ? userRankDetails.numberReviewsMade : ("ranking.reviewOutOf" | translate: reviewParams) }}
                             </ion-row>
                         </ion-col>
                         <ion-col no-padding>
@@ -86,7 +86,7 @@
                                 {{ "app.commits" | translate }}
                             </ion-row>
                             <ion-row justify-content-center class="text-title">
-                                {{ userRankDetails.isRanked ? userRankDetails.commits : ("ranking.commitOutOf" | translate: commitParams) }}
+                                {{ userRankDetails.isRanked ? userRankDetails.numberCommitsMade : ("ranking.commitOutOf" | translate: commitParams) }}
                             </ion-row>
                         </ion-col>
                         <ion-col *ngIf="globalSelected" no-padding>
@@ -103,7 +103,7 @@
                                 {{ "ranking.engagementIndex" | translate }}</ion-row>
                             <ion-row justify-content-center>
                                 <img src="../../assets/imgs/chains.svg">
-                                <span class="ranking-score">{{ userRankDetails.engagementIndexString }}</span>
+                                <span class="ranking-score">{{ userRankDetails.engagementIndex }}</span>
                             </ion-row>
                         </ion-col>
                     </ion-row>
@@ -112,7 +112,7 @@
                             <ion-col class="no-wrap, reputation">
                                 <div>
                                     <span *ngIf="userRankDetails.isRanked; else detailNotRanked"
-                                        class="ranking-details--star">{{ userRankDetails.scoreString }} </span>
+                                        class="ranking-details--star">{{ userRankDetails.reputation }} </span>
                                     <ng-template #detailNotRanked>
                                         <span
                                             class="ranking-details-text text-title--grey">{{ "ranking.noReputation" | translate }}</span>
@@ -125,7 +125,7 @@
                                     {{ "ranking.engagementIndex" | translate }}</ion-row>
                                 <ion-row justify-content-center>
                                     <img src="../../assets/imgs/chains.svg">
-                                    <span class="ranking-score">{{ userRankDetails.engagementIndexString }}</span>
+                                    <span class="ranking-score">{{ userRankDetails.engagementIndex }}</span>
                                 </ion-row>
                             </ion-col>
                         </ion-row>

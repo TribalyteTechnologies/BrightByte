@@ -13,23 +13,6 @@ import { ErrorHandlerService } from "../../domain/error-handler.service";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
 
-
-class UserRankDetails {
-    public name = "";
-    public rank = "";
-    public level = 0;
-    public email = "";
-    public score = 0;
-    public reviews = 0;
-    public commits = 0;
-    public agreed = 0;
-    public engagementIndex = 0;
-    public scoreString = "";
-    public engagementIndexString = "";
-    public hash = "";
-    public isRanked = true;
-}
-
 @Component({
     selector: "page-ranking",
     templateUrl: "ranking.html"
@@ -41,10 +24,7 @@ export class RankingPage {
     public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
-    public rankingTitle = ["Baby Coder", "Power Coder", "Ninja Coder", "Jedi coder", "Sith coder", "Squid Coder"];
-    public userRankDetails = new UserRankDetails();
-    public userRank = "No rank";
-    public userLevel = 0;
+    public userRankDetails = new UserReputation();
     public userStars = 0;
     public userHash = "";
     public userTrophyList = new Array<string>();
@@ -116,12 +96,6 @@ export class RankingPage {
     public refresh() {
         this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
             .then((usersRep: UserReputation[]) => {
-                usersRep = usersRep
-                .map(user => {
-                    user.reputation = Math.round(user.reputation / 10) * 10;
-                    return user;
-                });
-
                 this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
                     let ret: number;
                     if(this.globalSelected) {
@@ -166,33 +140,20 @@ export class RankingPage {
         this.showDetails = this.usersRep.length > 0;
         userDetails = (!userDetails && this.showDetails) ? this.usersRep[0] : userDetails;
         if (userDetails) {
-            this.userRankDetails.name = userDetails.name;
-            this.userRankDetails.email = userDetails.email;
-            this.userRankDetails.reviews = userDetails.numberReviewsMade;
-            this.userRankDetails.commits = userDetails.numberCommitsMade;
-            this.userRankDetails.agreed = userDetails.agreedPercentage;
-            this.userRankDetails.score = userDetails.reputation;
-            this.userRankDetails.rank = this.rankingTitle[Math.round(userDetails.reputation)];
-            this.userRankDetails.level = Math.round(userDetails.reputation * 3);
-            this.userRankDetails.engagementIndex = userDetails.engagementIndex;
-            this.userRankDetails.scoreString = (Math.floor(this.userRankDetails.score * 100 / AppConfig.REPUTATION_DIVISION_FACTOR) / 100)
-                                                .toFixed(2);
-            this.userRankDetails.engagementIndexString = this.userRankDetails.engagementIndex.toFixed(2);
-            this.userRankDetails.hash = userDetails.userHash;
-            this.userRankDetails.isRanked = userDetails.isRanked;
+            this.userRankDetails = userDetails;
             this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
             this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {
-                pendingCommits: Math.max(0, RankingPage.minNumberCommit - this.userRankDetails.commits),
-                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.reviews),
+                pendingCommits: Math.max(0, RankingPage.minNumberCommit - this.userRankDetails.numberCommitsMade),
+                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.numberReviewsMade),
                 agreedPercentage: userDetails.agreedPercentage
             };
             this.commitParams = {
-                numCommits: this.userRankDetails.commits,
+                numCommits: this.userRankDetails.numberCommitsMade,
                 minNumberCommit : RankingPage.minNumberCommit 
             };
             this.reviewParams = {
-                numReviews: this.userRankDetails.reviews,
+                numReviews: this.userRankDetails.numberReviewsMade,
                 minNumberReview : RankingPage.minNumberReview
             };
         }
