@@ -172,7 +172,7 @@ contract Bright {
         }
     }
 
-    function removeUserCommit(bytes32 url) public onlyDapp { //todo dan fallos
+    function removeUserCommit(bytes32 url) public onlyDapp {
         address userHash = tx.origin;
         uint finish;
         uint pending;
@@ -183,15 +183,16 @@ contract Bright {
         for(uint i = 0; i < pending; i++) {
             address reviewerHash = root.getCommitPendingReviewer(url, i);
             BrightModels.UserProfile storage reviewer = hashUserMap.map[reviewerHash];
-            removeFromArray(reviewer.seasonData[currentSeasonIndex].pendingReviews, url);
-            removeFromArray(reviewer.seasonData[currentSeasonIndex].toRead, url);
+            UtilsLib.removeFromArray(reviewer.seasonData[currentSeasonIndex].pendingReviews, url);
+            UtilsLib.removeFromArray(reviewer.seasonData[currentSeasonIndex].allReviews, url);
+            UtilsLib.removeFromArray(reviewer.seasonData[currentSeasonIndex].toRead, url);
         }
-        removeFromArray(userSeason.urlSeasonCommits, url);
-        removeFromArray(allCommitsArray, url);
+        UtilsLib.removeFromArray(userSeason.urlSeasonCommits, url);
+        UtilsLib.removeFromArray(allCommitsArray, url);
+        root.deleteCommit(url);
         user.globalStats.commitsMade--;
         userSeason.seasonStats.commitsMade--;
         delete userSeason.seasonCommits[url];
-        emit UserNewCommit(userHash, user.globalStats.commitsMade);
         emit DeletedCommit(userHash, url);
     }
     
@@ -337,20 +338,6 @@ contract Bright {
             currentSeasonIndex++;
             emit SeasonEnds(currentSeasonIndex);
         }
-    }
-
-    function removeFromArray(bytes32[] storage array, bytes32 url) private {
-        require(array.length > 0);
-        uint indexCommit = 0;
-        uint lastCommitIndex = array.length - 1;
-        for(uint i = lastCommitIndex; i >= 0; i--) {
-            if(array[i] == url) {
-                indexCommit = i;
-                break;
-            }
-        }
-        array[indexCommit] = array[lastCommitIndex];
-        array.length--;
     }
 
     function checkCommitSeason(bytes32 url,address author) public onlyDapp view returns (bool) {
