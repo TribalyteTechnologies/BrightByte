@@ -47,14 +47,19 @@ contract Bright {
         _;
     }
 
-    function init(address _root, uint256 seasonIndex, uint256 initialTimestamp, uint256 seasonLengthDays) public {
+    function init(address _root, uint256 initialTimestamp, uint256 seasonLengthDays) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        currentSeasonIndex = seasonIndex;
+        currentSeasonIndex = 1;
         initialSeasonTimestamp = initialTimestamp;
         deploymentTimestamp = block.timestamp;
         seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
+        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
+        while(deploymentTimestamp > seasonFinale) {
+            currentSeasonIndex++;
+            seasonFinale = seasonFinale + seasonLengthSecs;
+        }
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -123,6 +128,7 @@ contract Bright {
     }
 
     function setCommit(bytes32 url) public onlyRoot {
+        checkSeason();
         address sender = tx.origin;
         bool saved = false;
         for (uint256 i = 0; i < allCommitsArray.length; i++){
@@ -134,7 +140,6 @@ contract Bright {
         if(!saved){
             BrightModels.UserProfile storage user = hashUserMap.map[sender];
             allCommitsArray.push(url);
-            checkSeason();
             BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
             userSeason.urlSeasonCommits.push(url);
             userSeason.seasonCommits[url] = true;

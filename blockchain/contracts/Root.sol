@@ -36,7 +36,7 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    constructor (address bright, address commits, uint256 seasonIndex, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
+    constructor (address bright, address commits, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -44,7 +44,7 @@ contract Root{
         commitsAddress = commits;
         version = ver;
         remoteCommits.init(address(this));
-        remoteBright.init(address(this), seasonIndex, initialTimestamp, seasonLengthDays);
+        remoteBright.init(address(this), initialTimestamp, seasonLengthDays);
     }
     function getHelperAddress() public view returns(address, address){
         return(brightAddress,commitsAddress);
@@ -134,5 +134,4 @@ contract Root{
     function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
     }
-     
 }
