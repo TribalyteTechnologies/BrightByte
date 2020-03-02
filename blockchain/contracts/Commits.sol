@@ -2,6 +2,7 @@ pragma solidity 0.4.22;
 
 import "./Root.sol";
 import { MigrationLib } from "./MigrationLib.sol";
+import { UtilsLib } from "./UtilsLib.sol";
 
 
 contract Commits {
@@ -115,17 +116,8 @@ contract Commits {
     }
 
     function deleteCommit(bytes32 url) public onlyRoot {
+        UtilsLib.removeFromArray(allCommitsArray, url);
         delete storedData[url];
-        uint indexCommit = 0;
-        uint lastCommitIndex = allCommitsArray.length - 1;
-        for(uint i = lastCommitIndex; i >= 0; i--) {
-            if(allCommitsArray[i] == url) {
-                indexCommit = i;
-                break;
-            }
-        }
-        allCommitsArray[indexCommit] = allCommitsArray[lastCommitIndex];
-        allCommitsArray.length--;
     }
 
     function getDetailsCommits(bytes32 _url) public onlyDapp view returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){

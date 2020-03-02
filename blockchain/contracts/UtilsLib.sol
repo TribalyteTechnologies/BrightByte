@@ -15,4 +15,19 @@ library UtilsLib {
         }
         return newArray;
     }
+
+
+    function removeFromArray(bytes32[] storage array, bytes32 url) public {
+        require(array.length > 0);
+        uint indexCommit = 0;
+        uint lastCommitIndex = array.length - 1;
+        for(uint i = lastCommitIndex; i >= 0; i--) {
+            if(array[i] == url) {
+                indexCommit = i;
+                break;
+            }
+        }
+        array[indexCommit] = array[lastCommitIndex];
+        array.length--;
+    }
 }

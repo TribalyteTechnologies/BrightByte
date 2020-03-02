@@ -7,9 +7,9 @@ var BrightModels = artifacts.require("./BrightModels.sol");
 var UtilsLib = artifacts.require("./UtilsLib.sol");
 var scVersionObj = require("../../version.json");
 
-const INITIAL_SEASON_INDEX = 3;
+const INITIAL_SEASON_INDEX = 5;
 const INITIAL_SEASON_TIMESTAMP = 1550047598;
-const SEASON_LENGTH_DAYS = 7;
+const SEASON_LENGTH_DAYS = 90;
 var currentVersion = scVersionObj.version;
 
 module.exports = function(deployer) {
@@ -36,6 +36,8 @@ module.exports = function(deployer) {
         return deployer.deploy(Bright);
     }).then(function(){
         return deployer.link(MigrationLib, Commits);
+    }).then(function(){
+        return deployer.link(UtilsLib, Commits);
     }).then(function(){
         return deployer.deploy(Commits);
     }).then(function() {
