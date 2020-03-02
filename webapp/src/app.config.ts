@@ -32,7 +32,8 @@ export class AppConfig {
     public static readonly MAX_REVIEWER_COUNT = 4;
     public static readonly OPTIMISTIC_SCORE_MULTIPLY_FACTOR = 10;
     public static readonly SCORE_DIVISION_FACTOR = 100;
-    public static readonly REPUTATION_DIVISION_FACTOR = 1000;    
+    public static readonly REPUTATION_DIVISION_FACTOR = 1000;   
+    public static readonly COMMIT_SCORE_DIVISION_FACTOR = 100000000000;
     public static readonly SECS_TO_MS = 1000;
     public static readonly N_USER_RANKING_LIST = 5;
     public static readonly COMMIT_WEIGHT = 0.3;
