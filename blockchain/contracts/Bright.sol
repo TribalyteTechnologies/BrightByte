@@ -201,15 +201,6 @@ contract Bright {
         emit DeletedCommit(userHash, url);
     }
     
-    function getUserCommits(address userHash) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[]) {
-        BrightModels.UserSeason memory userSeason = hashUserMap.map[userHash].seasonData[currentSeasonIndex];
-        return (userSeason.pendingReviews,
-                userSeason.finishedReviews,
-                userSeason.urlSeasonCommits,
-                userSeason.toRead
-        );
-    }
-
     function getUserSeasonState(address userHash, uint256 indSeason) public onlyDapp view returns(uint256, uint256, uint256, uint256, uint256) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
         return (userSeason.pendingReviews.length,
@@ -324,11 +315,7 @@ contract Bright {
     }
 
     function getVotes(address userHash, bool global, uint256 indSeason) public onlyDapp view returns (uint, uint) {
-        if(global) {
-            return (hashUserMap.map[userHash].globalStats.positeVotes, hashUserMap.map[userHash].globalStats.negativeVotes);
-        } else {
-            return (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
-        }
+        return global ? (hashUserMap.map[userHash].globalStats.positeVotes, hashUserMap.map[userHash].globalStats.negativeVotes) : (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
     }
 
     function getCurrentSeason() public onlyDapp view returns (uint256, uint256, uint256) {
