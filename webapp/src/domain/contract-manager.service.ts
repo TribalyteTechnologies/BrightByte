@@ -428,11 +428,12 @@ export class ContractManagerService {
         });
     }
 
-    public getCurrentSeason(): Promise<number[]> {
-        let contractArtifact;
-        return this.initProm.then(([bright, commit, root]) => {
-            contractArtifact = bright;
-            return contractArtifact.methods.getCurrentSeason().call();
+    public getCurrentSeason(): Promise<Array<number>> {
+        return this.initProm.then(([bright]) => {
+            return bright.methods.getCurrentSeason().call();
+        }).then(seasonState => {
+            this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, seasonState[0]);
+            return seasonState;
         }).catch(err => {
             this.log.e("Error getting current season :", err);
             throw err;

@@ -124,12 +124,15 @@ export class LoginForm {
                     this.spinnerService.hideLoader();
                     if(result) {
                         this.backendApiSrv.initBackendConnection(account.address);
-                    }else{
+                    } else {
                         this.translateService.get("app.connectionFailure").subscribe(
                             msg => {
                                 this.msg = msg;
                             });
                     }
+                    return this.contractManager.getCurrentSeason();
+                }).then(res => {
+                    this.log.d("The current season is ", res[0]);
                 }).catch((e) => {
                     this.spinnerService.hideLoader();
                     

@@ -63,7 +63,8 @@ export class AppConfig {
         REVIEWPENDINGFILTER: "brightReviewPendingFilter",
         COMMITFILTER: "brightCommitFilter",
         COMMITPENDINGFILTER: "brightCommitPendingFilter",
-        LOCALSTORAGEVERSION: "brightLocalStorageVerison"
+        LOCALSTORAGEVERSION: "brightLocalStorageVerison",
+        CURRENTSEASONINDEX: "brightCurrentSeasonIndex"
     };
 
     public static readonly UrlKey = {
