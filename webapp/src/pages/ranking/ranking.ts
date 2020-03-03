@@ -12,6 +12,7 @@ import { AchievementService } from "../../domain/achievement.service";
 import { ErrorHandlerService } from "../../domain/error-handler.service";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
+import { UserNameService } from "../../domain/user-name.service";
 
 @Component({
     selector: "page-ranking",
@@ -45,10 +46,15 @@ export class RankingPage {
     public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
+    public isCurrentUserName: boolean;
+    public nameObs: Observable<string>;
+    
+    
     private log: ILogger;
     private account: Account;
     private isBackendOnline = true;
     private showDetails = false;
+    
 
     constructor(
         public navCtrl: NavController,
@@ -58,7 +64,8 @@ export class RankingPage {
         private loginService: LoginService,
         private achievementSrv: AchievementService,
         private errorHndlr: ErrorHandlerService,
-        private avatarSrv: AvatarService
+        private avatarSrv: AvatarService,
+        private userNameSrv: UserNameService
     ) {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
@@ -141,6 +148,13 @@ export class RankingPage {
         userDetails = (!userDetails && this.showDetails) ? this.usersRep[0] : userDetails;
         if (userDetails) {
             this.userRankDetails = userDetails;
+            if (userDetails.userHash === this.loginService.getAccount().address) {
+                this.nameObs = this.userNameSrv.setUserObs(userDetails.userHash);
+                this.isCurrentUserName = true;
+            } else {
+                this.userRankDetails.name = userDetails.name;
+                this.isCurrentUserName = false;
+            }
             this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
             this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {

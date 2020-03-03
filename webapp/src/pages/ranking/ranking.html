@@ -64,9 +64,14 @@
                     <avatar [avatarUrl]="currentUserObs | async" [isBig]="true"></avatar>
                 </ion-col>
                 <ion-col col-2 padding justify-content-center center class="vert-separator">
-                    <ion-row class="text-title">
-                        {{ userRankDetails.name }}
+                    <ion-row *ngIf="isCurrentUserName; else otherUser" class="text-title">
+                        {{ nameObs | async }}
                     </ion-row>
+                    <ng-template #otherUser>
+                        <ion-row class="text-title">
+                            {{ userRankDetails.name }}
+                        </ion-row>
+                    </ng-template>
                     <ion-row class="text-description text-ellipsis">
                         {{ userRankDetails.email }}
                     </ion-row>

@@ -65,6 +65,7 @@ import { TransactionQueueService } from "../domain/transaction-queue.service";
 import { ProgressBarComponent } from "../components/progress-bar/progress-bar.component";
 import { TwitterComponent } from "../components/twitter/twitter.component";
 import { FacebookComponent } from "../components/facebook/facebook.component";
+import { UserNameService } from "../domain/user-name.service";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -155,6 +156,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         UserLoggerService,
         UserCacheService,
         AvatarService,
+        UserNameService,
         ErrorHandlerService,
         {provide: ErrorHandler, useClass: ErrorHandlerService},
         ContractManagerService,

@@ -5,6 +5,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
+import { UserNameService } from "../../domain/user-name.service";
 
 
 @Component({
@@ -15,9 +16,10 @@ import { Observable } from "rxjs";
 export class RankingCard {
 
     public ANONYMOUS = "";
-    public name = "No name";
     public userPosition = 0;
     public reputation = 0;
+    public name: string;
+    public nameObs: Observable<string>;
     public email = "";
     public numReviews = 0;
     public numCommits = 0;
@@ -36,6 +38,7 @@ export class RankingCard {
     public reviewParams: { numReviews: number; minNumberReview: number; };
     public isRankedByReviews: boolean;
     public isRankedByCommits: boolean;
+    public isCurrentUserName: boolean;
 
     @Input()
     public globalSelected: boolean;
@@ -44,7 +47,13 @@ export class RankingCard {
     public set ranking(val: UserReputation) {
         let rankIdx = val.reputation;
         this.reputation = rankIdx;
-        this.name = ((val.name === "") ? this.ANONYMOUS : val.name);
+        if (val.userHash === this.accountHash) {
+            this.nameObs = this.userNameSrv.setUserObs(val.userHash);
+            this.isCurrentUserName = true;
+        } else {
+            this.name = val.name;
+            this.isCurrentUserName = false;
+        }
         this.email = val.email;
         this.numReviews = val.numberReviewsMade;
         this.numCommits = val.numberCommitsMade,
@@ -74,7 +83,8 @@ export class RankingCard {
     constructor(
         loginService: LoginService,
         translateSrv: TranslateService,
-        private avatarSrv: AvatarService
+        private avatarSrv: AvatarService,
+        private userNameSrv: UserNameService
     ) {
         let account = loginService.getAccount();
         this.accountHash = account.address;

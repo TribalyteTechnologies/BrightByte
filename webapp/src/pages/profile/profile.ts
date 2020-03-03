@@ -12,6 +12,7 @@ import { IResponse } from "../../models/response.model";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { SpinnerService } from "../../core/spinner.service";
+import { UserNameService } from "../../domain/user-name.service";
 
 @Component({
     selector: "profile",
@@ -51,7 +52,8 @@ export class Profile {
         private formBuilder: FormBuilder,
         private alertCtrl: AlertController,
         private contractManagerService: ContractManagerService,
-        private spinnerService: SpinnerService
+        private spinnerService: SpinnerService,
+        private userNameSrv: UserNameService
     ) {
         this.log = loggerSrv.get("ProfilePage");
     }
@@ -138,6 +140,7 @@ export class Profile {
         if (userName && userName !== this.userName) {
             let promise = this.contractManagerService.setUserName(userName).then(() => {
                 this.log.d("The user has set a new name");
+                this.userNameSrv.updateName(userName);
                 this.successMsg = this.successMessageName;
             }).catch(e => {
                 this.log.e("Error setting the new user name: ", e);
