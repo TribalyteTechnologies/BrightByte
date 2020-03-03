@@ -104,7 +104,7 @@ export class ReviewPage {
             this.spinnerService.showLoader();
         }
         let commits: Array<UserCommit>;
-        this.contractManagerService.getSeasonState()
+        this.contractManagerService.getReviewCommitsState()
         .then(state => {
             if (!event){
                 this.loadedCommits = state[this.currentReviewFilterState];

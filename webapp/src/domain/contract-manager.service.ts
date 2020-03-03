@@ -12,6 +12,7 @@ import { CommitComment } from "../models/commit-comment.model";
 import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
 import { UserCacheService } from "../domain/user-cache.service";
+import { LocalStorageService } from "../core/local-storage.service";
 
 interface IContractJson {
     abi: Array<Object>;
@@ -37,7 +38,8 @@ export class ContractManagerService {
         private http: HttpClient,
         private web3Service: Web3Service,
         private loggerSrv: LoggerService,
-        private userCacheSrv: UserCacheService
+        private userCacheSrv: UserCacheService,
+        private storageSrv: LocalStorageService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
@@ -172,17 +174,17 @@ export class ContractManagerService {
     }
 
     public getCommits(): Promise<Array<UserCommit>> {
-        let allUserCommits: Array<any>;
+        let brightContract, commitContract: ITrbSmartContact;
         return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", bright);
-            return bright.methods.getUserCommits(this.currentUser.address).call();
-        }).then((allUserCommitsRes: Array<any>) => {
-            allUserCommits = allUserCommitsRes;
-            return this.initProm;
-        }).then(([brigh, commit, root]) => {
+            brightContract = bright;
+            commitContract = commit;
+            return this.getCurrentSeasonState();
+        }).then(seasonState => {
+            let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
+            return brightContract.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, seasonState[2]).call();
+        }).then((allUserCommits: Array<any>) => {
             let promisesPending = new Array<Promise<UserCommit>>();
-            promisesPending = allUserCommits[2].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+            promisesPending = allUserCommits[2].map(userCommit => commitContract.methods.getDetailsCommits(userCommit).call()
                 .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
             return Promise.all(promisesPending);
         }).catch(err => {
@@ -192,11 +194,15 @@ export class ContractManagerService {
     }
 
     public getCommitsToReview(): Promise<UserCommit[][]> {
-        return this.initProm
-            .then(([bright, commit]) => {
+        let endIndex: number;
+        return this.getCurrentSeasonState().then(seasonState => {
+            endIndex = (seasonState[0] > seasonState[1]) ? seasonState[0] : seasonState[1];
+            return this.initProm;
+        }).then(([bright, commit]) => {
                 this.log.d("Public Address: ", this.currentUser.address);
                 this.log.d("Contract artifact", bright);
-                return bright.methods.getUserCommits(this.currentUser.address).call()
+                let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
+                return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex).call()
                     .then((allUserCommits: Array<any>) => {
                         let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
                             .then((commitVals: any) => {
@@ -214,19 +220,26 @@ export class ContractManagerService {
             });
     }
 
-    public getSeasonState(): Promise<number[]> {
+    public getCurrentSeasonState(): Promise<Array<number>> {
         let brightContract;
         return this.initProm
-            .then(([bright]) => {
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
-                brightContract = bright;
-                return bright.methods.getCurrentSeason().call();
-            }).then(seasonData => {
-                return brightContract.methods.getUserSeasonState(this.currentUser.address, seasonData[0]).call();
-            }).then(state => {
-                return [state[0], state[1], state[4]];
-            });
+        .then(([bright]) => {
+            brightContract = bright;
+            return bright.methods.getCurrentSeason().call();
+        }).then(seasonData => {
+            let currentSeason = seasonData[0];
+            this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
+            return brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason).call();
+        }).catch(err => {
+            this.log.e("Error obtaining the state of the user commmits:", err);
+            throw err;
+        });
+    }
+
+    public getReviewCommitsState(): Promise<Array<number>> {
+        return this.getCurrentSeasonState().then(seasonState => {
+            return [seasonState[0], seasonState[1], seasonState[4]];
+        });
     }
 
     public getSeasonCommitsToReview(endIndex: number): Promise<UserCommit[][]> {
