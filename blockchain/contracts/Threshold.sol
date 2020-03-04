@@ -17,6 +17,7 @@ contract Threshold {
     }
 
     event newSeasonThreshold(uint256 currentSeasonIndex, uint256 commitThreshold, uint256 reviewThreshold);
+    event newSeason(uint256 currentSeasonIndex, uint256 currentTimeStamp);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor () public {
@@ -72,6 +73,7 @@ contract Threshold {
         BrightByteSeasonThreshold storage seasonThreshold = seasonThresholds[seasonIndex];
         seasonThreshold.commitThreshold = averageNumberOfCommits;
         seasonThreshold.reviewThreshold = averageNumberOfReviews;
+        emit newSeason(currentSeasonIndex, block.timestamp);
         emit newSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 
