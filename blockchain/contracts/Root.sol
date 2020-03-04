@@ -1,6 +1,8 @@
 pragma solidity 0.4.22;
+
 import "./Bright.sol";
 import "./Commits.sol";
+import "./Threshold.sol";
 
 import { Reputation } from "./Reputation.sol";
 
@@ -9,6 +11,8 @@ contract Root{
     address brightAddress;
     Commits remoteCommits;
     address commitsAddress;
+    Threshold remoteThreshold;
+    address thresholdAddress;
     address owner;
     string version;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -36,16 +40,24 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    constructor (address bright, address commits, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
+    constructor (address bright, address commits, address threshold, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
         remoteCommits = Commits(commits);
         commitsAddress = commits;
+        remoteThreshold = Threshold(threshold);
+        thresholdAddress = threshold;
         version = ver;
         remoteCommits.init(address(this));
         remoteBright.init(address(this), initialTimestamp, seasonLengthDays);
+        uint256 currentSeasonIndex;
+        uint256 seasonFinaleTime;
+        uint256 seasonLengthSecs;
+        (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs) = remoteBright.getCurrentSeason();
+        remoteThreshold.init(address(this), currentSeasonIndex);
     }
+
     function getHelperAddress() public view returns(address, address){
         return(brightAddress,commitsAddress);
     }
@@ -131,7 +143,15 @@ contract Root{
         remoteCommits.deleteCommit(url);
     }
 
+    function getCurrentSeasonThreshold() public view returns (uint256, uint256) {
+        return remoteThreshold.getCurrentSeasonThreshold();
+    }
+
     function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
+    }
+
+    function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public {
+        remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 }

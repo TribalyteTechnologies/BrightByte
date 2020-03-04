@@ -1,7 +1,7 @@
 pragma solidity 0.4.22;
 import "./Root.sol";
 
-import { MigrationLib } from "./MigrationLib.sol";
+import { BrightByteLib } from "./BrightByteLib.sol";
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
@@ -25,7 +25,6 @@ contract Bright {
     event UserNewCommit (address userHash, uint256 numberOfCommits);
     event UserNewReview (address userHash, uint256 numberOfReviews);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event SeasonEnds (uint256 currentSeason);
     event DeletedCommit (address userHash, bytes32 url);
 
     constructor() public {
@@ -55,10 +54,10 @@ contract Bright {
         initialSeasonTimestamp = initialTimestamp;
         deploymentTimestamp = block.timestamp;
         seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
-        uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
+        uint256 seasonFinale = initialSeasonTimestamp + seasonLengthSecs;
         while(deploymentTimestamp > seasonFinale) {
             currentSeasonIndex++;
-            seasonFinale = seasonFinale + seasonLengthSecs;
+            seasonFinale += seasonLengthSecs;
         }
     }
 
@@ -327,8 +326,11 @@ contract Bright {
     function checkSeason() private {
         uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
         if(block.timestamp > seasonFinale) {
+            uint256 commitAverage;
+            uint256 reviewAverage;
+            (commitAverage, reviewAverage) = BrightByteLib.calculateSeasonAverages(hashUserMap, allUsersArray, currentSeasonIndex);
             currentSeasonIndex++;
-            emit SeasonEnds(currentSeasonIndex);
+            root.setNewSeasonThreshold(currentSeasonIndex, commitAverage, reviewAverage);
         }
     }
 
@@ -337,14 +339,14 @@ contract Bright {
     }
     
     function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 pos, uint256 neg, uint256 rev, uint256 comMade) public onlyDapp {
-        MigrationLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail, hash, perct, pos, neg, rev,comMade);
+        BrightByteLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail, hash, perct, pos, neg, rev,comMade);
     }
 
     function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint posVotes, uint negVotes, uint reputation, uint rev, uint256 comMade, uint complexity) public onlyDapp {
-        MigrationLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, posVotes, negVotes, reputation, rev, comMade, complexity, deploymentTimestamp);
+        BrightByteLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, posVotes, negVotes, reputation, rev, comMade, complexity, deploymentTimestamp);
     }
 
     function setSeasonUrls(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd, bytes32[] allRev) public onlyDapp {
-        MigrationLib.setSeasonUrls(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd, allRev);
+        BrightByteLib.setSeasonUrls(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd, allRev);
     }
 }
