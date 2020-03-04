@@ -2,10 +2,10 @@ import { Component, Input } from "@angular/core";
 import { UserReputation } from "../../models/user-reputation.model";
 import { LoginService } from "../../core/login.service";
 import { TranslateService } from "@ngx-translate/core";
-import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
 import { UserNameService } from "../../domain/user-name.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 
 
 @Component({
@@ -31,8 +31,8 @@ export class RankingCard {
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
     public isRanked = false;
-    public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
-    public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
+    public minNumberReview;
+    public minNumberCommit;
     public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
@@ -84,7 +84,8 @@ export class RankingCard {
         loginService: LoginService,
         translateSrv: TranslateService,
         private avatarSrv: AvatarService,
-        private userNameSrv: UserNameService
+        private userNameSrv: UserNameService,
+        private contractManagerService: ContractManagerService
     ) {
         let account = loginService.getAccount();
         this.accountHash = account.address;
@@ -96,6 +97,10 @@ export class RankingCard {
 
     public ngOnInit() {
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userHash);
+        this.contractManagerService.getCurrentSeasonThreshold().then(seasonThreshold => {
+            this.minNumberCommit = seasonThreshold[0];
+            this.minNumberReview = seasonThreshold[1];
+        });
     }
 
 }

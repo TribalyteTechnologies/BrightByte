@@ -4,7 +4,7 @@ import { SocketIoConfig } from "ng-socket-io";
 export class AppConfig {
 
     public static readonly LOG_DEBUG = true;
-    public static readonly IS_CUSTOM_NET = true;
+    public static readonly IS_CUSTOM_NET = false;
 
     public static readonly DEFAULT_LANGUAGE = "en";
     public static readonly DEFAULT_DATE_FORMAT = "en-EU";
@@ -43,8 +43,6 @@ export class AppConfig {
     public static readonly HOUR_TO_SECS = AppConfig.MIN_TO_SECS * 60;
     public static readonly DAY_TO_SECS = AppConfig.HOUR_TO_SECS * 24;
     public static readonly REPUTATION_FACTOR = 1000;
-    public static readonly MIN_REVIEW_QUALIFY = 45;
-    public static readonly MIN_COMMIT_QUALIFY = 35;
     public static readonly FIRST_QUALIFYING_SEASON = 4;
     public static readonly COMMITS_BLOCK_SIZE = 20;
     

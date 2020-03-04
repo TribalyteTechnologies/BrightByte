@@ -20,8 +20,8 @@ import { UserNameService } from "../../domain/user-name.service";
 })
 export class RankingPage {
 
-    public static readonly minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
-    public static readonly minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
+    public minNumberReview: number;
+    public minNumberCommit: number;
     public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
@@ -96,6 +96,11 @@ export class RankingPage {
                 for (let i = this.numberOfSeasons; i >= 0; i--) {
                     this.seasons.push("Season " + i);
                 }
+                this.contractManagerService.getCurrentSeasonThreshold();
+            }).then(seasonThreshold => {
+                this.log.d("The season Threshold are", seasonThreshold);
+                this.minNumberCommit = seasonThreshold[0];
+                this.minNumberReview = seasonThreshold[1];
                 this.refresh();
             });
     }
@@ -161,17 +166,17 @@ export class RankingPage {
             this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
             this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {
-                pendingCommits: Math.max(0, RankingPage.minNumberCommit - this.userRankDetails.numberCommitsMade),
-                pendingReviews: Math.max(0, RankingPage.minNumberReview - this.userRankDetails.numberReviewsMade),
+                pendingCommits: Math.max(0, this.minNumberCommit - this.userRankDetails.numberCommitsMade),
+                pendingReviews: Math.max(0, this.minNumberReview - this.userRankDetails.numberReviewsMade),
                 agreedPercentage: userDetails.agreedPercentage
             };
             this.commitParams = {
                 numCommits: this.userRankDetails.numberCommitsMade,
-                minNumberCommit : RankingPage.minNumberCommit 
+                minNumberCommit : this.minNumberCommit 
             };
             this.reviewParams = {
                 numReviews: this.userRankDetails.numberReviewsMade,
-                minNumberReview : RankingPage.minNumberReview
+                minNumberReview : this.minNumberReview
             };
         }
     }
@@ -241,17 +246,17 @@ export class RankingPage {
     }
 
     private isRankedUser(user: UserReputation): boolean {
-        return user.numberCommitsMade >= AppConfig.MIN_COMMIT_QUALIFY && user.numberReviewsMade >= AppConfig.MIN_REVIEW_QUALIFY;
+        return user.numberCommitsMade >= this.minNumberCommit && user.numberReviewsMade >= this.minNumberReview;
     }
 
     private calculateDistanceToQualified(currentValue: number, distanceType: DistaceType): number{
         let minValueToQualify;
         switch (distanceType) {
             case DistaceType.Commits:
-                minValueToQualify = AppConfig.MIN_COMMIT_QUALIFY;
+                minValueToQualify = this.minNumberCommit;
                 break;
             case DistaceType.Reviews:
-                minValueToQualify = AppConfig.MIN_REVIEW_QUALIFY;
+                minValueToQualify = this.minNumberReview;
                 break;
             default:
                 minValueToQualify = 0;

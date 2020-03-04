@@ -383,6 +383,17 @@ export class ContractManagerService {
         });
     }
 
+    public getCurrentSeasonThreshold(): Promise<Array<number>> {
+        return this.initProm.then(([bright, commit, root]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", root);
+            return root.methods.getCurrentSeasonThreshold().call();
+        }).catch(e => {
+            this.log.e("Error setting thumbs: ", e);
+            throw e;
+        });
+    }
+
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
             this.log.d("Public Address: ", this.currentUser.address);
