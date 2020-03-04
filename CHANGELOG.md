@@ -1,5 +1,14 @@
 # Change Log
 
+#### v 0.6.4
+
+- Enabled social share feature.
+- Added slides for register and use tutorials.
+- Style changes on ranking page.
+- Bug fixes on add commit rollback.
+
+`No migration needed from 0.6.3 to 0.6.4`
+
 #### v 0.6.3
 
 - Added queue service for reviews. Improves performance when reviewing multiple commits.
