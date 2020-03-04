@@ -6,6 +6,8 @@ import { UserLoggerService } from "../../domain/user-logger.service";
 import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
 import { UpdateCheckService } from "../../core/update-check.service";
 import { AppConfig } from "../../app.config";
+import { RegisterSlidePopover } from "../../components/register-tutorial-slides/register-tutorial-slide.component";
+import { LocalStorageService } from "../../core/local-storage.service";
 
 @Component({
     selector: "page-login",
@@ -28,6 +30,7 @@ export class LoginPage {
         private userLoggerService: UserLoggerService,
         private appVersionSrv: AppVersionService,
         private versionCheckSrv: UpdateCheckService,
+        private storageSrv: LocalStorageService,
         loggerSrv: LoggerService
 
     ) {
@@ -39,6 +42,9 @@ export class LoginPage {
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
         );
+        if(!this.storageSrv.get(AppConfig.StorageKey.REGISTERTUTORIALVISITED)) {
+            this.showRegisterTutorialSlide();
+        }
     }
 
     public manageEvent(e: string) {
@@ -47,6 +53,11 @@ export class LoginPage {
 
     public showTerms() {
         let popover = this.popoverCtrl.create(TermsAndConditions, {}, { cssClass: "terms-popover" });
+        popover.present();
+    }
+
+    public showRegisterTutorialSlide() {
+        let popover = this.popoverCtrl.create(RegisterSlidePopover, {}, { cssClass: "tutorial-slide" });
         popover.present();
     }
 }

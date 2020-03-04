@@ -1,0 +1,119 @@
+after-login-slide-popover {
+    .separator {
+        height: 1px;
+        background-color: #f5f7fb;
+    }
+
+    .arrow {
+        padding-top: 15%;
+    }
+
+    .arrow-next {
+        transform: rotate(180deg);
+    }
+
+    .slide-logo {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+    }
+
+    .slide-title {
+        color: dodgerblue;
+        text-align: left;
+        font-size: 28px;
+    }
+
+    .slide-last .slide-title {
+        text-align: center;
+        margin-top: 5%;
+    }
+
+    .slide-first {
+        padding-left: 10%;
+        padding-bottom: 5%;
+    }
+
+    .slide-first .slide-img {
+        height: 100%;
+        width: 100%;
+    }
+
+    .slide-last {
+        padding-right: 52px;
+    }
+
+    .slide-img {
+        padding: 38px;
+    }
+
+    .slide-brightbyte-page-img {
+        padding: 7px;
+        width: 50px;
+        height: 50px;
+        background-color: #4889D5;
+        border-radius: 23px;
+    }
+
+    .slide-brightbyte-page {
+        margin-left: 45%;
+        margin-top: 5%;
+    }
+
+    .slide-subtitle {
+        text-align: justify;
+        text-justify: inter-word;
+        font-size: 17px;
+    }
+
+    .slide-last .slide-subtitle {
+        text-align: center;
+        margin-top: 5%;
+    }
+
+    .slide-white-space {
+        background-color: white;
+    }
+
+    .slide-container {
+        border: 1px solid rgba(143, 143, 143, 0.3);
+        border-radius: 2px;
+        -webkit-box-shadow: 9px 10px 13px -5px rgba(143, 143, 143, 1);
+        -moz-box-shadow: 9px 10px 13px -5px rgba(143, 143, 143, 1);
+        box-shadow: 9px 10px 13px -5px rgba(143, 143, 143, 1);
+    }
+
+    .slide-container-outside-padding {
+        padding-bottom: 40px;
+    }
+
+    .blue-dismiss-button {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: dodgerblue;
+        color: white;
+    }
+
+    .slide-last-button {
+        border-radius: 18px;
+        margin-left: 37%;
+        margin-top: 10%;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+.tutorial-slide .popover-content {
+    width: 800px;
+    height: 690px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f5f7fb;
+}
+
+.tutorial-slide .popover-content .scroll-content {
+    overflow: hidden;
+    background-color: #f5f7fb;
+}

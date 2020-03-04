@@ -18,6 +18,7 @@ import { AddCommitPopover } from "../addcommit/addcommit";
 import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
+import { AfterLoginSlidePopover } from "../../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
 
 @Component({
     selector: "page-tabs",
@@ -35,6 +36,7 @@ export class TabsPage {
     public commits = new MenuItem("commits.svg", CommitPage, "commits");
     public reviews = new MenuItem("reviews.svg", ReviewPage, "reviews");
     public ranking = new MenuItem("ranking.svg", RankingPage, "ranking");
+    public readonly brightBytePage = AppConfig.BRIGHTBYTE_LANDING_PAGE;
     
     public menuArray = new Array<MenuItem>();
     public name: string = "";
@@ -88,6 +90,9 @@ export class TabsPage {
 
     public ngOnInit(){
         this.avatarObs = this.avatarSrv.getAvatarObs(this.loginService.getAccountAddress());
+        if(!this.storageSrv.get(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED)) {
+            this.openAfterLoginTutorialDialog();
+        }
     }
 
     public goTo(page: any) {
@@ -104,6 +109,11 @@ export class TabsPage {
 
     public openAddCommitDialog() {
         let popover = this.popoverCtrl.create(AddCommitPopover, {}, { cssClass: "add-commit-popover" });
+        popover.present();
+    }
+
+    public openAfterLoginTutorialDialog() {
+        let popover = this.popoverCtrl.create(AfterLoginSlidePopover, {}, { cssClass: "tutorial-slide" });
         popover.present();
     }
 

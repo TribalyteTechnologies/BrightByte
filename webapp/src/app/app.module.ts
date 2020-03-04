@@ -66,6 +66,8 @@ import { ProgressBarComponent } from "../components/progress-bar/progress-bar.co
 import { TwitterComponent } from "../components/twitter/twitter.component";
 import { FacebookComponent } from "../components/facebook/facebook.component";
 import { UserNameService } from "../domain/user-name.service";
+import { RegisterSlidePopover } from "../components/register-tutorial-slides/register-tutorial-slide.component";
+import { AfterLoginSlidePopover } from "../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -97,7 +99,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         RankingCard,
         ProgressBarComponent,
         TwitterComponent,
-        FacebookComponent
+        FacebookComponent,
+        RegisterSlidePopover,
+        AfterLoginSlidePopover
     ],
     imports: [
         BrowserModule,
@@ -138,7 +142,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         RankingCard,
         ProgressBarComponent,
         TwitterComponent,
-        FacebookComponent
+        FacebookComponent,
+        RegisterSlidePopover,
+        AfterLoginSlidePopover
     ],
     providers: [
         AppConfig,

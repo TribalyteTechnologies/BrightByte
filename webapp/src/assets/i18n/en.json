@@ -29,7 +29,8 @@
         "commits": "Commits",
         "reviews": "Reviews",
         "ranking": "Ranking",
-        "versionOutdated": "Your BrightBight version is outdated. The page is going to refresh."
+        "versionOutdated": "Your BrightBight version is outdated. The page is going to refresh.",
+        "registerTutorial": "Register Tutorial"
     },
     "addCommit": {
         "title": "Add commit",
@@ -248,9 +249,29 @@
     },
     "social": {
         "generalShareText": "I'm using BrightByte a social network for code developers. Go check it out!",
-        "url": "https://tribalyte.com",
         "hashtags": "BrightByteApp",
         "achievementText": "I've just got \"{{title}}\" achievement in BrightByte. Go check it out!",
         "shareButtonText": "Share"
+    },
+    "tutorialSlides": {
+        "registerTutorialTitle": "Register tutorial",
+        "registerTutorialSubtitleText": "Step",
+        "registerTutorialImgPath": "../../assets/imgs/Step{{id}}.png",
+        "afterLoginTutorialCommit": "Commits",
+        "afterLoginTutorialCommitText1": "Add your commits or PRs clicking on",
+        "afterLoginTutorialCommitText2": "contribute button on left side menu or in the upper right corner",
+        "afterLoginTutorialCommitText3": "of commits page. You can do manually or by batch with the BitBucket integration:",
+        "afterLoginTutorialCommitImgPath": "../../assets/imgs/Commits.png",
+        "afterLoginTutorialReview": "Review",
+        "afterLoginTutorialReviewText1": "Review colleagues code. There are 3 categories to rate:",
+        "afterLoginTutorialReviewText2": "Quality, Difficulty and your Confidence",
+        "afterLoginTutorialReviewText3": "with that technology.",
+        "afterLoginTutorialReviewImgPath": "../../assets/imgs/reviews.png",
+        "afterLoginTutorialRanking": "Ranking",
+        "afterLoginTutorialRankingText": "In ranking page you can check your position on based on your reputation. BrightByte ranking is divided in seasons in which every user has a chance to get to the first place. There is also a global ranking in witch you are able to check your obtained commits.",
+        "afterLoginTutorialRankingImgPath": "../../assets/imgs/Ranking.png",
+        "afterLoginTutorialFinal": "You are done!",
+        "afterLoginTutorialFinalText": "Go and start uploading and reviewing your first commits or PRs",
+        "afterLoginTutorialFinalButtonText": "Let's go!"
     }
 }

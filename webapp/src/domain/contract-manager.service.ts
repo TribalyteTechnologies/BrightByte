@@ -120,6 +120,7 @@ export class ContractManagerService {
 
     public addCommit(url: string, title: string, usersMail: string[]): Promise<any> {
         let rootContract;
+        let isAlreadyUploaded = false;
         return this.initProm.then(([bright, commit, root]) => {
             rootContract = root;
             this.log.d("Contract artifact: ", commit);
@@ -142,6 +143,7 @@ export class ContractManagerService {
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressCommits);
         }).then(() => {
+            isAlreadyUploaded = true;
             let emailsArray = usersMail.filter(email => !!email).map(email => this.web3.utils.keccak256(email));
             let bytecodeData = rootContract.methods.notifyCommit(
                 url,
@@ -150,6 +152,9 @@ export class ContractManagerService {
             this.log.d("ByteCodeData of notifyCommit: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressRoot);
         }).catch(e => {
+            if (isAlreadyUploaded) {
+                this.deleteCommit(url);
+            }
             this.log.e("Error in addcommit: ", e);
             throw e;
         });

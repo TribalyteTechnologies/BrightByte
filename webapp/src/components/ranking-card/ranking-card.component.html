@@ -42,19 +42,22 @@
                         </ng-template>
                     </div>
                 </ion-col>
-            </ng-template>
-            <ion-col col-1 *ngIf="!globalSelected" class="remove-vertical-padding">
-                <div>
-                    <img class="ico ico__big" src="../../assets/imgs/chains.svg">
-                </div>
-            </ion-col>
-            <ion-col col-1 *ngIf="!globalSelected" class="remove-vertical-padding margin-right">
-                <ion-row justify-content-center>
-                    <div class="engagement-index">
-                        <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+                <ion-col col-1 class="remove-vertical-padding">
+                    <div>
+                        <img class="ico ico__big" src="../../assets/imgs/chains.svg">
                     </div>
-                </ion-row>
-            </ion-col>
+                </ion-col>
+                <ion-col col-1 class="remove-vertical-padding margin-right">
+                    <ion-row justify-content-center>
+                        <div class="engagement-index" *ngIf="isRanked; else isNotRanked">
+                            <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+                        </div>
+                        <ng-template #isNotRanked>
+                            <span class="text-title text-title--grey ranking-score no-reputation">{{ "ranking.noReputation" | translate }}</span>
+                        </ng-template>
+                    </ion-row>
+                </ion-col>
+            </ng-template>
             <ion-col col-3 class="remove-vertical-padding">
                 <ion-row *ngIf="isRankedByReviews; else toQualifyReview" justify-content-center class="text-title">
                     {{ numReviews }}</ion-row>

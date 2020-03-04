@@ -4,7 +4,7 @@ import { SocketIoConfig } from "ng-socket-io";
 export class AppConfig {
 
     public static readonly LOG_DEBUG = true;
-    public static readonly IS_CUSTOM_NET = false;
+    public static readonly IS_CUSTOM_NET = true;
 
     public static readonly DEFAULT_LANGUAGE = "en";
     public static readonly DEFAULT_DATE_FORMAT = "en-EU";
@@ -25,6 +25,7 @@ export class AppConfig {
     public static readonly AVATAR_STATUS_PATH = "/status/";
     public static readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
     public static readonly IDENTICON_FORMAT = ".svg";
+    public static readonly BRIGHTBYTE_LANDING_PAGE = "http://www.brightbyteapp.com/";
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
         AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
@@ -50,7 +51,7 @@ export class AppConfig {
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
 
-    public static readonly IS_SHARING = false;
+    public static readonly IS_SHARING = true;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",
@@ -63,8 +64,10 @@ export class AppConfig {
         REVIEWPENDINGFILTER: "brightReviewPendingFilter",
         COMMITFILTER: "brightCommitFilter",
         COMMITPENDINGFILTER: "brightCommitPendingFilter",
+        CURRENTSEASONINDEX: "brightCurrentSeasonIndex",
         LOCALSTORAGEVERSION: "brightLocalStorageVerison",
-        CURRENTSEASONINDEX: "brightCurrentSeasonIndex"
+        REGISTERTUTORIALVISITED: "brightRegisterTutorialVisited",
+        AFTERLOGINTUTORIALVISITED: "brightAfterLoginTutorialVisited"
     };
 
     public static readonly UrlKey = {

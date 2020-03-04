@@ -1,0 +1,88 @@
+slide-popover {
+    .separator {
+        height: 1px;
+        background-color: #f5f7fb;
+    }
+
+    .arrow {
+        padding-top: 15%;
+    }
+
+    .arrow-next {
+        transform: rotate(180deg);
+    }
+
+    .slide-logo {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+    }
+
+    .slide-title {
+        text-align: center;
+    }
+
+    .slide-first {
+        padding-left: 10%;
+        padding-bottom: 3%;
+    }
+
+    .slide-first .slide-img {
+        height: 50%;
+        width: 100%;
+    }
+
+    .slide-last {
+        padding-right: 52px;
+    }
+
+    .slide-img {
+        padding: 38px;
+    }
+
+    .slide-subtitle-font-color {
+        color: dodgerblue;
+    }
+
+    .slide-subtitle {
+        padding-left: 5%;
+    }
+
+    .slide-white-space {
+        background-color: white;
+    }
+
+    .slide-container {
+        border: 1px solid rgba(143, 143, 143, 0.3);
+        border-radius: 2px;
+        -webkit-box-shadow: 9px 10px 13px -5px rgba(143, 143, 143, 1);
+        -moz-box-shadow: 9px 10px 13px -5px rgba(143, 143, 143, 1);
+        box-shadow: 9px 10px 13px -5px rgba(143, 143, 143, 1);
+    }
+
+    .slide-container-outside-padding {
+        padding-bottom: 40px;
+    }
+
+    .blue-dismiss-button {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: dodgerblue;
+        color: white;
+    }
+}
+
+.tutorial-slide .popover-content {
+    width: 800px;
+    height: 690px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f5f7fb;
+}
+
+.tutorial-slide .popover-content .scroll-content {
+    overflow: hidden;
+    background-color: #f5f7fb;
+}

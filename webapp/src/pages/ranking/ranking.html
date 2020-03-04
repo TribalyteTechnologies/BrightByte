@@ -129,8 +129,11 @@
                                 <ion-row justify-content-center class="ranking-details no-wrap">
                                     {{ "ranking.engagementIndex" | translate }}</ion-row>
                                 <ion-row justify-content-center>
-                                    <img src="../../assets/imgs/chains.svg">
-                                    <span class="ranking-score">{{ userRankDetails.engagementIndex }}</span>
+                                    <img class="engagemente-index-chain" src="../../assets/imgs/chains.svg">
+                                    <span *ngIf="userRankDetails.isRanked; else eiNotRanked" class="ranking-score engagement-index">{{ userRankDetails.engagementIndexString }}</span>
+                                    <ng-template #eiNotRanked>
+                                        <span class="ranking-score text-title--grey engagement-index">{{ "ranking.noReputation" | translate }}</span>
+                                    </ng-template>
                                 </ion-row>
                             </ion-col>
                         </ion-row>

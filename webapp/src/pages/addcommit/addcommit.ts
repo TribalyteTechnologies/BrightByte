@@ -198,6 +198,9 @@ export class AddCommitPopover {
             }).catch(e => {
 
                 this.isTxOngoing = false;
+                if(e.msg) {
+                    this.showGuiMessage(e.msg, e.err);
+                }
                 throw e;
             });
     }
@@ -350,11 +353,14 @@ export class AddCommitPopover {
                 }).then(() => {
                     this.isUpdatingByBatch = false;
                     this.viewCtrl.dismiss();
-                }).catch(() => {
+                }).catch(err => {
                     if (commitIndex < repo.commitsInfo.length || prIndex < repo.pullRequestsNotUploaded.length) {
                         this.addRepoStartingFrom(repoSelection, commitIndex, prIndex, this.updatingProgress);
                     } else {
                         this.isUpdatingByBatch = false;
+                        if(!(err.msg)) {
+                            throw err;
+                        }
                     }
                 });
             }

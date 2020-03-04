@@ -1,0 +1,83 @@
+<ion-header text-right no-border>
+    <button margin-top margin-right class="blue-dismiss-button" (click)="hideSlides()">
+        <ion-icon name="close"></ion-icon>
+    </button>
+</ion-header>
+<ion-content>
+    <img class="logo slide-logo" src="../../assets/imgs/bright_logo.svg">
+    <ion-slides class="slides" pager="true">
+        <ion-slide *ngFor="let contentId of slidesContentIds">
+                <ion-row>
+                    <ion-col col-1 class="arrow" *ngIf="contentId != 1">
+                        <img (click)="goPrev()" src="../../assets/imgs/Flecha-anterior.svg">
+                    </ion-col>
+                    <ion-col [ngSwitch]="contentId" class="slide-container-outside-padding">
+                        <div *ngSwitchDefault class="slide-first">
+                            <h2 class="slide-title">
+                                {{ "tutorialSlides.afterLoginTutorialCommit" | translate }}
+                            </h2>
+                            <p class="slide-subtitle">
+                                {{ "tutorialSlides.afterLoginTutorialCommitText1" | translate }} <b>{{ "tutorialSlides.afterLoginTutorialCommitText2" | translate }}</b>
+                                {{ "tutorialSlides.afterLoginTutorialCommitText3" | translate }}
+                            </p>
+                            <div class="slide-container">
+                                <ion-row>
+                                    <ion-col>
+                                        <img class="slide-img slide-white-space" [src]="'tutorialSlides.afterLoginTutorialCommitImgPath' | translate">
+                                    </ion-col>
+                                </ion-row>
+                            </div>
+                        </div>
+                        <div *ngSwitchCase="slidesContentIds[1]">
+                            <h2 class="slide-title">
+                                {{ "tutorialSlides.afterLoginTutorialReview" | translate }}
+                            </h2>
+                            <p class="slide-subtitle">
+                                {{ "tutorialSlides.afterLoginTutorialReviewText1" | translate }} <b> {{ "tutorialSlides.afterLoginTutorialReviewText2" | translate }} </b>
+                                {{ "tutorialSlides.afterLoginTutorialReviewText3" | translate }}
+                            </p>
+                            <div class="slide-container">
+                                <ion-row>
+                                    <img class="slide-img slide-white-space" [src]="'tutorialSlides.afterLoginTutorialReviewImgPath' | translate">
+                                </ion-row>
+                            </div>
+                        </div>
+                        <div *ngSwitchCase="slidesContentIds[2]">
+                            <h2 class="slide-title">
+                                {{ "tutorialSlides.afterLoginTutorialRanking" | translate }}
+                            </h2>
+                            <p class="slide-subtitle">
+                                {{ "tutorialSlides.afterLoginTutorialRankingText" | translate }}
+                            </p>
+                            <div class="slide-container">
+                                <ion-row>
+                                    <img class="slide-img slide-white-space" [src]="'tutorialSlides.afterLoginTutorialRankingImgPath' | translate">
+                                </ion-row>
+                            </div>
+                        </div>
+                        <div *ngSwitchCase="slidesContentIds[slidesContentIds.length-1]" class="slide-last">
+                            <h2 class="slide-title">
+                                {{ "tutorialSlides.afterLoginTutorialFinal" | translate }}
+                            </h2>
+                            <p class="slide-subtitle">
+                                {{ "tutorialSlides.afterLoginTutorialFinalText" | translate }}
+                            </p>
+                            <ion-row>
+                                <button ion-button class="slide-last-button" (click)="hideSlides()">
+                                    {{ "tutorialSlides.afterLoginTutorialFinalButtonText" | translate }}
+                                </button>
+                            </ion-row>
+                            <ion-row>
+                                <a class="slide-brightbyte-page" [href]="brightBytePage" target="_blank">
+                                    <img class="slide-brightbyte-page-img" src="../../assets/imgs/globe-outline.svg">
+                                </a>
+                            </ion-row>
+                        </div>
+                    </ion-col>
+                    <ion-col col-1 class="arrow" *ngIf="contentId != slidesContentIds[slidesContentIds.length-1]">
+                        <img (click)="goNext()" class="arrow-next" src="../../assets/imgs/Flecha-anterior.svg">    
+                    </ion-col>
+                </ion-row>
+        </ion-slide>
+    </ion-slides>
+</ion-content>
