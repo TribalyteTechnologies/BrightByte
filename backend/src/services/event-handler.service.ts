@@ -22,6 +22,8 @@ export class EventHandlerService {
     private readonly LISTENER_END_EVENT = "end";
     private readonly USER_HASH = "userHash";
     private readonly NUMBER_COMMITS = "numberOfCommits";
+    private readonly TIMESTAMP = "timestamp";
+    private readonly URL = "url";
     private readonly NUMBER_REVIEWS = "numberOfReviews";
     private readonly CURRENT_SEASON = "currentSeason";
     private readonly LATEST = "latest";
@@ -73,15 +75,17 @@ export class EventHandlerService {
                 switch (type) {
                     case this.COMMIT:
                         newEvent = new CommitEventDto(
-                            event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_COMMITS]));
+                            event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_COMMITS]), 
+                            parseInt(event.returnValues[this.TIMESTAMP]));
                         break;
                     case this.REVIEW:
                         newEvent = new ReviewEventDto(
-                            event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_REVIEWS]));
+                            event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_REVIEWS]), 
+                            parseInt(event.returnValues[this.TIMESTAMP]));
                         break;
                     case this.DELETE:
                         newEvent = new DeleteEventDto(
-                            event.returnValues[this.USER_HASH], event.returnValues["url"]);
+                            event.returnValues[this.USER_HASH], event.returnValues[this.URL]);
                         break;
                     case this.SEASON:
                         newEvent = new SeasonEventDto(

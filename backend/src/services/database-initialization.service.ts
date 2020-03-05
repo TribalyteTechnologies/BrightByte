@@ -53,8 +53,8 @@ export class DatabaseInitializationService {
     private setInitialAchivements(usersDetails: Array<UserDetailsDto>): Observable<Array<ResponseDto>> {
         let obs = new Array<Observable<ResponseDto>>();
         usersDetails.forEach(user => {
-            obs.push(this.dispatcher.dispatch( new CommitEventDto(user.userHash, user.numberOfCommits)));
-            obs.push(this.dispatcher.dispatch(new ReviewEventDto(user.userHash, user.finishedReviews)));
+            obs.push(this.dispatcher.dispatch( new CommitEventDto(user.userHash, user.numberOfCommits, Date.now())));
+            obs.push(this.dispatcher.dispatch(new ReviewEventDto(user.userHash, user.finishedReviews, Date.now())));
         });
         return forkJoin(obs);
     }
