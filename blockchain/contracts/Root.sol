@@ -26,6 +26,10 @@ contract Root{
         require(msg.sender == commitsAddress);
         _;
     }
+    modifier onlyBright() {
+        require(msg.sender == brightAddress);
+        _;
+    }
     modifier onlyUser(){
         require(msg.sender == tx.origin);
         _;
@@ -139,19 +143,27 @@ contract Root{
         return (pending, finish);
     }
 
-    function deleteCommit(bytes32 url) public {
+    function deleteCommit(bytes32 url) public onlyBright {
         remoteCommits.deleteCommit(url);
-    }
-
-    function getCurrentSeasonThreshold() public view returns (uint256, uint256) {
-        return remoteThreshold.getCurrentSeasonThreshold();
     }
 
     function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
     }
 
-    function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public {
+    function getSeasonThreshold(uint256 seasonIndex) public view returns (uint256, uint256) {
+        return remoteThreshold.getSeasonThreshold(seasonIndex);
+    }
+
+    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyOwner {
+        return remoteThreshold.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
+    }
+
+    function setCurrentSeasonThresholdOwner(uint256 commitsThreshold, uint256 reviewsThreshold) public onlyOwner {
+        return remoteThreshold.setCurrentSeasonThreshold(commitsThreshold, reviewsThreshold);
+    }
+
+    function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyBright {
         remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 }

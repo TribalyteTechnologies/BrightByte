@@ -41,12 +41,6 @@ contract Threshold {
         _;
     }
 
-    function init(address _root) public {
-        require(rootAddress == uint80(0));
-        root = Root(_root);
-        rootAddress = _root;
-    }
-
     function transferOwnership(address newOwner) public onlyOwner {
         require(newOwner != address(0));
         emit OwnershipTransferred(owner, newOwner);
@@ -70,20 +64,30 @@ contract Threshold {
 
     function setNewSeasonThreshold(uint256 seasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyRoot {
         currentSeasonIndex = seasonIndex;
-        BrightByteSeasonThreshold storage seasonThreshold = seasonThresholds[seasonIndex];
-        seasonThreshold.commitThreshold = averageNumberOfCommits;
-        seasonThreshold.reviewThreshold = averageNumberOfReviews;
-        emit newSeason(currentSeasonIndex, block.timestamp);
-        emit newSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
+        initSeasonThreshold(seasonIndex, averageNumberOfCommits, averageNumberOfReviews, false);
+        emit newSeason(currentSeasonIndex, block.timestamp);      
     }
 
     function setCurrentSeasonThreshold(uint256 commitThreshold, uint256 reviewThreshold) public onlyRoot {
-        BrightByteSeasonThreshold storage seasonThreshold = seasonThresholds[currentSeasonIndex];
-        if(!seasonThreshold.isModifiedByRoot) {
-            seasonThreshold.commitThreshold = commitThreshold;
-            seasonThreshold.reviewThreshold = reviewThreshold;
-            seasonThreshold.isModifiedByRoot = true;
-            emit newSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold);
+        if(!seasonThresholds[currentSeasonIndex].isModifiedByRoot) {
+            initSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold, true);
         }
+    }
+
+    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyRoot {
+        uint256 totalNumberOfSeasons = commitsThreshold.length + initialSeasonIndex - 1;
+        uint256 finalSeasonToFill = (currentSeasonIndex > totalNumberOfSeasons) ? totalNumberOfSeasons : currentSeasonIndex; 
+          for(uint256 i = initialSeasonIndex; i <= finalSeasonToFill; i++) {
+            uint256 index = i - initialSeasonIndex;
+            initSeasonThreshold(i, commitsThreshold[index],  reviewsThreshold[index], true);
+        }
+    }
+
+    function initSeasonThreshold(uint256 seasonIndex, uint256 commitThreshold, uint256 reviewThreshold, bool enable) private {
+        BrightByteSeasonThreshold storage seasonThreshold = seasonThresholds[seasonIndex];
+        seasonThreshold.commitThreshold = commitThreshold;
+        seasonThreshold.reviewThreshold = reviewThreshold;
+        seasonThreshold.isModifiedByRoot = enable;
+        emit newSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold);
     }
 }
