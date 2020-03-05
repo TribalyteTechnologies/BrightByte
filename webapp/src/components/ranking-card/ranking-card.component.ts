@@ -63,21 +63,6 @@ export class RankingCard {
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
         this.isRanked = val.isRanked;
-        this.tooltipParams = {
-            pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
-            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
-            agreedPercentage: val.agreedPercentage
-        };
-        this.commitParams = {
-            numCommits: this.numCommits,
-            minNumberCommit : this.minNumberCommit 
-        };
-        this.reviewParams = {
-            numReviews: this.numReviews,
-            minNumberReview : this.minNumberReview
-        };
-        this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
-        this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
     }
 
     constructor(
@@ -100,6 +85,22 @@ export class RankingCard {
         this.contractManagerService.getCurrentSeasonThreshold().then(seasonThreshold => {
             this.minNumberCommit = seasonThreshold[0];
             this.minNumberReview = seasonThreshold[1];
+
+            this.tooltipParams = {
+                pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
+                pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
+                agreedPercentage: this.agreed
+            };
+            this.commitParams = {
+                numCommits: this.numCommits,
+                minNumberCommit : this.minNumberCommit 
+            };
+            this.reviewParams = {
+                numReviews: this.numReviews,
+                minNumberReview : this.minNumberReview
+            };
+            this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
+            this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
         });
     }
 

@@ -96,57 +96,55 @@ export class RankingPage {
                 for (let i = this.numberOfSeasons; i >= 0; i--) {
                     this.seasons.push("Season " + i);
                 }
-                this.contractManagerService.getCurrentSeasonThreshold();
-            }).then(seasonThreshold => {
-                this.log.d("The season Threshold are", seasonThreshold);
-                this.minNumberCommit = seasonThreshold[0];
-                this.minNumberReview = seasonThreshold[1];
-                this.refresh();
             });
     }
 
     public refresh() {
-        this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected)
-            .then((usersRep: UserReputation[]) => {
-                this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
-                    let ret: number;
-                    if(this.globalSelected) {
-                        ret = b.engagementIndex - a.engagementIndex;
-                    } else {
-                        ret = (b.reputation - a.reputation) || 
-                            (b.engagementIndex - a.engagementIndex);
-                    }
-                    return ret;
-                });
-                if (!this.globalSelected) {
-                    this.usersRep = this.usersRep.filter(user => user.numberReviewsMade > 0 || user.numberCommitsMade > 0);
-                    let rankedUsers = this.usersRep.filter(user => this.isRankedUser(user));
-                    let unRankedUsers = this.usersRep.filter(user => !this.isRankedUser(user));
-                    unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
-                        return  (this.calculateDistanceToQualified(a.numberCommitsMade, DistaceType.Commits) + 
-                        this.calculateDistanceToQualified(a.numberReviewsMade, DistaceType.Reviews))
-                        - (this.calculateDistanceToQualified(b.numberCommitsMade, DistaceType.Commits) + 
-                        this.calculateDistanceToQualified(b.numberReviewsMade, DistaceType.Reviews));
-                    });
-                    if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON) {
-                        unRankedUsers.forEach(user => user.isRanked = false);
-                    }
-                    this.usersRep = rankedUsers.concat(unRankedUsers);
+        this.contractManagerService.getSeasonThreshold(this.seasonSelected).then(seasonThreshold => {
+                this.log.d("The season thresholds are", seasonThreshold);
+                this.minNumberCommit = seasonThreshold[0];
+                this.minNumberReview = seasonThreshold[1];
+                return this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected);
+        }).then((usersRep: UserReputation[]) => {
+            this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
+                let ret: number;
+                if(this.globalSelected) {
+                    ret = b.engagementIndex - a.engagementIndex;
+                } else {
+                    ret = (b.reputation - a.reputation) || 
+                        (b.engagementIndex - a.engagementIndex);
                 }
-
-                this.usersRep.forEach((user, i) => {
-                    user.userPosition = ++i;
-                });
-                this.userHash = this.account.address;
-                this.setUser(this.account.address);
-            }).catch((e) => {
-                this.translateService.get("ranking.getReputation").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
-                throw e;
+                return ret;
             });
+            if (!this.globalSelected) {
+                this.usersRep = this.usersRep.filter(user => user.numberReviewsMade > 0 || user.numberCommitsMade > 0);
+                let rankedUsers = this.usersRep.filter(user => this.isRankedUser(user));
+                let unRankedUsers = this.usersRep.filter(user => !this.isRankedUser(user));
+                unRankedUsers = unRankedUsers.sort((a: UserReputation, b: UserReputation) => {
+                    return  (this.calculateDistanceToQualified(a.numberCommitsMade, DistaceType.Commits) + 
+                    this.calculateDistanceToQualified(a.numberReviewsMade, DistaceType.Reviews))
+                    - (this.calculateDistanceToQualified(b.numberCommitsMade, DistaceType.Commits) + 
+                    this.calculateDistanceToQualified(b.numberReviewsMade, DistaceType.Reviews));
+                });
+                if (this.seasonSelected >= AppConfig.FIRST_QUALIFYING_SEASON) {
+                    unRankedUsers.forEach(user => user.isRanked = false);
+                }
+                this.usersRep = rankedUsers.concat(unRankedUsers);
+            }
+
+            this.usersRep.forEach((user, i) => {
+                user.userPosition = ++i;
+            });
+            this.userHash = this.account.address;
+            this.setUser(this.account.address);
+        }).catch((e) => {
+            this.translateService.get("ranking.getReputation").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+            throw e;
+        });        
     }
 
     public setUser(hash: string) {
