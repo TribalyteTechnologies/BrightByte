@@ -31,6 +31,9 @@ export class TabsPage {
     public currentPage: any;
     public tabContent: any;
 
+    public readonly RANKING_PAGE_INDEX = "3";
+    public readonly HOME_PAGE_INDEX = "0";
+
     public contribute = new MenuItem("add.svg", null, "contribute");
     public home = new MenuItem("home.svg", HomePage, "home");
     public commits = new MenuItem("commits.svg", CommitPage, "commits");
@@ -41,6 +44,7 @@ export class TabsPage {
     public name: string = "";
     private log: ILogger;
     private avatarObs: Observable<string>;
+
 
 
     constructor(
@@ -89,7 +93,9 @@ export class TabsPage {
 
     public ngOnInit(){
         this.avatarObs = this.avatarSrv.getAvatarObs(this.loginService.getAccountAddress());
-        if(!this.storageSrv.get(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED)) {
+        if(!this.storageSrv.get(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED) && 
+            (this.storageSrv.get(AppConfig.StorageKey.LASTPAGE) === this.HOME_PAGE_INDEX ||
+            this.storageSrv.get(AppConfig.StorageKey.LASTPAGE) === this.RANKING_PAGE_INDEX) ) {
             this.openAfterLoginTutorialDialog();
         }
     }
