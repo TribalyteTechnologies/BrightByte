@@ -20,4 +20,7 @@ export class MigrationConfig {
     public static readonly PRIVATE_KEY_ACCOUNT = "0x0";
     public static readonly PERCENTAGE = 100;
     public static readonly INITIAL_SEASON_MULTIPLE_CRITERIA = 3;
+    public static readonly INITIAL_SEASON_THRESHOLD = 4;
+    public static readonly COMMIT_THRESHOLDS = [15, 35];
+    public static readonly REVIEW_THRESHOLDS = [15, 45];
 }
