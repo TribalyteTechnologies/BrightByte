@@ -150,27 +150,18 @@ contract Bright {
 
     function notifyCommit (string a, bytes32 email) public onlyRoot {
         bytes32 url = keccak256(a);
-        address sender = tx.origin;
         address user = getAddressByEmail(email);
         require(user != address(0));
-        bool saved = false;
         BrightModels.UserSeason storage reviewerSeason = hashUserMap.map[user].seasonData[currentSeasonIndex];
-        BrightModels.UserSeason memory userSeason = hashUserMap.map[sender].seasonData[currentSeasonIndex];
         reviewerSeason.toRead.push(url);
-        for (uint256 i = 0; i < userSeason.urlSeasonCommits.length; i++){
-            if(userSeason.urlSeasonCommits[i] == url){
-                saved = true;
-                break;
-            }
-        }
         bool done = false;
-        for (i = 0; i < reviewerSeason.pendingReviews.length; i++){
+        for (uint256 i = 0; i < reviewerSeason.pendingReviews.length; i++){
             if(reviewerSeason.pendingReviews[i] == url){
                 done = true;
                 break;
             }
         }
-        if (!done && saved){
+        if (!done){
             reviewerSeason.pendingReviews.push(url);
             reviewerSeason.allReviews.push(url);
         }

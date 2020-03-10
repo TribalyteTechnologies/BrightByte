@@ -60,7 +60,7 @@ export class AddCommitPopover {
     private allEmails = new Array<string>();
     private searchInput = "";
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
-    private readonly PERCENTAGE_RANGE = 100;
+    private readonly PERCENTAGE_RANGE = 99.99;
     private readonly FACTOR_PERCENTAGE_DECIMALS = 100; 
     private userDetailsProm: Promise<UserDetails>;
     private log: ILogger;
@@ -196,7 +196,6 @@ export class AddCommitPopover {
                     this.viewCtrl.dismiss(newCommit);
                 }
             }).catch(e => {
-
                 this.isTxOngoing = false;
                 if(e.msg) {
                     this.showGuiMessage(e.msg, e.err);

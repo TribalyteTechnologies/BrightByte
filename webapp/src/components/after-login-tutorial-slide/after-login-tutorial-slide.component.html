@@ -6,9 +6,9 @@
 <ion-content>
     <img class="logo slide-logo" src="../../assets/imgs/bright_logo.svg">
     <ion-slides class="slides" pager="true">
-        <ion-slide *ngFor="let contentId of slidesContentIds">
+        <ion-slide *ngFor="let contentId of SLIDES_CONTENT_IDS">
                 <ion-row>
-                    <ion-col col-1 class="arrow" *ngIf="contentId != 1">
+                    <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[0]">
                         <img (click)="goPrev()" src="../../assets/imgs/Flecha-anterior.svg">
                     </ion-col>
                     <ion-col [ngSwitch]="contentId" class="slide-container-outside-padding">
@@ -28,7 +28,7 @@
                                 </ion-row>
                             </div>
                         </div>
-                        <div *ngSwitchCase="slidesContentIds[1]">
+                        <div *ngSwitchCase="SLIDES_CONTENT_IDS[1]">
                             <h2 class="slide-title">
                                 {{ "tutorialSlides.afterLoginTutorialReview" | translate }}
                             </h2>
@@ -42,7 +42,7 @@
                                 </ion-row>
                             </div>
                         </div>
-                        <div *ngSwitchCase="slidesContentIds[2]">
+                        <div *ngSwitchCase="SLIDES_CONTENT_IDS[2]">
                             <h2 class="slide-title">
                                 {{ "tutorialSlides.afterLoginTutorialRanking" | translate }}
                             </h2>
@@ -55,7 +55,7 @@
                                 </ion-row>
                             </div>
                         </div>
-                        <div *ngSwitchCase="slidesContentIds[slidesContentIds.length-1]" class="slide-last">
+                        <div *ngSwitchCase="SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]" class="slide-last">
                             <h2 class="slide-title">
                                 {{ "tutorialSlides.afterLoginTutorialFinal" | translate }}
                             </h2>
@@ -74,7 +74,7 @@
                             </ion-row>
                         </div>
                     </ion-col>
-                    <ion-col col-1 class="arrow" *ngIf="contentId != slidesContentIds[slidesContentIds.length-1]">
+                    <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]">
                         <img (click)="goNext()" class="arrow-next" src="../../assets/imgs/Flecha-anterior.svg">    
                     </ion-col>
                 </ion-row>
