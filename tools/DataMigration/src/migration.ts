@@ -115,7 +115,8 @@ export class MigrationService {
             users.forEach((user, index) => {
                 for (let i = 0; i <= seasonNumber; i++) {
                     let userSeason = new UserSeason();
-                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]) * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
+                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]);
+                    userSeason.seasonStats.reputation = userSeason.seasonStats.reputation * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
                     userSeason.seasonStats.agreedPercentage = Number(seasonReputation[counter][4]);
                     userSeason.seasonStats.commitsMade = Number(seasonReputation[counter][5]);
                     userSeason.seasonStats.reviewsMade = Number(seasonReputation[counter][6]);
@@ -233,6 +234,8 @@ export class MigrationService {
                                 revKnowledge.push(comment.points[2]);
                             });
                             let commitPonderation = this.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
+                            userCommit.score = Math.trunc(commitPonderation[0]);
+                            userCommit.weightedComplexity = Math.trunc(commitPonderation[1]);
                             let reputationPonderation = this.calculateUserReputation
                                 (seasonReputation, seasonCumulativeComplexity, commitPonderation[0], commitPonderation[1], 0, 0);
 
@@ -503,8 +506,9 @@ export class MigrationService {
             });
     }
 
+
     private calculateCommitPonderation(cleanliness: Array<number>, complexity: Array<number>, revKnowledge: Array<number>): Array<number> {
-        let WEIGHT_FACTOR = 1000000000000;
+        let WEIGHT_FACTOR = 10000000000;
         let weightedCleanliness = 0;
         let complexityPonderation = 0;
         let totalKnowledge = 0;
