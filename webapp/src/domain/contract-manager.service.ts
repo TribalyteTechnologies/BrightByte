@@ -364,6 +364,21 @@ export class ContractManagerService {
             throw err;
         });
     }
+    
+    public getCommitScores(url: string): Promise<Array<number>> {
+        return this.initProm.then(([bright, commit, root]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", commit);
+            let urlKeccak = this.web3.utils.keccak256(url);
+            return commit.methods.getCommitScores(urlKeccak).call();
+        }).then(res => {
+            this.log.w("Los resuultados son los siguientes", res);
+            return res;
+        }).catch(err => {
+            this.log.e("Error getting comments of commit :", err);
+            throw err;
+        });
+    }
 
     public getUserDetails(hash: string): Promise<UserDetails> {
         return this.userCacheSrv.getUser(hash).catch(() => {
