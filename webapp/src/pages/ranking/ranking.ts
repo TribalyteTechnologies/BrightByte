@@ -96,6 +96,12 @@ export class RankingPage {
                 for (let i = this.numberOfSeasons; i >= 0; i--) {
                     this.seasons.push("Season " + i);
                 }
+                return this.contractManagerService.getSeasonThreshold(this.seasonSelected);
+            }).then(seasonThreshold => {
+                this.log.d("The season Threshold are", seasonThreshold);
+                this.minNumberCommit = seasonThreshold[0];
+                this.minNumberReview = seasonThreshold[1];
+                this.refresh();
             });
     }
 

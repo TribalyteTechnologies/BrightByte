@@ -5,7 +5,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
 import { UserNameService } from "../../domain/user-name.service";
-import { ContractManagerService } from "../../domain/contract-manager.service";
 
 
 @Component({
@@ -44,6 +43,16 @@ export class RankingCard {
     public globalSelected: boolean;
 
     @Input()
+    public set minNumberOfCommit(minNumberCommit: number) {
+        this.minNumberCommit = minNumberCommit;
+    }
+
+    @Input()
+    public set minNumberOfReview(minNumberReview: number) {
+        this.minNumberReview = minNumberReview;
+    }
+
+    @Input()
     public set ranking(val: UserReputation) {
         let rankIdx = val.reputation;
         this.reputation = rankIdx;
@@ -63,14 +72,14 @@ export class RankingCard {
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
         this.isRanked = val.isRanked;
+        this.refreshTooltips();
     }
 
     constructor(
         loginService: LoginService,
         translateSrv: TranslateService,
         private avatarSrv: AvatarService,
-        private userNameSrv: UserNameService,
-        private contractManagerService: ContractManagerService
+        private userNameSrv: UserNameService
     ) {
         let account = loginService.getAccount();
         this.accountHash = account.address;
@@ -82,26 +91,25 @@ export class RankingCard {
 
     public ngOnInit() {
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userHash);
-        this.contractManagerService.getCurrentSeasonThreshold().then(seasonThreshold => {
-            this.minNumberCommit = seasonThreshold[0];
-            this.minNumberReview = seasonThreshold[1];
+        this.refreshTooltips();
+    }
 
-            this.tooltipParams = {
-                pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
-                pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
-                agreedPercentage: this.agreed
-            };
-            this.commitParams = {
-                numCommits: this.numCommits,
-                minNumberCommit : this.minNumberCommit 
-            };
-            this.reviewParams = {
-                numReviews: this.numReviews,
-                minNumberReview : this.minNumberReview
-            };
-            this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
-            this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
-        });
+    private refreshTooltips() {
+        this.tooltipParams = {
+            pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
+            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
+            agreedPercentage: this.agreed
+        };
+        this.commitParams = {
+            numCommits: this.numCommits,
+            minNumberCommit : this.minNumberCommit 
+        };
+        this.reviewParams = {
+            numReviews: this.numReviews,
+            minNumberReview : this.minNumberReview
+        };
+        this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
+        this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
     }
 
 }
