@@ -2,7 +2,6 @@ import { Component, Input } from "@angular/core";
 import { UserReputation } from "../../models/user-reputation.model";
 import { LoginService } from "../../core/login.service";
 import { TranslateService } from "@ngx-translate/core";
-import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
 import { UserNameService } from "../../domain/user-name.service";
@@ -31,8 +30,8 @@ export class RankingCard {
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
     public isRanked = false;
-    public minNumberReview = AppConfig.MIN_REVIEW_QUALIFY;
-    public minNumberCommit = AppConfig.MIN_COMMIT_QUALIFY;
+    public minNumberReview;
+    public minNumberCommit;
     public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
@@ -42,6 +41,16 @@ export class RankingCard {
 
     @Input()
     public globalSelected: boolean;
+
+    @Input()
+    public set minNumberOfCommit(minNumberCommit: number) {
+        this.minNumberCommit = minNumberCommit;
+    }
+
+    @Input()
+    public set minNumberOfReview(minNumberReview: number) {
+        this.minNumberReview = minNumberReview;
+    }
 
     @Input()
     public set ranking(val: UserReputation) {
@@ -63,21 +72,7 @@ export class RankingCard {
         this.engagementIndex = val.engagementIndex;
         this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
         this.isRanked = val.isRanked;
-        this.tooltipParams = {
-            pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
-            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
-            agreedPercentage: val.agreedPercentage
-        };
-        this.commitParams = {
-            numCommits: this.numCommits,
-            minNumberCommit : this.minNumberCommit 
-        };
-        this.reviewParams = {
-            numReviews: this.numReviews,
-            minNumberReview : this.minNumberReview
-        };
-        this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
-        this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
+        this.refreshTooltips();
     }
 
     constructor(
@@ -96,6 +91,25 @@ export class RankingCard {
 
     public ngOnInit() {
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userHash);
+        this.refreshTooltips();
+    }
+
+    private refreshTooltips() {
+        this.tooltipParams = {
+            pendingCommits: Math.max(0, this.minNumberCommit - this.numCommits),
+            pendingReviews: Math.max(0, this.minNumberReview - this.numReviews),
+            agreedPercentage: this.agreed
+        };
+        this.commitParams = {
+            numCommits: this.numCommits,
+            minNumberCommit : this.minNumberCommit 
+        };
+        this.reviewParams = {
+            numReviews: this.numReviews,
+            minNumberReview : this.minNumberReview
+        };
+        this.isRankedByReviews = this.isRanked || this.numReviews >= this.minNumberReview;
+        this.isRankedByCommits = this.isRanked || this.numCommits >= this.minNumberCommit;
     }
 
 }

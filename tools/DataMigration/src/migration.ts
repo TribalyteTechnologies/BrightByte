@@ -18,8 +18,10 @@ export class MigrationService {
     private commitOldAddress: string;
     private brightNewAddress: string;
     private commitNewAddress: string;
+    private rootNewAddress: string;
     private contractBright: ITrbSmartContractJson;
     private contractCommit: ITrbSmartContractJson;
+    private contractRoot: ITrbSmartContractJson;
     private web3: Web3;
     private web3Websocket: Web3;
     private web3Service = new Web3Service();
@@ -42,6 +44,7 @@ export class MigrationService {
         let commitOld = new this.web3Websocket.eth.Contract(this.commitOldJson.abi, this.commitOldAddress);
         let brightNew = new this.web3.eth.Contract(this.contractBright.abi, this.brightNewAddress);
         let commitNew = new this.web3.eth.Contract(this.contractCommit.abi, this.commitNewAddress);
+        let rootNew = new this.web3.eth.Contract(this.contractRoot.abi, this.rootNewAddress);
 
         let usersHash = new Array<string>();
         let users = new Array<User>();
@@ -112,7 +115,8 @@ export class MigrationService {
             users.forEach((user, index) => {
                 for (let i = 0; i <= seasonNumber; i++) {
                     let userSeason = new UserSeason();
-                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]) * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
+                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]);
+                    userSeason.seasonStats.reputation = userSeason.seasonStats.reputation * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
                     userSeason.seasonStats.agreedPercentage = Number(seasonReputation[counter][4]);
                     userSeason.seasonStats.commitsMade = Number(seasonReputation[counter][5]);
                     userSeason.seasonStats.reviewsMade = Number(seasonReputation[counter][6]);
@@ -230,6 +234,8 @@ export class MigrationService {
                                 revKnowledge.push(comment.points[2]);
                             });
                             let commitPonderation = this.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
+                            userCommit.score = Math.trunc(commitPonderation[0]);
+                            userCommit.weightedComplexity = Math.trunc(commitPonderation[1]);
                             let reputationPonderation = this.calculateUserReputation
                                 (seasonReputation, seasonCumulativeComplexity, commitPonderation[0], commitPonderation[1], 0, 0);
 
@@ -460,6 +466,14 @@ export class MigrationService {
                 Promise.resolve()
             );
         }).then((trxResponse) => {
+            let byteCodeData = rootNew.methods.setIniatialThreshold(
+                MigrationConfig.INITIAL_SEASON_THRESHOLD,
+                MigrationConfig.COMMIT_THRESHOLDS,
+                MigrationConfig.REVIEW_THRESHOLDS
+            ).encodeABI();
+            this.decreaseCount();
+            return this.sendTx(byteCodeData, this.rootNewAddress);
+        }).then((trxResponse) => {
             console.log("Migration Finished");
         }).catch(err => console.log("Error in the migration " + err));
     }
@@ -492,8 +506,9 @@ export class MigrationService {
             });
     }
 
+
     private calculateCommitPonderation(cleanliness: Array<number>, complexity: Array<number>, revKnowledge: Array<number>): Array<number> {
-        let WEIGHT_FACTOR = 1000000000000;
+        let WEIGHT_FACTOR = 10000000000;
         let weightedCleanliness = 0;
         let complexityPonderation = 0;
         let totalKnowledge = 0;
@@ -535,12 +550,19 @@ export class MigrationService {
             return axios.get(MigrationConfig.BRIGHT_CONTRACT_URL);
         }).then(response => {
             this.contractBright = response.data;
-            this.brightNewAddress = this.contractBright.networks[MigrationConfig.NETID].address;
+            this.brightNewAddress = this.contractBright.networks[MigrationConfig.NETID_GANACHE].address;
             return axios.get(MigrationConfig.COMMIT_CONTRACT_URL);
         }).then(response => {
             this.contractCommit = response.data;
-            this.commitNewAddress = this.contractCommit.networks[MigrationConfig.NETID].address;
+            this.commitNewAddress = this.contractCommit.networks[MigrationConfig.NETID_GANACHE].address;
+            return axios.get(MigrationConfig.ROOT_CONTRACT_URL);
+        }).then(response => {
+            this.contractRoot = response.data;
+            this.rootNewAddress = this.contractRoot.networks[MigrationConfig.NETID_GANACHE].address;
             return true;
+        }).catch(e => {
+            console.log("Error getting Contracts ABIs", e);
+            throw e;
         });
     }
 

@@ -1,7 +1,7 @@
 pragma solidity 0.4.22;
 
 import "./Root.sol";
-import { MigrationLib } from "./MigrationLib.sol";
+import { BrightByteLib } from "./BrightByteLib.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
 
@@ -65,7 +65,7 @@ contract Commits {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        migrationEndTimestamp = block.timestamp + MigrationLib.getTimeToMigrate();
+        migrationEndTimestamp = block.timestamp + BrightByteLib.getTimeToMigrate();
     }
 
     function transferOwnership(address newOwner) public onlyOwner {

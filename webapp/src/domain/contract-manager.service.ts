@@ -364,6 +364,21 @@ export class ContractManagerService {
             throw err;
         });
     }
+    
+    public getCommitScores(url: string): Promise<Array<number>> {
+        return this.initProm.then(([bright, commit, root]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", commit);
+            let urlKeccak = this.web3.utils.keccak256(url);
+            return commit.methods.getCommitScores(urlKeccak).call();
+        }).then(res => {
+            this.log.w("Los resuultados son los siguientes", res);
+            return res;
+        }).catch(err => {
+            this.log.e("Error getting comments of commit :", err);
+            throw err;
+        });
+    }
 
     public getUserDetails(hash: string): Promise<UserDetails> {
         return this.userCacheSrv.getUser(hash).catch(() => {
@@ -372,7 +387,6 @@ export class ContractManagerService {
                 this.log.d("Contract artifact", bright);
                 return bright.methods.getUser(hash).call();
             }).then((userVals: Array<any>) => {
-                userVals[6] = hash;
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
                 return userValsToUSerDetails;
@@ -382,6 +396,29 @@ export class ContractManagerService {
             });
         });
     }
+
+    public getCurrentSeasonThreshold(): Promise<Array<number>> {
+        return this.initProm.then(([bright, commit, root]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", root);
+            return root.methods.getCurrentSeasonThreshold().call();
+        }).catch(e => {
+            this.log.e("Error setting thumbs: ", e);
+            throw e;
+        });
+    }
+
+    public getSeasonThreshold(seasonIndex: number): Promise<Array<number>> {
+        return this.initProm.then(([bright, commit, root]) => {
+            this.log.d("Public Address: ", this.currentUser.address);
+            this.log.d("Contract artifact", root);
+            return root.methods.getSeasonThreshold(seasonIndex).call();
+        }).catch(e => {
+            this.log.e("Error setting thumbs: ", e);
+            throw e;
+        });
+    }
+   
 
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {

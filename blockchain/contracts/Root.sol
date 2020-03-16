@@ -1,6 +1,8 @@
 pragma solidity 0.4.22;
+
 import "./Bright.sol";
 import "./Commits.sol";
+import "./Threshold.sol";
 
 import { Reputation } from "./Reputation.sol";
 
@@ -9,6 +11,8 @@ contract Root{
     address brightAddress;
     Commits remoteCommits;
     address commitsAddress;
+    Threshold remoteThreshold;
+    address thresholdAddress;
     address owner;
     string version;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -20,6 +24,10 @@ contract Root{
     }
     modifier onlyCommit() {
         require(msg.sender == commitsAddress);
+        _;
+    }
+    modifier onlyBright() {
+        require(msg.sender == brightAddress);
         _;
     }
     modifier onlyUser(){
@@ -36,16 +44,24 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    constructor (address bright, address commits, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
+    constructor (address bright, address commits, address threshold, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
         remoteCommits = Commits(commits);
         commitsAddress = commits;
+        remoteThreshold = Threshold(threshold);
+        thresholdAddress = threshold;
         version = ver;
         remoteCommits.init(address(this));
         remoteBright.init(address(this), initialTimestamp, seasonLengthDays);
+        uint256 currentSeasonIndex;
+        uint256 seasonFinaleTime;
+        uint256 seasonLengthSecs;
+        (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs) = remoteBright.getCurrentSeason();
+        remoteThreshold.init(address(this), currentSeasonIndex);
     }
+
     function getHelperAddress() public view returns(address, address){
         return(brightAddress,commitsAddress);
     }
@@ -76,11 +92,13 @@ contract Root{
         bool auth;
         (yes, auth) = remoteCommits.isCommit(_id);
         require(auth);
-        for (uint i = 0; i <_emails.length; i++){
-            a = remoteBright.getAddressByEmail(_emails[i]);
-            if(a != address(0) && a != msg.sender){
-                remoteCommits.notifyCommit(_id,a);
-                remoteBright.notifyCommit(url, _emails[i]);
+        if(remoteBright.checkCommitSeason(_id, msg.sender)) {
+            for (uint i = 0; i <_emails.length; i++){
+                a = remoteBright.getAddressByEmail(_emails[i]);
+                if(a != address(0) && a != msg.sender){
+                    remoteCommits.notifyCommit(_id,a);
+                    remoteBright.notifyCommit(url, _emails[i]);
+                }
             }
         }
     }
@@ -127,11 +145,27 @@ contract Root{
         return (pending, finish);
     }
 
-    function deleteCommit(bytes32 url) public {
+    function deleteCommit(bytes32 url) public onlyBright {
         remoteCommits.deleteCommit(url);
     }
 
     function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
+    }
+
+    function getSeasonThreshold(uint256 seasonIndex) public view returns (uint256, uint256) {
+        return remoteThreshold.getSeasonThreshold(seasonIndex);
+    }
+
+    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyOwner {
+        return remoteThreshold.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
+    }
+
+    function setCurrentSeasonThresholdOwner(uint256 commitsThreshold, uint256 reviewsThreshold) public onlyOwner {
+        return remoteThreshold.setCurrentSeasonThreshold(commitsThreshold, reviewsThreshold);
+    }
+
+    function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyBright {
+        remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 }

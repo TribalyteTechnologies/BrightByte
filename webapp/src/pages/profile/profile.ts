@@ -137,6 +137,7 @@ export class Profile {
         let userName = this.uploadForm.get(this.USER_NAME_FIELD_NAME).value;
         let promises = new Array<Promise<any>>();
         this.errorMsg = null;
+        this.successMsg = null;
         if (userName && userName !== this.userName) {
             let promise = this.contractManagerService.setUserName(userName).then(() => {
                 this.log.d("The user has set a new name");

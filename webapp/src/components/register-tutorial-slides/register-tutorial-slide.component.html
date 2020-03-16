@@ -9,13 +9,13 @@
         <span>{{ "tutorialSlides.registerTutorialTitle" | translate }}</span>
     </h2> 
     <ion-slides class="slides" pager="true">
-        <ion-slide *ngFor="let contentId of slidesContentIds">
+        <ion-slide *ngFor="let contentId of SLIDES_CONTENT_IDS">
                 <ion-row>
-                    <ion-col col-1 class="arrow" *ngIf="contentId != 1">
+                    <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[0]">
                         <img (click)="goPrev()" src="../../assets/imgs/Flecha-anterior.svg">
                     </ion-col>
                     <ion-col class="slide-container-outside-padding">
-                        <div [ngClass]="{'slide-first':contentId == slidesContentIds[0], 'slide-last':contentId == slidesContentIds[slidesContentIds.length-1]}">
+                        <div [ngClass]="{'slide-first':contentId == SLIDES_CONTENT_IDS[0], 'slide-last':contentId == SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]}">
                             <div class="slide-container">
                                 <ion-row class="slide-white-space slide-subtitle">
                                     <h2 class="slide-subtitle-font-color">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </ion-col>
-                    <ion-col col-1 class="arrow" *ngIf="contentId != 3">
+                    <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]">
                         <img (click)="goNext()" class="arrow-next" src="../../assets/imgs/Flecha-anterior.svg">    
                     </ion-col>
                 </ion-row>
