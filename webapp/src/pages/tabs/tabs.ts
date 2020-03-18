@@ -26,14 +26,13 @@ import { AfterLoginSlidePopover } from "../../components/after-login-tutorial-sl
 })
 export class TabsPage {
 
-    public isVisible = true;
-    public isSharing = AppConfig.IS_SHARING_ENABLE;
-    public currentPage: any;
-    public tabContent: any;
-
+    public readonly isSharing = AppConfig.IS_SHARING_ENABLED;
     public readonly RANKING_PAGE_INDEX = "3";
     public readonly HOME_PAGE_INDEX = "0";
 
+    public isVisible = true;
+    public currentPage: any;
+    public tabContent: any;
     public contribute = new MenuItem("add.svg", null, "contribute");
     public home = new MenuItem("home.svg", HomePage, "home");
     public commits = new MenuItem("commits.svg", CommitPage, "commits");

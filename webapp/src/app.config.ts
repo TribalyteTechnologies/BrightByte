@@ -49,7 +49,7 @@ export class AppConfig {
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
 
-    public static readonly IS_SHARING_ENABLE = true;
+    public static readonly IS_SHARING_ENABLED = true;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",

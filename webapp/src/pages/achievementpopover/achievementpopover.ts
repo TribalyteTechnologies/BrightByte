@@ -12,7 +12,7 @@ import { AppConfig } from "../../app.config";
 })
 export class AchievementPopOver {
 
-    public isSharing = AppConfig.IS_SHARING_ENABLE;
+    public readonly isSharing = AppConfig.IS_SHARING_ENABLED;
     public achievement: Achievement;
     
     private log: ILogger;
