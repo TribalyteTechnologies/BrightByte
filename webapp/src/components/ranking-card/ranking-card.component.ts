@@ -14,6 +14,15 @@ import { UserNameService } from "../../domain/user-name.service";
 })
 export class RankingCard {
 
+    @Input()
+    public globalSelected: boolean;
+
+    @Input()
+    public minNumberReview: number;
+
+    @Input()
+    public  minNumberCommit: number;
+
     public ANONYMOUS = "";
     public userPosition = 0;
     public reputation = 0;
@@ -30,27 +39,12 @@ export class RankingCard {
     public engagementIndexString = "";
     public avatarObs: Observable<string>;
     public isRanked = false;
-    public minNumberReview;
-    public minNumberCommit;
     public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
     public commitParams: { numCommits: number; minNumberCommit: number; };
     public reviewParams: { numReviews: number; minNumberReview: number; };
     public isRankedByReviews: boolean;
     public isRankedByCommits: boolean;
     public isCurrentUserName: boolean;
-
-    @Input()
-    public globalSelected: boolean;
-
-    @Input()
-    public set minNumberOfCommit(minNumberCommit: number) {
-        this.minNumberCommit = minNumberCommit;
-    }
-
-    @Input()
-    public set minNumberOfReview(minNumberReview: number) {
-        this.minNumberReview = minNumberReview;
-    }
 
     @Input()
     public set ranking(val: UserReputation) {
@@ -91,7 +85,7 @@ export class RankingCard {
 
     public ngOnInit() {
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userHash);
-        this.refreshTooltips();
+        //this.refreshTooltips();
     }
 
     private refreshTooltips() {

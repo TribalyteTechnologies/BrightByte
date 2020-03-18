@@ -51,7 +51,7 @@
                 <ion-grid no-padding class="table">
                     <ranking-card *ngFor="let user of usersRep" (click)="setUser(user.userHash)"
                         [globalSelected]="globalSelected" [ranking]="user"
-                        [minNumberOfCommit]="minNumberCommit" [minNumberOfReview]="minNumberReview"
+                        [minNumberCommit]="minNumberCommit" [minNumberReview]="minNumberReview"
                         [ngClass]="user.isRanked ? 'ranked' : 'not-ranked'"></ranking-card>
                 </ion-grid>
             </ion-row>
