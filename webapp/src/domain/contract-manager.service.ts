@@ -101,12 +101,9 @@ export class ContractManagerService {
 
     public setProfile(name: string, mail: string): Promise<any> {
         let contractArtifact;
-        return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Contract: ", bright);
+        return this.initProm.then(([bright]) => {
             contractArtifact = bright;
             this.log.d("Setting profile with name and mail: ", [name, mail]);
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", contractArtifact);
             let bytecodeData = contractArtifact.methods.setProfile(name, mail).encodeABI();
             this.log.d("Bytecode data: ", bytecodeData);
 
@@ -122,10 +119,7 @@ export class ContractManagerService {
         let rootContract;
         let isAlreadyUploaded = false;
         return this.initProm.then(([bright, commit, root]) => {
-            rootContract = root;
-            this.log.d("Contract artifact: ", commit);
-            this.log.d("Contract Address: ", this.contractAddressCommits);
-            this.log.d("Public Address: ", this.currentUser.address);
+            rootContract = root;            
             this.log.d("Variables: url ", url);
             this.log.d("UsersMail: ", usersMail);
             // let project = this.splitService.getProject(url);
@@ -164,9 +158,6 @@ export class ContractManagerService {
         let contractArtifact;
         return this.initProm.then(([bright]) => {
             contractArtifact = bright;
-            this.log.d("Contract: ", bright);
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", contractArtifact);
             this.log.d("Request to delete the commit: " + url);
             let urlKeccak = this.web3.utils.keccak256(url);
             let bytecodeData = contractArtifact.methods.removeUserCommit(urlKeccak).encodeABI();
@@ -180,7 +171,7 @@ export class ContractManagerService {
 
     public getCommits(): Promise<Array<UserCommit>> {
         let brightContract, commitContract: ITrbSmartContact;
-        return this.initProm.then(([bright, commit, root]) => {
+        return this.initProm.then(([bright, commit]) => {
             brightContract = bright;
             commitContract = commit;
             return this.getCurrentSeasonState();
@@ -204,25 +195,23 @@ export class ContractManagerService {
             endIndex = (seasonState[0] > seasonState[1]) ? seasonState[0] : seasonState[1];
             return this.initProm;
         }).then(([bright, commit]) => {
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
-                let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
-                return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex).call()
-                    .then((allUserCommits: Array<any>) => {
-                        let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                            .then((commitVals: any) => {
-                                return UserCommit.fromSmartContract(commitVals, true);
-                            }));
-                        let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                            .then((commitVals: any) => {
-                                return UserCommit.fromSmartContract(commitVals, false);
-                            }));
-                        return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
-                    });
-            }).catch(err => {
-                this.log.e("Error obtaining commits to review :", err);
-                throw err;
-            });
+            let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
+            return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex).call()
+                .then((allUserCommits: Array<any>) => {
+                    let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, true);
+                        }));
+                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                        .then((commitVals: any) => {
+                            return UserCommit.fromSmartContract(commitVals, false);
+                        }));
+                    return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
+                });
+        }).catch(err => {
+            this.log.e("Error obtaining commits to review :", err);
+            throw err;
+        });
     }
 
     public getCurrentSeasonState(): Promise<Array<number>> {
@@ -250,8 +239,6 @@ export class ContractManagerService {
     public getSeasonCommitsToReview(endIndex: number): Promise<UserCommit[][]> {
         return this.initProm
             .then(([bright, commit]) => {
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
                 return bright.methods.getCurrentSeason().call()
                 .then(seasonData => {
                     let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
@@ -281,8 +268,6 @@ export class ContractManagerService {
     public getAllUserAddresses(): Promise<Array<string>> {
         return this.initProm
             .then(([bright]) => {
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
                 return bright.methods.getUsersAddress().call();
             }).catch(err => {
                 this.log.e("Error checking commit season :", err);
@@ -296,8 +281,6 @@ export class ContractManagerService {
         return this.initProm
             .then(([root]) => {
                 rootContract = root;
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", root);
                 urlKeccak = this.web3.utils.keccak256(url);
                 return rootContract.methods.checkCommitSeason(urlKeccak, author).call();
             }).catch(err => {
@@ -307,7 +290,7 @@ export class ContractManagerService {
     }
 
     public getCommitDetails(url: string, returnsUserCommits = true): Promise<UserCommit | CommitDetails> {
-        return this.initProm.then(([bright, commit, root]) => {
+        return this.initProm.then(([bright, commit]) => {
             return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
                 .then((commitVals: any) => {
                     let result;
@@ -327,16 +310,11 @@ export class ContractManagerService {
     public setReview(url: string, text: string, points: number[]): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
             let contractArtifact = commit;
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", contractArtifact);
             let bytecodeData = contractArtifact.methods.setReview(url, text, points).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced text: ", text);
             this.log.d("Introduced points: ", points);
-            this.log.d("DATA: ", bytecodeData);
-
             return this.sendTx(bytecodeData, this.contractAddressCommits);
-
         }).catch(e => {
             this.log.e("Error setting a review: ", e);
             throw e;
@@ -345,9 +323,7 @@ export class ContractManagerService {
     }
 
     public getCommentsOfCommit(url: string): Promise<Array<CommitComment>> {
-        return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", commit);
+        return this.initProm.then(([bright, commit]) => {
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommentsOfCommit(urlKeccak).call()
                 .then((allComments: Array<any>) => {
@@ -366,14 +342,9 @@ export class ContractManagerService {
     }
     
     public getCommitScores(url: string): Promise<Array<number>> {
-        return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", commit);
+        return this.initProm.then(([bright, commit]) => {
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommitScores(urlKeccak).call();
-        }).then(res => {
-            this.log.w("Los resuultados son los siguientes", res);
-            return res;
         }).catch(err => {
             this.log.e("Error getting comments of commit :", err);
             throw err;
@@ -382,9 +353,7 @@ export class ContractManagerService {
 
     public getUserDetails(hash: string): Promise<UserDetails> {
         return this.userCacheSrv.getUser(hash).catch(() => {
-            return this.initProm.then(([bright, commit, root]) => {
-                this.log.d("Public Address: ", this.currentUser.address);
-                this.log.d("Contract artifact", bright);
+            return this.initProm.then(([bright]) => {
                 return bright.methods.getUser(hash).call();
             }).then((userVals: Array<any>) => {
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
@@ -399,8 +368,6 @@ export class ContractManagerService {
 
     public getCurrentSeasonThreshold(): Promise<Array<number>> {
         return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", root);
             return root.methods.getCurrentSeasonThreshold().call();
         }).catch(e => {
             this.log.e("Error setting thumbs: ", e);
@@ -410,8 +377,6 @@ export class ContractManagerService {
 
     public getSeasonThreshold(seasonIndex: number): Promise<Array<number>> {
         return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", root);
             return root.methods.getSeasonThreshold(seasonIndex).call();
         }).catch(e => {
             this.log.e("Error setting thumbs: ", e);
@@ -422,14 +387,10 @@ export class ContractManagerService {
 
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", root);
             return this.getCommentsOfCommit(url)
                 .then((arrayOfComments: Array<CommitComment>) => {
                     let bytecodeData = root.methods.setVote(url, arrayOfComments[index].user, value).encodeABI();
-                    this.log.d("Introduced index: ", index);
                     this.log.d("Introduced value: ", value);
-                    this.log.d("DATA: ", bytecodeData);
                     return this.sendTx(bytecodeData, this.contractAddressRoot);
                 });
         }).catch(e => {
@@ -440,8 +401,6 @@ export class ContractManagerService {
 
     public reviewChangesCommitFlag(url: string) {
         return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", root);
             let bytecodeData = root.methods.readCommit(url).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("DATA: ", bytecodeData);
@@ -508,13 +467,9 @@ export class ContractManagerService {
 
     public setFeedback(url: string) {
         return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", root);
             let bytecodeData = root.methods.setFeedback(url, this.currentUser.address).encodeABI();
             this.log.d("Introduced url: ", url);
-            this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressRoot);
-
         }).catch(e => {
             this.log.e("Error setting feedback: ", e);
             throw e;
@@ -522,8 +477,7 @@ export class ContractManagerService {
     }
 
     public getReviewers(url: string): Promise<string[][]> {
-        return this.initProm.then(([bright, commit, root]) => {
-            this.log.d("Public Adress: ", this.currentUser.address);
+        return this.initProm.then(([bright, commit]) => {
             let urlKeccak = this.web3.utils.keccak256(url);
             return commit.methods.getCommentsOfCommit(urlKeccak).call();
         }).catch(err => {
@@ -551,10 +505,7 @@ export class ContractManagerService {
 
     public setUserName(name: string): Promise<any> {
         return this.initProm.then(([bright]) => {
-            this.log.d("Public Address: ", this.currentUser.address);
-            this.log.d("Contract artifact", bright);
             let bytecodeData = bright.methods.setUserName(name).encodeABI();
-            this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressBright);
         }).then(() => {
             this.userCacheSrv.setUserName(this.currentUser.address, name);
