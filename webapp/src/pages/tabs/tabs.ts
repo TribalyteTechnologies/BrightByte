@@ -93,9 +93,9 @@ export class TabsPage {
 
     public ngOnInit(){
         this.avatarObs = this.avatarSrv.getAvatarObs(this.loginService.getAccountAddress());
+        const lastPage = this.storageSrv.get(AppConfig.StorageKey.LASTPAGE);
         if(!this.storageSrv.get(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED) && 
-            (this.storageSrv.get(AppConfig.StorageKey.LASTPAGE) === this.HOME_PAGE_INDEX ||
-            this.storageSrv.get(AppConfig.StorageKey.LASTPAGE) === this.RANKING_PAGE_INDEX) ) {
+            (lastPage === this.HOME_PAGE_INDEX || lastPage === this.RANKING_PAGE_INDEX)) {
             this.openAfterLoginTutorialDialog();
         }
     }
