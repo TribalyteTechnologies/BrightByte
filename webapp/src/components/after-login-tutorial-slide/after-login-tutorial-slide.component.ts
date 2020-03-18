@@ -9,13 +9,15 @@ import { AppConfig } from "../../app.config";
   styles: ["after-login-tutorial-slide.component.scss"]
 })
 export class AfterLoginSlidePopover {
-  @ViewChild(Slides) public slides: Slides;
+
   public readonly SLIDES_CONTENT_IDS = [1, 2, 3, 4];
   public readonly brightBytePage = AppConfig.BRIGHTBYTE_LANDING_PAGE;
-  
-  constructor(private viewCtrl: ViewController,
-              private storageSrv: LocalStorageService){
-  }
+
+  @ViewChild(Slides) public slides: Slides;
+
+  constructor(
+    private viewCtrl: ViewController,
+    private storageSrv: LocalStorageService) {}
 
   public ngAfterViewInit() {
     this.slides.lockSwipes(true);

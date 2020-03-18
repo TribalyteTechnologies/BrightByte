@@ -256,7 +256,7 @@
         "shareButtonText": "Share"
     },
     "tutorialSlides": {
-        "registerTutorialTitle": "Register help",
+        "registerTutorialTitle": "Registration help",
         "registerTutorialSubtitleText": "Step",
         "registerTutorialImgPath": "../../assets/imgs/Step{{id}}.png",
         "afterLoginTutorialCommit": "Commits",

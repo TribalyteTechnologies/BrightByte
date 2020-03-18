@@ -9,8 +9,10 @@ import { AppConfig } from "../../app.config";
   styles: ["register-tutorial-slide.component.scss"]
 })
 export class RegisterSlidePopover {
-  @ViewChild(Slides) public slides: Slides;
+
   public readonly SLIDES_CONTENT_IDS = [1, 2, 3];
+
+  @ViewChild(Slides) public slides: Slides;
   
   constructor(private viewCtrl: ViewController, private storageSrv: LocalStorageService){
   }
