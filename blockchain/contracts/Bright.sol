@@ -22,8 +22,8 @@ contract Bright {
     address private owner;
     
     event UserProfileSetEvent (string name, address hash);
-    event UserNewCommit (address userHash, uint256 numberOfCommits);
-    event UserNewReview (address userHash, uint256 numberOfReviews);
+    event UserNewCommit (address userHash, uint256 numberOfCommits, uint256 timestamp);
+    event UserNewReview (address userHash, uint256 numberOfReviews, uint256 timestamp);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event DeletedCommit (address userHash, bytes32 url);
 
@@ -145,7 +145,7 @@ contract Bright {
             userSeason.seasonCommits[url] = true;
             userSeason.seasonStats.commitsMade++;
             user.globalStats.commitsMade++;
-            emit UserNewCommit(sender, user.globalStats.commitsMade);
+            emit UserNewCommit(sender, user.globalStats.commitsMade, block.timestamp);
         }
     }
 
@@ -237,7 +237,7 @@ contract Bright {
             reviewer.seasonData[currentSeasonIndex].seasonStats.reviewsMade++;
             reviewer.globalStats.reviewsMade++;
         }
-        emit UserNewReview(sender, reviewer.globalStats.reviewsMade);
+        emit UserNewReview(sender, reviewer.globalStats.reviewsMade, block.timestamp);
     }
 
     function setUserName(string name) public onlyDapp {

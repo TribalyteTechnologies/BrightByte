@@ -3,7 +3,6 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import { forkJoin, Observable, of } from "rxjs";
 import { flatMap, map, catchError } from "rxjs/operators";
 import { ContractManagerService } from "./contract-manager.service";
-import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "./user-database.service";
 import { ReviewEventDto } from "../dto/events/review-event.dto";
 import { CommitEventDto } from "../dto/events/commit-event.dto";
@@ -32,30 +31,36 @@ export class DatabaseInitializationService {
     private initializeUsersDatabase(): Observable<any> {
         this.log.d("The database is going to be initialized with data from the Blockchain");
         return this.contractManagerService.getAllUserData().pipe(
-        flatMap(users => {
-            this.initialUserData = users;
-            let obs = this.initialUserData.map(user => 
-                this.userDbSrv.initializeNewUser(user.userHash, user.numberOfCommits, user.finishedReviews)
-            );
-            return forkJoin(obs);
-        }),
-        flatMap(res => {
-            this.log.d("The users are save ", res);
-            return forkJoin(this.setInitialAchivements(this.initialUserData));
-        }),
-        map(res => {
-            this.log.d("The users achivements are set");
-            return new SuccessResponseDto("The initialization has been successful");
-        }),
-        catchError(error => of(new FailureResponseDto(error))));
+            flatMap(users => {
+                this.initialUserData = users;
+                let obs = this.initialUserData.map(user =>
+                    this.userDbSrv.initializeNewUser(user.userHash, user.numberOfCommits, user.finishedReviews)
+                );
+                return forkJoin(obs);
+            }),
+            flatMap(res => {
+                this.log.d("The users are save ", res);
+                return this.contractManagerService.getReviewTimedEvents(this.initialUserData);
+            }),
+            flatMap((timedEvents: Array<ReviewEventDto>) => {
+                return forkJoin(this.setInitialAchivements(this.initialUserData, timedEvents));
+            }),
+            map(() => {
+                this.log.d("The users achivements are set");
+                return new SuccessResponseDto("The initialization has been successful");
+            }),
+            catchError(error => of(new FailureResponseDto(error))));
     }
 
-    private setInitialAchivements(usersDetails: Array<UserDetailsDto>): Observable<Array<ResponseDto>> {
+    private setInitialAchivements(
+        usersDetails: Array<UserDetailsDto>,
+        timedEventDtos: Array<ReviewEventDto>): Observable<Array<ResponseDto>> {
         let obs = new Array<Observable<ResponseDto>>();
         usersDetails.forEach(user => {
-            obs.push(this.dispatcher.dispatch( new CommitEventDto(user.userHash, user.numberOfCommits)));
-            obs.push(this.dispatcher.dispatch(new ReviewEventDto(user.userHash, user.finishedReviews)));
+            obs.push(this.dispatcher.dispatch(new CommitEventDto(user.userHash, user.numberOfCommits, Date.now())));
+            obs.push(this.dispatcher.dispatch(new ReviewEventDto(user.userHash, user.finishedReviews, Date.now())));
         });
+        obs = obs.concat(timedEventDtos.map(event => this.dispatcher.dispatch(event)));
         return forkJoin(obs);
     }
 }
