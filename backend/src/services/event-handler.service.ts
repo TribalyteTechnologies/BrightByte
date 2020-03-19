@@ -59,7 +59,7 @@ export class EventHandlerService {
                 this.log.d("Web3 Connection established");
                 this.contractAddress = this.jsonContractData.networks[BackendConfig.NET_ID].address;
                 this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
-                this.eventsSubscription(true);
+                this.eventsSubscription(false);
             }).catch(e => {
                 this.log.e("Not able to open a connection " + e);
             });
