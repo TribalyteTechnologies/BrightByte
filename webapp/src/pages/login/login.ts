@@ -42,7 +42,7 @@ export class LoginPage {
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
         );
-        if(!this.storageSrv.get(AppConfig.StorageKey.REGISTERTUTORIALVISITED) && !this.storageSrv.get(AppConfig.StorageKey.LASTPAGE)) {
+        if(!this.storageSrv.get(AppConfig.StorageKey.REGISTERTUTORIALVISITED)) {
             this.showRegisterTutorialSlide();
         }
     }

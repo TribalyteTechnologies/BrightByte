@@ -8,58 +8,70 @@ import { AppConfig } from "../app.config";
 @Injectable()
 export class UpdateCheckService {
 
-  public minBetweenChecks: number;
-  public msBetweenChecks: number;
+    public minBetweenChecks: number;
+    public msBetweenChecks: number;
 
-  private appVersion: string;
-  private log: ILogger;
-  private interval: NodeJS.Timer;
+    private appVersion: string;
+    private log: ILogger;
+    private interval: NodeJS.Timer;
 
-  constructor(
-    private translateService: TranslateService,
-    public appVersionSrv: AppVersionService,
-    private storageSrv: LocalStorageService,
-    private loggerSrv: LoggerService
-  ) {
-    this.log = this.loggerSrv.get("UpdateCheckService");
-  }
+    constructor(
+        private translateService: TranslateService,
+        public appVersionSrv: AppVersionService,
+        private storageSrv: LocalStorageService,
+        private loggerSrv: LoggerService
+    ) {
+        this.log = this.loggerSrv.get("UpdateCheckService");
+    }
 
-  public start(minutes = AppConfig.UPDATE_CHECK_INTERVAL_MINS) {
-    this.minBetweenChecks = minutes;
-    this.msBetweenChecks = 1000 * 60 * this.minBetweenChecks;
-    this.checkCurrentVersionForUpdates();
-    this.interval = setInterval(() => this.checkCurrentVersionForUpdates(), this.msBetweenChecks);
-  }
+    public start(minutes = AppConfig.UPDATE_CHECK_INTERVAL_MINS) {
+        this.minBetweenChecks = minutes;
+        this.msBetweenChecks = 1000 * 60 * this.minBetweenChecks;
+        this.checkCurrentVersionForUpdates();
+        this.interval = setInterval(() => this.checkCurrentVersionForUpdates(), this.msBetweenChecks);
+    }
 
-  public stop() {
-    clearInterval(this.interval);
-  }
+    public stop() {
+        clearInterval(this.interval);
+    }
 
-  public setCheckInterval(minutes: number) {
-    this.stop();
-    this.start(minutes);
-  }
+    public setCheckInterval(minutes: number) {
+        this.stop();
+        this.start(minutes);
+    }
 
-  private checkCurrentVersionForUpdates() {
-    let currentVersion = this.storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
-    this.appVersionSrv.getAppVersion().subscribe(
-      ver => {
-        this.appVersion = ver;
-        if (this.appVersion && currentVersion && this.appVersion !== currentVersion) {
-          this.translateService.get("app.versionOutdated")
-            .subscribe(
-              msg => {
-                window.alert(msg);
-                this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                window.location.reload(true);
-              });
-        } else if (currentVersion) {
-          this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-        }
-      },
-      err => {
-        this.log.w("No app version plugin detected. Can't check current version");
-      }
-    );
-  }
+    private checkCurrentVersionForUpdates() {
+        let currentVersion = this.storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
+        this.appVersionSrv.getAppVersion().subscribe(
+            ver => {
+                this.appVersion = ver;
+                if (currentVersion === AppConfig.StorageKey.APPJUSTUPDATED) {
+                    this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
+                } else if (this.appVersion && currentVersion && this.appVersion !== currentVersion) {
+                    this.translateService.get("app.versionOutdated")
+                        .subscribe(
+                            msg => {
+                                window.alert(msg);
+                                let isAfterLoginShown = this.storageSrv.get(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED);
+                                let isRegisterShown = this.storageSrv.get(AppConfig.StorageKey.REGISTERTUTORIALVISITED);
+                                window.location.reload(true);
+                                this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, AppConfig.StorageKey.APPJUSTUPDATED);
+                                if (isAfterLoginShown) {
+                                    this.storageSrv.set(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED, isAfterLoginShown);
+                                }
+                                if (isRegisterShown) {
+                                    this.storageSrv.set(AppConfig.StorageKey.REGISTERTUTORIALVISITED, isRegisterShown);
+                                }
+                            });
+                } else if (currentVersion) {
+                    this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, currentVersion);
+                } else {
+                    this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
+                }
+            },
+            err => {
+                this.log.w("No app version plugin detected. Can't check current version");
+            }
+        );
+    }
 }

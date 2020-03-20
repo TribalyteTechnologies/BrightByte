@@ -65,7 +65,8 @@ export class AppConfig {
         CURRENTSEASONINDEX: "brightCurrentSeasonIndex",
         LOCALSTORAGEVERSION: "brightLocalStorageVerison",
         REGISTERTUTORIALVISITED: "brightRegisterTutorialVisited",
-        AFTERLOGINTUTORIALVISITED: "brightAfterLoginTutorialVisited"
+        AFTERLOGINTUTORIALVISITED: "brightAfterLoginTutorialVisited",
+        APPJUSTUPDATED: "brightAppJustUpdated"
     };
 
     public static readonly UrlKey = {
