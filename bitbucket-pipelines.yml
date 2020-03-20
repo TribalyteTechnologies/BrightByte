@@ -19,7 +19,7 @@ pipelines:
           - cd ../blockchain
           - npm install
           - npm run truffle:compile
-          - npm run truffle:ganache:deploy
+          - npm run truffle:deploy:test
 definitions:
   caches:
     backendnode: backend/node_modules
