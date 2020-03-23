@@ -15,15 +15,10 @@ export class Web3Service {
     ) {
         this.log = loggerSrv.get("Web3Service");
         this.web3 = this.openConnection();
-        this.httpWeb3 = new Web3(BackendConfig.NODE_CONFIG_HTTP_URL);
     }
 
     public getWeb3(): Web3 {
         return this.web3;
-    }
-
-    public getHttpWeb3(): Web3 {
-        return this.httpWeb3;
     }
 
     public openConnection(): Web3 {

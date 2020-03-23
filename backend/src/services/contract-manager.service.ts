@@ -89,10 +89,6 @@ export class ContractManagerService {
                 return forkJoin(observables);
             }),
             flatMap((commitHashes: Array<Array<Array<string>>>) => {
-                this.contracts = new Array<ITrbSmartContact>();
-                let auxWeb3 = this.web3Service.getHttpWeb3();
-                this.contracts.push(new auxWeb3.eth.Contract(this.brightContractAbi.abi, this.contractAddressBright));
-                this.contracts.push(new auxWeb3.eth.Contract(this.commitsContractAbi.abi, this.contractAddressCommits));
                 return this.getCommentsDetailsObs(commitHashes, allUserData);
             }),
             map((comments: Array<Array<Array<CommentDetailsDto>>> | Array<Array<Array<Array<CommentDetailsDto>>>>) => {
