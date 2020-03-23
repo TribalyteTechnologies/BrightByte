@@ -56,12 +56,13 @@ export class AddCommitPopover {
     public showNextReposOption = false;
     public isUpdatingByBatch = false;
     public updatingProgress = 0;
+    public searchInput = "";
 
-    private allEmails = new Array<string>();
-    private searchInput = "";
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
     private readonly FACTOR_PERCENTAGE_DECIMALS = 100; 
+
+    private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
     private log: ILogger;
     private loginSubscription: EventEmitter<boolean>;
