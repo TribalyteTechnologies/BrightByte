@@ -23,7 +23,7 @@ export class RankingCard {
     @Input()
     public  minNumberCommit: number;
 
-    public ANONYMOUS: string;
+    public anonymous = "";
     public userPosition: number;
     public reputation: string;
     public name: string;
@@ -59,7 +59,7 @@ export class RankingCard {
         this.email = val.email;
         this.numReviews = val.numberReviewsMade;
         this.numCommits = val.numberCommitsMade,
-            this.agreed = val.agreedPercentage;
+        this.agreed = val.agreedPercentage;
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
@@ -78,13 +78,12 @@ export class RankingCard {
         this.accountHash = account.address;
         translateSrv.get("app.anonymous").subscribe(
             msg => {
-                this.ANONYMOUS = msg;
+                this.anonymous = msg;
             });
     }
 
     public ngOnInit() {
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userHash);
-        //this.refreshTooltips();
     }
 
     private refreshTooltips() {

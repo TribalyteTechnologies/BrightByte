@@ -26,7 +26,7 @@ import { AfterLoginSlidePopover } from "../../components/after-login-tutorial-sl
 })
 export class TabsPage {
 
-    public readonly isSharing = AppConfig.IS_SHARING_ENABLED;
+    public readonly IS_SHARING = AppConfig.IS_SHARING_ENABLED;
     public readonly RANKING_PAGE_INDEX = "3";
     public readonly HOME_PAGE_INDEX = "0";
 
