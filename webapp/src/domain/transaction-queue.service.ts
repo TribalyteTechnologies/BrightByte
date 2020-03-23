@@ -3,16 +3,21 @@ import { BehaviorSubject, Observable } from "rxjs";
 
 @Injectable()
 export class TransactionQueueService implements OnDestroy{
+
     public promiseQueue: Array<Promise<any>>;
-    public isProcessing = new BehaviorSubject<boolean>(false);
+    
+    private readonly QUEUE_CHECK_INTERVAL_MILIS = 60000;
+
+    private isProcessing = new BehaviorSubject<boolean>(false);
     private processInterval;
+
     constructor() {
         this.promiseQueue = new Array<Promise<any>>();
         this.processInterval = setInterval(
             () => {
                 this.processQueue();
             }, 
-            60000);
+            this.QUEUE_CHECK_INTERVAL_MILIS);
     }
 
     public enqueue(promise: Promise<any>): Promise<any> {
@@ -21,7 +26,7 @@ export class TransactionQueueService implements OnDestroy{
         return Promise.resolve();
     }
 
-    public getStatus(): Observable<boolean> {
+    public getProcessingStatus(): Observable<boolean> {
          return this.isProcessing.asObservable();
     }
 

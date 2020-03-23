@@ -94,7 +94,7 @@ export class ReviewPage {
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === this.TRUE_STRING;
         this.userAdress = this.loginService.getAccountAddress();
         this.initializing = true;
-        this.isSpinnerLoading = this.transactionQueueService.getStatus();
+        this.isSpinnerLoading = this.transactionQueueService.getProcessingStatus();
         this.refresh();
     }
 
