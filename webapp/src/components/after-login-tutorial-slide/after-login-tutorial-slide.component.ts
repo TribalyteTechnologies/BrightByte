@@ -11,7 +11,6 @@ import { AppConfig } from "../../app.config";
 export class AfterLoginSlidePopover {
 
   public readonly SLIDES_CONTENT_IDS = [1, 2, 3, 4];
-  public readonly brightBytePage = AppConfig.BRIGHTBYTE_LANDING_PAGE;
 
   @ViewChild(Slides) public slides: Slides;
 
