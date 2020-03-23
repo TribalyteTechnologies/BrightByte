@@ -170,18 +170,18 @@ contract Bright {
 
     function removeUserCommit(bytes32 url) public onlyDapp {
         address userHash = tx.origin;
-        uint finish;
-        uint pending;
+        uint256 finish;
+        uint256 pending;
         (pending, finish) = root.getNumberOfReviews(url);
         BrightModels.UserProfile storage user = hashUserMap.map[userHash];
         BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
         require(userSeason.seasonCommits[url] && finish == 0);
         for(uint i = 0; i < pending; i++) {
             address reviewerHash = root.getCommitPendingReviewer(url, i);
-            BrightModels.UserProfile storage reviewer = hashUserMap.map[reviewerHash];
-            UtilsLib.removeFromArray(reviewer.seasonData[currentSeasonIndex].pendingReviews, url);
-            UtilsLib.removeFromArray(reviewer.seasonData[currentSeasonIndex].allReviews, url);
-            UtilsLib.removeFromArray(reviewer.seasonData[currentSeasonIndex].toRead, url);
+            BrightModels.UserSeason storage reviewerSeason = hashUserMap.map[reviewerHash].seasonData[currentSeasonIndex];
+            UtilsLib.removeFromArray(reviewerSeason.pendingReviews, url);
+            UtilsLib.removeFromArray(reviewerSeason.allReviews, url);
+            UtilsLib.removeFromArray(reviewerSeason.toRead, url);
         }
         UtilsLib.removeFromArray(userSeason.urlSeasonCommits, url);
         UtilsLib.removeFromArray(allCommitsArray, url);
