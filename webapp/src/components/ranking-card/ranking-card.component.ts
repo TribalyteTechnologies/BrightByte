@@ -23,20 +23,20 @@ export class RankingCard {
     @Input()
     public  minNumberCommit: number;
 
-    public ANONYMOUS = "";
-    public userPosition = 0;
-    public reputation = 0;
+    public ANONYMOUS: string;
+    public userPosition: number;
+    public reputation: string;
     public name: string;
     public nameObs: Observable<string>;
-    public email = "";
-    public numReviews = 0;
-    public numCommits = 0;
+    public email: string;
+    public numReviews: number;
+    public numCommits: number;
     public agreed = 99;
     public stateFinished = false;
-    public userHash = "";
-    public accountHash = "";
-    public engagementIndex = 0;
-    public engagementIndexString = "";
+    public userHash: string;
+    public accountHash: string;
+    public engagementIndex: number;
+    public engagementIndexString: string;
     public avatarObs: Observable<string>;
     public isRanked = false;
     public tooltipParams: { pendingCommits: number; pendingReviews: number; agreedPercentage: number};
@@ -48,8 +48,7 @@ export class RankingCard {
 
     @Input()
     public set ranking(val: UserReputation) {
-        let rankIdx = val.reputation;
-        this.reputation = rankIdx;
+        this.reputation = val.reputation.toFixed(2);
         if (val.userHash === this.accountHash) {
             this.nameObs = this.userNameSrv.setUserObs(val.userHash);
             this.isCurrentUserName = true;
