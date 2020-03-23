@@ -4,7 +4,7 @@ import { BrightModels } from "./BrightModels.sol";
 
 library BrightByteLib {
     
-    uint256 public constant TIME_TO_MIGRATE_SECS = 60 * 60 * 8;
+    uint256 public constant TIME_TO_MIGRATE_SECS = 60 * 60 * 24;
 
     function getTimeToMigrate() public pure returns (uint256) {
         return TIME_TO_MIGRATE_SECS;
