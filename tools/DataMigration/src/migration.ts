@@ -115,8 +115,7 @@ export class MigrationService {
             users.forEach((user, index) => {
                 for (let i = 0; i <= seasonNumber; i++) {
                     let userSeason = new UserSeason();
-                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]);
-                    userSeason.seasonStats.reputation = userSeason.seasonStats.reputation * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
+                    userSeason.seasonStats.reputation = Number(seasonReputation[counter][1]) * MigrationConfig.WEIGHT_REPUTATION_FACTOR;
                     userSeason.seasonStats.agreedPercentage = Number(seasonReputation[counter][4]);
                     userSeason.seasonStats.commitsMade = Number(seasonReputation[counter][5]);
                     userSeason.seasonStats.reviewsMade = Number(seasonReputation[counter][6]);
