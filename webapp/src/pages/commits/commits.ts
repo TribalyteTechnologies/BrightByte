@@ -208,6 +208,7 @@ export class CommitPage {
         this.contractManagerService.deleteCommit(commit.url)
             .then(res => {
                 this.log.w("The result is the next");
+                this.currentCommit = null;
                 this.refresh();
             }).catch((err) => {
                 this.log.e(err);
