@@ -14,8 +14,7 @@ import { AvatarService } from "../../domain/avatar.service";
 
 export class CommentComponent {
 
-    public ANONYMOUS = "";
-    public submitError = "";
+    public submitError: string;
     public points = [0, 0, 0];
     public textComment: string;
     
@@ -78,10 +77,6 @@ export class CommentComponent {
                 private avatarSrv: AvatarService,
                 loggerSrv: LoggerService){
         this.log = loggerSrv.get("CommentComponent");
-        translateService.get("app.anonymous").subscribe(
-            msg => {
-                this.ANONYMOUS = msg;
-            });
     }
 
     public ngOnInit() {

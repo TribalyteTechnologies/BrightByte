@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { UserReputation } from "../../models/user-reputation.model";
 import { LoginService } from "../../core/login.service";
-import { TranslateService } from "@ngx-translate/core";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
 import { UserNameService } from "../../domain/user-name.service";
@@ -23,7 +22,6 @@ export class RankingCard {
     @Input()
     public  minNumberCommit: number;
 
-    public anonymous = "";
     public userPosition: number;
     public reputation: string;
     public name: string;
@@ -70,16 +68,11 @@ export class RankingCard {
 
     constructor(
         loginService: LoginService,
-        translateSrv: TranslateService,
         private avatarSrv: AvatarService,
         private userNameSrv: UserNameService
     ) {
         let account = loginService.getAccount();
         this.accountHash = account.address;
-        translateSrv.get("app.anonymous").subscribe(
-            msg => {
-                this.anonymous = msg;
-            });
     }
 
     public ngOnInit() {
