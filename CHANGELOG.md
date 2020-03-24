@@ -1,5 +1,20 @@
 # Change Log
 
+#### v0.7.0
+
+- New feature, change user name.
+- Add Pagination to review and commits
+- New Smart Contract to store season thresholds.
+- Added multi websocket session, all your tabs will be connected to the backend.
+- Implemented a utils library on the smart contracts.
+- Solved the how timed achievements are obtain on the backend initialization.
+- First smart contrats unitary tests.
+- Bug fix on Bright contract initialization.
+- Increase Weight Factor on the mathematical operations to solve issues with the users reputation.
+- Mayor code refactor.
+
+**IMPORTANT NOTE**: It's necessary to deploy all the new contracts again and run the [migration procedure](https://github.com/TribalyteTechnologies/BrightByte/blob/master/MIGRATIONS.md)
+
 #### v 0.6.4
 
 - Enabled social share feature.
