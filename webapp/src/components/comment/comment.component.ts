@@ -14,10 +14,21 @@ import { AvatarService } from "../../domain/avatar.service";
 
 export class CommentComponent {
 
-    public submitError: string;
-    public points = [0, 0, 0];
-    public textComment: string;
-    
+    @Input()
+    public set isReviewNeeded(val: boolean){
+        this._isReviewNeeded = val;
+    }
+
+    @Input()
+    public set isReviewPage(val: boolean){
+        this._isReviewPage = val;
+    }
+
+    @Input()
+    public set review(val: CommitComment){
+        this._review = val;
+    }
+
     @Output()
     public submitReview = new EventEmitter<Object>();
 
@@ -27,41 +38,67 @@ export class CommentComponent {
     @Output()
     public thumbsDown = new EventEmitter();
 
+    public submitError: string;
+    public emptyCommentError: string;
+    public emptyRatingError: string;
+    public alertClaim: string;
+    public claimMsg: string;
+    public alertCancel: string;
+    public alertAccept: string;
+    public points = [0, 0, 0];
+    public textComment: string;
+
     private _review: CommitComment;
     private _isReviewPage: boolean = true;
     private _isReviewNeeded: boolean = false;
     private log: ILogger;
     private avatarObs: Observable<string>;
 
-    @Input()
-    public set isReviewNeeded(val: boolean){
-        this._isReviewNeeded = val;
+    constructor (
+        public translateService: TranslateService,
+        private alertCtrl: AlertController,
+        private avatarSrv: AvatarService,
+        loggerSrv: LoggerService
+    ) {
+        this.log = loggerSrv.get("CommentComponent");
+    }
+
+    public ngOnInit() {
+        if(!this._isReviewNeeded) {
+            this.avatarObs = this.avatarSrv.getAvatarObs(this.review.user);
+        }
+        this.translateService.get([
+            "review.reviewCommentError",
+            "review.reviewEmptyRatingError",
+            "alerts.claim",
+            "alerts.claimMsg", 
+            "alerts.cancel", 
+            "alerts.accept"
+        ])
+        .subscribe(translation => {
+            this.emptyCommentError = translation["review.reviewCommentError"];
+            this.emptyRatingError = translation["review.reviewEmptyRatingError"];
+            this.alertClaim = translation["alerts.claim"];
+            this.claimMsg =  translation["alerts.claimMsg"];
+            this.alertCancel =  translation["alerts.cancel"];
+            this.alertAccept =  translation["alerts.accept"];
+        });
+    }
+
+    public ngDoCheck(): void {
+        this.review = this._review; 
     }
 
     public get isReviewNeeded(){
         return this._isReviewNeeded;
     }
 
-    @Input()
-    public set isReviewPage(val: boolean){
-        this._isReviewPage = val;
-    }
-
     public get isReviewPage(){
         return this._isReviewPage;
     }
 
-    @Input()
-    public set review(val: CommitComment){
-        this._review = val;
-    }
-
     public get review(){
         return this._review;
-    }
-
-    public ngDoCheck(): void {
-        this.review = this._review; 
     }
 
     public setThumbsUp(){
@@ -72,32 +109,17 @@ export class CommentComponent {
         this.thumbsDown.next();
     }
 
-    constructor(public translateService: TranslateService,
-                private alertCtrl: AlertController,
-                private avatarSrv: AvatarService,
-                loggerSrv: LoggerService){
-        this.log = loggerSrv.get("CommentComponent");
-    }
-
-    public ngOnInit() {
-        if(!this._isReviewNeeded) {
-            this.avatarObs = this.avatarSrv.getAvatarObs(this.review.user);
-        }
-    }
-
     public validateAndSetReview(text: string){
-        this.submitError = "";
-        let isPointsEmpty = false;
+        let isPointsEmpty: boolean;
 
         isPointsEmpty = this.points.some(val => val === 0);
 
         if (!text){
-            this.obtainTranslatedError("review.reviewCommentError");
+            this.submitError = this.emptyCommentError;
         } else if(isPointsEmpty) {
-            this.obtainTranslatedError("review.reviewEmptyRatingError");
-        } else{
+            this.submitError = this.emptyRatingError;
+        } else {
             let obj = {txt: text, points: this.points};
-
             this.submitReview.next(obj);    
         }
     }
@@ -106,18 +128,18 @@ export class CommentComponent {
 
         // TODO: connect with Smart contracts and send the complaint
         let alert = this.alertCtrl.create({
-            title: this.obtainTransaltion("alerts.claim"),
-            message: this.obtainTransaltion("alerts.claimMsg"),
+            title: this.alertClaim,
+            message: this.claimMsg,
             buttons: [
               {
-                text: this.obtainTransaltion("alerts.cancel"),
+                text: this.alertCancel,
                 role: "cancel",
                 handler: () => {
                       this.log.d("Complain cancelled");
                 }
               },
               {
-                text: this.obtainTransaltion("alerts.accept"),
+                text: this.alertAccept,
                 handler: () => {
                     this.log.d("Complain accepted");
                 }
@@ -126,20 +148,4 @@ export class CommentComponent {
         });
         alert.present();
     } 
-
-    private obtainTranslatedError(translation: string){
-        this.translateService.get(translation).subscribe(
-            msg => {
-                this.submitError = msg;
-            });
-    }
-
-    private obtainTransaltion(translation: string): string{
-        let translatedText = "";
-        this.translateService.get(translation).subscribe(
-            msg => {
-                translatedText = msg;
-            });
-        return translatedText;
-    }    
 }
