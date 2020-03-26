@@ -18,10 +18,11 @@ library UtilsLib {
 
 
     function removeFromArray(bytes32[] storage array, bytes32 url) public {
-        if(array.length > 0) {
+        uint arrayLength = array.length;
+        if(arrayLength > 0) {
             uint indexCommit = 0;
             bool isFound = false;
-            uint lastCommitIndex = array.length - 1;
+            uint lastCommitIndex = arrayLength - 1;
             for(uint i = lastCommitIndex; i >= 0; i--) {
                 if(array[i] == url) {
                     indexCommit = i;
@@ -30,8 +31,7 @@ library UtilsLib {
                 }
             }
             if(isFound) {
-                array[indexCommit] = array[lastCommitIndex];
-                array.length--;
+                array[indexCommit] = "";
             }
         }
     }
