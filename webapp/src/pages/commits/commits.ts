@@ -64,7 +64,7 @@ export class CommitPage {
         this.contractManagerService.getCommits()
             .then((commitConcat: UserCommit[]) => {
                 this.log.d("User Commits received");
-                commits = commitConcat;
+                commits = commitConcat.filter(commit => commit);
 
                 let reviewers = commits.map((commit) => {
                     return this.contractManagerService.getReviewersName(commit.url);

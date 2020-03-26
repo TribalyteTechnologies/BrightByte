@@ -285,7 +285,8 @@ export class AddCommitPopover {
         }).then(() => {
             this.showSpinner = true;
             return this.contractManagerService.getCommits();
-        }).then(commits => {           
+        }).then(commits => {
+            commits = commits.filter(com => com);    
             this.blockChainCommits = commits.map(com => {
                 return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
             });

@@ -45,6 +45,7 @@ export class AppConfig {
     public static readonly REPUTATION_FACTOR = 1000;
     public static readonly FIRST_QUALIFYING_SEASON = 4;
     public static readonly COMMITS_BLOCK_SIZE = 20;
+    public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
     
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
