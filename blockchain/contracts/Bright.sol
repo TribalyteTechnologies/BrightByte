@@ -14,9 +14,9 @@ contract Bright {
     uint256 private initialSeasonTimestamp;
     uint256 private seasonLengthSecs;
     BrightModels.HashUserMap private hashUserMap;
+    mapping (bytes32 => bool) private allCommits;
     BrightModels.EmailUserMap private emailUserMap;
     address[] private allUsersArray;
-    bytes32[] private allCommitsArray;
 
     address private rootAddress;
     address private owner;
@@ -130,17 +130,11 @@ contract Bright {
     function setCommit(bytes32 url) public onlyRoot {
         checkSeason();
         address sender = tx.origin;
-        bool saved = false;
-        for (uint256 i = 0; i < allCommitsArray.length; i++){
-            if(allCommitsArray[i] == url){
-                saved = true;
-                break;
-            }
-        }
+        bool saved = allCommits[url];
         if(!saved){
             BrightModels.UserProfile storage user = hashUserMap.map[sender];
-            allCommitsArray.push(url);
             BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
+            allCommits[url] = true;
             userSeason.urlSeasonCommits.push(url);
             userSeason.seasonCommits[url] = true;
             userSeason.seasonStats.commitsMade++;
@@ -175,16 +169,15 @@ contract Bright {
         (pending, finish) = root.getNumberOfReviews(url);
         BrightModels.UserProfile storage user = hashUserMap.map[userHash];
         BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
-        require(userSeason.seasonCommits[url] && finish == 0);
+        require (userSeason.seasonCommits[url] && finish == 0);
         for(uint i = 0; i < pending; i++) {
             address reviewerHash = root.getCommitPendingReviewer(url, i);
             BrightModels.UserSeason storage reviewerSeason = hashUserMap.map[reviewerHash].seasonData[currentSeasonIndex];
             UtilsLib.removeFromArray(reviewerSeason.pendingReviews, url);
             UtilsLib.removeFromArray(reviewerSeason.allReviews, url);
-            UtilsLib.removeFromArray(reviewerSeason.toRead, url);
         }
         UtilsLib.removeFromArray(userSeason.urlSeasonCommits, url);
-        UtilsLib.removeFromArray(allCommitsArray, url);
+        allCommits[url] = false;
         root.deleteCommit(url);
         user.globalStats.commitsMade--;
         userSeason.seasonStats.commitsMade--;
@@ -340,5 +333,8 @@ contract Bright {
 
     function setSeasonUrls(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd, bytes32[] allRev) public onlyDapp {
         BrightByteLib.setSeasonUrls(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd, allRev);
+        for(uint256 i = 0; i < urls.length; i++) {
+            allCommits[urls[i]] = true;
+        }
     }
 }
