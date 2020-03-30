@@ -118,7 +118,7 @@
                             <ion-col class="no-wrap, reputation">
                                 <div>
                                     <span *ngIf="userRankDetails.isRanked; else detailNotRanked"
-                                        class="ranking-details--star">{{ userRankDetails.reputation }} </span>
+                                        class="ranking-details--star">{{ userRankDetails.reputation.toFixed(2) }} </span>
                                     <ng-template #detailNotRanked>
                                         <span
                                             class="ranking-details-text text-title--grey">{{ "ranking.noReputation" | translate }}</span>
