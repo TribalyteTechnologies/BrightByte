@@ -6,6 +6,7 @@ var Reputation = artifacts.require("./Reputation.sol");
 var BrightByteLib = artifacts.require("./BrightByteLib.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
 var UtilsLib = artifacts.require("./UtilsLib.sol");
+var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 var scVersionObj = require("../../version.json");
 
 const INITIAL_SEASON_TIMESTAMP = 1550047598;
@@ -47,5 +48,7 @@ module.exports = function(deployer) {
     }).then(function() {
         deployer.link(Reputation, Root);
         return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, INITIAL_SEASON_TIMESTAMP, SEASON_LENGTH_DAYS, currentVersion);
+    }).then(function(){
+        return deployer.deploy(CloudTeamManager);
     });
 };
