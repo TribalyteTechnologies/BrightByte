@@ -3,6 +3,7 @@ pragma solidity 0.4.22;
 import "./Bright.sol";
 import "./Commits.sol";
 import "./Threshold.sol";
+import "./CloudEventDispatcher.sol";
 
 import { Reputation } from "./Reputation.sol";
 
@@ -13,6 +14,8 @@ contract Root{
     address commitsAddress;
     Threshold remoteThreshold;
     address thresholdAddress;
+    CloudEventDispatcher remoteCloudEventDispatcher;
+    address cloudEventDispatcherAddress;
     address owner;
     string version;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -44,7 +47,7 @@ contract Root{
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
-    constructor (address bright, address commits, address threshold, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
+    constructor (address bright, address commits, address threshold, address cloudEventDispatcher, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -52,9 +55,12 @@ contract Root{
         commitsAddress = commits;
         remoteThreshold = Threshold(threshold);
         thresholdAddress = threshold;
+        remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcher);
+        cloudEventDispatcherAddress = cloudEventDispatcher;
         version = ver;
         remoteCommits.init(address(this));
         remoteBright.init(address(this), initialTimestamp, seasonLengthDays);
+        remoteCloudEventDispatcher.init(address(this));
         uint256 currentSeasonIndex;
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;

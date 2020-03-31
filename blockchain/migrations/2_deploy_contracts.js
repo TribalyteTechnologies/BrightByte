@@ -1,6 +1,7 @@
 var Bright = artifacts.require("./Bright.sol");
 var Commits = artifacts.require("./Commits.sol");
 var Threshold = artifacts.require("./Threshold.sol");
+var CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
 var Root = artifacts.require("./Root.sol");
 var Reputation = artifacts.require("./Reputation.sol");
 var BrightByteLib = artifacts.require("./BrightByteLib.sol");
@@ -46,8 +47,10 @@ module.exports = function(deployer) {
     }).then(function() {
         return deployer.deploy(Threshold);
     }).then(function() {
+        return deployer.deploy(CloudEventDispatcher);
+    }).then(function() {
         deployer.link(Reputation, Root);
-        return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, INITIAL_SEASON_TIMESTAMP, SEASON_LENGTH_DAYS, currentVersion);
+        return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, CloudEventDispatcher.address, INITIAL_SEASON_TIMESTAMP, SEASON_LENGTH_DAYS, currentVersion);
     }).then(function(){
         return deployer.deploy(CloudTeamManager);
     });
