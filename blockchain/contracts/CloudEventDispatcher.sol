@@ -1,10 +1,7 @@
 pragma solidity 0.4.22;
-import "./Root.sol";
 
 contract CloudEventDispatcher {
 
-    Root private root;
-    address private rootAddress;
     address private owner;
     mapping (address => bool) private contractList;
 
@@ -13,25 +10,13 @@ contract CloudEventDispatcher {
     event UserNewReview (uint256 teamId, address userHash, uint256 numberOfReviews, uint256 timestamp);
     event DeletedCommit (uint256 teamId, address userHash, bytes32 url);
 
-    constructor() public {
-        owner = msg.sender;
+    constructor(address brightByteFactory) public {
+        owner = brightByteFactory;
         contractList[owner] = true;
-    }
-
-    function init(address _root) public {
-        require(rootAddress == uint80(0), "The root address is alredy set");
-        root = Root(_root);
-        rootAddress = _root;
-        contractList[rootAddress] = true;
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner);
-        _;
-    }
-
-    modifier onlyRoot() {
-        require(msg.sender == rootAddress);
         _;
     }
 
@@ -45,7 +30,7 @@ contract CloudEventDispatcher {
         owner = newOwner;
     }
 
-    function addContractAllow(address newAddress) public onlyRoot {
+    function addContractAllow(address newAddress) public onlyOwner {
         require(newAddress != address(0), "The contract address is invalid");
         contractList[newAddress] = true;
     }

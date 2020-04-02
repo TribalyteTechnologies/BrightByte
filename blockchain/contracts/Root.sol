@@ -60,7 +60,6 @@ contract Root{
         version = ver;
         remoteCommits.init(address(this));
         remoteBright.init(address(this), initialTimestamp, seasonLengthDays);
-        remoteCloudEventDispatcher.init(address(this));
         uint256 currentSeasonIndex;
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;
