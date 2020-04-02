@@ -1,5 +1,6 @@
 pragma solidity 0.4.22;
 
+import "./CloudBrightByteFactory.sol";
 
 contract CloudTeamManager {
     
@@ -9,8 +10,12 @@ contract CloudTeamManager {
     mapping (address => uint256) private userTeamMap;
     mapping (string => InvitedUser) private invitedUserTeamMap;
     
+    uint256 private seasonLengthInDays;
     uint256 private teamCount;
     address private owner;
+    
+    address private bbFactoryAddress;
+    CloudBrightByteFactory remoteBBFactory;
     
     struct Team {
         uint256 uId;
@@ -37,10 +42,13 @@ contract CloudTeamManager {
     
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    constructor() public {
+    constructor(address bbFactoryAddr, uint256 seasonLength) public {
         owner = msg.sender;
         teamCount = 0;
         createTeam("root@bb.com", "Empty team");
+        bbFactoryAddress = bbFactoryAddr;
+        remoteBBFactory = CloudBrightByteFactory(bbFactoryAddress);
+        seasonLengthInDays = seasonLength;
     }
     
     modifier onlyOwner() {
@@ -54,8 +62,19 @@ contract CloudTeamManager {
         _;
     }
     
+    modifier onlyMembersOrAdmins(uint256 teamUId) {
+        Team storage team = createdTeams[teamUId];
+        require(team.users[msg.sender] == UserType.Member || team.users[msg.sender] == UserType.Admin);
+        _;
+    }
+    
     modifier onlyNotRegistered() {
         require (userTeamMap[msg.sender] == 0);
+        _;
+    }
+    
+    modifier onlySender(address userHash) {
+        require (msg.sender == userHash);
         _;
     }
 
@@ -65,6 +84,26 @@ contract CloudTeamManager {
         addToTeam(teamCount, msg.sender, email, UserType.Admin);
         teamCount++;
         return teamCount-1;
+    }
+    
+    function deployBright(uint256 teamUId) public onlyAdmins(teamUId) {
+        remoteBBFactory.deployBright(teamUId);
+    }
+    
+    function deployCommits(uint256 teamUId) public onlyAdmins(teamUId) {
+        remoteBBFactory.deployCommits(teamUId);
+    }
+    
+    function deployThreshold(uint256 teamUId) public onlyAdmins(teamUId) {
+        remoteBBFactory.deployThreshold(teamUId);
+    }
+    
+    function deployRoot(uint256 teamUId) public onlyAdmins(teamUId) {
+        remoteBBFactory.deployRoot(teamUId, seasonLengthInDays);
+    }
+    
+    function getTeamContractAddresses(uint256 teamUId) public view onlyMembersOrAdmins(teamUId) returns (address, address, address, address) {
+        return remoteBBFactory.getTeamContractAddresses(teamUId);
     }
     
     function getTeamName(uint256 teamUId) public view returns (string){
@@ -80,7 +119,7 @@ contract CloudTeamManager {
         UserType userType = team.users[memberHash];
         string memory email;
         if (userType == UserType.Admin) {
-            require(msg.sender == owner);
+            require(memberHash != owner);
             email = removeFromTeam(teamUId, memberHash);
             addToTeam(teamUId, memberHash, email, UserType.Member);
         } else if (userType == UserType.Member){
@@ -89,21 +128,30 @@ contract CloudTeamManager {
         }
     }
     
-    function inviteToTeam(uint256 teamUId, string email, UserType userType) public onlyAdmins(teamUId){
+    function inviteToTeam(uint256 teamUId, string email, UserType userType, uint256 expMilis) public onlyAdmins(teamUId){
+        if (expMilis == 0) {
+            expMilis = INVITATION_DURATION_IN_SECS;
+        }
         require(userType == UserType.Admin || userType == UserType.Member);
         Team storage team = createdTeams[teamUId];
         team.invitedUsersEmail[email] = userType;
-        invitedUserTeamMap[email] = InvitedUser(teamUId, block.timestamp + INVITATION_DURATION_IN_SECS);
+        invitedUserTeamMap[email] = InvitedUser(teamUId, now + expMilis);
     }
     
     function isUserEmailInvited(string email) public view returns (bool) {
         return invitedUserTeamMap[email].teamUId != 0;
     }
     
-    function registerToTeam(address memberHash, string email) public {
+    function getInvitedUserInfo(string email) public view returns (uint256, uint256, UserType) {
+        InvitedUser storage invitedUser = invitedUserTeamMap[email];
+        UserType userType = createdTeams[invitedUser.teamUId].invitedUsersEmail[email];
+        return (invitedUser.teamUId, invitedUser.expirationTimestamp, userType);
+    }
+    
+    function registerToTeam(address memberHash, string email) public onlySender(memberHash){
         uint256 teamUId = invitedUserTeamMap[email].teamUId;
         require(teamUId != 0);
-        if (invitedUserTeamMap[email].expirationTimestamp >= block.timestamp) {
+        if (invitedUserTeamMap[email].expirationTimestamp > now) {
             addToTeam(teamUId, memberHash, email, UserType.NotRegistered);
         } else {
             Team storage team = createdTeams[teamUId];
@@ -154,7 +202,8 @@ contract CloudTeamManager {
         owner = newOwner;
     }
     
-    function removeFromTeam(uint256 teamUId, address memberHash) public returns (string){
+    function removeFromTeam(uint256 teamUId, address memberHash) public onlyAdmins(teamUId) returns (string){
+        require(memberHash != owner);
         Team storage team = createdTeams[teamUId];
         uint256 userIndex;
         string memory email;

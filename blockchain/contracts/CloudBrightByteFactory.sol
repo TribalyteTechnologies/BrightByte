@@ -5,8 +5,6 @@ import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";
 import { ThresholdDeployerLib } from "./deployers/ThresholdDeployerLib.sol";
 import { RootDeployerLib } from "./deployers/RootDeployerLib.sol";
 
-
-import "./Root.sol";
 import "./CloudEventDispatcher.sol";
 
 contract CloudBrightByteFactory {

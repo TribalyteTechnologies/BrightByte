@@ -7,6 +7,7 @@ var Reputation = artifacts.require("./Reputation.sol");
 var BrightByteLib = artifacts.require("./BrightByteLib.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
 var UtilsLib = artifacts.require("./UtilsLib.sol");
+var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 var BrightDeployerLib = artifacts.require("./BrightDeployerLib.sol");
 var CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
@@ -102,5 +103,8 @@ module.exports = function(deployer) {
     })
     .then(function(){
         return deployer.deploy(CloudBBFactory, currentVersion);
+    })
+    .then(function(){
+        return deployer.deploy(CloudTeamManager, CloudBBFactory.address, SEASON_LENGTH_DAYS);
     });
 };
