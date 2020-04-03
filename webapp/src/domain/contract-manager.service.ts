@@ -25,9 +25,12 @@ interface ITrbSmartContact { //Web3.Eth.Contract
 
 @Injectable()
 export class ContractManagerService {
+
     private contractAddressRoot: string;
     private contractAddressBright: string;
     private contractAddressCommits: string;
+    private contractAddressTeamManager: string;
+    private contractAddressBBFactory: string;
     private log: ILogger;
     private web3: Web3;
     private initProm: Promise<Array<ITrbSmartContact>>;
@@ -55,7 +58,7 @@ export class ContractManagerService {
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
-        let promBright = this.http.get("../assets/build/Bright.json").toPromise()
+        let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
                 let brightContractJson = jsonContractData;
                 this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
@@ -65,27 +68,102 @@ export class ContractManagerService {
                 return contractBright;
             });
         contractPromises.push(promBright);
-        let promCommits = this.http.get("../assets/build/Commits.json").toPromise()
+        let promCommits = this.http.get(AppConfig.COMMITS_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
                 let commitContractJson = jsonContractData;
                 this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
                 let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
-                this.log.d("TruffleContractBright function: ", contractCommits);
+                this.log.d("TruffleContractCommits function: ", contractCommits);
                 this.log.d("ContractAddressCommits: ", this.contractAddressCommits);
                 return contractCommits;
             });
         contractPromises.push(promCommits);
-        let promRoot = this.http.get("../assets/build/Root.json").toPromise()
+        let promRoot = this.http.get(AppConfig.ROOT_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
                 let rootContractJson = jsonContractData;
                 this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
                 let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
-                this.log.d("TruffleContractBright function: ", contractRoot);
+                this.log.d("TruffleContractRoot function: ", contractRoot);
                 this.log.d("ContractAddressRoot: ", this.contractAddressRoot);
                 return contractRoot;
             });
         contractPromises.push(promRoot);
+        let promTeamManager = this.http.get(AppConfig.TEAM_MANAGER_CONTRACT_PATH).toPromise()
+            .then((jsonContractData: IContractJson) => {
+                this.contractAddressTeamManager = jsonContractData.networks[configNet.netId].address;
+                let contractTeamManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressTeamManager);
+                this.log.d("TruffleContractTeamManager function: ", contractTeamManager);
+                this.log.d("ContractAddressTeamManager: ", this.contractAddressTeamManager);
+                return contractTeamManager;
+            });
+        contractPromises.push(promTeamManager);
+        let promBBFactory = this.http.get(AppConfig.BB_FACTORY_CONTRACT_PATH).toPromise()
+            .then((jsonContractData: IContractJson) => {
+                this.contractAddressBBFactory = jsonContractData.networks[configNet.netId].address;
+                let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBBFactory);
+                this.log.d("TruffleContractBBFactory function: ", contractBBFactory);
+                this.log.d("ContractAddressBBFactory: ", this.contractAddressBBFactory);
+                return contractBBFactory;
+            });
+        contractPromises.push(promBBFactory);
         return this.initProm = Promise.all(contractPromises);
+    }
+
+    public isInvitedToTeam(email: string): Promise<boolean> {
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return teamManager.methods.isUserEmailInvited(email);
+        });
+    }
+
+    public getUserTeam(): Promise<number> {
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return teamManager.getUserTeam(this.currentUser.address);
+        });
+    }
+
+    public registerToTeam(email: string): Promise<void | TransactionReceipt> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, email).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        });
+    }
+
+    public createTeam(email: string, teamName: string): Promise<number> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            let byteCodeData =  teamManager.methods.createTeam(email, teamName).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        })
+        .then(() => {
+            return teamManagerContract.getUserTeam(this.currentUser.address);
+        });
+    }
+
+    public deployAllContracts(teamUId: number): Promise<void | TransactionReceipt | Array<string>> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            let byteCodeData = teamManagerContract.deployBright(teamUId).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        })
+        .then(() => {
+            let byteCodeData = teamManagerContract.deployCommits(teamUId).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        })
+        .then(() => {
+            let byteCodeData = teamManagerContract.deployThreshold(teamUId).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        })
+        .then(() => {
+            let byteCodeData = teamManagerContract.deployRoot(teamUId).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        })
+        .then(() => {
+            let byteCodeData = teamManagerContract.getTeamContractAddresses(teamUId).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        });
     }
 
     public createUser(pass: string): Promise<Blob> {

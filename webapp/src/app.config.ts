@@ -27,6 +27,12 @@ export class AppConfig {
     public static readonly IDENTICON_FORMAT = ".svg";
     public static readonly BRIGHTBYTE_LANDING_PAGE = "http://www.brightbyteapp.com/";
 
+    public static readonly BRIGHT_CONTRACT_PATH = "../assets/build/Bright.json";
+    public static readonly COMMITS_CONTRACT_PATH = "../assets/build/Commits.json";
+    public static readonly ROOT_CONTRACT_PATH = "../assets/build/Root.json";
+    public static readonly TEAM_MANAGER_CONTRACT_PATH = "../assets/build/CloudTeamManager.json";
+    public static readonly BB_FACTORY_CONTRACT_PATH = "../assets/build/CloudBrightByteFactory.json";
+
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
         AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
     public static CURRENT_NODE_INDEX = 0;
