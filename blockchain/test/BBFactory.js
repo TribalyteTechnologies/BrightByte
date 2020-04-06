@@ -1,25 +1,25 @@
-var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
+var CloudBbFactory = artifacts.require("./CloudBrightByteFactory.sol");
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 const TEAM_UID = 1;
 const SEASON_LENGHT_IN_DAYS = 90;
 
-contract("CloudBBFactory", accounts => {
+contract("CloudBbFactory", accounts => {
     it("should deploy all the contracts for a given team", () => {
-        let cloudBBFactory;
-        return CloudBBFactory.deployed()
+        let cloudBbFactory;
+        return CloudBbFactory.deployed()
             .then(instance => {
-                cloudBBFactory = instance;
-                return deployBrightCommitsThreshold(cloudBBFactory, TEAM_UID);
+                cloudBbFactory = instance;
+                return deployBrightCommitsThreshold(cloudBbFactory, TEAM_UID);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
-                return cloudBBFactory.deployRoot(TEAM_UID, SEASON_LENGHT_IN_DAYS);
+                return cloudBbFactory.deployRoot(TEAM_UID, SEASON_LENGHT_IN_DAYS);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
-                return cloudBBFactory.getTeamContractAddresses(TEAM_UID);
+                return cloudBbFactory.getTeamContractAddresses(TEAM_UID);
             }).then(allContracts => {
                 let areContractsDeployedCorrectly = !Object.values(allContracts).some(address => address === EMPTY_ADDRESS);
                 assert(areContractsDeployedCorrectly, "All or some contracts were deployed incorrectly");
-                return cloudBBFactory.getEventDispatcherAddress();
+                return cloudBbFactory.getEventDispatcherAddress();
             })
             .then(eventDispatcherAddress => {
                 assert(eventDispatcherAddress !== EMPTY_ADDRESS, "EventyDispatcher was deployed incorrectly");
@@ -28,15 +28,15 @@ contract("CloudBBFactory", accounts => {
     );
 
     it("should fail deploying all the contracts for a given team", () => {
-        let cloudBBFactory;
-        return CloudBBFactory.deployed()
+        let cloudBbFactory;
+        return CloudBbFactory.deployed()
             .then(instance => {
-                cloudBBFactory = instance;
-                return deployBrightCommitsThreshold(cloudBBFactory, TEAM_UID);
+                cloudBbFactory = instance;
+                return deployBrightCommitsThreshold(cloudBbFactory, TEAM_UID);
             })
             .then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
-                return cloudBBFactory.getTeamContractAddresses(TEAM_UID);
+                return cloudBbFactory.getTeamContractAddresses(TEAM_UID);
             }).then(allContracts => {
                 let areContractsDeployedCorrectly = !Object.values(allContracts).some(address => address === EMPTY_ADDRESS);
                 assert(!areContractsDeployedCorrectly, "All or some contracts were deployed correctly");
@@ -45,13 +45,13 @@ contract("CloudBBFactory", accounts => {
     );
 });
 
-function deployBrightCommitsThreshold(cloudBBFactory, teamUId) {
-    return cloudBBFactory.deployBright(teamUId)
+function deployBrightCommitsThreshold(cloudBbFactory, teamUId) {
+    return cloudBbFactory.deployBright(teamUId)
     .then(response => {
         assert(response.receipt.status, "Contract deployed incorrectly");
-        return cloudBBFactory.deployCommits(teamUId);
+        return cloudBbFactory.deployCommits(teamUId);
     }).then(response => {
         assert(response.receipt.status, "Contract deployed incorrectly");
-        return cloudBBFactory.deployThreshold(teamUId);
+        return cloudBbFactory.deployThreshold(teamUId);
     });
 }

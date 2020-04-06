@@ -3,7 +3,7 @@ const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 contract("CloudTeamManager", accounts => {
     const EMAIL_ACCOUNTS = ["0@example.com", "1@example.com", "2@example.com"];
     const TEAM_NAMES = ["team1"];
-    const EMPTY_TEAM = 0;
+    const EMPTY_TEAM_ID = 0;
     const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     const ADMIN_USERTYPE = 1;
@@ -40,7 +40,7 @@ contract("CloudTeamManager", accounts => {
                 return teamManagerInstance.getUserTeam(adminOwnerAccount);
             }).then(teamUId => {
                 team1UId = teamUId.toNumber();
-                assert(teamUId.toNumber() !== EMPTY_TEAM, "Team was created incorrectly");
+                assert(teamUId.toNumber() !== EMPTY_TEAM_ID, "Team was created incorrectly");
                 return teamManagerInstance.getTeamMembers(teamUId);
             })
             .then(teamMembers => {
@@ -59,7 +59,7 @@ contract("CloudTeamManager", accounts => {
             });
     });
 
-    it("should overwritte user invitation as member", () => {
+    it("should overwrite user invitation as member", () => {
         let teamManagerInstance;
         return CloudTeamManager.deployed()
             .then(instance => {
@@ -73,14 +73,14 @@ contract("CloudTeamManager", accounts => {
         return CloudTeamManager.deployed()
             .then(instance => {
                 teamManagerInstance = instance;
-                return registerToTeam(teamManagerInstance, user1Account, emailUser1, EMPTY_TEAM, false);
+                return registerToTeam(teamManagerInstance, user1Account, emailUser1, EMPTY_TEAM_ID, false);
             })
             .then(teamUId => {
                 return teamManagerInstance.getTeamMembers(teamUId);
             })
             .then(teamMembers => {
                 let isUserCreatedMember = teamMembers[1].find(address => address === user1Account) === user1Account;
-                assert(isUserCreatedMember, "Creator user is not member");
+                assert(isUserCreatedMember, "User is not member after register to team");
             });
         }
     );
@@ -96,7 +96,7 @@ contract("CloudTeamManager", accounts => {
                 return timeout(EXP_TIMEOUT_MILIS);
             })
             .then(() => { 
-                return registerToTeam(teamManagerInstance, user2Account, emailUser2, EMPTY_TEAM, true);
+                return registerToTeam(teamManagerInstance, user2Account, emailUser2, EMPTY_TEAM_ID, true);
             });
         }
     );
@@ -170,7 +170,7 @@ contract("CloudTeamManager", accounts => {
         return CloudTeamManager.deployed()
             .then(instance => {
                 teamManagerInstance = instance;
-                return changeUserType(teamManagerInstance, team1UId, user1Account, adminOwnerAccount, false);
+                return toggleUserType(teamManagerInstance, team1UId, user1Account, adminOwnerAccount, false);
             })
             .then(teamMembers => {
                 let isChangedUserAdmin = teamMembers[0].find(address => address === user1Account) === user1Account &&
@@ -185,7 +185,7 @@ contract("CloudTeamManager", accounts => {
         return CloudTeamManager.deployed()
             .then(instance => {
                 teamManagerInstance = instance;
-                return changeUserType(teamManagerInstance, team1UId, user1Account, adminOwnerAccount, false);
+                return toggleUserType(teamManagerInstance, team1UId, user1Account, adminOwnerAccount, false);
             })
             .then(teamMembers => {
                 let isChangedUserMember = teamMembers[1].find(address => address === user1Account) === user1Account &&
@@ -200,7 +200,7 @@ contract("CloudTeamManager", accounts => {
         return CloudTeamManager.deployed()
             .then(instance => {
                 teamManagerInstance = instance;
-                return changeUserType(teamManagerInstance, team1UId, adminOwnerAccount, user1Account, true);
+                return toggleUserType(teamManagerInstance, team1UId, adminOwnerAccount, user1Account, true);
             })
             .then(teamMembers => {
                 let isChangedUserMember = teamMembers[0].find(address => address === adminOwnerAccount) === adminOwnerAccount &&
@@ -230,7 +230,7 @@ contract("CloudTeamManager", accounts => {
         return CloudTeamManager.deployed()
             .then(instance => {
                 teamManagerInstance = instance;
-                return changeUserType(teamManagerInstance, team1UId, user1Account, adminOwnerAccount, false);
+                return toggleUserType(teamManagerInstance, team1UId, user1Account, adminOwnerAccount, false);
             })
             .then(teamMembers => {
                 let isChangedUserAdmin = teamMembers[0].find(address => address === user1Account) === user1Account &&
@@ -281,7 +281,7 @@ function inviteUser(teamManagerInstance, team1UId, email, usertype, expiration, 
     });
 }
 
-function registerToTeam(teamManagerInstance, userAddress, email, empyTeam, shouldFail) {
+function registerToTeam(teamManagerInstance, userAddress, email, empyTeamId, shouldFail) {
     return teamManagerInstance.registerToTeam(userAddress, email, { from: userAddress })
     .then(response => {
         assert(response.receipt.status);
@@ -289,16 +289,16 @@ function registerToTeam(teamManagerInstance, userAddress, email, empyTeam, shoul
     })
     .then(teamUId => {
         if (shouldFail) {
-            assert(teamUId.toNumber() === empyTeam, "User registration was incorrect");
+            assert(teamUId.toNumber() === empyTeamId, "User registration was incorrect");
         } else {
-            assert(teamUId.toNumber() !== empyTeam, "User registration was correct");
+            assert(teamUId.toNumber() !== empyTeamId, "User registration was correct");
         }
         return teamUId;
     });
 }
 
-function changeUserType(teamManagerInstance, teamUId, changedUserAddress, senderAddress, shouldFail) {
-    let promise =  teamManagerInstance.changeUserType(teamUId, changedUserAddress, { from: senderAddress })
+function toggleUserType(teamManagerInstance, teamUId, changedUserAddress, senderAddress, shouldFail) {
+    let promise =  teamManagerInstance.toggleUserType(teamUId, changedUserAddress, { from: senderAddress })
     return concatEndPromise(teamManagerInstance, promise, teamUId, shouldFail);
 }
 
@@ -308,18 +308,19 @@ function removeUserFromTeam(teamManagerInstance, teamUId, changedUserAddress, se
 }
 
 function concatEndPromise(teamManagerInstance, promise, teamUId, shouldFail) {
+    let newPromise;
     if (shouldFail) {
-        promise = promise
+        newPromise = promise
         .catch(() => {
             assert(true);
             return teamManagerInstance.getTeamMembers(teamUId);
         });
     }else {
-        promise = promise
+        newPromise = promise
         .then(response => {
             assert(response.receipt.status);
             return teamManagerInstance.getTeamMembers(teamUId);
         });
     }
-    return promise;
+    return newPromise;
 }

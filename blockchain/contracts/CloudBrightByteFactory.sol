@@ -9,51 +9,57 @@ import "./CloudEventDispatcher.sol";
 
 contract CloudBrightByteFactory {
     
-    mapping(uint256 => Contracts) teamContracts;
-    string currentVersion;
-
-    address eventDispatcherAddress;
-    CloudEventDispatcher remoteEventDispatcher;
-    
-    struct Contracts {
+    struct TeamContracts {
         address brightAddress;
         address commitsAddress;
         address thresholdAddress;
         address rootAddress;
     }
     
+    mapping(uint256 => TeamContracts) teamContracts;
+    string private currentVersion;
+
+    address eventDispatcherAddress;
+    CloudEventDispatcher remoteEventDispatcher;
+    
     constructor(string version) public {
         currentVersion = version;
         deployEventDispatcher();
     }
     
-    function deployBright(uint256 teamUId) public{
-        address addr = BrightDeployerLib.deploy();
-        teamContracts[teamUId] = Contracts(addr, address(0), address(0), address(0));
-    }
-
-    function deployCommits(uint256 teamUId) public{
-        teamContracts[teamUId].commitsAddress = CommitsDeployerLib.deploy();
+    function getCurrentVersion() public view returns (string) {
+        return currentVersion;
     }
     
-    function deployThreshold(uint256 teamUId) public{
-        teamContracts[teamUId].thresholdAddress = ThresholdDeployerLib.deploy();
+    function deployBright(uint256 teamUid) public{
+        address addr = BrightDeployerLib.deploy();
+        teamContracts[teamUid] = TeamContracts(addr, address(0), address(0), address(0));
     }
 
-    function deployRoot(uint256 teamUId, uint256 seasonLengthInDays) public returns (address){
-        address bright = teamContracts[teamUId].brightAddress;
-        address commits = teamContracts[teamUId].commitsAddress;
-        address threshold = teamContracts[teamUId].thresholdAddress;
+    function deployCommits(uint256 teamUid) public{
+        teamContracts[teamUid].commitsAddress = CommitsDeployerLib.deploy();
+    }
+    
+    function deployThreshold(uint256 teamUid) public{
+        teamContracts[teamUid].thresholdAddress = ThresholdDeployerLib.deploy();
+    }
+
+    function deployRoot(uint256 teamUid, uint256 seasonLengthInDays) public returns (address){
+        TeamContracts storage contracts = teamContracts[teamUid];
+        address bright = contracts.brightAddress;
+        address commits = contracts.commitsAddress;
+        address threshold = contracts.thresholdAddress;
         address root = RootDeployerLib.deploy(bright, commits, threshold, eventDispatcherAddress, seasonLengthInDays);
-        teamContracts[teamUId].rootAddress = root;
+        contracts.rootAddress = root;
         allowEventDispatcherForContract(bright);
         allowEventDispatcherForContract(commits);
         allowEventDispatcherForContract(threshold);
         allowEventDispatcherForContract(root);
     }
     
-    function getTeamContractAddresses(uint256 teamUId) public view returns (address, address, address, address) {
-        return (teamContracts[teamUId].brightAddress, teamContracts[teamUId].commitsAddress, teamContracts[teamUId].thresholdAddress, teamContracts[teamUId].rootAddress);
+    function getTeamContractAddresses(uint256 teamUid) public view returns (address, address, address, address) {
+        TeamContracts storage contracts = teamContracts[teamUid];
+        return (contracts.brightAddress, contracts.commitsAddress, contracts.thresholdAddress, contracts.rootAddress);
     }
 
     function getEventDispatcherAddress() public view returns (address) {
