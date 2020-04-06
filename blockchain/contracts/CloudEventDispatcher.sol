@@ -5,7 +5,7 @@ contract CloudEventDispatcher {
     address private owner;
     mapping (address => bool) private contractList;
 
-    event NewUserEvent (uint256 teamId, string userName, address hash);
+    event NewUserEvent (uint256 teamId, address hash);
     event UserNewCommit (uint256 teamId, address userHash, uint256 numberOfCommits, uint256 timestamp);
     event UserNewReview (uint256 teamId, address userHash, uint256 numberOfReviews, uint256 timestamp);
     event DeletedCommit (uint256 teamId, address userHash, bytes32 url);
@@ -16,7 +16,7 @@ contract CloudEventDispatcher {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "The origin is not allowed");
         _;
     }
 
@@ -35,8 +35,8 @@ contract CloudEventDispatcher {
         contractList[newAddress] = true;
     }
 
-    function emitNewUserEvent (uint256 teamId, string name, address userAddress) public onlyAllowed {
-        emit NewUserEvent(teamId, name, userAddress);
+    function emitNewUserEvent (uint256 teamId, address userAddress) public onlyAllowed {
+        emit NewUserEvent(teamId, userAddress);
     }
 
     function emitNewCommitEvent(uint256 teamId, address userAddress, uint256 numberOfCommits) public onlyAllowed {

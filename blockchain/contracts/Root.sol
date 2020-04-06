@@ -8,6 +8,8 @@ import "./CloudEventDispatcher.sol";
 import { Reputation } from "./Reputation.sol";
 
 contract Root{
+    mapping (address => bool) private adminUsers;
+
     Bright remoteBright;
     address brightAddress;
     Commits remoteCommits;
@@ -17,12 +19,11 @@ contract Root{
     CloudEventDispatcher remoteCloudEventDispatcher;
     address cloudEventDispatcherAddress;
     address owner;
-    string version;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
 
-    modifier onlyOwner() {
-        require(msg.sender == owner);
+    modifier onlyAdmin() {
+       require (adminUsers[msg.sender], "The origin address is not allowed");
         _;
     }
     modifier onlyCommit() {
@@ -33,21 +34,8 @@ contract Root{
         require(msg.sender == brightAddress);
         _;
     }
-    modifier onlyUser(){
-        require(msg.sender == tx.origin);
-        _;
-    }
-
-    function getVersion() public view returns (string){
-        return version;
-    }
-
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
-    constructor (address bright, address commits, address threshold, address cloudEventDispatcher, uint256 initialTimestamp, uint256 seasonLengthDays, string ver) public {
+    
+    constructor (address bright, address commits, address threshold, address cloudEventDispatcher, address userAdmin, uint256 teamId) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -57,31 +45,21 @@ contract Root{
         thresholdAddress = threshold;
         remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcher);
         cloudEventDispatcherAddress = cloudEventDispatcher;
-        version = ver;
         remoteCommits.init(address(this));
-        remoteBright.init(address(this), initialTimestamp, seasonLengthDays);
+        remoteBright.init(address(this), cloudEventDispatcher, teamId);
         uint256 currentSeasonIndex;
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;
         (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs) = remoteBright.getCurrentSeason();
         remoteThreshold.init(address(this), currentSeasonIndex);
+        adminUsers[userAdmin] = true;
     }
 
     function getHelperAddress() public view returns(address, address){
         return(brightAddress,commitsAddress);
     }
 
-    function changeContractAddress(address bright, address commits) public onlyOwner {
-        if(bright != address(0)) {
-            remoteBright = Bright(bright);
-            brightAddress = bright;
-        }
-        if(commits != address(0)) {
-            remoteCommits = Commits(commits);
-            commitsAddress = commits;
-        }
-    }
-    function getUserAddressByEmail(string email) public onlyUser view returns(address){
+    function getUserAddressByEmail(string email) public  view returns(address){
         bytes32 index = keccak256(email);
         address a = remoteBright.getAddressByEmail(index);
         return a;
@@ -90,7 +68,7 @@ contract Root{
     function setNewCommit(bytes32 url) public onlyCommit {
         remoteBright.setCommit(url);
     }
-    function notifyCommit (string url, bytes32[] _emails) public onlyUser {
+    function notifyCommit (string url, bytes32[] _emails) public  {
         bytes32 _id = keccak256(url);
         address a;
         bool yes;
@@ -108,7 +86,7 @@ contract Root{
         }
     }
 
-    function readCommit(string url) public onlyUser {
+    function readCommit(string url) public  {
         remoteCommits.readCommit(keccak256(url));
     }
     
@@ -116,13 +94,13 @@ contract Root{
         remoteBright.setReview(url,a);
     }
 
-    function setVote(string url, address user, uint256 vote) public onlyUser {
+    function setVote(string url, address user, uint256 vote) public  {
         bytes32 url_bytes = keccak256(url); 
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
 
-    function setFeedback(string url,address user) public onlyUser {
+    function setFeedback(string url,address user) public  {
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
@@ -162,11 +140,11 @@ contract Root{
         return remoteThreshold.getSeasonThreshold(seasonIndex);
     }
 
-    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyOwner {
+    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyAdmin {
         return remoteThreshold.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
     }
 
-    function setCurrentSeasonThresholdOwner(uint256 commitsThreshold, uint256 reviewsThreshold) public onlyOwner {
+    function setCurrentSeasonThresholdOwner(uint256 commitsThreshold, uint256 reviewsThreshold) public onlyAdmin {
         return remoteThreshold.setCurrentSeasonThreshold(commitsThreshold, reviewsThreshold);
     }
 

@@ -1,13 +1,30 @@
 const Bright = artifacts.require("./Bright.sol");
+var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 const name = "Manuel";
+const TEAM_UID = 1;
 const email = "manuel@example.com";
 
-contract("Bright", accounts => {
+
+contract("CloudBBFactory", accounts => {
     let account = accounts[8];
+    let brightInstance;
+    let brightAddress;
     it("should create account if it is not created yet", () => {
-        let brightInstance;
-        return Bright.deployed()
+        let cloudBBFactory;
+        return CloudBBFactory.deployed()
             .then(instance => {
+                cloudBBFactory = instance;
+                return deployBrightCommitsThreshold(cloudBBFactory, TEAM_UID);
+            }).then(response => {
+                assert(response.receipt.status, "Contract deployed incorrectly");
+                return cloudBBFactory.deployRoot(TEAM_UID, account);
+            }).then(response => {
+                assert(response.receipt.status, "Contract deployed incorrectly");
+                return cloudBBFactory.getTeamContractAddresses(TEAM_UID);
+            }).then(allContracts => {
+                let brightAddress = allContracts[0];
+                return Bright.at(brightAddress);
+            }).then(instance => {
                 brightInstance = instance;
                 return brightInstance.getUsersAddress();
             })
@@ -33,7 +50,7 @@ contract("Bright", accounts => {
 
     it("should give error creating an already created account", () => {
         let brightInstance;
-        return Bright.deployed()
+        return Bright.at(brightAddress)
             .then(instance => {
                 brightInstance = instance;
                 return brightInstance.setProfile(name, email, { from: account });
@@ -43,4 +60,16 @@ contract("Bright", accounts => {
             });
         }
     );
+
 });
+
+function deployBrightCommitsThreshold(cloudBBFactory, teamUId) {
+    return cloudBBFactory.deployBright(teamUId)
+    .then(response => {
+        assert(response.receipt.status, "Contract deployed incorrectly");
+        return cloudBBFactory.deployCommits(teamUId);
+    }).then(response => {
+        assert(response.receipt.status, "Contract deployed incorrectly");
+        return cloudBBFactory.deployThreshold(teamUId);
+    });
+}

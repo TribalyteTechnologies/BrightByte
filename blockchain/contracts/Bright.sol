@@ -1,5 +1,6 @@
 pragma solidity 0.4.22;
 import "./Root.sol";
+import "./CloudEventDispatcher.sol";
 
 import { BrightByteLib } from "./BrightByteLib.sol";
 import { BrightModels } from "./BrightModels.sol";
@@ -8,18 +9,22 @@ import { UtilsLib } from "./UtilsLib.sol";
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant DAY_LENGTH_SECS = 24 * 60 * 60;
-    Root private root;
+    uint256 private constant SEASON_LENGTH_DAYS = 14;
     uint256 private deploymentTimestamp;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
     uint256 private seasonLengthSecs;
+    uint256 private teamUid;
+
     BrightModels.HashUserMap private hashUserMap;
     mapping (bytes32 => bool) private allCommits;
     BrightModels.EmailUserMap private emailUserMap;
     address[] private allUsersArray;
 
+    address private cloudEventDispatcherAddress;
+    Root private root;
     address private rootAddress;
-    address private owner;
+    CloudEventDispatcher private remoteCloudEventDispatcher;
     
     event UserProfileSetEvent (string name, address hash);
     event UserNewCommit (address userHash, uint256 numberOfCommits, uint256 timestamp);
@@ -27,14 +32,7 @@ contract Bright {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event DeletedCommit (address userHash, bytes32 url);
 
-    constructor() public {
-        owner = msg.sender;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
+    constructor() public {}
 
     modifier onlyRoot() {
         require(msg.sender == rootAddress);
@@ -46,52 +44,30 @@ contract Bright {
         _;
     }
 
-    function init(address _root, uint256 initialTimestamp, uint256 seasonLengthDays) public {
+    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
+        cloudEventDispatcherAddress = _cloudEventDispatcherAddress;
+        remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcherAddress);
         currentSeasonIndex = 1;
-        initialSeasonTimestamp = initialTimestamp;
-        deploymentTimestamp = block.timestamp;
-        seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
-        uint256 seasonFinale = initialSeasonTimestamp + seasonLengthSecs;
-        while(deploymentTimestamp > seasonFinale) {
-            currentSeasonIndex++;
-            seasonFinale += seasonLengthSecs;
-        }
+        teamUid = teamId;
+        initialSeasonTimestamp = block.timestamp;
+        seasonLengthSecs = SEASON_LENGTH_DAYS * DAY_LENGTH_SECS;
     }
 
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
-
-    function setRootAddress(address a) public onlyOwner {
-        rootAddress = a;
-    }
-
-    function setProfile (string name, string email) public onlyDapp {
+    function setProfile (string name, string email) public {
         address user = tx.origin;
         bytes32 emailId = keccak256(email);
-        if (bytes(hashUserMap.map[user].name).length == 0 && bytes(hashUserMap.map[user].email).length == 0){
+        if (bytes(hashUserMap.map[user].email).length == 0){
             BrightModels.UserProfile storage newUser = hashUserMap.map[user];
             newUser.name = name;
             newUser.email = email;
             newUser.hash = user;
             emailUserMap.map[emailId] = user;
             allUsersArray.push(user);
-        } else {
-            bytes32 userEmail = keccak256(hashUserMap.map[user].email);
-            if(emailId == userEmail) {
-                require(emailUserMap.map[emailId] == address(0));
-                delete emailUserMap.map[userEmail];
-                hashUserMap.map[user].email = email;
-                emailUserMap.map[emailId] = user;
-            }
-            hashUserMap.map[user].name = name;
+           //remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
         }
-        emit UserProfileSetEvent(name, user);
     }
 
     function getUsersAddress() public onlyDapp view returns (address[]) {
@@ -130,17 +106,15 @@ contract Bright {
     function setCommit(bytes32 url) public onlyRoot {
         checkSeason();
         address sender = tx.origin;
-        bool saved = allCommits[url];
-        if(!saved){
-            BrightModels.UserProfile storage user = hashUserMap.map[sender];
-            BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
-            allCommits[url] = true;
-            userSeason.urlSeasonCommits.push(url);
-            userSeason.seasonCommits[url] = true;
-            userSeason.seasonStats.commitsMade++;
-            user.globalStats.commitsMade++;
-            emit UserNewCommit(sender, user.globalStats.commitsMade, block.timestamp);
-        }
+        require ((hashUserMap.map[sender].hash == sender && !allCommits[url]), "Not able to set a new commit");
+        BrightModels.UserProfile storage user = hashUserMap.map[sender];
+        BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
+        allCommits[url] = true;
+        userSeason.urlSeasonCommits.push(url);
+        userSeason.seasonCommits[url] = true;
+        userSeason.seasonStats.commitsMade++;
+        user.globalStats.commitsMade++;
+        remoteCloudEventDispatcher.emitNewCommitEvent(teamUid, sender, user.globalStats.commitsMade);
     }
 
     function notifyCommit (string a, bytes32 email) public onlyRoot {
@@ -148,7 +122,6 @@ contract Bright {
         address user = getAddressByEmail(email);
         require(user != address(0));
         BrightModels.UserSeason storage reviewerSeason = hashUserMap.map[user].seasonData[currentSeasonIndex];
-        reviewerSeason.toRead.push(url);
         bool done = false;
         for (uint256 i = 0; i < reviewerSeason.pendingReviews.length; i++){
             if(reviewerSeason.pendingReviews[i] == url){
@@ -159,6 +132,7 @@ contract Bright {
         if (!done){
             reviewerSeason.pendingReviews.push(url);
             reviewerSeason.allReviews.push(url);
+            reviewerSeason.toRead.push(url);
         }
     }
 
@@ -182,7 +156,7 @@ contract Bright {
         user.globalStats.commitsMade--;
         userSeason.seasonStats.commitsMade--;
         delete userSeason.seasonCommits[url];
-        emit DeletedCommit(userHash, url);
+        remoteCloudEventDispatcher.emitDeletedCommitEvent(teamUid, userHash, url);
     }
     
     function getUserSeasonState(address userHash, uint256 indSeason) public onlyDapp view returns(uint256, uint256, uint256, uint256, uint256) {
@@ -213,9 +187,7 @@ contract Bright {
         address sender = tx.origin;
         require(hashUserMap.map[author].hash == author && hashUserMap.map[sender].hash == sender);
         checkSeason();
-        BrightModels.UserProfile storage user = hashUserMap.map[author];
-        BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
-
+        BrightModels.UserSeason storage userSeason = hashUserMap.map[author].seasonData[currentSeasonIndex];
         BrightModels.UserProfile storage reviewer = hashUserMap.map[sender];
         for (uint256 j = 0 ; j < reviewer.seasonData[currentSeasonIndex].pendingReviews.length; j++){
             if (url == reviewer.seasonData[currentSeasonIndex].pendingReviews[j]){
@@ -257,6 +229,7 @@ contract Bright {
     function setFeedback(bytes32 url, address userAddr, bool value, uint256 vote) public onlyRoot{
         address sender = userAddr;
         address maker = tx.origin;
+        require(hashUserMap.map[sender].hash == sender && hashUserMap.map[maker].hash == maker);
         BrightModels.UserProfile storage user = hashUserMap.map[sender];
         BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
         checkSeason();
@@ -322,19 +295,8 @@ contract Bright {
     function checkCommitSeason(bytes32 url,address author) public onlyDapp view returns (bool) {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
-    
-    function setAllUserData(string name, string mail, address hash, uint256 perct, uint256 pos, uint256 neg, uint256 rev, uint256 comMade) public onlyDapp {
-        BrightByteLib.setAllUserData(allUsersArray, hashUserMap, emailUserMap, deploymentTimestamp, name, mail, hash, perct, pos, neg, rev,comMade);
-    }
 
-    function setAllUserSeasonData(uint season, address userAddr, uint percentage, uint posVotes, uint negVotes, uint reputation, uint rev, uint256 comMade, uint complexity) public onlyDapp {
-        BrightByteLib.setAllUserSeasonData(hashUserMap, season, userAddr, percentage, posVotes, negVotes, reputation, rev, comMade, complexity, deploymentTimestamp);
-    }
-
-    function setSeasonUrls(uint256 seasonIndex, address userAddr, bytes32[] urls,  bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd, bytes32[] allRev) public onlyDapp {
-        BrightByteLib.setSeasonUrls(hashUserMap, deploymentTimestamp, seasonIndex, userAddr, urls, finRev, pendRev, toRd, allRev);
-        for(uint256 i = 0; i < urls.length; i++) {
-            allCommits[urls[i]] = true;
-        }
+    function getTeamId() public onlyDapp view returns (uint256) {
+        return teamUid;
     }
 }

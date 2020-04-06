@@ -1,12 +1,10 @@
 pragma solidity 0.4.22;
 
 import "./Root.sol";
-import { BrightByteLib } from "./BrightByteLib.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
 
 contract Commits {
-    uint256 private migrationEndTimestamp;
     Root private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
@@ -65,7 +63,6 @@ contract Commits {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        migrationEndTimestamp = block.timestamp + BrightByteLib.getTimeToMigrate();
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -208,7 +205,7 @@ contract Commits {
             commit.previousScore = commit.score;
             commit.previousComplexity = commit.weightedComplexity;
             commit.score = commitScore;
-            commit.weightedComplexity = commitComplexity;   
+            commit.weightedComplexity = commitComplexity;
         }
         commit.isReadNeeded = true;
         commit.currentNumberReviews ++;
@@ -239,58 +236,11 @@ contract Commits {
         return (yes,auth);
     }
 
-    function setAllCommitData(string title, string url, address author, uint creationDate, bool needRead, uint lastMod, uint256 numberReview, uint256 currentReviews, uint256 score, uint256 weightedComplexity) public onlyDapp {
-        require (block.timestamp < migrationEndTimestamp);
-        bytes32 _id = keccak256(url);
-        address[] memory a;
-        require (bytes(storedData[_id].url).length == 0 && bytes(storedData[_id].title).length == 0);
-        storedData[_id] = Commit(title, url, author, creationDate, needRead, lastMod, numberReview, currentReviews, score, weightedComplexity, 0, 0, a, a);
-        allCommitsArray.push(_id);
-    }
-
-    function setAllCommitDataTwo(bytes32 url, address[] pendingComments, address[] finishedComments) public onlyDapp {
-        require (block.timestamp < migrationEndTimestamp);
-        Commit storage data = storedData[url];
-        for(uint i = 0; i < pendingComments.length; i++) {
-            data.pendingComments.push(pendingComments[i]);
-        }
-        for(uint j = 0; j < finishedComments.length; j++) {
-            data.finishedComments.push(finishedComments[j]);
-        }
-    }
-
-    function setAllCommentData(bytes32 url, address user, string txt, address author, uint256[] points, uint256 vote, uint creationDate, uint lastMod) public onlyDapp {
-        require (block.timestamp < migrationEndTimestamp);
-        Comment storage data = storedData[url].commitComments[user];
-        data.text = txt;
-        data.author = author;
-        data.vote = vote;
-        data.creationDate = creationDate;
-        data.lastModificationDate = lastMod;
-        for(uint i = 0; i < points.length; i++) {
-            data.points.push(points[i]);
-        }
-    }
-
-    function setPendingCommentsData(bytes32 url, address hash)  public onlyDapp {
-        require (block.timestamp < migrationEndTimestamp);
-        bool found = false;
-        for (uint i = 0; i < storedData[url].pendingComments.length; i++){
-            if(storedData[url].pendingComments[i] == hash){
-                found = true;
-                break;
-            }
-        }
-        if(!found){
-            storedData[url].pendingComments.push(hash);
-        }
-    }
-
     function getCommitScores(bytes32 url) public onlyDapp view returns (uint256, uint256, uint256, uint256) {
         return(storedData[url].score, storedData[url].weightedComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
 
     function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
         return storedData[url].pendingComments[reviewerIndex];
-    } 
+    }
 }

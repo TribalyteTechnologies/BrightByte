@@ -1,12 +1,9 @@
 pragma solidity 0.4.22;
 
-import "./Root.sol";
-
 contract Threshold {
     uint256 private currentSeasonIndex;
     mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
 
-    Root private root;
     address private rootAddress;
     address private owner;
     
@@ -21,13 +18,11 @@ contract Threshold {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor () public {
-        owner = msg.sender;
         currentSeasonIndex = 1;
     }
 
     function init(address _root, uint256 indexCurrentSeason) public {
         require(rootAddress == uint80(0));
-        root = Root(_root);
         rootAddress = _root;
         currentSeasonIndex = indexCurrentSeason;
     }
@@ -37,19 +32,8 @@ contract Threshold {
         _;
     }
     modifier onlyRoot() {
-        require(msg.sender == rootAddress);
+        require(msg.sender == rootAddress, "The request origin is not allowed");
         _;
-    }
-
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
-
-    function setRootAddress(address a) public onlyOwner {
-        root = Root(a);
-        rootAddress = a;
     }
 
     function getSeasonThreshold(uint256 seasonIndex) public view returns(uint256, uint256) {
@@ -65,7 +49,7 @@ contract Threshold {
     function setNewSeasonThreshold(uint256 seasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyRoot {
         currentSeasonIndex = seasonIndex;
         initSeasonThreshold(seasonIndex, averageNumberOfCommits, averageNumberOfReviews, false);
-        emit newSeason(currentSeasonIndex, block.timestamp);      
+        emit newSeason(currentSeasonIndex, block.timestamp);
     }
 
     function setCurrentSeasonThreshold(uint256 commitThreshold, uint256 reviewThreshold) public onlyRoot {

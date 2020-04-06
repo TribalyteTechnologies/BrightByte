@@ -99,7 +99,7 @@ contract CloudTeamManager {
     }
     
     function deployRoot(uint256 teamUid) public onlyAdmins(teamUid) {
-        remoteBbFactory.deployRoot(teamUid, seasonLengthInDays);
+        remoteBbFactory.deployRoot(teamUid, createdTeams[teamUid].admins[0].memberAddress);
     }
     
     function getTeamContractAddresses(uint256 teamUid) public view onlyMembersOrAdmins(teamUid) returns (address, address, address, address) {

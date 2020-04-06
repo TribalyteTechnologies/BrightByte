@@ -4,6 +4,7 @@ const TEAM_UID = 1;
 const SEASON_LENGHT_IN_DAYS = 90;
 
 contract("CloudBbFactory", accounts => {
+    let account = accounts[8];
     it("should deploy all the contracts for a given team", () => {
         let cloudBbFactory;
         return CloudBbFactory.deployed()
@@ -12,7 +13,7 @@ contract("CloudBbFactory", accounts => {
                 return deployBrightCommitsThreshold(cloudBbFactory, TEAM_UID);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
-                return cloudBbFactory.deployRoot(TEAM_UID, SEASON_LENGHT_IN_DAYS);
+                return cloudBbFactory.deployRoot(TEAM_UID, account);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
                 return cloudBbFactory.getTeamContractAddresses(TEAM_UID);
