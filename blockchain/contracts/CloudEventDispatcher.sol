@@ -2,13 +2,13 @@ pragma solidity 0.4.22;
 
 contract CloudEventDispatcher {
 
-    address private owner;
-    mapping (address => bool) private contractList;
-
     event NewUserEvent (uint256 teamId, address hash);
     event UserNewCommit (uint256 teamId, address userHash, uint256 numberOfCommits, uint256 timestamp);
     event UserNewReview (uint256 teamId, address userHash, uint256 numberOfReviews, uint256 timestamp);
     event DeletedCommit (uint256 teamId, address userHash, bytes32 url);
+
+    address private owner;
+    mapping (address => bool) private contractList;
 
     constructor(address brightByteFactory) public {
         owner = brightByteFactory;
