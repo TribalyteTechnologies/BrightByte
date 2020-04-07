@@ -180,12 +180,9 @@ export class ContractManagerService {
             return brightContract.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, seasonState[2]).call();
         }).then((allUserCommits: Array<any>) => {
             let promisesPending = new Array<Promise<UserCommit>>();
-            promisesPending = allUserCommits[2].map(userCommit => {
-                if(userCommit !== AppConfig.EMPTY_COMMIT_HASH) {
-                    return commitContract.methods.getDetailsCommits(userCommit).call()
-                    .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true));
-                }
-            });
+            promisesPending = allUserCommits[2].filter(userCommit => userCommit !== AppConfig.EMPTY_COMMIT_HASH)
+            .map(userCommit => commitContract.methods.getDetailsCommits(userCommit).call()
+                .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
             return Promise.all(promisesPending);
         }).catch(err => {
             this.log.e("Error obtaining commits :", err);
@@ -202,18 +199,11 @@ export class ContractManagerService {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
             return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex).call()
                 .then((allUserCommits: Array<any>) => {
-                    let promisesPending = allUserCommits[0].map(userCommit => {
-                        if(userCommit !== AppConfig.EMPTY_COMMIT_HASH) {
-                            return commit.methods.getDetailsCommits(userCommit).call()
-                            .then((commitVals: any) => {
-                                return UserCommit.fromSmartContract(commitVals, true);
-                            });
-                        }
-                    });
+                    let promisesPending = allUserCommits[0].filter(userCommit => userCommit !== AppConfig.EMPTY_COMMIT_HASH)
+                    .map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true)));
                     let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
-                        .then((commitVals: any) => {
-                            return UserCommit.fromSmartContract(commitVals, false);
-                        }));
+                    .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, false)));
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                 });
         }).catch(err => {

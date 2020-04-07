@@ -286,11 +286,9 @@ export class AddCommitPopover {
             this.showSpinner = true;
             return this.contractManagerService.getCommits();
         }).then(commits => {
-            commits = commits.filter(com => com);    
-            this.blockChainCommits = commits.map(com => {
-                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
-            });
-            this.log.d("The commits from the blockchain", this.blockChainCommits);
+            this.blockChainCommits = commits.filter(com => !!com)
+            .map(com => com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash);
+            this.log.d("The commits from the blockchain are:", this.blockChainCommits);
             return this.bitbucketSrv.getBackendConfig();
         }).then((config: BackendConfig) => {
             seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
