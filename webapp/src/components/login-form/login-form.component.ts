@@ -7,7 +7,6 @@ import { LoginService } from "../../core/login.service";
 import { AppVersionService } from "../../core/app-version.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
-import { UserDetails } from "../../models/user-details.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { Account } from "web3/types";
@@ -130,9 +129,7 @@ export class LoginForm {
                                 this.msg = msg;
                             });
                     }
-                    return this.contractManager.getCurrentSeason();
-                }).then(res => {
-                    this.log.d("The current season is ", res[0]);
+                    return true;
                 }).catch((e) => {
                     this.spinnerService.hideLoader();
                     
@@ -163,23 +160,36 @@ export class LoginForm {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
+                return this.contractManager.getUserTeam();                
+            })
+            .then((teamUidStr: string) => {
+                let teamUid = parseInt(teamUidStr);
+                let promise;
+                if (teamUid !== AppConfig.EMPTY_TEAM_ID) {
+                    promise = this.contractManager.getTeamContractAddresses(teamUid);
+                } else {
+                    this.goToSetProfile.next(this.SET_PROFILE);
+                }
+                return promise;
+            })
+            .then((contractAddresses: Array<string>) => {
+                return this.contractManager.setBaseContracts(
+                    contractAddresses[AppConfig.BRIGHT_CONTRACT_INDEX], 
+                    contractAddresses[AppConfig.COMMITS_CONTRACT_INDEX], 
+                    contractAddresses[AppConfig.ROOT_CONTRACT_INDEX]);
+            })
+            .then(() => {
                 return this.contractManager.getAllUserAddresses();                
-            }).then((addresses: Array<string>) => {
+            })
+            .then((addresses: Array<string>) => {
                 addresses.forEach(address => {
                     this.avatarSrv.addUser(address);
                 });
-                this.avatarSrv.addUser(account.address);
-                return this.contractManager.getUserDetails(account.address);
-            }).then((detailsUser: UserDetails) => {
-                this.log.d("Email: ", detailsUser.email);
-                if (!detailsUser.email) {
-                    this.goToSetProfile.next(this.SET_PROFILE);
-                } else {
-                    this.navCtrl.push(TabsPage);
-                }
+                this.navCtrl.push(TabsPage);
                 this.log.d("Total success connecting the node " + currentNodeIndex);
                 return true;
-            }).catch((e) => {
+            })
+            .catch((e) => {
                 this.log.d("Failure to access the node " + currentNodeIndex);
                 return(this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
             });

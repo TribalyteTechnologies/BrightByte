@@ -30,7 +30,12 @@ export class ContractManagerService {
     private contractAddressBright: string;
     private contractAddressCommits: string;
     private contractAddressTeamManager: string;
-    private contractAddressBBFactory: string;
+    private contractAddressBbFactory: string;
+
+    private contractJSONRoot: IContractJson;
+    private contractJSONBright: IContractJson;
+    private contractJSONCommits: IContractJson;
+
     private log: ILogger;
     private web3: Web3;
     private initProm: Promise<Array<ITrbSmartContact>>;
@@ -60,6 +65,7 @@ export class ContractManagerService {
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
         let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
+                this.contractJSONBright = jsonContractData;
                 let brightContractJson = jsonContractData;
                 this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
                 let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
@@ -70,6 +76,7 @@ export class ContractManagerService {
         contractPromises.push(promBright);
         let promCommits = this.http.get(AppConfig.COMMITS_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
+                this.contractJSONCommits = jsonContractData;
                 let commitContractJson = jsonContractData;
                 this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
                 let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
@@ -80,6 +87,7 @@ export class ContractManagerService {
         contractPromises.push(promCommits);
         let promRoot = this.http.get(AppConfig.ROOT_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
+                this.contractJSONRoot = jsonContractData;
                 let rootContractJson = jsonContractData;
                 this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
                 let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
@@ -99,70 +107,125 @@ export class ContractManagerService {
         contractPromises.push(promTeamManager);
         let promBBFactory = this.http.get(AppConfig.BB_FACTORY_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
-                this.contractAddressBBFactory = jsonContractData.networks[configNet.netId].address;
-                let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBBFactory);
+                this.contractAddressBbFactory = jsonContractData.networks[configNet.netId].address;
+                let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBbFactory);
                 this.log.d("TruffleContractBBFactory function: ", contractBBFactory);
-                this.log.d("ContractAddressBBFactory: ", this.contractAddressBBFactory);
+                this.log.d("ContractAddressBBFactory: ", this.contractAddressBbFactory);
                 return contractBBFactory;
             });
         contractPromises.push(promBBFactory);
         return this.initProm = Promise.all(contractPromises);
     }
 
+    public setBaseContracts(brightAddress, commitsAddress, rootAddress): Promise<ITrbSmartContact[]> {
+        return this.initProm.then(([bright, commit, root, teamManager, bbFactory]) => {
+            let contractBright = new this.web3.eth.Contract(this.contractJSONBright.abi, brightAddress);
+            this.contractAddressBright = brightAddress;
+            let contractCommits = new this.web3.eth.Contract(this.contractJSONCommits.abi, commitsAddress);
+            this.contractAddressCommits = commitsAddress;
+            let contractRoot = new this.web3.eth.Contract(this.contractJSONRoot.abi, rootAddress);
+            this.contractAddressRoot = rootAddress;
+            this.initProm = Promise.all([contractBright, contractCommits, contractRoot, teamManager, bbFactory]);
+            return this.initProm;
+        });
+    }
+
     public isInvitedToTeam(email: string): Promise<boolean> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            return teamManager.methods.isUserEmailInvited(email);
+            return teamManager.methods.isUserEmailInvited(email).call();
         });
     }
 
-    public getUserTeam(): Promise<number> {
+    public inviteEmailToTeam(
+        teamUid: number, email: string, 
+        userType: AppConfig.UserType, expInSecs: number): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            return teamManager.getUserTeam(this.currentUser.address);
+            let byteCodeData = teamManager.methods.inviteToTeam(teamUid, email, userType as number, expInSecs).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
     }
 
-    public registerToTeam(email: string): Promise<void | TransactionReceipt> {
+    public inviteMultipleEmailsToTeam(teamUid: number, emails: Array<string>, userType: AppConfig.UserType, expInSecs: number) {
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return emails.reduce(
+            (prevVal, email) => {
+                return prevVal.then(() => {
+                    let byteCodeData = teamManager.methods.inviteToTeam(teamUid, email, userType as number, expInSecs).encodeABI();
+                    return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+                });
+            },
+            Promise.resolve());
+        });
+    }
+
+    public getUserTeam(): Promise<string> {
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return teamManager.methods.getUserTeam(this.currentUser.address).call();
+        });
+    }
+
+    public registerToTeam(email: string): Promise<string> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, email).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+        })
+        .then(() => {
+            return this.getUserTeam();
         });
     }
 
-    public createTeam(email: string, teamName: string): Promise<number> {
+    public createTeam(email: string, teamName: string): Promise<string> {
         let teamManagerContract;
+        let teamUid;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             let byteCodeData =  teamManager.methods.createTeam(email, teamName).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            return teamManagerContract.getUserTeam(this.currentUser.address);
+            return this.getUserTeam();
+        })
+        .then((teamUidStr: string) => {
+            teamUid = teamUidStr;
+            return teamManagerContract.methods.getTeamMembers(parseInt(teamUidStr)).call();
+        })
+        .then((members: any) => {
+            return this.deployAllContracts(parseInt(teamUid));
+        })
+        .then(() => {
+            return teamUid;
         });
     }
 
     public deployAllContracts(teamUId: number): Promise<void | TransactionReceipt | Array<string>> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            let byteCodeData = teamManagerContract.deployBright(teamUId).encodeABI();
+            teamManagerContract = teamManager;
+            let byteCodeData = teamManagerContract.methods.deployBright(teamUId).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.deployCommits(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployCommits(teamUId).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.deployThreshold(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployThreshold(teamUId).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.deployRoot(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployRoot(teamUId).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.getTeamContractAddresses(teamUId).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.getTeamContractAddresses(teamUId);
+        });
+    }
+
+    public getTeamContractAddresses(teamUId: number): Promise<void | TransactionReceipt | Array<string>> {
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return teamManager.methods.getTeamContractAddresses(teamUId).call({ from: this.currentUser.address });
         });
     }
 
@@ -186,8 +249,8 @@ export class ContractManagerService {
             this.log.d("Bytecode data: ", bytecodeData);
 
             return this.sendTx(bytecodeData, this.contractAddressBright);
-
-        }).catch(e => {
+        })
+        .catch(e => {
             this.log.e("Error setting profile: ", e);
             throw e;
         });

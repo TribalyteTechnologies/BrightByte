@@ -13,7 +13,7 @@ export class AppConfig {
     public static readonly UPDATE_CHECK_INTERVAL_MINS = 10;
 
     public static readonly NETWORK_CONFIG_LOCALHOST = [{
-        gasLimit: 2000000,
+        gasLimit: 6721975,
         gasPrice: 0,
         netId: 5777,
         urlNode: "HTTP://127.0.0.1:7545"
@@ -32,6 +32,10 @@ export class AppConfig {
     public static readonly ROOT_CONTRACT_PATH = "../assets/build/Root.json";
     public static readonly TEAM_MANAGER_CONTRACT_PATH = "../assets/build/CloudTeamManager.json";
     public static readonly BB_FACTORY_CONTRACT_PATH = "../assets/build/CloudBrightByteFactory.json";
+
+    public static readonly BRIGHT_CONTRACT_INDEX = 0;
+    public static readonly COMMITS_CONTRACT_INDEX = 1;
+    public static readonly ROOT_CONTRACT_INDEX = 3;
 
     public static readonly NETWORK_CONFIG = AppConfig.IS_CUSTOM_NET ? 
         AppConfig.shuffle(NETWORK_CONFIG_CUSTOM.configList) : AppConfig.NETWORK_CONFIG_LOCALHOST;
@@ -52,6 +56,10 @@ export class AppConfig {
     public static readonly FIRST_QUALIFYING_SEASON = 4;
     public static readonly COMMITS_BLOCK_SIZE = 20;
     public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
+    public static readonly EMPTY_TEAM_ID = 0;
+    public static readonly DEFAULT_INVITATION_EXP_IN_SECS = 60 * 60;
+
+    
     
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
@@ -100,5 +108,11 @@ export namespace AppConfig {
         Review = 1,
         TimedReview = 2,
         Season = 3
+    }
+
+    export enum UserType{
+        NotRegistered = 0,
+        Admin = 1,
+        Member = 2
     }
 }
