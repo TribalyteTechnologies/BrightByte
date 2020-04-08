@@ -127,15 +127,6 @@ contract("CloudTeamManager", accounts => {
             .then(allContracts => {
                 let areContractsDeployedCorrectly = !Object.values(allContracts).some(address => address === EMPTY_ADDRESS);
                 assert(areContractsDeployedCorrectly, "All or some contracts were deployed incorrectly");
-                return teamManagerInstance.getTeamContractAddresses(team1UId, { from: user1Account });
-            })
-            .then(allContracts => {
-                let areContractsDeployedCorrectly = !Object.values(allContracts).some(address => address === EMPTY_ADDRESS);
-                assert(areContractsDeployedCorrectly, "Member cannot access team contracts");
-                return teamManagerInstance.getTeamContractAddresses(team1UId, { from: user2Account });
-            })
-            .catch(() => {
-                assert(true, "NotRegisteredUser can access team contracts");
             });
         }
     );
