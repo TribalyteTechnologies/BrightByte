@@ -3,12 +3,12 @@ import { BackendConfig } from "../../backend.config";
 
 export class CommitEventDto extends AchievementEventDto {
 
-    public constructor(userHash: string, numberOfCommit: number, timestamp: number) {
+    public constructor(teamUid: number, userHash: string, numberOfCommit: number, timestamp: number) {
         super();
+        this.teamUid = teamUid;
         this.userHash = userHash;
         this.count = numberOfCommit;
         this.timestamp = timestamp;
         this.eventType = BackendConfig.EventTypeEnum.Commit;
     }
 }
-

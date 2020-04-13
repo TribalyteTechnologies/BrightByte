@@ -16,16 +16,15 @@ export class EventHandlerService {
 
     private readonly COMMIT = "Commit";
     private readonly REVIEW = "Review";
-    private readonly SEASON = "Season";
     private readonly DELETE = "Delete";
     private readonly LISTENER_CLOSE_EVENT = "close";
     private readonly LISTENER_END_EVENT = "end";
     private readonly USER_HASH = "userHash";
+    private readonly TEAM_UID = "teamUid";
     private readonly NUMBER_COMMITS = "numberOfCommits";
     private readonly TIMESTAMP = "timestamp";
     private readonly URL = "url";
     private readonly NUMBER_REVIEWS = "numberOfReviews";
-    private readonly CURRENT_SEASON = "currentSeason";
     private readonly LATEST = "latest";
     private readonly FIRST_BLOCK = 0;
 
@@ -51,15 +50,13 @@ export class EventHandlerService {
 
     public init() {
         this.log.d("Initializing Event Handler Service");
-        this.contractManagerService.getBrightSmartContract().subscribe(contractAbi => {
-            this.jsonContractData = contractAbi;
+        this.contractManagerService.getEventDispatcherSmartContract().subscribe(contract => {
+            this.contract = contract;
             this.web3 = this.web3Service.openConnection();
             this.web3.eth.net.isListening()
             .then((res) => {
                 this.log.d("Web3 Connection established");
-                this.contractAddress = this.jsonContractData.networks[BackendConfig.NET_ID].address;
-                this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
-                this.eventsSubscription(false);
+                this.eventsSubscription(true);
             }).catch(e => {
                 this.log.e("Not able to open a connection " + e);
             });
@@ -75,21 +72,20 @@ export class EventHandlerService {
                 switch (type) {
                     case this.COMMIT:
                         newEvent = new CommitEventDto(
+                            parseInt(event.returnValues[this.TEAM_UID]),
                             event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_COMMITS]), 
                             parseInt(event.returnValues[this.TIMESTAMP]));
                         break;
                     case this.REVIEW:
                         newEvent = new ReviewEventDto(
+                            parseInt(event.returnValues[this.TEAM_UID]),
                             event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_REVIEWS]), 
                             parseInt(event.returnValues[this.TIMESTAMP]));
                         break;
                     case this.DELETE:
                         newEvent = new DeleteEventDto(
+                            parseInt(event.returnValues[this.TEAM_UID]),
                             event.returnValues[this.USER_HASH], event.returnValues[this.URL]);
-                        break;
-                    case this.SEASON:
-                        newEvent = new SeasonEventDto(
-                            event.returnValues[this.CURRENT_SEASON]);
                         break;
                     default:
                         this.log.e("The parameter 'type' is not valid");
@@ -100,7 +96,6 @@ export class EventHandlerService {
             }
         };
 
-        this.contract = new this.web3.eth.Contract(this.jsonContractData.abi, this.contractAddress);
         let block = initialization ? this.FIRST_BLOCK : this.LATEST;
 
         switch (type) {
@@ -112,9 +107,6 @@ export class EventHandlerService {
                 break;
             case this.DELETE:
                 this.contract.events.DeletedCommit({ fromBlock: block }, callback);
-                break;
-            case this.SEASON:
-                this.contract.events.SeasonEnds({ fromBlock: block }, callback);
                 break;
             default:
                 this.log.e("The parameter 'type' is not valid");

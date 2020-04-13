@@ -66,7 +66,7 @@ contract Bright {
             newUser.hash = user;
             emailUserMap.map[emailId] = user;
             allUsersArray.push(user);
-           //remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
+            remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
         }
     }
 
@@ -202,7 +202,7 @@ contract Bright {
             reviewer.seasonData[currentSeasonIndex].seasonStats.reviewsMade++;
             reviewer.globalStats.reviewsMade++;
         }
-        emit UserNewReview(sender, reviewer.globalStats.reviewsMade, block.timestamp);
+        remoteCloudEventDispatcher.emitNewReviewEvent(teamUid, sender, reviewer.globalStats.reviewsMade);
     }
 
     function setUserName(string name) public onlyDapp {

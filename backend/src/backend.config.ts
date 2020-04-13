@@ -23,6 +23,8 @@ export class BackendConfig {
     public static readonly BRIGHTBYTE_DB_PORT = process.env.PORT || 3000;
     public static readonly BRIGHT_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Bright.json";
     public static readonly COMMITS_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Commits.json";
+    public static readonly CLOUD_EVENT_DISPATCHER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudEventDispatcher.json";
+    public static readonly CLOUD_BB_FACTORY_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudBrightByteFactory.json";
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
     public static readonly STATIC_FILES_PATH = join(__dirname, "./www/");
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";

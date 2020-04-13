@@ -2,10 +2,10 @@ pragma solidity 0.4.22;
 
 contract CloudEventDispatcher {
 
-    event NewUserEvent (uint256 teamId, address hash);
-    event UserNewCommit (uint256 teamId, address userHash, uint256 numberOfCommits, uint256 timestamp);
-    event UserNewReview (uint256 teamId, address userHash, uint256 numberOfReviews, uint256 timestamp);
-    event DeletedCommit (uint256 teamId, address userHash, bytes32 url);
+    event NewUserEvent (uint256 teamUid, address hash);
+    event UserNewCommit (uint256 teamUid, address userHash, uint256 numberOfCommits, uint256 timestamp);
+    event UserNewReview (uint256 teamUid, address userHash, uint256 numberOfReviews, uint256 timestamp);
+    event DeletedCommit (uint256 teamUid, address userHash, bytes32 url);
 
     address private owner;
     mapping (address => bool) private contractList;
@@ -35,19 +35,19 @@ contract CloudEventDispatcher {
         contractList[newAddress] = true;
     }
 
-    function emitNewUserEvent (uint256 teamId, address userAddress) public onlyAllowed {
-        emit NewUserEvent(teamId, userAddress);
+    function emitNewUserEvent (uint256 teamUid, address userAddress) public onlyAllowed {
+        emit NewUserEvent(teamUid, userAddress);
     }
 
-    function emitNewCommitEvent(uint256 teamId, address userAddress, uint256 numberOfCommits) public onlyAllowed {
-        emit UserNewCommit(teamId, userAddress, numberOfCommits, block.timestamp);
+    function emitNewCommitEvent(uint256 teamUid, address userAddress, uint256 numberOfCommits) public onlyAllowed {
+        emit UserNewCommit(teamUid, userAddress, numberOfCommits, block.timestamp);
     }
 
-    function emitNewReviewEvent(uint256 teamId, address userAddress, uint256 numberOfReviews) public onlyAllowed {
-        emit UserNewReview(teamId, userAddress, numberOfReviews, block.timestamp);
+    function emitNewReviewEvent(uint256 teamUid, address userAddress, uint256 numberOfReviews) public onlyAllowed {
+        emit UserNewReview(teamUid, userAddress, numberOfReviews, block.timestamp);
     }
 
-    function emitDeletedCommitEvent(uint256 teamId, address userAddress, bytes32 url) public onlyAllowed {
-        emit DeletedCommit(teamId, userAddress, url);
+    function emitDeletedCommitEvent(uint256 teamUid, address userAddress, bytes32 url) public onlyAllowed {
+        emit DeletedCommit(teamUid, userAddress, url);
     }
 }

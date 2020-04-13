@@ -17,11 +17,15 @@ export class ContractManagerService {
 
     private contractAddressBright: string;
     private contractAddressCommits: string;
+    private contractAddressEventDispatcher: string;
+    private contractAddressBbFactory: string;
     private log: ILogger;
     private web3: Web3;
     private contracts: Array<ITrbSmartContact>;
     private brightContractAbi: ITrbSmartContractJson;
     private commitsContractAbi: ITrbSmartContractJson;
+    private eventDispatcherContractAbi: ITrbSmartContractJson;
+    private bbFactoryContractAbi: ITrbSmartContractJson;
     private initObs: Observable<AxiosResponse<any>>;
 
 
@@ -43,7 +47,7 @@ export class ContractManagerService {
             flatMap((usersAddresses: Array<String>) => {
                 allAddresses = usersAddresses;
                 let observables = usersAddresses.map(userAddress => from(
-                    this.contracts[0].methods.getUser(userAddress).call()
+                    this.contracts[ContractsIndex.Bright].methods.getUser(userAddress).call()
                 ).pipe(
                     map((userData: any[]) => UserDetailsDto.fromSmartContract(userData))
                 ));
@@ -98,7 +102,7 @@ export class ContractManagerService {
                     user.forEach(season => {
                         season.forEach(commit => {
                             let comment = CommentDetailsDto.fromSmartContract(commit);
-                            eventsDtos.push(new ReviewEventDto(allUserData[i].userHash, 0, comment.creationDate));
+                            eventsDtos.push(new ReviewEventDto(0, allUserData[i].userHash, 0, comment.creationDate));
                         });
                     });
                 });
@@ -116,28 +120,37 @@ export class ContractManagerService {
         return this.initObs.pipe(map(() => this.brightContractAbi));
     }
 
+    public getEventDispatcherSmartContract(): Observable<ITrbSmartContact> {
+        return this.initObs.pipe(map(() => this.contracts[ContractsIndex.EventDispatcher]));
+    }
+
     private getUserNumber(): Observable<Number> {
-        return from<Number>(this.contracts[0].methods.getNumbers().call());
+        return from<Number>(this.contracts[ContractsIndex.Bright].methods.getNumbers().call());
     }
 
     private getUsersAddress(): Observable<Array<String>> {
-        return from<Array<String>>(this.contracts[0].methods.getUsersAddress().call());
+        return from<Array<String>>(this.contracts[ContractsIndex.Bright].methods.getUsersAddress().call());
     }
 
     private getUsersSeasonState(userHash: string, seasonIndex: number): Observable<Array<number>> {
-        return from<Array<number>>(this.contracts[0].methods.getUserSeasonState(userHash, seasonIndex).call());
+        return from<Array<number>>(this.contracts[ContractsIndex.Bright].methods.getUserSeasonState(userHash, seasonIndex).call());
     }
 
     private getUserSeasonCommits(userHash: string, seasonIndex: number, start: number, end: number): Observable<Array<string>> {
-        return from<Array<string>>(this.contracts[0].methods.getUserSeasonCommits(userHash, seasonIndex, start, end).call());
+        return from<Array<string>>(this.contracts[ContractsIndex.Bright].methods.getUserSeasonCommits(
+            userHash, seasonIndex, start, end).call());
     }
 
     private getCommentDetail(commitHash: string, userHash: string): Observable<Array<CommentDetailsDto>> {
-        return from<Array<CommentDetailsDto>>(this.contracts[1].methods.getCommentDetail(commitHash, userHash).call());
+        return from<Array<CommentDetailsDto>>(this.contracts[ContractsIndex.Commits].methods.getCommentDetail(commitHash, userHash).call());
     }
 
     private getCurrentSeason(): Observable<Array<number>> {
-        return from<Array<number>>(this.contracts[0].methods.getCurrentSeason().call());
+        return from<Array<number>>(this.contracts[ContractsIndex.Bright].methods.getCurrentSeason().call());
+    }
+
+    private getEventDispatcherAddress(): Observable<string> {
+        return from<string>(this.contracts[ContractsIndex.BbFactory].methods.getEventDispatcherAddress().call());
     }
 
     private getCommentsDetailsObs(
@@ -159,7 +172,22 @@ export class ContractManagerService {
 
     private init() {
         this.log.d("Initializing Contract Manager Service");
-        this.initObs = this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL).pipe(
+        this.initObs = this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL).pipe(
+            flatMap(response => {
+                this.bbFactoryContractAbi = response.data;
+                this.contractAddressBbFactory = this.bbFactoryContractAbi.networks[BackendConfig.NET_ID].address;
+                this.contracts.push(new this.web3.eth.Contract(this.bbFactoryContractAbi.abi, this.contractAddressBbFactory));
+                return this.httpSrv.get(BackendConfig.CLOUD_EVENT_DISPATCHER_CONTRACT_URL);
+            }),
+            flatMap(response => {
+                this.eventDispatcherContractAbi = response.data;
+                return this.getEventDispatcherAddress();
+            }),
+            flatMap(address => {
+                this.contractAddressEventDispatcher = address;
+                this.contracts.push(new this.web3.eth.Contract(this.eventDispatcherContractAbi.abi, this.contractAddressEventDispatcher));
+                return this.httpSrv.get(BackendConfig.BRIGHT_CONTRACT_URL);
+            }),
             flatMap(response => {
                 this.brightContractAbi = response.data;
                 this.contractAddressBright = this.brightContractAbi.networks[BackendConfig.NET_ID].address;
@@ -173,4 +201,11 @@ export class ContractManagerService {
             }),
             shareReplay(BackendConfig.BUFFER_SIZE));
     }
+}
+
+enum ContractsIndex {
+    BbFactory = 0,
+    EventDispatcher = 1,
+    Bright = 2,
+    Commits = 3
 }
