@@ -16,9 +16,11 @@ import { RankingPage } from "../ranking/ranking";
 })
 export class HomePage {
 
+    public userName: string;
+    public teamName: string;
+
     private log: ILogger;
     private user;
-    private userName: string;
 
     constructor(
         public navCtrl: NavController,
@@ -41,6 +43,10 @@ export class HomePage {
         this.contractManagerService.getUserDetails(this.user.address)
         .then((user) => {
             this.userName = user.name;
+            return this.contractManagerService.getTeamName();
+        })
+        .then(teamName => {
+            this.teamName =  teamName;
         });
     }
 

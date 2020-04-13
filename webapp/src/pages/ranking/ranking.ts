@@ -26,6 +26,7 @@ export class RankingPage {
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
     public userRankDetails = new UserReputation();
+    public teamName: string;
     public userStars = 0;
     public userHash = "";
     public userTrophyList = new Array<string>();
@@ -101,6 +102,10 @@ export class RankingPage {
                 this.log.d("The season Threshold are", seasonThreshold);
                 this.minNumberCommit = seasonThreshold[0];
                 this.minNumberReview = seasonThreshold[1];
+                return this.contractManagerService.getTeamName();
+            })
+            .then((teamName: string) => {
+                this.teamName = teamName;
                 this.refresh();
             });
     }

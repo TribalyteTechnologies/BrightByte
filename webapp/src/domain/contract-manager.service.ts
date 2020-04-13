@@ -229,6 +229,17 @@ export class ContractManagerService {
         });
     }
 
+    public getTeamName(): Promise<string> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return this.getUserTeam();
+        })
+        .then((teamUid: string) => {
+            return teamManagerContract.methods.getTeamName(parseInt(teamUid)).call();
+        });
+    }
+
     public createUser(pass: string): Promise<Blob> {
         let createAccount = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
         let encrypted = this.web3.eth.accounts.encrypt(createAccount.privateKey, pass);

@@ -91,7 +91,7 @@
         "confidenceDescription": "<h6>Reviewer confidence</h6>How much expertise do you consider to have in the technologies used in this commit?"
     },
     "home": {
-        "title": "Welcome,",
+        "title": "Welcome, {{userName}} to {{teamName}}",
         "info": "Choose the available tabs to see your commits, reviews or the ranking. GitHub repo: ",
         "goTo": "Go to:"
     },

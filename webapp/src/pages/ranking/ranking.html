@@ -36,9 +36,9 @@
         <ion-col>
             <ion-row no-padding>
                 <ion-col col-10 no-padding>
-                    <span *ngIf="globalSelected; else globalNotSelectedBlock"> {{ "ranking.global" | translate }}</span>
-                    <ng-template #globalNotSelectedBlock>{{ "app.ranking" | translate }} ·
-                        {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
+                    <span *ngIf="globalSelected; else globalNotSelectedBlock">{{ teamName }}: {{ "ranking.global" | translate }} </span>
+                    <ng-template #globalNotSelectedBlock>{{ teamName }}: {{ "app.ranking" | translate }} ·
+                         {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
                     <span class="text-details ranking-a"><a no-padding (click)="setCurrentSeason()"> |
                             {{ "ranking.retrieveToSeason" | translate }}</a></span>
                 </ion-col>

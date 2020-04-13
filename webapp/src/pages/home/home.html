@@ -7,7 +7,7 @@
                 </div>
             </ion-row>
             <ion-row >
-                <h1 no-margin>{{ "home.title" | translate }} {{ userName }}</h1>
+                <h1 no-margin>{{ "home.title" | translate: {userName: userName, teamName: teamName} }}</h1>
             </ion-row>
             <ion-row class="home-text">
                 <p no-margin>{{ "home.info" | translate }}</p>
