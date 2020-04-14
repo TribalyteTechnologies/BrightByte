@@ -166,28 +166,25 @@ export class LoginForm {
                 let teamUid = parseInt(teamUidStr);
                 let promise;
                 if (teamUid !== AppConfig.EMPTY_TEAM_ID) {
-                    promise = this.contractManager.getTeamContractAddresses(teamUid);
+                    promise = this.contractManager.setBaseContracts(teamUid);
                 } else {
                     this.goToSetProfile.next(this.SET_PROFILE);
                 }
                 return promise;
             })
-            .then((contractAddresses: Array<string>) => {
-                return this.contractManager.setBaseContracts(
-                    contractAddresses[AppConfig.BRIGHT_CONTRACT_INDEX], 
-                    contractAddresses[AppConfig.COMMITS_CONTRACT_INDEX], 
-                    contractAddresses[AppConfig.ROOT_CONTRACT_INDEX]);
-            })
             .then(() => {
                 return this.contractManager.getAllUserAddresses();                
             })
             .then((addresses: Array<string>) => {
-                addresses.forEach(address => {
-                    this.avatarSrv.addUser(address);
-                });
-                this.navCtrl.push(TabsPage);
+                let promise;
+                if (addresses.length > 0){
+                    addresses.forEach(address => {
+                        this.avatarSrv.addUser(address);
+                    });
+                    promise = this.navCtrl.push(TabsPage);
+                }
                 this.log.d("Total success connecting the node " + currentNodeIndex);
-                return true;
+                return promise;
             })
             .catch((e) => {
                 this.log.d("Failure to access the node " + currentNodeIndex);

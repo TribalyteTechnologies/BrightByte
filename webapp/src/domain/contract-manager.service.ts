@@ -32,9 +32,9 @@ export class ContractManagerService {
     private contractAddressTeamManager: string;
     private contractAddressBbFactory: string;
 
-    private contractJSONRoot: IContractJson;
-    private contractJSONBright: IContractJson;
-    private contractJSONCommits: IContractJson;
+    private contractJsonRoot: IContractJson;
+    private contractJsonBright: IContractJson;
+    private contractJsonCommits: IContractJson;
 
     private log: ILogger;
     private web3: Web3;
@@ -65,7 +65,7 @@ export class ContractManagerService {
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
         let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
-                this.contractJSONBright = jsonContractData;
+                this.contractJsonBright = jsonContractData;
                 let brightContractJson = jsonContractData;
                 this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
                 let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
@@ -76,7 +76,7 @@ export class ContractManagerService {
         contractPromises.push(promBright);
         let promCommits = this.http.get(AppConfig.COMMITS_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
-                this.contractJSONCommits = jsonContractData;
+                this.contractJsonCommits = jsonContractData;
                 let commitContractJson = jsonContractData;
                 this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
                 let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
@@ -87,7 +87,7 @@ export class ContractManagerService {
         contractPromises.push(promCommits);
         let promRoot = this.http.get(AppConfig.ROOT_CONTRACT_PATH).toPromise()
             .then((jsonContractData: IContractJson) => {
-                this.contractJSONRoot = jsonContractData;
+                this.contractJsonRoot = jsonContractData;
                 let rootContractJson = jsonContractData;
                 this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
                 let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
@@ -117,15 +117,22 @@ export class ContractManagerService {
         return this.initProm = Promise.all(contractPromises);
     }
 
-    public setBaseContracts(brightAddress, commitsAddress, rootAddress): Promise<ITrbSmartContact[]> {
+    public setBaseContracts(teamUid): Promise<ITrbSmartContact[]> {
+        let teamManagerContract;
+        let bbFactoryContract;
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory]) => {
-            let contractBright = new this.web3.eth.Contract(this.contractJSONBright.abi, brightAddress);
-            this.contractAddressBright = brightAddress;
-            let contractCommits = new this.web3.eth.Contract(this.contractJSONCommits.abi, commitsAddress);
-            this.contractAddressCommits = commitsAddress;
-            let contractRoot = new this.web3.eth.Contract(this.contractJSONRoot.abi, rootAddress);
-            this.contractAddressRoot = rootAddress;
-            this.initProm = Promise.all([contractBright, contractCommits, contractRoot, teamManager, bbFactory]);
+            teamManagerContract = teamManager;
+            bbFactoryContract = bbFactory;
+            return this.getTeamContractAddresses(teamUid);
+        })
+        .then((contractAddresses: Array<string>) => {
+            let contractBright = new this.web3.eth.Contract(this.contractJsonBright.abi, contractAddresses[0]);
+            this.contractAddressBright = contractAddresses[0];
+            let contractCommits = new this.web3.eth.Contract(this.contractJsonCommits.abi, contractAddresses[1]);
+            this.contractAddressCommits = contractAddresses[1];
+            let contractRoot = new this.web3.eth.Contract(this.contractJsonRoot.abi, contractAddresses[3]);
+            this.contractAddressRoot = contractAddresses[3];
+            this.initProm = Promise.all([contractBright, contractCommits, contractRoot, teamManagerContract, bbFactoryContract]);
             return this.initProm;
         });
     }

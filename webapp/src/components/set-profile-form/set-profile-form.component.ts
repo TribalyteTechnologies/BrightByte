@@ -57,18 +57,25 @@ export class SetProfileForm {
         this.isButtonPressed = true;
         this.userEmail = email;
         this.userName = name;
+        let promise;
+        let isInvited;
         this.contractManagerService.isInvitedToTeam(email)
             .then((isInvitedToTeam: boolean) => {
+                isInvited = isInvitedToTeam;
                 if (isInvitedToTeam) {
-                    this.contractManagerService.registerToTeam(email)
-                        .then(teamUidStr => {
-                            return this.setContractsAndProfile(parseInt(teamUidStr));
-                        });
+                    promise = this.contractManagerService.registerToTeam(email);
                 } else {
                     this.showCreateTeam = true;
                     this.isButtonPressed = false;
                 }
-            }).catch((e) => {
+                return promise;
+            })
+            .then(teamUidStr => {
+                if (isInvited) {
+                    this.setContractsAndProfile(parseInt(teamUidStr));
+                }
+            })
+            .catch((e) => {
                 this.translateService.get("setProfile.getEmails").subscribe(
                     msg => {
                         this.msg = msg;
@@ -105,13 +112,7 @@ export class SetProfileForm {
     }
 
     private setContractsAndProfile(teamUid: number): Promise<void> {
-        return this.contractManagerService.getTeamContractAddresses(teamUid)
-            .then((contractAddresses: Array<string>) => {
-                return this.contractManagerService.setBaseContracts(
-                    contractAddresses[AppConfig.BRIGHT_CONTRACT_INDEX],
-                    contractAddresses[AppConfig.COMMITS_CONTRACT_INDEX],
-                    contractAddresses[AppConfig.ROOT_CONTRACT_INDEX]);
-            })
+        return this.contractManagerService.setBaseContracts(teamUid)
             .then(() => {
                 return this.contractManagerService.setProfile(this.userName, this.userEmail);
             })
