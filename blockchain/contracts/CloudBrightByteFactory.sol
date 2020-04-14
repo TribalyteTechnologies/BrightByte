@@ -16,11 +16,11 @@ contract CloudBrightByteFactory {
         address rootAddress;
     }
     
-    mapping(uint256 => TeamContracts) teamContracts;
+    mapping(uint256 => TeamContracts) private teamContracts;
     string private currentVersion;
 
-    address eventDispatcherAddress;
-    CloudEventDispatcher remoteEventDispatcher;
+    address private eventDispatcherAddress;
+    CloudEventDispatcher private remoteEventDispatcher;
     
     constructor(string version) public {
         currentVersion = version;

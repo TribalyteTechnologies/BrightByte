@@ -38,7 +38,7 @@ contract CloudTeamManager {
     address private owner;
     
     address private bbFactoryAddress;
-    CloudBrightByteFactory remoteBbFactory;
+    CloudBrightByteFactory private remoteBbFactory;
     
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
