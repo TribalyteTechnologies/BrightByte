@@ -1,9 +1,22 @@
 # Change Log
 
+#### cloud.v0.1.0
+
+BrightByte cloud is a multi team implementation for base BrightByte v0.7.0. Open to public at http://cloud.brightbyteapp.com/ 
+- New smart contracts for multi team management.
+- Adapted BrightByte base smart contracts for multi team.
+- Fronted changes for multi team (Team creation page, team name display).
+- Backend changes for multi team (New achievements events subscrption).
+- New frontend-backend-blockchain integration (on ConctractManagerService both backend and frontend).
+- Added multiple test for new multi team smart contracts.
+
+
+`No migration needed for cloud.0.1.0`
+
 #### v0.7.0
 
 - New feature, change user name.
-- Add Pagination to review and commits
+- Add Pagination to review and commits.
 - New Smart Contract to store season thresholds.
 - Added multi websocket session, all your tabs will be connected to the backend.
 - Implemented a utils library on the smart contracts.
