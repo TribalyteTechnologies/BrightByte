@@ -12,9 +12,10 @@
     "truffle:besu": "truffle migrate --reset --network besu",
     "posttruffle:besu": "npm run copy:contracts",
     "truffle:compile": "truffle compile",
-    "truffle:deploy:test": "npm run ganache & (npm run wait:ganache && npm run truffle:test)",
+    "truffle:deploy:test": "npm run ganache:quite & (npm run wait:ganache && npm run truffle:test)",
     "wait:ganache": "wait-on -r http://localhost:7545",
     "ganache": "ganache-cli -p 7545 -i 5777",
+    "ganache:quite": "ganache-cli -p 7545 -i 5777 -q",
     "remix:start": "remix-ide",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build",
     "truffle:test": "truffle test"
@@ -27,10 +28,10 @@
     "remix-ide": "0.8.8",
     "truffle": "5.0.39",
     "truffle-core": "5.0.34",
-    "truffle-environment": "0.1.10",
-    "wait-on": "3.3.0"
+    "truffle-environment": "0.1.10"
   },
   "devDependencies": {
-    "shx": "0.3.2"
+    "shx": "0.3.2",
+    "wait-on": "3.3.0"
   }
 }
