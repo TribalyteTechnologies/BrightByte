@@ -106,6 +106,7 @@
         "goToLogin": "Go to login"
     },
     "ranking": {
+        "team": "Team",
         "getUserInfo": "Error getting user information",
         "name": "Name",
         "mail": "Email",

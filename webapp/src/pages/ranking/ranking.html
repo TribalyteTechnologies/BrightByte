@@ -15,7 +15,7 @@
         <ion-col col-4 no-padding class="text-ranking">
             <div class="ranking-top">
                 <ion-row>
-                    <ion-col col-7>{{ "ranking.current" | translate }} {{ "ranking.season" | translate }}:
+                    <ion-col col-7>{{ teamName }}, {{ "ranking.season" | translate }}:
                         {{ numberOfSeasons }}</ion-col>
                     <ion-col col-5 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }}
                         {{ "ranking.left" | translate }}</ion-col>
@@ -36,8 +36,8 @@
         <ion-col>
             <ion-row no-padding>
                 <ion-col col-10 no-padding>
-                    <span *ngIf="globalSelected; else globalNotSelectedBlock">{{ teamName }}: {{ "ranking.global" | translate }} </span>
-                    <ng-template #globalNotSelectedBlock>{{ teamName }}: {{ "app.ranking" | translate }} ·
+                    <span *ngIf="globalSelected; else globalNotSelectedBlock">{{ "ranking.global" | translate }} </span>
+                    <ng-template #globalNotSelectedBlock>{{ "app.ranking" | translate }} ·
                          {{ "ranking.season" | translate }} {{ seasonSelected }}</ng-template>
                     <span class="text-details ranking-a"><a no-padding (click)="setCurrentSeason()"> |
                             {{ "ranking.retrieveToSeason" | translate }}</a></span>
