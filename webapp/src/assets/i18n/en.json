@@ -205,7 +205,13 @@
         "removeConfirmation": "Are you sure you want to remove your avatar image?",
         "remove": "Remove",
         "cancel": "Cancel",
-        "userName": "User Name"
+        "userName": "User Name",
+        "settings": "Settings",
+        "tabCategoryProfile": "Profile settings",
+        "tabCategoryTeam": "Team settings",
+        "changeTeamName": "Change team name",
+        "succesTeamNameChange": "Team name changed correctly",
+        "changeTeamNameError": "Cannot change your team name. Please contact the service provider."
     },
     "commitDetails": {
         "author": "Author",

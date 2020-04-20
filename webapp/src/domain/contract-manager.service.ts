@@ -137,6 +137,20 @@ export class ContractManagerService {
         });
     }
 
+    public isCurrentUserAdmin(): Promise<boolean>{
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return this.getUserTeam();
+        })
+        .then((teamUid: string) => {
+            return teamManagerContract.methods.getUserType(parseInt(teamUid), this.currentUser.address).call();
+        })
+        .then(userType => {
+            return parseInt(userType) === AppConfig.UserType.Admin;
+        });
+    }
+
     public isInvitedToTeam(email: string): Promise<boolean> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             return teamManager.methods.isUserEmailInvited(email).call();
@@ -244,6 +258,18 @@ export class ContractManagerService {
         })
         .then((teamUid: string) => {
             return teamManagerContract.methods.getTeamName(parseInt(teamUid)).call();
+        });
+    }
+
+    public changeTeamName(teamName: string): Promise<void | TransactionReceipt> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return this.getUserTeam();
+        })
+        .then((teamUid: string) => {
+            let byteCodeData = teamManagerContract.methods.setTeamName(teamUid, teamName).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
     }
 

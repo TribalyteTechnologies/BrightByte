@@ -1,8 +1,22 @@
 profile {
-    .title {
+    ion-item .label {
+        height: 50px;
+    }
+
+    .team-name-list {
         width: 100%;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .team-name-submit {
+        text-align: end;
+    }
+
+    .segments {
         margin-bottom: 20px;
+    }
+
+    .tittle-margin {
+        margin-bottom: 30px;
     }
 
     .upload-form {

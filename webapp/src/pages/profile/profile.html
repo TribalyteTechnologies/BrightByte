@@ -3,17 +3,26 @@
         <ion-row justify-content-end>
             <ion-icon class="close-icon" name="close" (click)="dismiss()"></ion-icon>
         </ion-row>
-        <ion-row justify-content-center class="title">
-            <h1>{{ "setProfile.profile" | translate }}</h1>
+        <ion-row [ngClass]="{'tittle-margin': !isCurrentUserAdmin}">
+            <h3 no-margin>{{ "setProfile.settings" | translate }}</h3>
         </ion-row>
-        <ion-row no-padding>
+        <ion-row class="segments" *ngIf="isCurrentUserAdmin">
+            <ion-segment [(ngModel)]="settingsCategory">
+                <ion-segment-button *ngFor="let category of SETTINGS_CATEGORIES" [value]="category">
+                    <ion-label>{{ "setProfile.tabCategory" + category | translate }}</ion-label>
+                </ion-segment-button>
+            </ion-segment>
+        </ion-row>
+        <ion-row no-padding *ngIf="settingsCategory === SETTINGS_CATEGORIES[0]">
             <ion-col col-3>
                 <ion-row class="preview-image" justify-center>
-                    <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarData" [isPreview]="true" class="avatar-container">
+                    <avatar *ngIf="imageSelected; else imageNotSelected" [avatarUrl]="avatarData" [isPreview]="true"
+                        class="avatar-container">
                     </avatar>
                     <ng-template #imageNotSelected>
                         <div class="container">
-                            <avatar [avatarUrl]="avatarObs | async" [isPreview]="true" alt="Avatar" class="image"></avatar>
+                            <avatar [avatarUrl]="avatarObs | async" [isPreview]="true" alt="Avatar" class="image">
+                            </avatar>
                             <div class="overlay" (click)="confirmImageRemove()">
                                 <ion-icon class="remove-icon" name="close"></ion-icon>
                                 <h1 class="remove-text">{{ "setProfile.removeImage" | translate }}</h1>
@@ -25,13 +34,13 @@
             <ion-col col-9 padding align-self-end>
                 <form [formGroup]="uploadForm" (ngSubmit)="saveProfileChange(userName)">
                     <ion-list lines="full" class="ion-no-margin ion-no-padding">
-                       <ion-item>
+                        <ion-item>
                             <ion-label color="dark">{{ "setProfile.userName" | translate }}: </ion-label>
                             <ion-input formControlName="userName" type="text"></ion-input>
-                       </ion-item>
-                       <ion-item>
+                        </ion-item>
+                        <ion-item>
                             <input type="file" (change)="openFile($event)">
-                       </ion-item>
+                        </ion-item>
                     </ion-list>
                     <ion-row *ngIf="successMsg" class="success-body">
                         {{ successMsg }}
@@ -40,10 +49,36 @@
                         {{ errorMsg }}
                     </ion-row>
                     <ion-row padding-top justify-content-end>
-                        <button type="submit" class="btn save-button btn__blue">{{ "setProfile.save" | translate }}</button>
+                        <button type="submit"
+                            class="btn save-button btn__blue">{{ "setProfile.save" | translate }}</button>
                     </ion-row>
                 </form>
 
+            </ion-col>
+        </ion-row>
+
+        <ion-row no-padding *ngIf="isCurrentUserAdmin && settingsCategory === SETTINGS_CATEGORIES[1]">
+            <ion-col>
+                <ion-row>
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-item>
+                            <ion-label color="dark">{{ "setProfile.teamName" | translate }}: </ion-label>
+                            <ion-input type="text" [(ngModel)]="teamName"></ion-input>
+                        </ion-item>
+                        <ion-row *ngIf="successMsg" class="success-body">
+                            {{ successMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="errorMsg" class="error-body">
+                            {{ errorMsg }}
+                        </ion-row>
+                        <ion-item class="team-name-submit">
+                            <ion-spinner *ngIf="isSettingTeamName"></ion-spinner>
+                            <button type="submit" class="btn save-button btn__blue" (click)="changeTeamName(teamName)">
+                                {{ "setProfile.changeTeamName" | translate }}
+                            </button>
+                        </ion-item>
+                    </ion-list>
+                </ion-row>
             </ion-col>
         </ion-row>
     </ion-grid>

@@ -21,6 +21,8 @@ import { UserNameService } from "../../domain/user-name.service";
 
 export class Profile {
 
+    public readonly SETTINGS_CATEGORIES = ["Profile", "Team"];
+
     public avatarObs: Observable<string>;
     public avatarData: string;
     public imageSelected = false;
@@ -28,6 +30,10 @@ export class Profile {
     public errorMsg: string;
     public successMsg: string;
     public uploadForm: FormGroup;
+    public settingsCategory = this.SETTINGS_CATEGORIES[0];
+    public teamName: string;
+    public isCurrentUserAdmin: boolean;
+    public isSettingTeamName = false;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly IMAGE_FIELD_NAME = "image";
@@ -37,8 +43,10 @@ export class Profile {
     private uploadError: string;
     private defaultError: string;
     private successMessageName: string;
+    private successMessageTeamName: string;
     private successMessageAvatar: string;
     private changeNameError: string;
+    private changeTeamNameError: string;
     private userAddress: string;
     private log: ILogger;
 
@@ -67,14 +75,19 @@ export class Profile {
             "setProfile.noChangesError",
             "setProfile.successMessageName", 
             "setProfile.successMessageAvatar", 
-            "setProfile.changeNameError"])
+            "setProfile.changeNameError",
+            "setProfile.changeTeamNameError",
+            "setProfile.succesTeamNameChange"])
         .subscribe(translation => {
             this.uploadError = translation["setProfile.uploadError"];
             this.defaultError = translation["setProfile.defaultError"];
             this.noChangesError = translation["setProfile.noChangesError"];
             this.successMessageName =  translation["setProfile.successMessageName"];
+            this.successMessageTeamName =  translation["setProfile.succesTeamNameChange"];
             this.successMessageAvatar =  translation["setProfile.successMessageAvatar"];
             this.changeNameError =  translation["setProfile.changeNameError"];
+            this.changeTeamNameError =  translation["setProfile.changeTeamNameError"];
+
         });
         this.uploadForm = this.formBuilder.group({
             image: [""],
@@ -85,7 +98,13 @@ export class Profile {
         .then(user => {
             this.userName = user.name;
             this.uploadForm.get(this.USER_NAME_FIELD_NAME).setValue(user.name);
-        });
+            return this.contractManagerService.isCurrentUserAdmin();
+        })
+        .then(isAdmin => {
+            this.isCurrentUserAdmin = isAdmin;
+            return this.contractManagerService.getTeamName();
+        })
+        .then(teamName => this.teamName = teamName);
     }
 
     public openFile(event: Event) {
@@ -176,6 +195,22 @@ export class Profile {
         } else {
             this.errorMsg = this.noChangesError;
         }
+    }
+
+    public changeTeamName(teamName: string) {
+        this.teamName = teamName;
+        this.errorMsg = null;
+        this.successMsg = null;
+        this.isSettingTeamName = true;
+        this.contractManagerService.changeTeamName(teamName)
+        .then(() => {
+            this.isSettingTeamName = false;
+            this.successMsg = this.successMessageTeamName;
+        })
+        .catch(e => {
+            this.isSettingTeamName = false;
+            this.errorMsg = this.changeTeamNameError;
+        });
     }
 
     private deleteAvatar() {
