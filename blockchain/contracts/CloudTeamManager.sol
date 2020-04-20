@@ -134,6 +134,10 @@ contract CloudTeamManager {
         team.invitedUsersEmail[email] = userType;
         invitedUserTeamMap[email] = InvitedUser(teamUid, now + expMilis);
     }
+
+    function removeInvitationToTeam(uint256 teamUid, string email) public onlyAdmins(teamUid){
+        removeInvitation(teamUid, email);
+    }
     
     function isUserEmailInvited(string email) public view returns (bool) {
         return invitedUserTeamMap[email].teamUid != 0;
@@ -151,9 +155,7 @@ contract CloudTeamManager {
         if (invitedUserTeamMap[email].expirationTimestamp > now) {
             addToTeam(teamUid, memberAddress, email, UserType.NotRegistered);
         } else {
-            Team storage team = createdTeams[teamUid];
-            delete team.invitedUsersEmail[email];
-            delete invitedUserTeamMap[email];
+            removeInvitation(teamUid, email);
         }
     }
     
@@ -217,6 +219,12 @@ contract CloudTeamManager {
         delete userTeamMap[memberAddress];
         
         return email;
+    }
+
+    function removeInvitation(uint256 teamUid, string email) private{
+        Team storage team = createdTeams[teamUid];
+        delete team.invitedUsersEmail[email];
+        delete invitedUserTeamMap[email];
     }
     
     function addToTeam(uint256 teamUid, address memberAddress, string email, UserType userType) private {
