@@ -25,10 +25,13 @@
                     {{ "addCommit.fieldRequire" | translate }}</div>
             </ion-row>
         </ion-row>
-        <ion-spinner [hidden]="!isButtonPressed && showCreateTeam"></ion-spinner>
+        <ion-row [hidden]="!isButtonPressed && showCreateTeam">
+            <ion-spinner></ion-spinner>
+            <p class="creating-team-message">{{ "setProfile.creatingTeamMessage" | translate }}</p>
+        </ion-row>
         <div class="buttons">
             <button class="btn btn--full btn__blue"
-                [disabled]="createTeamFG.invalid">{{ "setProfile.createTeam" | translate }}</button>
+                [disabled]="createTeamFG.invalid || isButtonPressed">{{ "setProfile.createTeam" | translate }}</button>
         </div>
     </form>
 </div>

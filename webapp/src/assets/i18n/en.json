@@ -177,6 +177,7 @@
         "enterName": "Enter your name",
         "enterTeamName":"Enter team name",
         "name": "Name",
+        "creatingTeamMessage": "BrightByte is creating your team. This could take a while.",
         "teamName": "Team name",
         "teamNameLength": "Team name should be maximum {{length}} characters long",
         "set": "Set profile",
