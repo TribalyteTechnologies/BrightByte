@@ -1,6 +1,6 @@
 # Change Log
 
-#### cloud.v0.1.0
+#### v0.1.0-cloud
 
 BrightByte cloud is a multi team implementation for base BrightByte v0.7.0. Open to public at http://cloud.brightbyteapp.com/ 
 - New smart contracts for multi team management.
@@ -11,7 +11,7 @@ BrightByte cloud is a multi team implementation for base BrightByte v0.7.0. Open
 - Added multiple test for new multi team smart contracts.
 
 
-`No migration needed for cloud.0.1.0`
+`No migration needed for v0.1.0-cloud`
 
 #### v0.7.0
 
