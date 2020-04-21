@@ -25,12 +25,6 @@ contract Bright {
     Root private root;
     address private rootAddress;
     CloudEventDispatcher private remoteCloudEventDispatcher;
-    
-    event UserProfileSetEvent (string name, address hash);
-    event UserNewCommit (address userHash, uint256 numberOfCommits, uint256 timestamp);
-    event UserNewReview (address userHash, uint256 numberOfReviews, uint256 timestamp);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event DeletedCommit (address userHash, bytes32 url);
 
     constructor() public {}
 
