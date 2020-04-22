@@ -19,6 +19,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
 import { AfterLoginSlidePopover } from "../../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
+import { Profile } from "../profile/profile";
 
 @Component({
     selector: "page-tabs",
@@ -116,6 +117,11 @@ export class TabsPage {
 
     public openAfterLoginTutorialDialog() {
         let popover = this.popoverCtrl.create(AfterLoginSlidePopover, {}, { cssClass: "tutorial-slide" });
+        popover.present();
+    }
+
+    public openSetProfileDialog() {
+        let popover = this.popoverCtrl.create(Profile, { }, { cssClass: "profile" });
         popover.present();
     }
 
