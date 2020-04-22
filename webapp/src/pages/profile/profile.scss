@@ -3,6 +3,15 @@ profile {
         height: 50px;
     }
 
+    .trash-icon {
+        color: gray;
+    }
+
+    .trash-icon:hover {
+        color: black;
+        cursor: pointer;
+    }
+
     .team-name-list {
         width: 100%;
     }
@@ -50,6 +59,17 @@ profile {
         border: 1px solid color($colors, primary);
         color: white;
         margin: 5px;
+    }
+
+    .hor-separator {
+        padding-bottom: 50px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .separator {
+        padding: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
     }
 
     .error-body {
@@ -129,4 +149,8 @@ profile {
         overflow-y: hidden;
         padding: 0;
     }
+}
+
+div .popover-content {
+    top: 5% !important;
 }

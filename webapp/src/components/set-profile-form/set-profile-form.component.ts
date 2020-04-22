@@ -70,9 +70,9 @@ export class SetProfileForm {
                 }
                 return promise;
             })
-            .then(teamUidStr => {
+            .then((teamUid: number) => {
                 if (isInvited) {
-                    this.setContractsAndProfile(parseInt(teamUidStr));
+                    this.setContractsAndProfile(teamUid);
                 }
             })
             .catch((e) => {
@@ -98,8 +98,8 @@ export class SetProfileForm {
         this.isButtonPressed = true;
         if (this.areEmailsWellFormated) {
             this.contractManagerService.createTeam(this.userEmail, teamName)
-                .then(teamUidStr => {
-                    teamUid = parseInt(teamUidStr);
+                .then((teamId: number) => {
+                    teamUid = teamId;
                     return this.contractManagerService.inviteMultipleEmailsToTeam(
                         teamUid, emails, AppConfig.UserType.Member, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
                 })

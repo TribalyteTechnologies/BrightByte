@@ -162,8 +162,8 @@ export class LoginForm {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
                 return this.contractManager.getUserTeam();                
             })
-            .then((teamUidStr: string) => {
-                let teamUid = parseInt(teamUidStr);
+            .then((teamId: number) => {
+                let teamUid = teamId;
                 let promise;
                 if (teamUid !== AppConfig.EMPTY_TEAM_ID) {
                     promise = this.contractManager.setBaseContracts(teamUid);

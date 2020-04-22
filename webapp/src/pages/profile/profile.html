@@ -56,10 +56,10 @@
 
             </ion-col>
         </ion-row>
-
         <ion-row no-padding *ngIf="isCurrentUserAdmin && settingsCategory === SETTINGS_CATEGORIES[1]">
             <ion-col>
-                <ion-row>
+                <h6>Change team name</h6>
+                <ion-row class="separator">
                     <ion-list lines="full" class="team-name-list">
                         <ion-item>
                             <ion-label color="dark">{{ "setProfile.teamName" | translate }}: </ion-label>
@@ -79,6 +79,66 @@
                         </ion-item>
                     </ion-list>
                 </ion-row>
+                <h6>Invite email to team</h6>
+                <ion-row class="separator">
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-item>
+                            <ion-label color="dark">{{ "setProfile.email" | translate }}: </ion-label>
+                            <ion-input type="text" [placeholder]="'setProfile.emailFormat' | translate"
+                                [(ngModel)]="invitedEmail"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label color="dark">{{ "setProfile.memberType" | translate }}</ion-label>
+                            <ion-select placeholder="Select One" [(ngModel)]="memberType">
+                                <ion-option [value]="MEMBER">{{ "setProfile.member" | translate }}</ion-option>
+                                <ion-option [value]="ADMIN">{{ "setProfile.admin" | translate }}</ion-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-row *ngIf="successInviteMsg" class="success-body">
+                            {{ successInviteMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="errorInviteMsg" class="error-body">
+                            {{ errorInviteMsg }}
+                        </ion-row>
+                        <ion-item class="team-name-submit">
+                            <ion-spinner *ngIf="isInvitingUser"></ion-spinner>
+                            <button type="submit" class="btn save-button btn__blue"
+                                (click)="inviteUserToTeam(invitedEmail, memberType)">
+                                {{ "setProfile.inviteToTeam" | translate }}
+                            </button>
+                        </ion-item>
+                    </ion-list>
+                </ion-row>
+                <h6>Team members</h6>
+                <div class="separator">
+                    <ion-row>
+                        {{ "setProfile.admins" | translate }}
+                    </ion-row>
+                    <ion-row>
+                        <ion-list lines="full" class="team-name-list">
+                            <ion-item *ngFor="let teamMember of teamMembers[0]">
+                                <ion-label color="dark">{{ teamMember.email }}</ion-label>
+                                <ion-icon *ngIf="teamMember.address !== userAddress" item-right name="trash"
+                                    class="trash-icon" (click)="showRemoveMemberConfirmation(teamMember)"></ion-icon>
+                            </ion-item>
+                        </ion-list>
+                    </ion-row>
+                    <ion-row>
+                        {{ "setProfile.members" | translate }}
+                    </ion-row>
+                    <ion-row>
+                        <ion-list lines="full" class="team-name-list">
+                            <ion-item *ngFor="let teamMember of teamMembers[1]">
+                                <ion-label color="dark">{{ teamMember.email }}</ion-label>
+                                <ion-icon item-right name="trash" class="trash-icon"
+                                    (click)="showRemoveMemberConfirmation(teamMember)"></ion-icon>
+                            </ion-item>
+                            <ion-item *ngIf="teamMembers[1].length <= 0">
+                                <ion-label color="dark">{{ 'setProfile.noMemberRegisteredYet' | translate }}</ion-label>
+                            </ion-item>
+                        </ion-list>
+                    </ion-row>
+                </div>
             </ion-col>
         </ion-row>
     </ion-grid>
