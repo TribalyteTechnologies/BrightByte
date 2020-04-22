@@ -145,12 +145,9 @@ profile {
 .profile .popover-content {
     width: 50%;
     border-radius: 10px;
+    top: 5% !important;
     .scroll-content {
         overflow-y: hidden;
         padding: 0;
     }
-}
-
-div .popover-content {
-    top: 5% !important;
 }
