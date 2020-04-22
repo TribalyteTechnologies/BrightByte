@@ -1,10 +1,12 @@
 import { Module, HttpModule } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { UserDatabaseService } from "../services/user-database.service";
+import { TeamDatabaseService } from "../services/team-database.service";
 import { AchievementDatabaseService } from "../services/achievement-database.service";
 import { UserDatabaseController } from "../controllers/user-database.controller";
 import { ProfileImageController } from "../controllers/profile-image.controller";
 import { AuthenticationController } from "../controllers/authentication.controller";
+import { TeamDatabaseController } from "../controllers/team-database.controller";
 import { LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
@@ -35,13 +37,15 @@ import { SystemConfigController } from "../controllers/system-config.controller"
         UserDatabaseController,
         ProfileImageController,
         AuthenticationController,
-        SystemConfigController
+        SystemConfigController,
+        TeamDatabaseController
     ],
     providers: [
         UserDatabaseService,
         AchievementDatabaseService,
         EventDatabaseService,
         CoreDatabaseService,
+        TeamDatabaseService,
         Web3Service,
         DispatcherService,
         EventHandlerService,

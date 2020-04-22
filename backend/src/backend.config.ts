@@ -5,11 +5,13 @@ export class BackendConfig {
     public static readonly LOG_DEBUG = true;
 
     public static readonly USER_COLLECTION = "users";
+    public static readonly TEAMS_COLLECTION = "teams";
     public static readonly ACHIEVEMENT_COLLECTION = "achievements";
     public static readonly EVENT_COLLECTION = "events";
     public static readonly ACHIEVEMENT_DB_JSON = "brightbyte-achievement-db.json";
     public static readonly USER_DB_JSON = "brightbyte-user-db.json";
     public static readonly EVENT_DB_JSON = "brightbyte-event-db.json";
+    public static readonly TEAMS_DB_JSON = "brightbyte-team-db.json";
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
