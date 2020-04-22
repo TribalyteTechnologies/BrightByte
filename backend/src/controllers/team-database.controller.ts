@@ -31,4 +31,14 @@ export class TeamDatabaseController {
     public addNewTeamMember(@Param("id") teamUid: number, @Param("user") user: string): Observable<ResponseDto> {
         return this.teamDatabaseService.addNewTeamMember(teamUid, user);
     }
+
+    @Post("removeTeamWorkspace/:id/:workspace")
+    public removeWorkspace(@Param("id") teamUid: number, @Param("workspace") workspace: string): Observable<ResponseDto> {
+        return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace);
+    }
+
+    @Post("removeTeamMember/:id/:user")
+    public removeTeamMember(@Param("id") teamUid: number, @Param("user") user: string): Observable<ResponseDto> {
+        return this.teamDatabaseService.removeTeamMember(teamUid, user);
+    }
 }

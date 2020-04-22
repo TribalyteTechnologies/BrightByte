@@ -91,6 +91,40 @@ export class TeamDatabaseService {
         );
     }
 
+    public removeTeamWorkspace(teamUid: number, workspace: string): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            flatMap(collection => {
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                let team = collection.findOne({ id: teamUid });
+                if (team) {
+                    let workspaceIndex = team.workspace.indexOf(workspace);
+                    workspaceIndex === -1 ? this.log.d("The workspace did not exists") : team.workspaces.splice(workspaceIndex, 1);
+                    ret = this.databaseSrv.save(this.database, collection, team);
+                }
+                return ret;
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
+    }
+
+    public removeTeamMember(teamUid: number, user: string): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            flatMap(collection => {
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                let team = collection.findOne({ id: teamUid });
+                if (team) {
+                    let userIndex = team.teamMembers.indexOf(user);
+                    userIndex === -1 ? this.log.d("The user did not exists") : team.teamMembers.splice(userIndex, 1);
+                    ret = this.databaseSrv.save(this.database, collection, team);
+                }
+                return ret;
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
+    }
+
     private init() {
         this.initObs = this.databaseSrv.initDatabase(BackendConfig.TEAMS_DB_JSON).pipe(
             tap(database => this.database = database),
