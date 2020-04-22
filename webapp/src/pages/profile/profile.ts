@@ -36,17 +36,21 @@ export class Profile {
     public errorInviteMsg: string;
     public successMsg: string;
     public successInviteMsg: string;
+    public newWorkspaceErrorMsg: string;
+    public newWorkspaceSuccessMsg: string;
     public uploadForm: FormGroup;
     public settingsCategory = this.SETTINGS_CATEGORIES[0];
     public teamName: string;
     public memberType: AppConfig.UserType;
     public invitedEmail: string;
+    public newTeamWorkspace: string;
     public isCurrentUserAdmin: boolean;
     public isSettingTeamName = false;
     public isInvitingUser = false;
     public teamMembers: Array<Array<TeamMember>>;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
+    private readonly ADD_NEW_WORKSPACE = AppConfig.SERVER_BASE_URL + "/team/addNewWorkspace/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
 
@@ -64,6 +68,7 @@ export class Profile {
     private userTypeError: string;
     private alreadyRegisteredError: string;
     private userAddress: string;
+    private userTeam: number;
     private log: ILogger;
 
     constructor(
@@ -137,7 +142,8 @@ export class Profile {
         })
         .then((teamMembers: Array<Array<TeamMember>>) => {
             this.teamMembers = teamMembers;
-        });
+            return this.contractManagerService.getUserTeam();
+        }).then(userTeam => this.userTeam = userTeam);
     }
 
     public showRemoveMemberConfirmation(teamMember: TeamMember) {
@@ -311,6 +317,31 @@ export class Profile {
         } else {
             this.errorInviteMsg = this.invitationEmailFormatError;
         }
+    }
+
+    public addNewWorkspace(workspace: string) {
+        this.newWorkspaceErrorMsg = null;
+        this.newWorkspaceSuccessMsg = null;
+        if (workspace) {
+            this.http.post(this.ADD_NEW_WORKSPACE + this.userTeam + "/" + workspace, {}).toPromise().then((response: IResponse) => {
+                this.log.d("Added new workspace for the team");
+                if (response.status === AppConfig.STATUS_OK) {
+                    this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
+                        this.newWorkspaceSuccessMsg = res;
+                    });
+                }
+            }).catch(e => {
+                this.log.e("Error setting the new team workspace: ", e);
+                this.translateSrv.get("setProfile.newWorkspaceError").subscribe(res => {
+                    this.newWorkspaceErrorMsg = res;
+                });
+            });
+        } else {
+            this.translateSrv.get("setProfile.invalidWorkspace").subscribe(res => {
+                this.newWorkspaceErrorMsg = res;
+            });
+        }
+        
     }
 
     private removeMember(teamMember: TeamMember) {

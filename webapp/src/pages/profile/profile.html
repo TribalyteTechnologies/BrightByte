@@ -139,6 +139,27 @@
                         </ion-list>
                     </ion-row>
                 </div>
+                <h6>{{ "setProfile.addNewWorkspace" | translate }}</h6>
+                <div class="separator">
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-item>
+                            <ion-label color="dark">{{ "setProfile.workspaceName" | translate }}: </ion-label>
+                            <ion-input type="text" [(ngModel)]="newTeamWorkspace"></ion-input>
+                        </ion-item>
+                        <ion-row *ngIf="newWorkspaceSuccessMsg" class="success-body">
+                            {{ newWorkspaceSuccessMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="newWorkspaceErrorMsg" class="error-body">
+                            {{ newWorkspaceErrorMsg }}
+                        </ion-row>
+                        <ion-item class="team-name-submit">
+                            <ion-spinner *ngIf="isSettingWorkspace"></ion-spinner>
+                            <button type="submit" class="btn save-button btn__blue" (click)="addNewWorkspace(newTeamWorkspace)">
+                                {{ "setProfile.addNewWorkspace" | translate }}
+                            </button>
+                        </ion-item>
+                    </ion-list>
+                </div>
             </ion-col>
         </ion-row>
     </ion-grid>

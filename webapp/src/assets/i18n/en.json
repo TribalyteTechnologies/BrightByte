@@ -227,7 +227,12 @@
         "invitedEmails": "Invited Emails",
         "email": "Emails",
         "noMemberRegisteredYet": "There isn't any member registered to this team.",
-        "alreadyRegisteredError": "Email already registered to team."
+        "alreadyRegisteredError": "Email already registered to team.",
+        "addNewWorkspace": "Add new workspace",
+        "workspaceName": "Workspace name",
+        "invalidWorkspace": "Please, introduce a name for the new workspace.",
+        "newWorkspaceError": "Cannot add the new workspace. Please contact the service provider.",
+        "newWorkspaceSuccessMsg": "New workspace added."
     },
     "commitDetails": {
         "author": "Author",
