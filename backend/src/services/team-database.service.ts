@@ -25,10 +25,11 @@ export class TeamDatabaseService {
         this.init();
     }
 
-    public getTeamWorkspaces(teamUid: number): Observable<ResponseDto> {
+    public getTeamWorkspaces(teamUid: number, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: teamUid })),
-            map((team: TeamDto) => new SuccessResponseDto(team.workspaces)),
+            map((team: TeamDto) => 
+            team.teamMembers.indexOf(user) !== -1 ? new SuccessResponseDto(team.workspaces) : new SuccessResponseDto(new Array<string>())),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
         );
     }

@@ -64,6 +64,8 @@ export class AddCommitPopover {
 
     private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
+    private userAddress: string;
+    private userTeam: number;
     private log: ILogger;
     private loginSubscription: EventEmitter<boolean>;
     private blockChainCommits: Array<string>;
@@ -94,8 +96,8 @@ export class AddCommitPopover {
             username: ["", [Validators.required]],
             password: ["", [Validators.required]]
         });
-        let userAddress = this.loginService.getAccountAddress();
-        this.userDetailsProm = this.contractManagerService.getUserDetails(userAddress);
+        this.userAddress = this.loginService.getAccountAddress();
+        this.userDetailsProm = this.contractManagerService.getUserDetails(this.userAddress);
         this.contractManagerService.getAllUserReputation(0, true)
             .then(allReputations => {
                 this.log.d("All user reputations: ", allReputations);
@@ -109,6 +111,10 @@ export class AddCommitPopover {
                         this.setEmailFromList(mail);
                     });
                 }
+                return this.contractManagerService.getUserTeam();
+            }).then(userTeam =>  {
+                this.log.d("The user team is: ", userTeam);
+                this.userTeam = userTeam;
             }).catch((e) => {
                 this.showGuiMessage("addCommit.errorEmails", e);
             });
@@ -291,11 +297,11 @@ export class AddCommitPopover {
                 return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
             });
             this.log.d("The commits from the blockchain", this.blockChainCommits);
-            return this.bitbucketSrv.getBackendConfig();
+            return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress);
         }).then((config: BackendConfig) => {
             seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
             this.currentSeasonStartDate = seasonDate;
-            let workspaces = config.bitbucket.workspaces;
+            let workspaces = config.bitbucketWorkspaces;
             let promisesWorkspaces = workspaces.map(workspace => {
                 return this.bitbucketSrv.getRepositories(workspace, this.currentSeasonStartDate).then(repositories => {
                     this.log.d("The repositories from Bitbucket are: ", repositories);
@@ -370,8 +376,8 @@ export class AddCommitPopover {
 
     public loadNextRepos(): Promise<void>{
         this.showSpinner = true;
-        return this.bitbucketSrv.getBackendConfig().then(config => {
-            return config.bitbucket.workspaces;
+        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress).then(config => {
+            return config.bitbucketWorkspaces;
         }).then(workspaces => {
             let promisesWorkspaces = workspaces.map(workspace => {
                 if (this.nextRepositoriesUrl.has(workspace) && this.nextRepositoriesUrl.get(workspace)) {
@@ -412,9 +418,9 @@ export class AddCommitPopover {
     }
 
     private loginToBitbucket() {
-        let userAddress = this.loginService.getAccountAddress();
+        this.userAddress = this.loginService.getAccountAddress();
         this.commitMethod = this.BATCH_METHOD;
-        this.bitbucketSrv.checkProviderAvailability(userAddress).then(user => {
+        this.bitbucketSrv.checkProviderAvailability(this.userAddress).then(user => {
             this.log.d("Waiting for the user to introduce their credentials");
             this.isServiceAvailable = true;
         }).catch(e => {

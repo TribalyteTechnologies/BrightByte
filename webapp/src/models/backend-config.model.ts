@@ -1,11 +1,7 @@
-interface IBitbucketConfig {
-    workspaces: string[];
-}
-
 export class BackendConfig { 
     public constructor(
-        public bitbucket: IBitbucketConfig
+        public bitbucketWorkspaces: Array<string>
     ) {
-        this.bitbucket = bitbucket;
+        this.bitbucketWorkspaces = bitbucketWorkspaces;
     }
 } 

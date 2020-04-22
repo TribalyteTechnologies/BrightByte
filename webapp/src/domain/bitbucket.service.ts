@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
-import { IResponse } from "../models/response.model";
+import { IResponse, IWorkspaceResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
 import { BitbucketRepositoryResponse } from "../models/bitbucket/repository.model";
 import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket/commit-info.model";
@@ -11,7 +11,7 @@ import { BackendConfig } from "../models/backend-config.model";
 
 export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
-    public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/config";
+    public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/team/teamWorkspaces/";
     public static readonly BASE_URL = "https://bitbucket.org/";
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
@@ -155,8 +155,9 @@ export class BitbucketService {
         this.eventEmitter.emit(true);
     }
 
-    public getBackendConfig(): Promise<BackendConfig> {
-        return this.http.get<BackendConfig>(BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL).toPromise();
+    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendConfig> {
+        let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/" + userAddress;
+        return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
     }
 
     private loginToBitbucket(userAddress: string): Promise<string> {

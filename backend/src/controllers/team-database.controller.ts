@@ -12,9 +12,9 @@ export class TeamDatabaseController {
         return this.teamDatabaseService.getTeamMembers(teamUid);
     }
 
-    @Get("workspaces/:id")
-    public getTeamWorkspacer(@Param("id") teamUid: number): Observable<ResponseDto> {
-        return this.teamDatabaseService.getTeamWorkspaces(teamUid);
+    @Get("teamWorkspaces/:id/:user")
+    public getTeamWorkspaces(@Param("id") teamUid: number, @Param("user") user: string): Observable<ResponseDto> {
+        return this.teamDatabaseService.getTeamWorkspaces(teamUid, user);
     }
 
     @Post("createTeam/:id")
