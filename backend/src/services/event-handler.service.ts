@@ -8,6 +8,7 @@ import { CommitEventDto } from "../dto/events/commit-event.dto";
 import { ReviewEventDto } from "../dto/events/review-event.dto";
 import { SeasonEventDto } from "../dto/events/season-event.dto";
 import { DeleteEventDto } from "../dto/events/delete-event.dto";
+import { NewUserEventDto } from "../dto/events/newUser-event.dto";
 import { ContractManagerService } from "./contract-manager.service";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
 
@@ -17,9 +18,11 @@ export class EventHandlerService {
     private readonly COMMIT = "Commit";
     private readonly REVIEW = "Review";
     private readonly DELETE = "Delete";
+    private readonly NEW_USER = "NewUser";
     private readonly LISTENER_CLOSE_EVENT = "close";
     private readonly LISTENER_END_EVENT = "end";
     private readonly USER_HASH = "userHash";
+    private readonly HASH = "hash";
     private readonly TEAM_UID = "teamUid";
     private readonly NUMBER_COMMITS = "numberOfCommits";
     private readonly TIMESTAMP = "timestamp";
@@ -87,6 +90,11 @@ export class EventHandlerService {
                             parseInt(event.returnValues[this.TEAM_UID]),
                             event.returnValues[this.USER_HASH], event.returnValues[this.URL]);
                         break;
+                    case this.NEW_USER:
+                        newEvent = new NewUserEventDto(
+                            parseInt(event.returnValues[this.TEAM_UID]),
+                            event.returnValues[this.HASH]);
+                        break;
                     default:
                         this.log.e("The parameter 'type' is not valid");
                 }
@@ -108,8 +116,11 @@ export class EventHandlerService {
             case this.DELETE:
                 this.contract.events.DeletedCommit({ fromBlock: block }, callback);
                 break;
+            case this.NEW_USER:
+                this.contract.events.NewUserEvent({ fromBlock: block }, callback);
+                break;
             default:
-                this.log.e("The parameter 'type' is not valid");
+                this.log.e("The parameter 'type' is not valid: ", type);
         }
     }
 
@@ -124,6 +135,7 @@ export class EventHandlerService {
         this.registerNewListener(this.COMMIT, initialization);
         this.registerNewListener(this.REVIEW, initialization);
         this.registerNewListener(this.DELETE, initialization);
+        this.registerNewListener(this.NEW_USER, initialization);
         let provider = this.web3.currentProvider;
         provider.on(this.LISTENER_CLOSE_EVENT, e => this.handlerDisconnects(e));
         provider.on(this.LISTENER_END_EVENT, e => this.handlerDisconnects(e));

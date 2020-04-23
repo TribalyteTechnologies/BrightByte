@@ -4,6 +4,7 @@ import { ILogger, LoggerService } from "../logger/logger.service";
 import { AchievementEventDto } from "../dto/events/achievement-event.dto";
 import { EventDatabaseService } from "./event-database.service";
 import { UserDatabaseService } from "../services/user-database.service";
+import { TeamDatabaseService } from "../services/team-database.service";
 import { ClientNotificationService } from "./client-notfication.service";
 import { map, flatMap, tap } from "rxjs/operators";
 import { Observable, combineLatest, of } from "rxjs";
@@ -28,6 +29,7 @@ export class DispatcherService {
         loggerSrv: LoggerService,
         private eventDbSrv: EventDatabaseService,
         private userDbSrv: UserDatabaseService,
+        private teamDbSrv: TeamDatabaseService,
         private achievementDbSrv: AchievementDatabaseService,
         private clientNtSrv: ClientNotificationService
     ) {
@@ -39,6 +41,7 @@ export class DispatcherService {
         this.log.d("New event received:", event);
         return this.eventDbSrv.setEvent(event).pipe(
             flatMap((res: ResponseDto) => this.userDbSrv.createUser(event.userHash)),
+            flatMap((res: ResponseDto) => this.teamDbSrv.addNewTeamMember(event.teamUid, event.userHash)),
             flatMap((res: ResponseDto) => {
                 let obs = this.achievementStack.map(achievementProcessor => achievementProcessor.process(event));
                 return combineLatest(obs);
