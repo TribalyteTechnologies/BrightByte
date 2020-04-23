@@ -139,26 +139,46 @@
                         </ion-list>
                     </ion-row>
                 </div>
-                <h6>{{ "setProfile.addNewWorkspace" | translate }}</h6>
-                <div class="separator">
-                    <ion-list lines="full" class="team-name-list">
-                        <ion-item>
-                            <ion-label color="dark">{{ "setProfile.workspaceName" | translate }}: </ion-label>
-                            <ion-input type="text" [(ngModel)]="newTeamWorkspace"></ion-input>
-                        </ion-item>
-                        <ion-row *ngIf="newWorkspaceSuccessMsg" class="success-body">
-                            {{ newWorkspaceSuccessMsg }}
+                <div *ngIf="isBackendAvailable">
+                    <h6>{{ "setProfile.teamWorkspaces" | translate }}</h6>
+                    <div class="separator">
+                        <ion-row>
+                            {{ "setProfile.availableWorkspaces" | translate }}
                         </ion-row>
-                        <ion-row *ngIf="newWorkspaceErrorMsg" class="error-body">
-                            {{ newWorkspaceErrorMsg }}
+                        <ion-row>
+                            <ion-list lines="full" class="team-name-list">
+                                <ion-item *ngFor="let workspace of teamWorkspaces">
+                                    <ion-label color="dark">{{ workspace }}</ion-label>
+                                    <ion-icon item-right name="trash" class="trash-icon"
+                                        (click)="showRemoveWorkspaceConfirmation(workspace)"></ion-icon>
+                                </ion-item>
+                                <ion-item *ngIf="teamWorkspaces.length <= 0">
+                                    <ion-label color="dark">{{ 'setProfile.noWorkspaceAvailableYet' | translate }}</ion-label>
+                                </ion-item>
+                            </ion-list>
                         </ion-row>
-                        <ion-item class="team-name-submit">
-                            <ion-spinner *ngIf="isSettingWorkspace"></ion-spinner>
-                            <button type="submit" class="btn save-button btn__blue" (click)="addNewWorkspace(newTeamWorkspace)">
-                                {{ "setProfile.addNewWorkspace" | translate }}
-                            </button>
-                        </ion-item>
-                    </ion-list>
+                        <ion-row *ngIf="workspaceSuccessMsg" class="success-body">
+                            {{ workspaceSuccessMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="workspaceErrorMsg" class="error-body">
+                            {{ workspaceErrorMsg }}
+                        </ion-row>
+                        <ion-row>
+                            {{ "setProfile.addNewWorkspace" | translate }}
+                        </ion-row>
+                        <ion-list lines="full" class="team-name-list">
+                            <ion-item>
+                                <ion-label color="dark">{{ "setProfile.workspaceName" | translate }}: </ion-label>
+                                <ion-input type="text" [(ngModel)]="newTeamWorkspace"></ion-input>
+                            </ion-item>
+                            <ion-item class="team-name-submit">
+                                <ion-spinner *ngIf="isSettingWorkspace"></ion-spinner>
+                                <button type="submit" class="btn save-button btn__blue" (click)="addNewWorkspace(newTeamWorkspace)">
+                                    {{ "setProfile.addNewWorkspace" | translate }}
+                                </button>
+                            </ion-item>
+                        </ion-list>
+                    </div>
                 </div>
             </ion-col>
         </ion-row>

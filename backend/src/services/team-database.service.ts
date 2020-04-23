@@ -98,7 +98,7 @@ export class TeamDatabaseService {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let team = collection.findOne({ id: teamUid });
                 if (team) {
-                    let workspaceIndex = team.workspace.indexOf(workspace);
+                    let workspaceIndex = team.workspaces.indexOf(workspace);
                     workspaceIndex === -1 ? this.log.d("The workspace did not exists") : team.workspaces.splice(workspaceIndex, 1);
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }

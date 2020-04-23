@@ -8,7 +8,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { catchError } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
-import { IResponse } from "../../models/response.model";
+import { IResponse, IWorkspaceResponse } from "../../models/response.model";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { SpinnerService } from "../../core/spinner.service";
@@ -36,8 +36,8 @@ export class Profile {
     public errorInviteMsg: string;
     public successMsg: string;
     public successInviteMsg: string;
-    public newWorkspaceErrorMsg: string;
-    public newWorkspaceSuccessMsg: string;
+    public workspaceErrorMsg: string;
+    public workspaceSuccessMsg: string;
     public uploadForm: FormGroup;
     public settingsCategory = this.SETTINGS_CATEGORIES[0];
     public teamName: string;
@@ -48,9 +48,13 @@ export class Profile {
     public isSettingTeamName = false;
     public isInvitingUser = false;
     public teamMembers: Array<Array<TeamMember>>;
+    public teamWorkspaces: Array<string>;
+    public isBackendAvailable: boolean;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
+    private readonly GET_TEAM_WORKSPACES = AppConfig.SERVER_BASE_URL + "/team/teamWorkspaces/";
     private readonly ADD_NEW_WORKSPACE = AppConfig.SERVER_BASE_URL + "/team/addNewWorkspace/";
+    private readonly REMOVE_TEAM_WORKSPACE = AppConfig.SERVER_BASE_URL + "/team/removeTeamWorkspace/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
 
@@ -85,6 +89,7 @@ export class Profile {
         private userNameSrv: UserNameService
     ) {
         this.log = loggerSrv.get("ProfilePage");
+        this.isBackendAvailable = true;
     }
 
     public ngOnInit() {
@@ -143,7 +148,15 @@ export class Profile {
         .then((teamMembers: Array<Array<TeamMember>>) => {
             this.teamMembers = teamMembers;
             return this.contractManagerService.getUserTeam();
-        }).then(userTeam => this.userTeam = userTeam);
+        }).then(userTeam => {
+            this.userTeam = userTeam;
+            return this.http.get(this.GET_TEAM_WORKSPACES + this.userTeam + "/" + this.userAddress).toPromise();
+        }).then((result: IWorkspaceResponse) => {
+            this.teamWorkspaces = result.data;
+        }).catch(e => {
+            this.log.e("Error: asfdasdasf", e);
+            this.isBackendAvailable = false;
+        });
     }
 
     public showRemoveMemberConfirmation(teamMember: TeamMember) {
@@ -320,28 +333,79 @@ export class Profile {
     }
 
     public addNewWorkspace(workspace: string) {
-        this.newWorkspaceErrorMsg = null;
-        this.newWorkspaceSuccessMsg = null;
-        if (workspace) {
+        this.workspaceErrorMsg = null;
+        this.workspaceSuccessMsg = null;
+        let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
+        if (workspace && workspaceIndex === -1) {
             this.http.post(this.ADD_NEW_WORKSPACE + this.userTeam + "/" + workspace, {}).toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
-                if (response.status === AppConfig.STATUS_OK) {
-                    this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
-                        this.newWorkspaceSuccessMsg = res;
-                    });
-                }
+                this.teamWorkspaces.push(workspace);
+                this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
+                    this.workspaceSuccessMsg = res;
+                });
             }).catch(e => {
                 this.log.e("Error setting the new team workspace: ", e);
                 this.translateSrv.get("setProfile.newWorkspaceError").subscribe(res => {
-                    this.newWorkspaceErrorMsg = res;
+                    this.workspaceErrorMsg = res;
                 });
             });
         } else {
             this.translateSrv.get("setProfile.invalidWorkspace").subscribe(res => {
-                this.newWorkspaceErrorMsg = res;
+                this.workspaceErrorMsg = res;
             });
         }
-        
+    }
+
+    public showRemoveWorkspaceConfirmation(workspace: string) {
+        this.translateSrv.get(["setProfile.removeWorkspace", "setProfile.removeWorkspaceConfirmation", "setProfile.remove", "setProfile.cancel"])
+        .subscribe((response) => {
+                let removeWorkspace = response["setProfile.removeWorkspace"];
+                let removeWorkspaceConfirmation = response["setProfile.removeWorkspaceConfirmation"];
+                let remove = response["setProfile.remove"];
+                let cancel = response["setProfile.cancel"];
+
+                let alert = this.alertCtrl.create({
+                    title: removeWorkspace,
+                    message: removeWorkspaceConfirmation,
+                    buttons: [
+                        {
+                            text: cancel,
+                            role: "cancel",
+                            handler: () => {
+                                this.log.d("Cancel clicked");
+                            }
+                        },
+                        {
+                            text: remove,
+                            handler: () => {
+                                this.log.d("Remove clicked");
+                                this.removeTeamWorkspace(workspace);
+                            }
+                        }
+                    ]
+                });
+                alert.present();
+            }
+        );
+    }
+
+    private removeTeamWorkspace(workspace: string) {
+        this.log.d("The user admin requested to deleted the workspace: ", workspace);
+        let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
+        if(workspaceIndex !== -1) {
+            this.http.post(this.REMOVE_TEAM_WORKSPACE + this.userTeam + "/" + workspace, {}).toPromise().then(result => {
+                this.teamWorkspaces.splice(workspaceIndex, 1);
+                this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
+                    this.workspaceSuccessMsg = res;
+                });
+            }).catch(e => {
+                this.log.e("Error deleting the team workspace: ", e);
+                this.translateSrv.get("setProfile.deleteWorkspaceError").subscribe(res => {
+                    this.workspaceErrorMsg = res;
+                });
+            });
+        }
+
     }
 
     private removeMember(teamMember: TeamMember) {
