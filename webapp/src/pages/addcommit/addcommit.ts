@@ -201,7 +201,6 @@ export class AddCommitPopover {
                 if(e.msg) {
                     this.showGuiMessage(e.msg, e.err);
                 }
-                throw e;
             });
     }
 
