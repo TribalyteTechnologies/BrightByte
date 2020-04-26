@@ -5,6 +5,7 @@
   "main": "",
   "private": true,
   "scripts": {
+    "preinstall": "find ./node_modules -type d -name .git -exec rm -fr {} +",
     "truffle:migrate": "truffle migrate --reset",
     "posttruffle:migrate": "npm run copy:contracts",
     "truffle:custom-deploy": "truffle migrate --network custom --reset",
@@ -27,8 +28,10 @@
     "ganache-cli": "6.9.0",
     "remix-ide": "0.8.8",
     "truffle": "5.0.39",
+    "truffle-assertions": "^0.9.2",
     "truffle-core": "5.0.34",
-    "truffle-environment": "0.1.10"
+    "truffle-environment": "0.1.10",
+    "truffle-test-utils": "^0.1.0"
   },
   "devDependencies": {
     "shx": "0.3.2",
