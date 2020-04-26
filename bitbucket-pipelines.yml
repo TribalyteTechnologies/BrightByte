@@ -1,8 +1,3 @@
-# This is a sample build configuration for JavaScript.
-# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-
 image: node:10.16.0
 
 pipelines:
@@ -11,6 +6,8 @@ pipelines:
         caches:
           - node
           - backendnode
+          - webappnode
+          - blockchainnode
         script:
           - cd ./webapp 
           - npm install --unsafe-perm
@@ -23,3 +20,5 @@ pipelines:
 definitions:
   caches:
     backendnode: backend/node_modules
+    webappnode: webapp/node_modules
+    blockchainnode: blockchain/node_modules
