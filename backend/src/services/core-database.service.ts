@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Observable, throwError } from "rxjs";
+import { Observable, throwError, of } from "rxjs";
+import { flatMap, tap, map } from "rxjs/operators";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { BackendConfig } from "../backend.config";
-import { flatMap } from "rxjs/operators";
 
 @Injectable()
 export class CoreDatabaseService {
@@ -16,10 +16,10 @@ export class CoreDatabaseService {
         this.log = loggerSrv.get("CoreDatabaseService");
     }
 
-    public save(database: Loki, collection: Loki.Collection, document: Loki.KeyValueStore): Observable<string> {
-        let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-        ret = this.updateCollection(document, collection).pipe(flatMap(() => this.saveDb(database)));
-        return ret;
+    public save<E extends object>(database: Loki, collection: Loki.Collection<E>, document: E): Observable<string> {
+        return this.updateCollection<E>(document, collection).pipe(
+            flatMap(() => this.saveDb(database))
+        );
     }
 
     public initDatabase(databaseName: string): Observable<Loki> {
@@ -38,24 +38,20 @@ export class CoreDatabaseService {
         });
     }
 
-    public initCollection(database: Loki, collectionName: string): Observable<Loki.Collection> {
-        let ret: Observable<Loki.Collection> = throwError(BackendConfig.STATUS_FAILURE);
-        ret = new Observable<Loki.Collection>(observer => {
-            let collection = database.getCollection(collectionName);
-            if (!collection) {
-                this.log.d(collectionName + " collection not found.");
-                collection = database.addCollection(collectionName);
-                this.saveDb(database).subscribe(
-                    () => {
-                        this.log.d(collectionName + " collection created.");
-                        observer.next(collection);
-                    }
-                );
-            } else {
-                this.log.d(collectionName + " collection loaded.");
-                observer.next(collection);
-            }
-        });
+    public initCollection<E extends object>(database: Loki, collectionName: string): Observable<Loki.Collection<E>> {
+        let ret: Observable<Loki.Collection<E>>;
+        let collection = database.getCollection<E>(collectionName);
+        if(collection) {
+            this.log.d(collectionName + " collection loaded.");
+            ret = of(collection);
+        } else {
+            this.log.d(collectionName + " collection not found.");
+            collection = database.addCollection<E>(collectionName);
+            ret = this.saveDb(database).pipe(
+                tap(() => this.log.d(collectionName + " collection created.")),
+                map(() => collection)
+            );
+        }
         return ret;
     }
 
@@ -72,7 +68,7 @@ export class CoreDatabaseService {
         });
     }
 
-    private updateCollection(doc: Loki.KeyValueStore, collection: Loki.Collection): Observable<string> {
+    private updateCollection<E extends object>(doc: E, collection: Loki.Collection<E>): Observable<string> {
         return new Observable<any>(observer => {
             try {
                 collection.update(doc);

@@ -14,7 +14,7 @@ import { FailureResponseDto } from "../dto/response/failure-response.dto";
 export class TeamDatabaseService {
 
     private database: Loki;
-    private initObs: Observable<Loki.Collection>;
+    private initObs: Observable<Loki.Collection<TeamDto>>;
     private log: ILogger;
 
     public constructor(
@@ -45,7 +45,7 @@ export class TeamDatabaseService {
     public createTeam(teamUid: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
-                let team = collection.findOne({ id: teamUid });
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
                 let ret;
                 if (team) {
                     ret = of(true);
@@ -80,7 +80,7 @@ export class TeamDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let team = collection.findOne({ id: teamUid });
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
                 if (team) {
                     team.teamMembers.indexOf(user) === -1 ? team.teamMembers.push(user) : this.log.d("This item already exists");
                     ret = this.databaseSrv.save(this.database, collection, team);
@@ -134,7 +134,7 @@ export class TeamDatabaseService {
     private init() {
         this.initObs = this.databaseSrv.initDatabase(BackendConfig.TEAMS_DB_JSON).pipe(
             tap(database => this.database = database),
-            flatMap(database => this.databaseSrv.initCollection(database, BackendConfig.TEAMS_COLLECTION)),
+            flatMap(database => this.databaseSrv.initCollection<TeamDto>(database, BackendConfig.TEAMS_COLLECTION)),
             first(),
             shareReplay(BackendConfig.BUFFER_SIZE)
         );
