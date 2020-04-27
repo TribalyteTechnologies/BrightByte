@@ -58,7 +58,7 @@
         </ion-row>
         <ion-row no-padding *ngIf="isCurrentUserAdmin && settingsCategory === SETTINGS_CATEGORIES[1]">
             <ion-col>
-                <h6>Change team name</h6>
+                <h6>{{ "setProfile.changeTeamName" | translate }}</h6>
                 <ion-row class="separator">
                     <ion-list lines="full" class="team-name-list">
                         <ion-item>
@@ -79,7 +79,7 @@
                         </ion-item>
                     </ion-list>
                 </ion-row>
-                <h6>Invite email to team</h6>
+                <h6>{{ "setProfile.inviteEmailsToTeam" | translate }}</h6>
                 <ion-row class="separator">
                     <ion-list lines="full" class="team-name-list">
                         <ion-item>
@@ -109,7 +109,7 @@
                         </ion-item>
                     </ion-list>
                 </ion-row>
-                <h6>Team members</h6>
+                <h6>{{ "setProfile.teamMembers" | translate }}</h6>
                 <div class="separator">
                     <ion-row>
                         {{ "setProfile.admins" | translate }}
