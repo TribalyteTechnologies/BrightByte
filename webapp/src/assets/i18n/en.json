@@ -177,7 +177,7 @@
         "name": "Name",
         "set": "Set profile",
         "tx": "Transaction error",
-        "enterEmail": "Enter an email",
+        "enterEmail": "Enter your committer email",
         "emailFormat": "email@example.com",
         "emailUsed": "Email already in use",
         "getEmails": "Error getting emails",
