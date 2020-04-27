@@ -37,12 +37,15 @@ export class LoginForm {
     public appVersion = "DEV";
     public migrationDone = false;
     public isKeepCredentialsOn = false;
+    public hidPass = "";
 
     private readonly NEW_USER = "new-user";
     private readonly SET_PROFILE = "set-profile";
+    private readonly HID_CHARACTER = "*";
 
     private log: ILogger;
-    
+    private password = "";
+    private lastPassword = "";
 
     constructor(
         private navCtrl: NavController,
@@ -99,6 +102,19 @@ export class LoginForm {
         } 
     }
 
+    public hidePassword(pass: string) {
+        let passLength = pass.length;
+        let lastPassLength = this.lastPassword.length;
+        if (pass !== "" && lastPassLength < passLength) {
+            this.password = this.password + pass[passLength - 1];
+        }else if (pass !== "" && lastPassLength >= passLength) {
+            this.password = this.password.substring(0, this.password.length - (lastPassLength - passLength));
+        } else {
+            this.password = "";
+        }
+        this.hidPass = this.HID_CHARACTER.repeat(this.password.length);
+        this.lastPassword = pass;
+    }
     
     public login(pass: string) {
         this.spinnerService.showLoader();

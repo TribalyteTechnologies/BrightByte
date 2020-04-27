@@ -3,7 +3,7 @@
     <input type="file" (change)="openFile($event)">
 </ion-row>
 <ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
-<input class="password-form" type="password" [placeholder]="'app.password' | translate" [(ngModel)]="pass" (keyup.enter)="login(pass)">
+<input class="password-form key" [placeholder]="'app.password' | translate" [(ngModel)]="hidPass" (keyup.enter)="login(password)" (input)="hidePassword(hidPass)">
 <ion-row *ngIf="msg">
     <ion-row class="error-body">
         {{ msg }}
@@ -14,7 +14,7 @@
     <ion-row class="text" (click)= "toggleKeepCredentials()">{{ "app.remember" | translate }}</ion-row>
 </ion-row>
 <div class="buttons">
-    <button class="btn btn--full btn__blue" (click)="login(pass)">{{ "app.login" | translate }}</button>
+    <button class="btn btn--full btn__blue" (click)="login(password)">{{ "app.login" | translate }}</button>
     <div class="separator"></div>
     <button class="btn btn--full btn__grey" (click)="register()">{{ "app.register" | translate }}</button>
 </div>
