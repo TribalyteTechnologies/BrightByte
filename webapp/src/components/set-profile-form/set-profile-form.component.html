@@ -63,7 +63,7 @@
         <ion-spinner [hidden]="!isButtonPressed && !showCreateTeam"></ion-spinner>
         <div class="buttons">
             <button class="btn btn--full btn__blue" type="submit"
-                [disabled]="setProfileFG.invalid">{{ "setProfile.set" | translate }}</button>
+                [disabled]="setProfileFG.invalid || isButtonPressed">{{ "setProfile.set" | translate }}</button>
         </div>
     </form>
 </ng-template>

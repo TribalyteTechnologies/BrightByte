@@ -73,7 +73,8 @@
                         </ion-row>
                         <ion-item class="team-name-submit">
                             <ion-spinner *ngIf="isSettingTeamName"></ion-spinner>
-                            <button type="submit" class="btn save-button btn__blue" (click)="changeTeamName(teamName)">
+                            <button type="submit" class="btn save-button btn__blue" (click)="changeTeamName(teamName)"
+                                [disabled]="isInvitingUser || isSettingTeamName">
                                 {{ "setProfile.changeTeamName" | translate }}
                             </button>
                         </ion-item>
@@ -103,7 +104,7 @@
                         <ion-item class="team-name-submit">
                             <ion-spinner *ngIf="isInvitingUser"></ion-spinner>
                             <button type="submit" class="btn save-button btn__blue"
-                                (click)="inviteUserToTeam(invitedEmail, memberType)" [disabled]="isInvitingUser">
+                                (click)="inviteUserToTeam(invitedEmail, memberType)" [disabled]="isInvitingUser || isSettingTeamName">
                                 {{ "setProfile.inviteToTeam" | translate }}
                             </button>
                         </ion-item>
