@@ -84,7 +84,7 @@
                     <ion-list lines="full" class="team-name-list">
                         <ion-item>
                             <ion-label color="dark">{{ "setProfile.email" | translate }}: </ion-label>
-                            <ion-input type="text" [placeholder]="'setProfile.emailFormat' | translate"
+                            <ion-input type="text" [placeholder]="'setProfile.multipleCommaEmailFormat' | translate"
                                 [(ngModel)]="invitedEmail"></ion-input>
                         </ion-item>
                         <ion-item>
@@ -103,7 +103,7 @@
                         <ion-item class="team-name-submit">
                             <ion-spinner *ngIf="isInvitingUser"></ion-spinner>
                             <button type="submit" class="btn save-button btn__blue"
-                                (click)="inviteUserToTeam(invitedEmail, memberType)">
+                                (click)="inviteUserToTeam(invitedEmail, memberType)" [disabled]="isInvitingUser">
                                 {{ "setProfile.inviteToTeam" | translate }}
                             </button>
                         </ion-item>

@@ -57,8 +57,10 @@ export class Profile {
     private readonly REMOVE_TEAM_WORKSPACE = AppConfig.SERVER_BASE_URL + "/team/removeTeamWorkspace/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
+    private readonly EMAILS_SEPARATOR = ",";
 
     private noChangesError: string;
+    private areEmailsWellFormated: boolean;
     private uploadError: string;
     private defaultError: string;
     private successMessageName: string;
@@ -298,21 +300,27 @@ export class Profile {
         });
     }
 
-    public inviteUserToTeam(email: string, userType: AppConfig.UserType) {
-        let emailValidator = FormatUtils.getEmailValidatorPattern();
+    public inviteUserToTeam(invitedEmails: string, userType: AppConfig.UserType) {
+        this.areEmailsWellFormated = true;
         this.successInviteMsg = null;
         this.errorInviteMsg = null;
-        let isEmailValid = emailValidator.test(email);
+        let emails = invitedEmails.split(this.EMAILS_SEPARATOR).map(email => {
+            let mail = email.trim();
+            if (this.areEmailsWellFormated && mail !== ""){
+                this.areEmailsWellFormated = FormatUtils.getEmailValidatorPattern().test(mail);
+            }
+            return mail;
+        }).filter(email => email !== "");
         let isEmailAlreadyRegistered = this.teamMembers.some(memberGroup => {
             return memberGroup.some(member => {
-                return member.email === email;
+                return emails.some(email => email === member.email);
             });
         });
-        if (isEmailValid) {
+        if (this.areEmailsWellFormated) {
             if (!isEmailAlreadyRegistered) {
                 if (userType) {
                     this.isInvitingUser = true;
-                    this.contractManagerService.inviteToCurrentTeam(email, userType)
+                    this.contractManagerService.inviteToCurrentTeam(emails, userType)
                     .then(() => {
                         this.isInvitingUser = false;
                         this.successInviteMsg = this.successMessageInvitation;
