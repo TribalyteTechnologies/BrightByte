@@ -8,6 +8,7 @@ import { BitbucketRepositoryResponse } from "../models/bitbucket/repository.mode
 import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket/commit-info.model";
 import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../models/bitbucket/pull-request.model";
 import { BackendConfig } from "../models/backend-config.model";
+import { TranslateService } from "@ngx-translate/core";
 
 export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
@@ -40,6 +41,7 @@ export class BitbucketService {
     constructor(
         private http: HttpClient,
         private storageSrv: LocalStorageService,
+        private translateSrv: TranslateService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("BitbucketService");
@@ -167,6 +169,11 @@ export class BitbucketService {
                 let url = response.data;
                 this.log.d("Opening bitbucket pop-up");
                 this.authWindow = window.open(url);
+                if (!this.authWindow){
+                    this.translateSrv.get("alerts.popUpWindowForBitbucket").subscribe(translation => {
+                        alert(translation);
+                    });
+                }
             } else {
                 this.log.w("Bitbucket Provider not defined, feature not available", response);
                 throw new Error(response.data);
