@@ -186,7 +186,7 @@
         "emailsToInvite": "Enter emails to invite members to the team (separated by line breaks)",
         "emails": "example@email.com\nperson1@email.com\nperson2@email.com\n...",
         "tx": "Transaction error",
-        "enterEmail": "Enter an email",
+        "enterEmail": "Enter your committer email",
         "emailFormat": "email@example.com",
         "emailUsed": "Email already in use",
         "getEmails": "Error getting emails",
