@@ -148,6 +148,10 @@ contract Root{
         return remoteThreshold.setCurrentSeasonThreshold(commitsThreshold, reviewsThreshold);
     }
 
+    function setSeasonLength(uint256 seasonLengthDays) public onlyAdmin {
+        return remoteBright.setSeasonLength(seasonLengthDays);
+    }
+
     function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyBright {
         remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }

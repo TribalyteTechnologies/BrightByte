@@ -8,8 +8,10 @@ import { UtilsLib } from "./UtilsLib.sol";
 
 contract Bright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
-    uint256 private constant DAY_LENGTH_SECS = 24 * 60 * 60;
-    uint256 private constant SEASON_LENGTH_DAYS = 14;
+    uint256 private constant HOUR_TO_SECS = 60 * 60;
+    uint256 private constant DAY_LENGTH_SECS = 24 * HOUR_TO_SECS;
+    uint256 private constant LIMIT_CHANGE_LENGTH = 2 * HOUR_TO_SECS;
+    uint256 private constant INITIAL_SEASON_LENGTH_DAYS = 14;
     uint256 private deploymentTimestamp;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -47,7 +49,7 @@ contract Bright {
         currentSeasonIndex = 1;
         teamUid = teamId;
         initialSeasonTimestamp = block.timestamp;
-        seasonLengthSecs = SEASON_LENGTH_DAYS * DAY_LENGTH_SECS;
+        seasonLengthSecs = INITIAL_SEASON_LENGTH_DAYS * DAY_LENGTH_SECS;
     }
 
     function setProfile (string name, string email) public {
@@ -62,6 +64,12 @@ contract Bright {
             allUsersArray.push(user);
             remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
         }
+    }
+
+    function setSeasonLength(uint256 seasonLengthDays) public onlyRoot {
+        uint256 changeLimitTime = initialSeasonTimestamp + seasonLengthSecs - LIMIT_CHANGE_LENGTH;
+        require(currentSeasonIndex == 1 &&  block.timestamp < changeLimitTime, "Not able to change the seasons length");
+        seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
     }
 
     function getUsersAddress() public onlyDapp view returns (address[]) {
