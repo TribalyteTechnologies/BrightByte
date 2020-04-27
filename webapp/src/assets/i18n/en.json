@@ -286,7 +286,8 @@
         "claimMsg": "Do you want to make a complaint?",
         "error": "Error",
         "accept": "Accept",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "popUpWindowForBitbucket": "You must allow popup windows to sync your bitbucket account."
     },
     "achievements": {
         "continue": "Continue",
