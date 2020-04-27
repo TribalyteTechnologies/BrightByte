@@ -235,14 +235,16 @@
         "noWorkspaceAvailableYet": "There isn't any workspace available to this team.",
         "alreadyRegisteredError": "One or more emails are already registered to team.",
         "addNewWorkspace": "Add new workspace",
-        "teamWorkspaces": "Team workspaces",
+        "bitBucketWorkspaces": "BitBucket Workspaces",
         "availableWorkspaces": "Available workspaces",
         "workspaceName": "Workspace name",
-        "invalidWorkspace": "Please, introduce a name for the new workspace.",
+        "invalidWorkspace": "Please, type the name of the new workspace",
         "newWorkspaceError": "Cannot add the new workspace. Please contact the service provider.",
         "newWorkspaceSuccessMsg": "New workspace added.",
         "deleteWorkspaceError": "Cannot delete the workspace. Please contact the service provider.",
-        "removeWorkspaceSuccessMsg": "Workspace deleted"
+        "removeWorkspaceSuccessMsg": "Workspace deleted",
+        "backendNotAvailable": "Bitbucket service not available. Please contact the service provider.",
+        "workspacesDescription": "A workspace is how Bitbucket organize different streams of work in an account. BrightByte uses this workspaces to enable the batch upload feature."
     },
     "commitDetails": {
         "author": "Author",
