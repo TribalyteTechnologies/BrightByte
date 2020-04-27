@@ -27,7 +27,7 @@ contract CloudTeamManager {
     
     enum UserType { NotRegistered, Admin, Member }
     
-    uint256 INVITATION_DURATION_IN_SECS = 1 * 60 * 60;
+    uint256 INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
     
     mapping (uint256 => Team) private createdTeams;
     mapping (address => uint256) private userTeamMap;
