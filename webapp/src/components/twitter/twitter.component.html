@@ -1,6 +1,4 @@
-<a href="https://twitter.com/share" 
-    [attr.data-text]="text" 
-    [attr.data-url]="url"
-    [attr.data-hashtags]="hashtag" 
-    class="twitter-share-button">
-</a>
+<button ion-button class="twitter-share-button" (click)="shareInBlank()">
+    <ion-icon name="logo-twitter"></ion-icon>
+    <p class="share-text">{{ "social.shareButtonText" | translate }}</p>
+</button>
