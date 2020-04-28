@@ -1,5 +1,15 @@
 # Change Log
 
+#### v0.7.1
+
+- Solved twitter sharing not showing up.
+- New settings button.
+- New alerts for enabling popup windows.
+- Some feedback improvements.
+- Minor bug fixes.
+
+`No migration needed from 0.7.0 to 0.7.1`
+
 #### v0.7.0
 
 - New feature, change user name.
