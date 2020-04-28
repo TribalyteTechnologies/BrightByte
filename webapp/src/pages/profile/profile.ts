@@ -36,17 +36,21 @@ export class Profile {
     public errorInviteMsg: string;
     public successMsg: string;
     public successInviteMsg: string;
+    public seasonSuccessMsg: string;
     public workspaceErrorMsg: string;
     public workspaceSuccessMsg: string;
+    public seasonErrorMsg: string;
     public uploadForm: FormGroup;
     public settingsCategory = this.SETTINGS_CATEGORIES[0];
     public teamName: string;
+    public seasonLength: number;
     public memberType: AppConfig.UserType;
     public invitedEmail: string;
     public newTeamWorkspace: string;
     public isCurrentUserAdmin: boolean;
     public isSettingTeamName = false;
     public isInvitingUser = false;
+    public isSettingSeasonData = false;
     public teamMembers: Array<Array<TeamMember>>;
     public teamWorkspaces: Array<string>;
     public isBackendAvailable: boolean;
@@ -75,6 +79,7 @@ export class Profile {
     private alreadyRegisteredError: string;
     private userAddress: string;
     private userTeam: number;
+    private isSettingSeason: boolean;
     private log: ILogger;
 
     constructor(
@@ -149,12 +154,21 @@ export class Profile {
         })
         .then((teamMembers: Array<Array<TeamMember>>) => {
             this.teamMembers = teamMembers;
+            return this.contractManagerService.getCurrentSeason();
+        }).then((seasonState: Array<number>) => {
+            this.isSettingSeason = Number(seasonState[0]) === 1;
+            this.seasonLength = seasonState[2] / AppConfig.DAY_TO_SECS;
             return this.contractManagerService.getUserTeam();
         }).then(userTeam => {
             this.userTeam = userTeam;
+            this.log.w(this.GET_TEAM_WORKSPACES + this.userTeam + "/" + this.userAddress);
             return this.http.get(this.GET_TEAM_WORKSPACES + this.userTeam + "/" + this.userAddress).toPromise();
         }).then((result: IWorkspaceResponse) => {
-            this.teamWorkspaces = result.data;
+            this.isBackendAvailable = false;
+            if(result.status !== "Error") {
+                this.teamWorkspaces = result.data;
+                this.isBackendAvailable = true;    
+            }
         }).catch(e => {
             this.log.e("Error: asfdasdasf", e);
             this.isBackendAvailable = false;
@@ -297,6 +311,26 @@ export class Profile {
         .catch(e => {
             this.isSettingTeamName = false;
             this.errorMsg = this.changeTeamNameError;
+        });
+    }
+
+    public changeSeasonLength(seasonLength: number) {
+        this.seasonLength = seasonLength;
+        this.seasonErrorMsg = null;
+        this.seasonSuccessMsg = null;
+        this.isSettingSeasonData = true;
+        this.contractManagerService.setSeasonLength(this.seasonLength)
+        .then(() => {
+            this.isSettingSeasonData = false;
+            return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
+        }).then(res => {
+            this.seasonSuccessMsg = res;
+        }).catch(e => {
+            this.log.e("Error setting the new season duration", e);
+            this.isSettingSeasonData = false;
+            return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
+        }).then(res => {
+            this.seasonErrorMsg = res;
         });
     }
 

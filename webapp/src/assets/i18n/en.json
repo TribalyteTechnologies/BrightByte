@@ -244,7 +244,13 @@
         "deleteWorkspaceError": "Cannot delete the workspace. Please contact the service provider.",
         "removeWorkspaceSuccessMsg": "Workspace deleted",
         "backendNotAvailable": "Bitbucket service not available. Please contact the service provider.",
-        "workspacesDescription": "A workspace is how Bitbucket organize different streams of work in an account. BrightByte uses this workspaces to enable the batch upload feature."
+        "workspacesDescription": "A workspace is how Bitbucket organize different streams of work in an account. BrightByte uses this workspaces to enable the batch upload feature.",
+        "seasonData": "Season Data",
+        "changeSeasonLength": "Change season length",
+        "setSeasonLength": "Set length in days",
+        "teamSeasons": "The duration of the seasons of your team are the following number of days",
+        "seasonLengthSuccessMsg": "The duration of the season has changed correctly",
+        "seasonLengthErrorMsg": "Cannot change the duration of the season. Please contact the service provider."
     },
     "commitDetails": {
         "author": "Author",

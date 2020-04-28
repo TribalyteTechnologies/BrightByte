@@ -80,6 +80,30 @@
                         </ion-item>
                     </ion-list>
                 </ion-row>
+                <h6>{{ "setProfile.seasonData" | translate }}</h6>
+                <ion-row class="separator">
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-item *ngIf="isSettingSeason; else notSettingLength">
+                                <ion-label color="dark">{{ "setProfile.setSeasonLength" | translate }}: </ion-label>
+                                <ion-input type="text" [(ngModel)]="seasonLength"></ion-input>
+                                <button item-end (click)="changeSeasonLength(seasonLength)" type="submit" class="btn item-save-button btn__blue">
+                                    {{ "setProfile.changeSeasonLength" | translate }}
+                                </button>
+                        </ion-item>
+                        <ng-template #notSettingLength>
+                            <ion-item >
+                                <ion-label color="dark">{{ "setProfile.teamSeasons" | translate }}:  {{ seasonLength }}</ion-label>
+                            </ion-item>
+                        </ng-template>
+                    </ion-list>
+                    <ion-spinner *ngIf="isSettingSeasonData"></ion-spinner>
+                    <ion-row *ngIf="seasonSuccessMsg" class="success-body">
+                        {{ seasonSuccessMsg }}
+                    </ion-row>
+                    <ion-row *ngIf="seasonErrorMsg" class="error-body">
+                        {{ seasonErrorMsg }}
+                    </ion-row>
+                </ion-row>
                 <h6>{{ "setProfile.inviteEmailsToTeam" | translate }}</h6>
                 <ion-row class="separator">
                     <ion-list lines="full" class="team-name-list">

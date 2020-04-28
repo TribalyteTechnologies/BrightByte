@@ -666,6 +666,16 @@ export class ContractManagerService {
         });
     }
 
+    public setSeasonLength(seasonLength: number): Promise<void | TransactionReceipt> {
+        return this.initProm.then(([bright, commit, root]) => {
+            let bytecodeData = root.methods.setSeasonLength(seasonLength).encodeABI();
+            return this.sendTx(bytecodeData, this.contractAddressRoot);
+        }).catch(e => {
+            this.log.e("Error setting the new season length: ", e);
+            throw e;
+        });
+    }
+
     public reviewChangesCommitFlag(url: string) {
         return this.initProm.then(([bright, commit, root]) => {
             let bytecodeData = root.methods.readCommit(url).encodeABI();
