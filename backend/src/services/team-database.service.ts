@@ -83,14 +83,12 @@ export class TeamDatabaseService {
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
                 if (team) {
                     team.teamMembers.indexOf(user) === -1 ? team.teamMembers.push(user) : this.log.d("This item already exists");
-                    ret = this.databaseSrv.save(this.database, collection, team);
                 } else {
                     let newTeam = new TeamDto(teamUid);
                     newTeam.teamMembers.push(user);
                     team = collection.insert(newTeam);
-                    ret = this.databaseSrv.save(this.database, collection, team);
                 }
-                return ret;
+                return this.databaseSrv.save(this.database, collection, team);;
             }),
             map(created => new SuccessResponseDto()),
             catchError(error => of(new FailureResponseDto(error)))
