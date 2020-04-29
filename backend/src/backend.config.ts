@@ -15,7 +15,7 @@ export class BackendConfig {
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
-    public static readonly NET_ID = "83584648538";
+    public static readonly NET_ID = process.env.NET_ID || "";
     public static readonly SCORE_DIVISION_FACTOR = 100;
     public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
     public static readonly ACH_TIMED_TROPHY_PATH = "../../assets/imgs/trophys/timedAchievement";
