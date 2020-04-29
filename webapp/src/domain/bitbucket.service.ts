@@ -12,7 +12,7 @@ import { TranslateService } from "@ngx-translate/core";
 
 export class BitbucketApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
-    public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/team/teamWorkspaces/";
+    public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/team/";
     public static readonly BASE_URL = "https://bitbucket.org/";
     public static readonly USER_BASE_URL = "https://api.bitbucket.org/2.0/user/";
     public static readonly REPOSITORIES_BASE_URL = "https://api.bitbucket.org/2.0/repositories/";
@@ -158,7 +158,7 @@ export class BitbucketService {
     }
 
     public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendConfig> {
-        let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/" + userAddress;
+        let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/workspace/" + userAddress;
         return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
     }
 

@@ -1,44 +1,60 @@
-import { Controller, Get, Param, Post } from "@nestjs/common";
+import { Controller, Get, Param, Post, Delete } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { TeamDatabaseService } from "../services/team-database.service";
 import { ResponseDto } from "../dto/response/response.dto";
+import { ILogger, LoggerService } from "../logger/logger.service";
+
 
 @Controller("team")
 export class TeamDatabaseController {
-    public constructor(private teamDatabaseService: TeamDatabaseService) { }
 
-    @Get("teamMembers/:id")
+    private log: ILogger;
+    public constructor(
+        private teamDatabaseService: TeamDatabaseService,
+        loggerSrv: LoggerService
+    ) {
+        this.log = loggerSrv.get("ProfileImageController");
+    }
+
+    @Get(":id/members")
     public getTeamMembers(@Param("id") teamUid: string): Observable<ResponseDto> {
+        this.log.d("Request to get the member of team: ", teamUid);
         return this.teamDatabaseService.getTeamMembers(teamUid);
     }
 
-    @Get("teamWorkspaces/:id/:user")
+    @Get(":id/workspace/:user")
     public getTeamWorkspaces(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+        this.log.d("Request to get the member workspaces of team: ", teamUid);
         return this.teamDatabaseService.getTeamWorkspaces(teamUid, user);
     }
 
-    @Post("createTeam/:id")
+    @Post(":id")
     public createTeam(@Param("id") teamUid: string): Observable<ResponseDto> {
+        this.log.d("Request to create a new team: ", teamUid);
         return this.teamDatabaseService.createTeam(teamUid);
     }
 
-    @Post("addNewWorkspace/:id/:workspace")
-    public addNewWorkspace(@Param("id") teamUid: string, @Param("workspace") workspace: string): Observable<ResponseDto> {
-        return this.teamDatabaseService.addNewWorkspace(teamUid, workspace);
+    @Post(":id/workspace/:workspaceName")
+    public addNewWorkspace(@Param("id") teamUid: string, @Param("workspaceName") workspaceName: string): Observable<ResponseDto> {
+        this.log.d("Request to add a new workspace to the team: ", teamUid);
+        return this.teamDatabaseService.addNewWorkspace(teamUid, workspaceName);
     }
 
-    @Post("addNewTeamMember/:id/:user")
+    @Post(":id/members/:user")
     public addNewTeamMember(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+        this.log.d("Request to add a new member to the team: ", teamUid);
         return this.teamDatabaseService.addNewTeamMember(teamUid, user);
     }
 
-    @Post("removeTeamWorkspace/:id/:workspace")
+    @Delete(":id/workspace/:workspace")
     public removeWorkspace(@Param("id") teamUid: string, @Param("workspace") workspace: string): Observable<ResponseDto> {
+        this.log.d("Request to delete a workspace from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace);
     }
 
-    @Post("removeTeamMember/:id/:user")
+    @Delete(":id/members/:user")
     public removeTeamMember(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+        this.log.d("Request to delete a member from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamMember(teamUid, user);
     }
 }

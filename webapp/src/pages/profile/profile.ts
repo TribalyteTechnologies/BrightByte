@@ -56,9 +56,8 @@ export class Profile {
     public isBackendAvailable: boolean;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
-    private readonly GET_TEAM_WORKSPACES = AppConfig.SERVER_BASE_URL + "/team/teamWorkspaces/";
-    private readonly ADD_NEW_WORKSPACE = AppConfig.SERVER_BASE_URL + "/team/addNewWorkspace/";
-    private readonly REMOVE_TEAM_WORKSPACE = AppConfig.SERVER_BASE_URL + "/team/removeTeamWorkspace/";
+    private readonly TEAM_API = AppConfig.SERVER_BASE_URL + "/team/";
+    private readonly WORKSPACE = "/workspace/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
     private readonly EMAILS_SEPARATOR = ",";
@@ -161,8 +160,7 @@ export class Profile {
             return this.contractManagerService.getUserTeam();
         }).then(userTeam => {
             this.userTeam = userTeam;
-            this.log.w(this.GET_TEAM_WORKSPACES + this.userTeam + "/" + this.userAddress);
-            return this.http.get(this.GET_TEAM_WORKSPACES + this.userTeam + "/" + this.userAddress).toPromise();
+            return this.http.get(this.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.isBackendAvailable = false;
             if(result.status !== "Error") {
@@ -379,7 +377,7 @@ export class Profile {
         this.workspaceSuccessMsg = null;
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspace && workspaceIndex === -1) {
-            this.http.post(this.ADD_NEW_WORKSPACE + this.userTeam + "/" + workspace, {}).toPromise().then((response: IResponse) => {
+            this.http.post(this.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
                 this.teamWorkspaces.push(workspace);
                 this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
@@ -435,7 +433,7 @@ export class Profile {
         this.log.d("The user admin requested to deleted the workspace: ", workspace);
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if(workspaceIndex !== -1) {
-            this.http.post(this.REMOVE_TEAM_WORKSPACE + this.userTeam + "/" + workspace, {}).toPromise().then(result => {
+            this.http.delete(this.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then(result => {
                 this.teamWorkspaces.splice(workspaceIndex, 1);
                 this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
                     this.workspaceSuccessMsg = res;

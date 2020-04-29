@@ -46,10 +46,8 @@ export class TeamDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
-                let ret;
-                if (team) {
-                    ret = of(true);
-                } else {
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                if (!team) {
                     team = collection.insert(new TeamDto(teamUid)) as TeamDto;
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }
@@ -65,8 +63,8 @@ export class TeamDatabaseService {
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
-                if (team) {
-                    team.workspaces.indexOf(workspace) === -1 ? team.workspaces.push(workspace) : this.log.d("This item already exists");
+                if (team && team.workspaces.indexOf(workspace) === -1) {
+                    team.workspaces.push(workspace);
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }
                 return ret;
@@ -79,7 +77,6 @@ export class TeamDatabaseService {
     public addNewTeamMember(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
-                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
                 if (team) {
                     team.teamMembers.indexOf(user) === -1 ? team.teamMembers.push(user) : this.log.d("This item already exists");
