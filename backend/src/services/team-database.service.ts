@@ -27,7 +27,7 @@ export class TeamDatabaseService {
 
     public getTeamWorkspaces(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: teamUid })),
+            map(collection => collection.findOne({ id: teamUid }) as TeamDto),
             map((team: TeamDto) => 
             team.teamMembers.indexOf(user) !== -1 ? new SuccessResponseDto(team.workspaces) : new SuccessResponseDto(new Array<string>())),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
@@ -36,7 +36,7 @@ export class TeamDatabaseService {
 
     public getTeamMembers(teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: teamUid })),
+            map(collection => collection.findOne({ id: teamUid }) as TeamDto),
             map((team: TeamDto) => new SuccessResponseDto(team.teamMembers)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
         );
@@ -50,7 +50,7 @@ export class TeamDatabaseService {
                 if (team) {
                     ret = of(true);
                 } else {
-                    team = collection.insert(new TeamDto(teamUid));
+                    team = collection.insert(new TeamDto(teamUid)) as TeamDto;
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }
                 return ret;
@@ -64,7 +64,7 @@ export class TeamDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let team = collection.findOne({ id: teamUid });
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
                 if (team) {
                     team.workspaces.indexOf(workspace) === -1 ? team.workspaces.push(workspace) : this.log.d("This item already exists");
                     ret = this.databaseSrv.save(this.database, collection, team);
@@ -86,9 +86,9 @@ export class TeamDatabaseService {
                 } else {
                     let newTeam = new TeamDto(teamUid);
                     newTeam.teamMembers.push(user);
-                    team = collection.insert(newTeam);
+                    team = collection.insert(newTeam) as TeamDto;
                 }
-                return this.databaseSrv.save(this.database, collection, team);;
+                return this.databaseSrv.save(this.database, collection, team);
             }),
             map(created => new SuccessResponseDto()),
             catchError(error => of(new FailureResponseDto(error)))
@@ -99,7 +99,7 @@ export class TeamDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let team = collection.findOne({ id: teamUid });
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
                 if (team) {
                     let workspaceIndex = team.workspaces.indexOf(workspace);
                     workspaceIndex === -1 ? this.log.d("The workspace did not exists") : team.workspaces.splice(workspaceIndex, 1);
@@ -116,7 +116,7 @@ export class TeamDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let team = collection.findOne({ id: teamUid });
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
                 if (team) {
                     let userIndex = team.teamMembers.indexOf(user);
                     userIndex === -1 ? this.log.d("The user did not exists") : team.teamMembers.splice(userIndex, 1);

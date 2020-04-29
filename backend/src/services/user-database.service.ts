@@ -30,7 +30,7 @@ export class UserDatabaseService {
 
     public getCommitNumber(userIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: userIdentifier })),
+            map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             map((user: UserDto) => new SuccessResponseDto(user.commitCount)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
         );
@@ -38,7 +38,7 @@ export class UserDatabaseService {
 
     public getReviewNumber(userIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: userIdentifier })),
+            map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             map((user: UserDto) => new SuccessResponseDto(user.reviewCount)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
         );
@@ -46,17 +46,17 @@ export class UserDatabaseService {
 
     public hasAchievement(userIdentifier: string, achievementIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: userIdentifier })),
-            map(user => user.obtainedAchievements),
-            map(achievements => new SuccessResponseDto(achievements.includes(achievementIdentifier))),
+            map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
+            map((user: UserDto) => user.obtainedAchievements),
+            map((achievements: Array<string>) => new SuccessResponseDto(achievements.includes(achievementIdentifier))),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
         );
     }
 
     public getObtainedAchievements(userIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: userIdentifier })),
-            flatMap(user => this.achievementDbSrv.getAchievements(user.obtainedAchievements)),
+            map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
+            flatMap((user: UserDto) => this.achievementDbSrv.getAchievements(user.obtainedAchievements)),
             map((achievements: Array<AchievementDto>) => new SuccessResponseDto(achievements)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
         );
@@ -65,12 +65,12 @@ export class UserDatabaseService {
     public createUser(userIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
-                let user = collection.findOne({ id: userIdentifier });
+                let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret;
                 if (user) {
                     ret = of(true);
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier));
+                    user = collection.insert(new UserDto(userIdentifier)) as UserDto;
                     ret = this.databaseSrv.save(this.database, collection, user);
                 }
                 return ret;
@@ -83,12 +83,12 @@ export class UserDatabaseService {
     public setCommitNumber(userIdentifier: string, num: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
-                let user = collection.findOne({ id: userIdentifier });
+                let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 if (user) {
                     user.commitCount = num;
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, num, 0, []));
+                    user = collection.insert(new UserDto(userIdentifier, num, 0, new Array<string>())) as UserDto;
                 }
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);
@@ -103,12 +103,12 @@ export class UserDatabaseService {
     public setReviewNumber(userIdentifier: string, num: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
-                let user = collection.findOne({ id: userIdentifier });
+                let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 if (user) {
                     user.reviewCount = num;
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, num, 0, []));
+                    user = collection.insert(new UserDto(userIdentifier, num, 0, new Array<string>())) as UserDto;
                 }
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);
@@ -124,10 +124,10 @@ export class UserDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 this.log.d("First Find the user with id " + userIdentifier);
-                let user = collection.findOne({ id: userIdentifier });
+                let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 if (!user) {
-                    user = collection.insert(new UserDto(userIdentifier, numberOfReviews, numberOfCommits, []));
+                    user = collection.insert(new UserDto(userIdentifier, numberOfReviews, numberOfCommits, new Array<string>())) as UserDto;
                 } else {
                     user.reviewCount = numberOfReviews;
                     user.commitCount = numberOfCommits;
@@ -146,15 +146,13 @@ export class UserDatabaseService {
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let achievementIds = achievementIdentifiers.split(",");
-                let user = collection.findOne({
-                    id: userIdentifier
-                });
+                let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 if (user) {
                     let obtainedAchievements = user.obtainedAchievements;
                     achievementIds.forEach(id => obtainedAchievements.push(id));
                     user.obtainedAchievements = obtainedAchievements;
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, 0, 0, achievementIds));
+                    user = collection.insert(new UserDto(userIdentifier, 0, 0, achievementIds)) as UserDto;
                 }
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);
