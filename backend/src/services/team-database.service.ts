@@ -25,7 +25,7 @@ export class TeamDatabaseService {
         this.init();
     }
 
-    public getTeamWorkspaces(teamUid: number, user: string): Observable<ResponseDto> {
+    public getTeamWorkspaces(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: teamUid })),
             map((team: TeamDto) => 
@@ -34,7 +34,7 @@ export class TeamDatabaseService {
         );
     }
 
-    public getTeamMembers(teamUid: number): Observable<ResponseDto> {
+    public getTeamMembers(teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: teamUid })),
             map((team: TeamDto) => new SuccessResponseDto(team.teamMembers)),
@@ -42,7 +42,7 @@ export class TeamDatabaseService {
         );
     }
     
-    public createTeam(teamUid: number): Observable<ResponseDto> {
+    public createTeam(teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
@@ -60,7 +60,7 @@ export class TeamDatabaseService {
         );
     }
 
-    public addNewWorkspace(teamUid: number, workspace: string): Observable<ResponseDto> {
+    public addNewWorkspace(teamUid: string, workspace: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
@@ -76,7 +76,7 @@ export class TeamDatabaseService {
         );
     }
 
-    public addNewTeamMember(teamUid: number, user: string): Observable<ResponseDto> {
+    public addNewTeamMember(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
@@ -97,7 +97,7 @@ export class TeamDatabaseService {
         );
     }
 
-    public removeTeamWorkspace(teamUid: number, workspace: string): Observable<ResponseDto> {
+    public removeTeamWorkspace(teamUid: string, workspace: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
@@ -114,7 +114,7 @@ export class TeamDatabaseService {
         );
     }
 
-    public removeTeamMember(teamUid: number, user: string): Observable<ResponseDto> {
+    public removeTeamMember(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);

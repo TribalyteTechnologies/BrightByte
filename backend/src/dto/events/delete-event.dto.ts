@@ -3,7 +3,7 @@ import { BackendConfig } from "../../backend.config";
 
 export class DeleteEventDto extends AchievementEventDto {
 
-    public constructor(teamUid: number, userHash: string, url: string) {
+    public constructor(teamUid: string, userHash: string, url: string) {
         super();
         this.teamUid = teamUid;
         this.userHash = userHash;

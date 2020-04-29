@@ -102,7 +102,7 @@ export class ContractManagerService {
                     user.forEach(season => {
                         season.forEach(commit => {
                             let comment = CommentDetailsDto.fromSmartContract(commit);
-                            eventsDtos.push(new ReviewEventDto(0, allUserData[i].userHash, 0, comment.creationDate));
+                            eventsDtos.push(new ReviewEventDto("0", allUserData[i].userHash, 0, comment.creationDate));
                         });
                     });
                 });

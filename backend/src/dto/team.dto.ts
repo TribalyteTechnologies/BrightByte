@@ -1,10 +1,10 @@
 export class TeamDto {
 
-    public id: number;
+    public id: string;
     public teamMembers: Array<string>;
     public workspaces: Array<string>;
 
-    public constructor(id: number) {
+    public constructor(id: string) {
         this.id = id;
         this.teamMembers = new Array<string>();
         this.workspaces = new Array<string>();
