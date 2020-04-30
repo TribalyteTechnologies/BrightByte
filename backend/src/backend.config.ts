@@ -32,13 +32,6 @@ export class BackendConfig {
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY;
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
-    public static readonly SYSTEM_CONFIGURATION = 
-        {
-            bitbucket: 
-            {
-                workspaces: (process.env.BITBUCKET_WORKSPACES || "tribalyte").split(",")
-            }
-        };
     public static readonly BUFFER_SIZE = 1;
 }
 export namespace BackendConfig {
