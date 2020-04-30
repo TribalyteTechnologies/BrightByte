@@ -21,7 +21,6 @@ module.exports = {
       provider: besuPrivateKeyProvider,
       network_id: "*",
       gasPrice: 0,
-      gas: "0x1ffffffffffffe"
     }
   },
 
