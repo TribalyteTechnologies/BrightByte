@@ -187,11 +187,11 @@ contract Bright {
     
     function getUserSeasonState(address userHash, uint256 indSeason) public onlyDapp view returns(uint256, uint256, uint256, uint256, uint256) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
-        return (userSeason.pendingReviews.length,
-                userSeason.finishedReviews.length,
-                userSeason.urlSeasonCommits.length,
-                userSeason.toRead.length,
-                userSeason.allReviews.length
+        return (UtilsLib.getNonEmptyPositions(userSeason.pendingReviews),
+                UtilsLib.getNonEmptyPositions(userSeason.finishedReviews),
+                UtilsLib.getNonEmptyPositions(userSeason.urlSeasonCommits),
+                UtilsLib.getNonEmptyPositions(userSeason.toRead),
+                UtilsLib.getNonEmptyPositions(userSeason.allReviews)
         );
     }
 

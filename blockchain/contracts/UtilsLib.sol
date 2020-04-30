@@ -16,6 +16,16 @@ library UtilsLib {
         return newArray;
     }
 
+    function getNonEmptyPositions(bytes32[] array) public pure returns (uint256) {
+        uint256 nonEmptyCount = 0;
+        uint arrayLength = array.length;
+        for(uint256 i = 0; i < arrayLength; i++) {
+            if (array[i] != "") {
+                nonEmptyCount++;
+            }
+        }
+        return nonEmptyCount;
+    }
 
     function removeFromArray(bytes32[] storage array, bytes32 url) public {
         uint arrayLength = array.length;
