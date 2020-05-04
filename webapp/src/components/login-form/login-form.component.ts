@@ -113,7 +113,7 @@ export class LoginForm {
         } else {
             this.password = "";
         }
-        this.hidPass = this.HID_CHARACTER.repeat(this.password.length);
+        this.hidPass = this.password.replace(/./g, this.HID_CHARACTER);
         this.lastPassword = pass;
     }
     

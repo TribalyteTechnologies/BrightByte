@@ -3,7 +3,7 @@
     <input type="file" (change)="openFile($event)">
 </ion-row>
 <ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
-<input class="password-form key" [placeholder]="'app.password' | translate" [(ngModel)]="hidPass" (keyup.enter)="login(password)" (input)="hidePassword(hidPass)">
+<input class="password-form" [placeholder]="'app.password' | translate" [(ngModel)]="hidPass" (keyup.enter)="login(password)" (input)="hidePassword(hidPass)">
 <ion-row *ngIf="msg">
     <ion-row class="error-body">
         {{ msg }}
