@@ -211,14 +211,14 @@ export class ContractManagerService {
         });
     }
 
-    public inviteToCurrentTeam(email: Array<string>, userType: AppConfig.UserType): Promise<void | TransactionReceipt> {
+    public inviteToCurrentTeam(emails: Array<string>, userType: AppConfig.UserType): Promise<void | TransactionReceipt> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             return this.getUserTeam();
         })
         .then((teamUid: number) => {
-            return this.inviteMultipleEmailsToTeam(teamUid, email, userType, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
+            return this.inviteMultipleEmailsToTeam(teamUid, emails, userType, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
         });
     }
 

@@ -128,7 +128,7 @@
                         <ion-item class="team-name-submit">
                             <ion-spinner *ngIf="isInvitingUser"></ion-spinner>
                             <button type="submit" class="btn save-button btn__blue"
-                                (click)="inviteUserToTeam(invitedEmail, memberType)" [disabled]="isInvitingUser || isSettingTeamName">
+                                (click)="inviteUsersToTeam(invitedEmail, memberType)" [disabled]="isInvitingUser || isSettingTeamName">
                                 {{ "setProfile.inviteToTeam" | translate }}
                             </button>
                         </ion-item>

@@ -63,7 +63,6 @@ export class Profile {
     private readonly EMAILS_SEPARATOR = ",";
 
     private noChangesError: string;
-    private areEmailsWellFormated: boolean;
     private uploadError: string;
     private defaultError: string;
     private successMessageName: string;
@@ -332,14 +331,14 @@ export class Profile {
         });
     }
 
-    public inviteUserToTeam(invitedEmails: string, userType: AppConfig.UserType) {
-        this.areEmailsWellFormated = true;
+    public inviteUsersToTeam(invitedEmails: string, userType: AppConfig.UserType) {
+        let areEmailsWellFormated = true;
         this.successInviteMsg = null;
         this.errorInviteMsg = null;
         let emails = invitedEmails.split(this.EMAILS_SEPARATOR).map(email => {
             let mail = email.trim();
-            if (this.areEmailsWellFormated && mail !== ""){
-                this.areEmailsWellFormated = FormatUtils.getEmailValidatorPattern().test(mail);
+            if (areEmailsWellFormated && mail !== ""){
+                areEmailsWellFormated = FormatUtils.getEmailValidatorPattern().test(mail);
             }
             return mail;
         }).filter(email => email !== "");
@@ -348,7 +347,7 @@ export class Profile {
                 return emails.some(email => email === member.email);
             });
         });
-        if (this.areEmailsWellFormated) {
+        if (areEmailsWellFormated) {
             if (!isEmailAlreadyRegistered) {
                 if (userType) {
                     this.isInvitingUser = true;
