@@ -10,15 +10,20 @@ require("truffle-test-utils").init();
 
 const NODE_URL = "http://127.0.0.1:7545";
 const TEAM_UID = 1;
+const INITIAL_SEASON_INDEX = 1;
 const NUMBER_OF_USERS = 2;
 const NUMBER_OF_REVIEWERS = 1;
 const NUMBER_OF_COMMITS = 1;
+const NUMBER_OF_REVIEWS = 1;
+const DELETED_COMMITS = 1;
 const USER_ONE = "Manuel";
 const EMAIL_USER_ONE = "manuel@example.com";
 const USER_TWO = "Marcos";
 const EMAIL_USER_TWO = "marcos@example.com";
 const COMMIT_TITTLE = "Example Commit";
-const COMMIT_URL = "https://bitbucket.org/tribalyte/exampleRepo/commits/ffffffffffffffffffffsdsdfgfdsgsdfgsdffff";
+const COMMIT_URL = "https://bitbucket.org/tribalyte/exampleRepo/commits/ffffffffffffffffffff";
+const REVIEW_TEXT = "Example Review";
+const REVIEW_POINTS =  [500, 200, 100];
 
 
 contract("EventDispatcher", accounts => {
@@ -66,13 +71,25 @@ contract("EventDispatcher", accounts => {
 
         let tx1 = await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: accountOne });
         let user1 = await brightInstance.getUser(accountOne);
+        parseBnAndAssertEqual(user1[3], NUMBER_OF_COMMITS);
 
-        var BN = web3.utils.BN;
-        const userCommits  = new BN(user1[3]).toString();
-        assert.equal(userCommits, NUMBER_OF_COMMITS);
+        let userState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX);
+        parseBnAndAssertEqual(userState[0], 0);
 
         let reviewers = new Array();
         reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
+        let tx2 = await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
+        let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX);
+        parseBnAndAssertEqual(reviewerState[0], NUMBER_OF_COMMITS);
+    });
+
+    it("Should Create a new review", async () => {
+        let reviewerState = await brightInstance.getUser(accountTwo);
+        parseBnAndAssertEqual(reviewerState[2], 0);
+        let tx1 = commitInstance.setReview(COMMIT_URL, REVIEW_TEXT, REVIEW_POINTS, { from: accountTwo });
+        const web3 = openConnection();
+        reviewerState = await brightInstance.getUser(accountTwo);
+        parseBnAndAssertEqual(reviewerState[2], NUMBER_OF_REVIEWS);
     });
 
     it("Check the event emmited for the new Users", async () => {
@@ -85,6 +102,37 @@ contract("EventDispatcher", accounts => {
         assert.equal(eventResults.length, NUMBER_OF_COMMITS);
     });
 
+    it("Check the event emmited for the new review", async () => {
+        const eventResults = await instanceContractEvent(cloudEventDispatcher, "UserNewReview");
+        assert.equal(eventResults.length, NUMBER_OF_REVIEWS);
+    });
+
+    it("Should Create a new commit and then delete it", async () => {
+        const urlCommit = COMMIT_URL + "delete";
+        const web3 = openConnection();
+        let user1 = await brightInstance.getUser(accountOne);
+        const initialNumberOfCommits = parseBnToInt(user1[3]);
+        const tx1 = await commitInstance.setNewCommit(COMMIT_TITTLE, urlCommit, NUMBER_OF_REVIEWERS, { from: accountOne });
+        user1 = await brightInstance.getUser(accountOne);
+        parseBnAndAssertEqual(user1[3], initialNumberOfCommits + 1);
+
+        let reviewers = new Array();
+        reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
+        const tx2 = await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
+        let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX);
+        parseBnAndAssertEqual(reviewerState[0], 1);
+
+        const urlKeccak = web3.utils.keccak256(urlCommit);
+        const tx3 = await brightInstance.removeUserCommit(urlKeccak, { from: accountOne });
+
+        user1 = await brightInstance.getUser(accountOne);
+        parseBnAndAssertEqual(user1[3], initialNumberOfCommits);
+    });
+
+    it("Check the event emmited for the new review", async () => {
+        const eventResults = await instanceContractEvent(cloudEventDispatcher, "DeletedCommit");
+        assert.equal(eventResults.length, DELETED_COMMITS);
+    });
 });
 
 function deployBrightCommitsThreshold(cloudBBFactory, teamUId) {
@@ -100,6 +148,22 @@ function deployBrightCommitsThreshold(cloudBBFactory, teamUId) {
 
 function openConnection() {
     return new Web3(new Web3.providers.HttpProvider(NODE_URL));
+}
+
+function parseBnAndAssertEqual(bigNumber, equalValue, assertMsg) {
+    let integer = parseBnToInt(bigNumber);
+    if (assertMsg){
+        assert.equal(integer, equalValue, assertMsg);
+    }else{
+        assert.equal(integer, equalValue);
+    }
+}
+
+function parseBnToInt(bigNumber) {
+    const web3 = openConnection();
+    var BN = web3.utils.BN;
+    let integer = parseInt(new BN(bigNumber));
+    return integer;
 }
 
 async function instanceContractEvent(cloudEventDispatcher, eventType) {
