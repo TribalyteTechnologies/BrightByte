@@ -35,7 +35,7 @@ contract Root{
         _;
     }
     
-    constructor (address bright, address commits, address threshold, address cloudEventDispatcher, address userAdmin, uint256 teamId) public {
+    constructor (address bright, address commits, address threshold, address cloudEventDispatcher, address userAdmin, uint256 teamId, uint256 seasonLength) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -46,7 +46,7 @@ contract Root{
         remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcher);
         cloudEventDispatcherAddress = cloudEventDispatcher;
         remoteCommits.init(address(this));
-        remoteBright.init(address(this), cloudEventDispatcher, teamId);
+        remoteBright.init(address(this), cloudEventDispatcher, teamId, seasonLength);
         uint256 currentSeasonIndex;
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;

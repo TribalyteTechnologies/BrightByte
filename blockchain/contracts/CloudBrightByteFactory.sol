@@ -44,12 +44,12 @@ contract CloudBrightByteFactory {
         teamContracts[teamUid].thresholdAddress = ThresholdDeployerLib.deploy();
     }
 
-    function deployRoot(uint256 teamUId, address userAdmin) public returns (address){
+    function deployRoot(uint256 teamUId, address userAdmin, uint seasonLength) public returns (address){
         TeamContracts storage contracts = teamContracts[teamUId];
         address bright = contracts.brightAddress;
         address commits = contracts.commitsAddress;
         address threshold = contracts.thresholdAddress;
-        address root = RootDeployerLib.deploy(bright, commits, threshold, eventDispatcherAddress, userAdmin, teamUId);
+        address root = RootDeployerLib.deploy(bright, commits, threshold, eventDispatcherAddress, userAdmin, teamUId, seasonLength);
         contracts.rootAddress = root;
         allowEventDispatcherForContract(bright);
         allowEventDispatcherForContract(commits);

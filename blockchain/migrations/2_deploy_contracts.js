@@ -17,7 +17,7 @@ var scVersionObj = require("../../version.json");
 
 const TEAM_UID = 1;
 const USER_ADMIN = "0x0000000000000000000000000000000000000000";
-const SEASON_LENGTH_DAYS = 90;
+const SEASON_LENGTH_DAYS = 15;
 var currentVersion = scVersionObj.version;
 
 module.exports = function(deployer) {
@@ -58,7 +58,7 @@ module.exports = function(deployer) {
         return deployer.deploy(CloudEventDispatcher, "0x0000000000000000000000000000000000000000");
     }).then(function() {
         deployer.link(Reputation, Root);
-        return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID);
+        return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     })
     .then(function(){
         return deployer.link(BrightByteLib, BrightDeployerLib);

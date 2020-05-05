@@ -11,7 +11,6 @@ contract Bright {
     uint256 private constant HOUR_TO_SECS = 60 * 60;
     uint256 private constant DAY_LENGTH_SECS = 24 * HOUR_TO_SECS;
     uint256 private constant LIMIT_CHANGE_LENGTH = 2 * HOUR_TO_SECS;
-    uint256 private constant INITIAL_SEASON_LENGTH_DAYS = 14;
     uint256 private deploymentTimestamp;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -40,7 +39,7 @@ contract Bright {
         _;
     }
 
-    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId) public {
+    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
@@ -49,7 +48,7 @@ contract Bright {
         currentSeasonIndex = 1;
         teamUid = teamId;
         initialSeasonTimestamp = block.timestamp;
-        seasonLengthSecs = INITIAL_SEASON_LENGTH_DAYS * DAY_LENGTH_SECS;
+        seasonLengthSecs = seasonLength * DAY_LENGTH_SECS;
     }
 
     function setProfile (string name, string email) public {
