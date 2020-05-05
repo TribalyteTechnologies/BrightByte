@@ -24,6 +24,7 @@ const COMMIT_TITTLE = "Example Commit";
 const COMMIT_URL = "https://bitbucket.org/tribalyte/exampleRepo/commits/ffffffffffffffffffff";
 const REVIEW_TEXT = "Example Review";
 const REVIEW_POINTS =  [500, 200, 100];
+const INITIAL_SEASON_LENGTH = 15;
 
 
 contract("EventDispatcher", accounts => {
@@ -46,7 +47,7 @@ contract("EventDispatcher", accounts => {
         cloudEventDispatcherAddress = await cloudBBFactory.getEventDispatcherAddress();
         cloudEventDispatcher = await CloudEventDispatcher.at(cloudEventDispatcherAddress);
         assert(response.receipt.status, "Contract deployed incorrectly");
-        response = await cloudBBFactory.deployRoot(TEAM_UID, accountOne);
+        response = await cloudBBFactory.deployRoot(TEAM_UID, accountOne, INITIAL_SEASON_LENGTH);
         assert(response.receipt.status, "Contract deployed incorrectly");
         let contractsAddresses = await cloudBBFactory.getTeamContractAddresses(TEAM_UID);
         brightAddress = contractsAddresses[0];

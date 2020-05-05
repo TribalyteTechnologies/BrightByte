@@ -3,6 +3,7 @@ var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 const name = "Manuel";
 const TEAM_UID = 1;
 const email = "manuel@example.com";
+const INITIAL_SEASON_LENGTH = 15;
 
 
 contract("CloudBBFactory", accounts => {
@@ -17,7 +18,7 @@ contract("CloudBBFactory", accounts => {
                 return deployBrightCommitsThreshold(cloudBBFactory, TEAM_UID);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
-                return cloudBBFactory.deployRoot(TEAM_UID, account);
+                return cloudBBFactory.deployRoot(TEAM_UID, account, INITIAL_SEASON_LENGTH);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
                 return cloudBBFactory.getTeamContractAddresses(TEAM_UID);

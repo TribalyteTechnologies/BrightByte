@@ -24,8 +24,10 @@ const COMMENT_VOTE = 2;
 
 const TEAM_UID = 1;
 const DAY_TO_SECS = 24 * 60 * 60;
-const INITIAL_SEASON_DAY_LENGTH_SECS = 14 * DAY_TO_SECS;
+const INITIAL_SEASON_LENGTH = 15;
+const INITIAL_SEASON_DAY_LENGTH_SECS = INITIAL_SEASON_LENGTH * DAY_TO_SECS;
 const NEW_SEASON_LENGTH = 24;
+
 
 contract("Bright", accounts => {
     let cloudBBFactory;
@@ -48,7 +50,7 @@ contract("Bright", accounts => {
         cloudEventDispatcherAddress = await cloudBBFactory.getEventDispatcherAddress();
         cloudEventDispatcher = await CloudEventDispatcher.at(cloudEventDispatcherAddress);
         assert(response.receipt.status, "Contract deployed incorrectly");
-        response = await cloudBBFactory.deployRoot(TEAM_UID, adminUser);
+        response = await cloudBBFactory.deployRoot(TEAM_UID, adminUser, INITIAL_SEASON_LENGTH);
         assert(response.receipt.status, "Contract deployed incorrectly");
         let contractsAddresses = await cloudBBFactory.getTeamContractAddresses(TEAM_UID);
         brightAddress = contractsAddresses[0];

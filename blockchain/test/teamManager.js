@@ -8,6 +8,7 @@ contract("CloudTeamManager", accounts => {
 
     const ADMIN_USERTYPE = 1;
     const MEMBER_USERTYPE = 2;
+    const INITIAL_SEASON_LENGTH = 15;
 
     const LONG_EXP_SECS = 2000;
     const SHORT_EXP_SECS = 1;
@@ -118,7 +119,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(response => {
                 assert(response.receipt.status);
-                return teamManagerInstance.deployRoot(team1UId, { from: adminOwnerAccount });
+                return teamManagerInstance.deployRoot(team1UId, INITIAL_SEASON_LENGTH, { from: adminOwnerAccount });
             })
             .then(response => {
                 assert(response.receipt.status);
@@ -148,7 +149,7 @@ contract("CloudTeamManager", accounts => {
             })
             .catch(() => {
                 assert(true);
-                return teamManagerInstance.deployRoot(team1UId, { from: user1Account });
+                return teamManagerInstance.deployRoot(team1UId, INITIAL_SEASON_LENGTH, { from: user1Account });
             })
             .catch(() => {
                 assert(true);

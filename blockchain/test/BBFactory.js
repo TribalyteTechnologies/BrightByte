@@ -1,7 +1,7 @@
 var CloudBbFactory = artifacts.require("./CloudBrightByteFactory.sol");
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 const TEAM_UID = 1;
-const SEASON_LENGHT_IN_DAYS = 90;
+const INITIAL_SEASON_LENGTH = 15;
 
 contract("CloudBbFactory", accounts => {
     let account = accounts[8];
@@ -13,7 +13,7 @@ contract("CloudBbFactory", accounts => {
                 return deployBrightCommitsThreshold(cloudBbFactory, TEAM_UID);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
-                return cloudBbFactory.deployRoot(TEAM_UID, account);
+                return cloudBbFactory.deployRoot(TEAM_UID, account, INITIAL_SEASON_LENGTH);
             }).then(response => {
                 assert(response.receipt.status, "Contract deployed incorrectly");
                 return cloudBbFactory.getTeamContractAddresses(TEAM_UID);
