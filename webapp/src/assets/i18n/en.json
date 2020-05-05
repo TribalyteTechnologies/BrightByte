@@ -1,4 +1,8 @@
 {
+    "general": {
+        "ok": "Okey",
+        "cancel": "Cancel"
+    },
     "app": {
         "title": "BrightByte",
         "header": "Sign in",
@@ -296,9 +300,10 @@
         "claim": "Claim",
         "claimMsg": "Do you want to make a complaint?",
         "error": "Error",
+        "warning": "Warning",
         "accept": "Accept",
         "cancel": "Cancel",
-        "popUpWindowForBitbucket": "You must allow popup windows to sync your bitbucket account."
+        "allowPopUpWindow": "You must allow popup windows to continue."
     },
     "achievements": {
         "continue": "Continue",

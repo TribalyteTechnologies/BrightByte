@@ -11,6 +11,7 @@ import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
 import { AlertController } from "ionic-angular";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "page-commits",
@@ -46,6 +47,7 @@ export class CommitPage {
         public storageSrv: SessionStorageService,
         private contractManagerService: ContractManagerService,
         private alertCtrl: AlertController,
+        private popupSrv: PopupService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
@@ -242,8 +244,7 @@ export class CommitPage {
     }
 
     public openUrl(url: string) {
-        let urlToOpen = url;
-        window.open(urlToOpen, "_blank");
+        this.popupSrv.openUrlNewTab(url);
     }
 
 

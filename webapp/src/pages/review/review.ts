@@ -11,6 +11,7 @@ import { SessionStorageService } from "../../core/session-storage.service";
 import { TransactionQueueService } from "../../domain/transaction-queue.service";
 import { AppConfig } from "../../app.config";
 import { Observable } from "rxjs";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "page-review",
@@ -74,6 +75,7 @@ export class ReviewPage {
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         private transactionQueueService: TransactionQueueService,
+        private popupSrv: PopupService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
@@ -178,8 +180,7 @@ export class ReviewPage {
     }
 
     public openUrl(url: string) {
-        let urlToOpen = url;
-        window.open(urlToOpen, "_blank");
+        this.popupSrv.openUrlNewTab(url);
     }
 
     public shouldOpen(commit: UserCommit) {

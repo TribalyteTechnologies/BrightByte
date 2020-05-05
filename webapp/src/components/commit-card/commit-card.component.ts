@@ -5,6 +5,7 @@ import { FormatUtils } from "../../core/format-utils";
 import { AppConfig } from "../../app.config";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
+import { PopupService } from "../../domain/popup.service";
 
 
 @Component({
@@ -80,7 +81,8 @@ export class CommitCard {
 
     public constructor(
         public translateService: TranslateService,
-        private avatarSrv: AvatarService
+        private avatarSrv: AvatarService,
+        private popupSrv: PopupService
         ){
     }
 
@@ -96,10 +98,10 @@ export class CommitCard {
         let currentPage = this.isReviewPage ? this.REVIEW_QUERY : this.COMMIT_QUERY;
         let urlToOpen = url;
         if(isCommitParam){
-            window.open(urlToOpen, "_blank");
+            this.popupSrv.openUrlNewTab(urlToOpen);
             urlToOpen = currentPage + encodeURIComponent(url);
         }
-        window.open(urlToOpen, "_blank");
+        this.popupSrv.openUrlNewTab(urlToOpen);
         if(e){
             e.stopPropagation();
         }

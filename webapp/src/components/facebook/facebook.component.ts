@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "facebook-share",
@@ -13,8 +14,9 @@ export class FacebookComponent {
     public readonly SRC_TAG = "&src=sdkpreparse";
     public readonly QUOTE_TAG = "&quote=";
 
+    constructor(private popupSrv: PopupService) {}
+
     public goToShareUrl(){
-        let newUrl = this.SHARE_URL + this.url + this.SRC_TAG + this.QUOTE_TAG + this.text;
-        window.open(newUrl, "popup", "width=600,height=400");
+        this.popupSrv.openUrlNewTab(this.SHARE_URL + this.url + this.SRC_TAG + this.QUOTE_TAG + this.text);
     }
 }

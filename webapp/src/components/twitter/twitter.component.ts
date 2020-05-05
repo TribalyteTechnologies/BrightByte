@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "twitter-share",
@@ -10,7 +11,9 @@ export class TwitterComponent {
     @Input() public text = "";
     @Input() public hashtag = "";
 
+    constructor(private popupSrv: PopupService) {}
+
     public shareInBlank(){
-        window.open("http://twitter.com/share?text=" + this.text + "&url=" + this.url + "&hashtags=" + this.hashtag, "_blank");
+        this.popupSrv.openUrlNewTab("http://twitter.com/share?text=" + this.text + "&url=" + this.url + "&hashtags=" + this.hashtag);
     }
 }
