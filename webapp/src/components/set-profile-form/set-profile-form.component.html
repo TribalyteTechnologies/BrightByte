@@ -47,7 +47,13 @@
                     {{ "addCommit.fieldRequire" | translate }}</div>
             </ion-row>
         </ion-row>
-        <ion-row class="mini-title">{{ "setProfile.enterEmail" | translate }}</ion-row>
+        <ion-row >
+            <div class="mini-title">{{ "setProfile.enterEmail" | translate }}</div>
+            <div class="tooltip info-icon">
+                <ion-icon name="ios-information-circle-outline"></ion-icon>
+                <div class="tooltip-text" [innerHTML]="('setProfile.committerEmailInfo') | translate"></div>
+            </div>
+        </ion-row>
         <input formControlName="email" class="password-form" type="text"
             [placeholder]="'setProfile.emailFormat' | translate">
         <ion-row *ngIf="(setProfileFG.get('email').errors && setProfileFG.get('email').dirty) || msg">

@@ -230,6 +230,7 @@
         "memberType": "Member Type",
         "invitedEmails": "Invited Emails",
         "inviteEmailsToTeam": "Invite emails to team",
+        "committerEmailInfo": "The committer email is the one from which the commits are pushed to your repositories.",
         "email": "Emails",
         "noMemberRegisteredYet": "There isn't any member registered to this team.",
         "noWorkspaceAvailableYet": "There isn't any workspace available to this team.",
