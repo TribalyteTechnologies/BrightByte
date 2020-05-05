@@ -18,6 +18,8 @@ import { AvatarService } from "../../domain/avatar.service";
 
 export class SetProfileForm {
     public readonly TEAM_NAME_MAX_LENGTH = 20;
+    public readonly MAX_SEASON_LENGTH = 365;
+    public readonly MIN_SEASON_LENGTH = 1;
     public setProfileFG: FormGroup;
     public createTeamFG: FormGroup;
     public isButtonPressed: boolean;
@@ -49,7 +51,8 @@ export class SetProfileForm {
         });
         this.createTeamFG = this.fb.group({
             teamName: ["", [Validators.required, Validators.maxLength(this.TEAM_NAME_MAX_LENGTH)]],
-            invitedEmails: ["", [Validators.required]]
+            invitedEmails: ["", [Validators.required]],
+            seasonLength: [14 , [Validators.required, Validators.min(1), Validators.max(this.MAX_SEASON_LENGTH)]]
         });
     }
 
@@ -85,7 +88,7 @@ export class SetProfileForm {
             });
     }
 
-    public createTeam(teamName: string, invitedEmails: string) {
+    public createTeam(teamName: string, invitedEmails: string, seasonLength: number) {
         this.areEmailsWellFormated = true;
         let emails = invitedEmails.split(this.EMAILS_SEPARATOR).map(email => {
             let mail = email.trim();
@@ -97,7 +100,7 @@ export class SetProfileForm {
         let teamUid;
         this.isButtonPressed = true;
         if (this.areEmailsWellFormated) {
-            this.contractManagerService.createTeam(this.userEmail, teamName)
+            this.contractManagerService.createTeam(this.userEmail, teamName, seasonLength)
                 .then((teamId: number) => {
                     teamUid = teamId;
                     return this.contractManagerService.inviteMultipleEmailsToTeam(

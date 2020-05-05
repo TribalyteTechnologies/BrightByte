@@ -1,7 +1,7 @@
 <div *ngIf="showCreateTeam; else showCreateProfile">
     <h4>{{ "setProfile.createTeamHeader" | translate }}</h4>
     <form [formGroup]="createTeamFG"
-        (ngSubmit)="createTeam(createTeamFG.get('teamName').value, createTeamFG.get('invitedEmails').value)" novalidate>
+        (ngSubmit)="createTeam(createTeamFG.get('teamName').value, createTeamFG.get('invitedEmails').value, createTeamFG.get('seasonLength').value)" novalidate>
         <ion-row class="mini-title">{{ "setProfile.enterTeamName" | translate }}</ion-row>
         <input formControlName="teamName" class="password-form" type="text"
             [placeholder]="'setProfile.teamName' | translate">
@@ -11,6 +11,17 @@
                     {{ "addCommit.fieldRequire" | translate }}</div>
                 <div color="danger" *ngIf="createTeamFG.get('teamName').hasError('maxlength')">
                     {{ "setProfile.teamNameLength" | translate: {length: TEAM_NAME_MAX_LENGTH} }}</div>
+            </ion-row>
+        </ion-row>
+        <ion-row class="mini-title">{{ "setProfile.enterSeasonLenght" | translate }}</ion-row>
+        <input formControlName="seasonLength" class="password-form" type="number"
+            [placeholder]="'setProfile.defaultLength' | translate">
+        <ion-row *ngIf="createTeamFG.get('seasonLength').errors && createTeamFG.get('seasonLength').dirty">
+            <ion-row class="error-body">
+                <div color="danger" *ngIf="createTeamFG.get('seasonLength').hasError('min')">
+                    {{ "setProfile.minSeasonLength" | translate: {length: MIN_SEASON_LENGTH} }}</div>
+                <div color="danger" *ngIf="createTeamFG.get('seasonLength').hasError('max')">
+                    {{ "setProfile.minSeasonLength" | translate: {length: MAX_SEASON_LENGTH} }}</div>
             </ion-row>
         </ion-row>
         <ion-row class="mini-title">{{ "setProfile.emailsToInvite" | translate }}</ion-row>

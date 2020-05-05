@@ -271,7 +271,7 @@ export class ContractManagerService {
         });
     }
 
-    public createTeam(email: string, teamName: string): Promise<number> {
+    public createTeam(email: string, teamName: string, seasonLength: number): Promise<number> {
         let teamManagerContract;
         let teamUid;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
@@ -287,14 +287,14 @@ export class ContractManagerService {
             return teamManagerContract.methods.getTeamMembers(teamUid).call();
         })
         .then((members: any) => {
-            return this.deployAllContracts(teamUid);
+            return this.deployAllContracts(teamUid, seasonLength);
         })
         .then(() => {
             return teamUid;
         });
     }
 
-    public deployAllContracts(teamUId: number): Promise<void | TransactionReceipt | Array<string>> {
+    public deployAllContracts(teamUId: number, seasonLength: number): Promise<void | TransactionReceipt | Array<string>> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
@@ -310,7 +310,7 @@ export class ContractManagerService {
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.methods.deployRoot(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployRoot(teamUId, seasonLength).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
