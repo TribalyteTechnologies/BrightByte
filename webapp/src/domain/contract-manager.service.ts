@@ -14,6 +14,7 @@ import { UserReputation } from "../models/user-reputation.model";
 import { UserCacheService } from "../domain/user-cache.service";
 import { LocalStorageService } from "../core/local-storage.service";
 import { TeamMember } from "../models/team-member.model";
+import { InvitedUser } from "../models/invited-user.model";
 
 interface IContractJson {
     abi: Array<Object>;
@@ -153,6 +154,46 @@ export class ContractManagerService {
         });
     }
 
+    public getInvitedUsersInfo(): Promise<Array<InvitedUser>> {
+        let teamManagerContract;
+        let teamUid;
+        let invitedEmails;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return this.getUserTeam();
+        })
+        .then((teamId: number) => {
+            teamUid = teamId;
+            return teamManagerContract.methods.getNumberOfInvitedBlockPositions(teamUid).call();
+        })
+        .then((blockPositions: number) => {
+            let promises = new Array<Promise<Array<String>>>();
+            for(let i = 0; i <= blockPositions; i++){
+                promises.push(teamManagerContract.methods.getInvitedUsersList(teamUid, i).call());
+            }
+            return Promise.all(promises);
+        })
+        .then((invitedUsersEmails: Array<Array<string>>) => {
+            invitedEmails = invitedUsersEmails.map(emails => Object.keys(emails)
+            .map(key => emails[key])
+            .map(email => {
+                return email;
+            }));
+            invitedEmails = invitedEmails.flat().filter(email => email);
+            let promises = invitedEmails.map(email => {
+                return teamManagerContract.methods.getInvitedUserInfo(email).call();
+            });
+            return Promise.all(promises);
+        })
+        .then(invitedUserInfo => {
+            let invitedUsers = invitedUserInfo.map((userInfo: Array<string>, i: number) => { 
+                return new InvitedUser(invitedEmails[i], parseInt(userInfo[1]), parseInt(userInfo[2]));
+            });
+
+            return invitedUsers;
+        });
+    }
+
     public getTeamMembersInfo(): Promise<Array<Array<TeamMember>>> {
         let teamManagerContract;
         let teamUid;
@@ -241,6 +282,20 @@ export class ContractManagerService {
                 });
             },
             Promise.resolve());
+        });
+    }
+
+    public removeInvitation(email: string): Promise<void | TransactionReceipt> {
+        let teamManagerContract;
+        let teamUid;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return this.getUserTeam();
+        })
+        .then((teamId: number) => {
+            teamUid = teamId;
+            let byteCodeData = teamManagerContract.methods.removeInvitationToTeam(teamUid, email).encodeABI();
+            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
     }
 

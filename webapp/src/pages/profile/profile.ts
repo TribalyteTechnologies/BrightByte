@@ -16,6 +16,7 @@ import { UserNameService } from "../../domain/user-name.service";
 import { UserDetails } from "../../models/user-details.model";
 import { TeamMember } from "../../models/team-member.model";
 import { FormatUtils } from "../../core/format-utils";
+import { InvitedUser } from "../../models/invited-user.model";
 import { from } from "rxjs/observable/from";
 
 @Component({
@@ -54,6 +55,7 @@ export class Profile {
     public isSettingSeasonData = false;
     public isSettingThreshold = false;
     public teamMembers: Array<Array<TeamMember>>;
+    public invitedUsers: Array<InvitedUser>;
     public teamWorkspaces: Array<string>;
     public isBackendAvailable: boolean;
     public commitThreshold: number;
@@ -152,6 +154,10 @@ export class Profile {
         })
         .then((teamName: string) => {
             this.teamName = teamName;
+            return this.contractManagerService.getInvitedUsersInfo();
+        })
+        .then((invitedUsers: Array<InvitedUser>) => {
+            this.invitedUsers = invitedUsers;
             return this.contractManagerService.getTeamMembersInfo();
         })
         .then((teamMembers: Array<Array<TeamMember>>) => {
@@ -363,6 +369,11 @@ export class Profile {
                     this.contractManagerService.inviteToCurrentTeam(emails, userType)
                     .then(() => {
                         this.isInvitingUser = false;
+                        let newInvitedUsers = emails.map(email => {
+                            let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
+                            return new InvitedUser(email, expDateMilis, userType); 
+                        });
+                        this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
                         this.successInviteMsg = this.successMessageInvitation;
                     })
                     .catch(e => {
@@ -378,6 +389,39 @@ export class Profile {
         } else {
             this.errorInviteMsg = this.invitationEmailFormatError;
         }
+    }
+
+    public showRemoveInivitationConfirmation(invitedUser: InvitedUser) {
+        this.translateSrv.get(["setProfile.removeInvitation", "setProfile.removeInvitationConfirmation", "setProfile.remove", "setProfile.cancel"])
+        .subscribe((response) => {
+                let removeInvitation = response["setProfile.removeInvitation"];
+                let removeInvitationConfirmation = response["setProfile.removeInvitationConfirmation"];
+                let remove = response["setProfile.remove"];
+                let cancel = response["setProfile.cancel"];
+
+                let alert = this.alertCtrl.create({
+                    title: removeInvitation,
+                    message: removeInvitationConfirmation,
+                    buttons: [
+                        {
+                            text: cancel,
+                            role: "cancel",
+                            handler: () => {
+                                this.log.d("Cancel clicked");
+                            }
+                        },
+                        {
+                            text: remove,
+                            handler: () => {
+                                this.log.d("Remove clicked");
+                                this.removeInvitation(invitedUser);
+                            }
+                        }
+                    ]
+                });
+                alert.present();
+            }
+        );
     }
 
     public addNewWorkspace(workspace: string) {
@@ -486,6 +530,14 @@ export class Profile {
             });
         }
 
+    }
+
+    private removeInvitation(invitedUser: InvitedUser) {
+        this.contractManagerService.removeInvitation(invitedUser.email)
+        .then(() => {
+            let invitationIndex = this.invitedUsers.indexOf(invitedUser);
+            this.invitedUsers.splice(invitationIndex, 1);
+        });
     }
 
     private removeMember(teamMember: TeamMember) {
