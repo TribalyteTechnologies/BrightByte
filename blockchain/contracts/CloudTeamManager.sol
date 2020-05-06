@@ -9,10 +9,12 @@ contract CloudTeamManager {
         string teamName;
         uint256 adminsCount;
         uint256 membersCount;
+        uint256 invitedUsersCount;
         mapping (uint256 => TeamMember) admins;
         mapping (uint256 => TeamMember) members;
         mapping (string => UserType) invitedUsersEmail;
         mapping (address => UserType) users;
+        mapping (uint256 => string) invitedUsersEmailList;
     }
     
     struct TeamMember {
@@ -24,10 +26,15 @@ contract CloudTeamManager {
         uint256 teamUid;
         uint256 expirationTimestamp;
     }
+    struct InvitedUserInfo {
+        uint256 teamUid;
+        uint256 expirationTimestamp;
+    }
     
     enum UserType { NotRegistered, Admin, Member }
     
     uint256 INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
+    uint256 INVITED_USERS_BLOCK_SIZE = 5;
     
     mapping (uint256 => Team) private createdTeams;
     mapping (address => uint256) private userTeamMap;
@@ -79,7 +86,8 @@ contract CloudTeamManager {
     }
 
     function createTeam(string email, string teamName) public onlyNotRegistered returns (uint256){
-        Team memory team = Team(teamCount, teamName, 0, 0);
+        string[] memory emptyArray;
+        Team memory team = Team(teamCount, teamName, 0, 0, 0);
         createdTeams[teamCount] = team;
         addToTeam(teamCount, msg.sender, email, UserType.Admin);
         teamCount++;
@@ -132,6 +140,10 @@ contract CloudTeamManager {
         require(userType == UserType.Admin || userType == UserType.Member);
         Team storage team = createdTeams[teamUid];
         team.invitedUsersEmail[email] = userType;
+        if (!isUserEmailInvited(email)) {
+            team.invitedUsersEmailList[team.invitedUsersCount] = email;
+            team.invitedUsersCount++;
+        }
         invitedUserTeamMap[email] = InvitedUser(teamUid, now + expMilis);
     }
 
@@ -195,6 +207,28 @@ contract CloudTeamManager {
         return (userIndex, userType, email);
     }
     
+    function getInvitedUsersList(uint256 teamUid, uint256 blockPosition) public view returns(string, string, string, string, string){
+        Team storage team = createdTeams[teamUid];
+        string[] memory emails = new string[](INVITED_USERS_BLOCK_SIZE);
+        uint256 start = blockPosition*INVITED_USERS_BLOCK_SIZE;
+        uint256 end = start+ INVITED_USERS_BLOCK_SIZE;
+        for (uint i = start; i < end; i++) {
+            string memory currentEmail = team.invitedUsersEmailList[i];
+            emails[i-start] = currentEmail;
+        }
+        return (emails[0], emails[1], emails[2],emails[3], emails[4]);
+    }
+    
+    function getNumberOfInvitedBlockPositions(uint256 teamUid) public view returns(uint256) {
+        Team storage team = createdTeams[teamUid];
+        uint256 blockPositions = team.invitedUsersCount/INVITED_USERS_BLOCK_SIZE;
+        if (team.invitedUsersCount%INVITED_USERS_BLOCK_SIZE != 0){
+            blockPositions++;
+        }
+        blockPositions--;
+        return blockPositions;
+    }
+    
     function transferOwnership(address newOwner) public onlyOwner {
         require(newOwner != address(0));
         emit OwnershipTransferred(owner, newOwner);
@@ -210,10 +244,8 @@ contract CloudTeamManager {
         (userIndex, userType, email) = getUserInfo(teamUid, memberAddress);
          if (userType == UserType.Admin) {
             delete team.admins[userIndex];
-            team.adminsCount--;
         } else if (userType == UserType.Member) {
             delete team.members[userIndex];
-            team.membersCount--;
         }
         delete team.users[memberAddress];
         delete userTeamMap[memberAddress];
@@ -225,6 +257,11 @@ contract CloudTeamManager {
         Team storage team = createdTeams[teamUid];
         delete team.invitedUsersEmail[email];
         delete invitedUserTeamMap[email];
+        for (uint i = 0; i < team.invitedUsersCount; i++) {
+            if (keccak256(team.invitedUsersEmailList[i]) == keccak256(email)) {
+                delete team.invitedUsersEmailList[i];
+            }    
+        }
     }
     
     function addToTeam(uint256 teamUid, address memberAddress, string email, UserType userType) private {
