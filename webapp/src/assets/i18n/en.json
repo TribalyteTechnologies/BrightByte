@@ -259,7 +259,14 @@
         "setSeasonLength": "Set length in days",
         "teamSeasons": "The duration of the seasons of your team are the following number of days",
         "seasonLengthSuccessMsg": "The duration of the season has changed correctly",
-        "seasonLengthErrorMsg": "Cannot change the duration of the season. Please contact the service provider."
+        "seasonLengthErrorMsg": "Cannot change the duration of the season. Please contact the service provider.",
+        "setSeasonThreshold": "Set current season threshold",
+        "submitChanges": "Submit Changes",
+        "commitThreshold": "Commit Threshold",
+        "reviewThreshold": "Review Threshold",
+        "invalidThreshold": "Invalid new thresholds",
+        "errorSettingThreshold": "Error setting season threshold. Please contact the service provider.",
+        "successSettingThreshold": "Success setting new season threshold"
     },
     "commitDetails": {
         "author": "Author",

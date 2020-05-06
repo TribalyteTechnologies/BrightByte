@@ -650,6 +650,16 @@ export class ContractManagerService {
             throw e;
         });
     }
+
+    public setCurrentSeasonThreshold(commitThreshold: number, reviewThreshold: number): Promise<void | TransactionReceipt> {
+        return this.initProm.then(([bright, commit, root]) => {
+            let bytecodeData =  root.methods.setCurrentSeasonThresholdOwner(commitThreshold, reviewThreshold).encodeABI();
+            return this.sendTx(bytecodeData, this.contractAddressRoot);
+        }).catch(e => {
+            this.log.e("Error setting new thresold: ", e);
+            throw e;
+        });
+    }
    
 
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {

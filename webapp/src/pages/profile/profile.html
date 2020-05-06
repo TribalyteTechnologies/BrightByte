@@ -95,6 +95,32 @@
                                 <ion-label color="dark">{{ "setProfile.teamSeasons" | translate }}:  {{ seasonLength }}</ion-label>
                             </ion-item>
                         </ng-template>
+                        <ion-row>
+                            <ion-row padding>
+                                <h6 color="dark">{{ "setProfile.setSeasonThreshold" | translate }}: </h6>
+                                <ion-row>
+                                    <ion-col col-6>
+                                        <ion-item>
+                                            <ion-label color="dark">{{ "setProfile.commitThreshold" | translate }}: </ion-label>
+                                            <ion-input type="text" [(ngModel)]="commitThreshold"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                    <ion-col col-6>
+                                        <ion-item>
+                                            <ion-label color="dark">{{ "setProfile.reviewThreshold" | translate }}: </ion-label>
+                                            <ion-input type="text" [(ngModel)]="reviewThreshold"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-row>
+
+                            <ion-item class="team-name-submit">
+                                <button type="submit" class="btn save-button btn__blue" (click)="changeSeasonThreshold(commitThreshold, reviewThreshold)"
+                                    [disabled]="isSettingThreshold">
+                                    {{ "setProfile.submitChanges" | translate }}
+                                </button>
+                            </ion-item>
+                        </ion-row>
                     </ion-list>
                     <ion-spinner *ngIf="isSettingSeasonData"></ion-spinner>
                     <ion-row *ngIf="seasonSuccessMsg" class="success-body">

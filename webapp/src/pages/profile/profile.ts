@@ -5,7 +5,7 @@ import { AppConfig } from "../../app.config";
 import { TranslateService } from "@ngx-translate/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { catchError } from "rxjs/operators";
+import { catchError, map, flatMap } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
 import { IResponse, IWorkspaceResponse } from "../../models/response.model";
@@ -16,6 +16,7 @@ import { UserNameService } from "../../domain/user-name.service";
 import { UserDetails } from "../../models/user-details.model";
 import { TeamMember } from "../../models/team-member.model";
 import { FormatUtils } from "../../core/format-utils";
+import { from } from "rxjs/observable/from";
 
 @Component({
     selector: "profile",
@@ -51,9 +52,12 @@ export class Profile {
     public isSettingTeamName = false;
     public isInvitingUser = false;
     public isSettingSeasonData = false;
+    public isSettingThreshold = false;
     public teamMembers: Array<Array<TeamMember>>;
     public teamWorkspaces: Array<string>;
     public isBackendAvailable: boolean;
+    public commitThreshold: number;
+    public reviewThreshold: number;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly TEAM_API = AppConfig.SERVER_BASE_URL + "/team/";
@@ -156,6 +160,11 @@ export class Profile {
         }).then((seasonState: Array<number>) => {
             this.isSettingSeason = Number(seasonState[0]) === 1;
             this.seasonLength = seasonState[2] / AppConfig.DAY_TO_SECS;
+            return this.contractManagerService.getCurrentSeasonThreshold();
+        }).then(seasonThreshold => {
+            this.log.d("The season thresholds are", seasonThreshold);
+            this.commitThreshold = seasonThreshold[0];
+            this.reviewThreshold = seasonThreshold[1];
             return this.contractManagerService.getUserTeam();
         }).then(userTeam => {
             this.userTeam = userTeam;
@@ -167,7 +176,7 @@ export class Profile {
                 this.isBackendAvailable = true;    
             }
         }).catch(e => {
-            this.log.e("Error: asfdasdasf", e);
+            this.log.e("Error: ", e);
             this.isBackendAvailable = false;
         });
     }
@@ -426,6 +435,38 @@ export class Profile {
                 alert.present();
             }
         );
+    }
+
+    public changeSeasonThreshold(commitThreshold: number, reviewThreshold: number): any {
+        let error: boolean;
+        this.commitThreshold = commitThreshold;
+        this.reviewThreshold = reviewThreshold;
+        if(this.commitThreshold > 0 && this.reviewThreshold > 0) {
+            this.isSettingSeasonData = true;
+            from(this.contractManagerService.setCurrentSeasonThreshold(this.commitThreshold, this.reviewThreshold)).pipe(
+                flatMap(res => {
+                    this.log.d("The user has set a new threshold");
+                    return this.translateSrv.get("setProfile.successSettingThreshold");
+                }),
+                catchError(e => {
+                    this.log.e("Error: ", e);
+                    error = true;
+                    return this.translateSrv.get("setProfile.errorSettingThreshold");
+                }),
+                map((res: string) => {
+                    this.isSettingSeasonData = false;
+                    if(error) {
+                        this.seasonErrorMsg = res;
+                    } else {
+                        this.seasonSuccessMsg = res;
+                    }
+                })
+            ).subscribe();
+        } else {
+            this.translateSrv.get("setProfile.invalidThreshold").subscribe(res => {
+                this.seasonErrorMsg = res;
+            });
+        }
     }
 
     private removeTeamWorkspace(workspace: string) {
