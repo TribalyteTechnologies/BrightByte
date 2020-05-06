@@ -18,7 +18,7 @@ import { AvatarService } from "../../domain/avatar.service";
 
 export class SetProfileForm {
     public readonly TEAM_NAME_MAX_LENGTH = 20;
-    public readonly MAX_SEASON_LENGTH = 365;
+    public readonly DEFAULT_SEASON_LENGTH = 14;
     public readonly MIN_SEASON_LENGTH = 1;
     public setProfileFG: FormGroup;
     public createTeamFG: FormGroup;
@@ -52,7 +52,10 @@ export class SetProfileForm {
         this.createTeamFG = this.fb.group({
             teamName: ["", [Validators.required, Validators.maxLength(this.TEAM_NAME_MAX_LENGTH)]],
             invitedEmails: ["", [Validators.required]],
-            seasonLength: [14 , [Validators.required, Validators.min(1), Validators.max(this.MAX_SEASON_LENGTH)]]
+            seasonLength: [
+                this.DEFAULT_SEASON_LENGTH,
+                [Validators.required, Validators.min(this.MIN_SEASON_LENGTH), Validators.max(AppConfig.MAX_SEASON_LENGTH)]
+            ]
         });
     }
 
