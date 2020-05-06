@@ -27,6 +27,7 @@ const DAY_TO_SECS = 24 * 60 * 60;
 const INITIAL_SEASON_LENGTH = 15;
 const INITIAL_SEASON_DAY_LENGTH_SECS = INITIAL_SEASON_LENGTH * DAY_TO_SECS;
 const NEW_SEASON_LENGTH = 24;
+const INVALID_SEASON_LENGTH = 365 * 11;
 
 
 contract("Bright", accounts => {
@@ -71,10 +72,17 @@ contract("Bright", accounts => {
         parseBnAndAssertEqual(currentSeason[2], NEW_SEASON_LENGTH * DAY_TO_SECS, "The season length change was not done correctly");
     });
 
-    it("should give error changing the season length with an invalid address", async () => {
+    it("Should give error changing the season length with an invalid address", async () => {
         await truffleAssert.reverts(
             rootInstance.setSeasonLength(NEW_SEASON_LENGTH, { from: invalidUser }),
             "The origin address is not allowed"
+        );
+    });
+
+    it("Should give error changing the season length with an invalid length", async () => {
+        await truffleAssert.reverts(
+            rootInstance.setSeasonLength(INVALID_SEASON_LENGTH, { from: adminUser }),
+            "Invalid season length"
         );
     });
 
