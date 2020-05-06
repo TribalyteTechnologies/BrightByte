@@ -140,6 +140,10 @@ contract Root{
         return remoteThreshold.getSeasonThreshold(seasonIndex);
     }
 
+    function getCurrentSeasonThreshold() public view returns (uint256, uint256) {
+        return remoteThreshold.getCurrentSeasonThreshold();
+    }
+
     function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyAdmin {
         return remoteThreshold.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
     }

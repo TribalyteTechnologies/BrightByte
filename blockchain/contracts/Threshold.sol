@@ -53,9 +53,8 @@ contract Threshold {
     }
 
     function setCurrentSeasonThreshold(uint256 commitThreshold, uint256 reviewThreshold) public onlyRoot {
-        if(!seasonThresholds[currentSeasonIndex].isModifiedByRoot) {
-            initSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold, true);
-        }
+        require(!seasonThresholds[currentSeasonIndex].isModifiedByRoot, "The threshold is alredy set");
+        initSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold, true);
     }
 
     function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyRoot {
