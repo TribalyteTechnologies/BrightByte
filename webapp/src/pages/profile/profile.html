@@ -190,10 +190,14 @@
                         </ion-list>
                     </ion-row>
                 </div>
-                <div class="tooltip">
+
+                <ion-row class="bitbucket-container">
                     <h6>{{ "setProfile.bitBucketWorkspaces" | translate }}</h6>
-                    <div class="tooltip-text" [innerHTML]="('setProfile.workspacesDescription') | translate"></div>
-                </div>
+                    <div class="tooltip info-icon">
+                        <ion-icon name="ios-information-circle-outline"></ion-icon>
+                        <div class="tooltip-text" [innerHTML]="('setProfile.workspacesDescription') | translate"></div>
+                    </div>
+                </ion-row>
                 <div class="separator">
                     <div *ngIf="isBackendAvailable; else backendNotAvailable">
                         <ion-row>

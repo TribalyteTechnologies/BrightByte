@@ -244,7 +244,7 @@
         "noWorkspaceAvailableYet": "There isn't any workspace available to this team.",
         "alreadyRegisteredError": "One or more emails are already registered to team.",
         "addNewWorkspace": "Add new workspace",
-        "bitBucketWorkspaces": "BitBucket Workspaces",
+        "bitBucketWorkspaces": "BitBucket Workspaces. (Optional) ",
         "availableWorkspaces": "Available workspaces",
         "workspaceName": "Workspace name",
         "invalidWorkspace": "Please, type the name of the new workspace",

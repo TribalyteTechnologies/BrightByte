@@ -149,10 +149,14 @@ profile {
         color: black;
     }
 
+    .bitbucket-container {
+        padding-top: 15px;
+    }
+
     .tooltip {
         position: relative;
         display: inline-block;
-        padding-top: 15px;
+        margin-left: 7px;
     }
 
     .tooltip .tooltip-text {
@@ -166,7 +170,7 @@ profile {
         border: 1px solid rgba(0, 0, 0, 0.2);
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         top: -30px;
-        margin-left: 90px;
+        margin-left: 30px;
         font-size: 12px;
 
         position: absolute;
@@ -186,6 +190,11 @@ profile {
 
     .tooltip:hover .tooltip-text {
         visibility: visible;
+    }
+
+    .info-icon {
+        font-size: 14px;
+        color: #0D4972;
     }
 }
 
