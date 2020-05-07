@@ -22,13 +22,15 @@ contract CloudTeamManager {
         string email;
     }
     
-    struct InvitedUser {
-        uint256 teamUid;
-        uint256 expirationTimestamp;
+    struct AddressTeamMap{
+        uint256 teamsCount;
+        mapping (uint256 => uint256) indexTeamUidMap;
+        mapping (uint256 => uint256) teamUidIndexMap;
     }
-    struct InvitedUserInfo {
-        uint256 teamUid;
-        uint256 expirationTimestamp;
+    
+    struct InvitedUser {
+        uint256 numberOfInvitations;
+        mapping (uint256 => uint256) teamExpirationMap;
     }
     
     enum UserType { NotRegistered, Admin, Member }
@@ -37,7 +39,7 @@ contract CloudTeamManager {
     uint256 INVITED_USERS_BLOCK_SIZE = 5;
     
     mapping (uint256 => Team) private createdTeams;
-    mapping (address => uint256) private userTeamMap;
+    mapping (address => AddressTeamMap) private userTeamMap;
     mapping (string => InvitedUser) private invitedUserTeamMap;
     
     uint256 private seasonLengthInDays;
@@ -59,37 +61,32 @@ contract CloudTeamManager {
     }
     
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Message sender is not owner");
         _;
     }
     
     modifier onlyAdmins(uint256 teamUid) {
         Team storage team = createdTeams[teamUid];
-        require(team.users[msg.sender] == UserType.Admin);
+        require(team.users[msg.sender] == UserType.Admin, "Message sender is not admin");
         _;
     }
     
     modifier onlyMembersOrAdmins(uint256 teamUid) {
         Team storage team = createdTeams[teamUid];
-        require(team.users[msg.sender] == UserType.Member || team.users[msg.sender] == UserType.Admin);
-        _;
-    }
-    
-    modifier onlyNotRegistered() {
-        require (userTeamMap[msg.sender] == 0);
+        require(team.users[msg.sender] == UserType.Member || team.users[msg.sender] == UserType.Admin, "Message sender is neither admin or member");
         _;
     }
     
     modifier onlySender(address userHash) {
-        require (msg.sender == userHash);
+        require (msg.sender == userHash, "Message sender is not the same as userHash");
         _;
     }
 
-    function createTeam(string email, string teamName) public onlyNotRegistered returns (uint256){
-        string[] memory emptyArray;
+    function createTeam(string email, string teamName) public returns (uint256){
         Team memory team = Team(teamCount, teamName, 0, 0, 0);
         createdTeams[teamCount] = team;
-        addToTeam(teamCount, msg.sender, email, UserType.Admin);
+        address userAddr = teamCount == 0 ? address(0) : msg.sender;
+        addToTeam(teamCount, userAddr, email, UserType.Admin);
         teamCount++;
         return teamCount-1;
     }
@@ -127,24 +124,28 @@ contract CloudTeamManager {
         UserType userType = team.users[memberAddress];
         string memory email;
         if (userType == UserType.Admin) {
-            require(memberAddress != owner);
+            require(memberAddress != owner, "Message sender is not owner");
         }
         email = removeFromTeam(teamUid, memberAddress);
         addToTeam(teamUid, memberAddress, email, userType == UserType.Admin ? UserType.Member : UserType.Admin);
     }
     
-    function inviteToTeam(uint256 teamUid, string email, UserType userType, uint256 expMilis) public onlyAdmins(teamUid){
-        if (expMilis == 0) {
-            expMilis = INVITATION_DURATION_IN_SECS;
+    function inviteToTeam(uint256 teamUid, string email, UserType userType, uint256 expSecs) public onlyAdmins(teamUid){
+        if (expSecs == 0) {
+            expSecs = INVITATION_DURATION_IN_SECS;
         }
-        require(userType == UserType.Admin || userType == UserType.Member);
+        require(userType == UserType.Admin || userType == UserType.Member, "UserType is neither admin or member");
         Team storage team = createdTeams[teamUid];
         team.invitedUsersEmail[email] = userType;
-        if (!isUserEmailInvited(email)) {
+        if (!isUserEmailInvitedToTeam(email, teamUid)) {
             team.invitedUsersEmailList[team.invitedUsersCount] = email;
             team.invitedUsersCount++;
         }
-        invitedUserTeamMap[email] = InvitedUser(teamUid, now + expMilis);
+        InvitedUser storage user = invitedUserTeamMap[email];
+        if (user.teamExpirationMap[teamUid] == 0) {
+            user.numberOfInvitations++;
+        }
+        user.teamExpirationMap[teamUid] = now + expSecs;
     }
 
     function removeInvitationToTeam(uint256 teamUid, string email) public onlyAdmins(teamUid){
@@ -152,19 +153,22 @@ contract CloudTeamManager {
     }
     
     function isUserEmailInvited(string email) public view returns (bool) {
-        return invitedUserTeamMap[email].teamUid != 0;
+        return invitedUserTeamMap[email].numberOfInvitations != 0;
     }
     
-    function getInvitedUserInfo(string email) public view returns (uint256, uint256, UserType) {
+    function isUserEmailInvitedToTeam(string email, uint256 teamUid) public view returns (bool) {
+        return invitedUserTeamMap[email].teamExpirationMap[teamUid] != 0;
+    }
+    
+    function getInvitedUserInfo(string email, uint256 teamUid) public view returns (uint256, uint256, UserType) {
         InvitedUser storage invitedUser = invitedUserTeamMap[email];
-        UserType userType = createdTeams[invitedUser.teamUid].invitedUsersEmail[email];
-        return (invitedUser.teamUid, invitedUser.expirationTimestamp, userType);
+        UserType userType = createdTeams[teamUid].invitedUsersEmail[email];
+        return (teamUid, invitedUser.teamExpirationMap[teamUid], userType);
     }
     
-    function registerToTeam(address memberAddress, string email) public onlySender(memberAddress){
-        uint256 teamUid = invitedUserTeamMap[email].teamUid;
-        require(teamUid != 0);
-        if (invitedUserTeamMap[email].expirationTimestamp > now) {
+    function registerToTeam(address memberAddress, string email, uint256 teamUid) public onlySender(memberAddress){
+        require(teamUid != 0 && isUserEmailInvitedToTeam(email, teamUid), "TeamUid is 0 or email is not invited to team");
+        if (invitedUserTeamMap[email].teamExpirationMap[teamUid] > now) {
             addToTeam(teamUid, memberAddress, email, UserType.NotRegistered);
         } else {
             removeInvitation(teamUid, email);
@@ -185,8 +189,13 @@ contract CloudTeamManager {
         return (admins, members);
     }
     
-    function getUserTeam(address memberAddress) public view returns(uint256) {
-        return userTeamMap[memberAddress];
+    function getUserTeam(address memberAddress) public view returns(uint256[]) {
+        AddressTeamMap storage addrTeamMap = userTeamMap[memberAddress];
+        uint256[] memory teamUids = new uint256[](addrTeamMap.teamsCount);
+        for (uint i = 0; i < addrTeamMap.teamsCount; i++) {
+            teamUids[i] = addrTeamMap.indexTeamUidMap[i];
+        }
+        return teamUids;
     }
     
     function getUserType(uint256 teamUid, address memberAddress) public view returns (UserType){
@@ -230,13 +239,13 @@ contract CloudTeamManager {
     }
     
     function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
+        require(newOwner != address(0), "NewOwner address is 0");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
     
     function removeFromTeam(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) returns (string){
-        require(memberAddress != owner);
+        require(memberAddress != owner, "Message sender is not owner");
         Team storage team = createdTeams[teamUid];
         uint256 userIndex;
         string memory email;
@@ -248,7 +257,11 @@ contract CloudTeamManager {
             delete team.members[userIndex];
         }
         delete team.users[memberAddress];
-        delete userTeamMap[memberAddress];
+        
+        AddressTeamMap storage addrTeamMap = userTeamMap[memberAddress];
+        uint256 teamIndex = addrTeamMap.teamUidIndexMap[teamUid];
+        delete addrTeamMap.indexTeamUidMap[teamIndex];
+        delete addrTeamMap.teamUidIndexMap[teamUid];
         
         return email;
     }
@@ -268,7 +281,7 @@ contract CloudTeamManager {
         Team storage team = createdTeams[teamUid];
         if (userType == UserType.NotRegistered) {
             userType = team.invitedUsersEmail[email];
-            require(userType == UserType.Admin || userType == UserType.Member);
+            require(userType == UserType.Admin || userType == UserType.Member, "UserType is neither admin or member");
         }
         if (userType == UserType.Admin) {
             team.admins[team.adminsCount] = TeamMember(memberAddress, email);
@@ -279,7 +292,10 @@ contract CloudTeamManager {
             team.membersCount++;
             team.users[memberAddress] = UserType.Member;
         }
-        userTeamMap[memberAddress] = teamUid;
+        AddressTeamMap storage addrTeamMap = userTeamMap[memberAddress];
+        addrTeamMap.indexTeamUidMap[addrTeamMap.teamsCount] = teamUid;
+        addrTeamMap.teamUidIndexMap[teamUid] = addrTeamMap.teamsCount;
+        addrTeamMap.teamsCount++;
         delete team.invitedUsersEmail[email];
         delete invitedUserTeamMap[email];
     }
