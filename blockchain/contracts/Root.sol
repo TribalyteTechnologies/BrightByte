@@ -9,6 +9,7 @@ import { Reputation } from "./Reputation.sol";
 
 contract Root{
     mapping (address => bool) private adminUsers;
+    mapping (address => bool) private allowAddresses;
 
     Bright remoteBright;
     address brightAddress;
@@ -23,7 +24,7 @@ contract Root{
 
 
     modifier onlyAdmin() {
-       require (adminUsers[msg.sender], "The origin address is not allowed");
+       require (adminUsers[msg.sender], "The origin address is not allowed. Not an admin");
         _;
     }
     modifier onlyCommit() {
@@ -46,7 +47,7 @@ contract Root{
         remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcher);
         cloudEventDispatcherAddress = cloudEventDispatcher;
         remoteCommits.init(address(this));
-        remoteBright.init(address(this), cloudEventDispatcher, teamId, seasonLength);
+        remoteBright.init(address(this), cloudEventDispatcher, teamId, seasonLength, userAdmin);
         uint256 currentSeasonIndex;
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;
@@ -158,5 +159,10 @@ contract Root{
 
     function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyBright {
         remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
+    }
+
+    function allowNewUser(address userAddress) public onlyBright {
+        allowAddresses[userAddress] = true;
+        remoteCommits.allowNewUser(userAddress);
     }
 }

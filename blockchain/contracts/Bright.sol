@@ -20,6 +20,8 @@ contract Bright {
 
     BrightModels.HashUserMap private hashUserMap;
     mapping (bytes32 => bool) private allCommits;
+    mapping (string => bool) private invitedEmails;
+    mapping (address => bool) private allowAddresses;
     BrightModels.EmailUserMap private emailUserMap;
     address[] private allUsersArray;
 
@@ -31,16 +33,21 @@ contract Bright {
     constructor() public {}
 
     modifier onlyRoot() {
-        require(msg.sender == rootAddress);
+        require(msg.sender == rootAddress, "Invalid Root addresss");
         _;
     }
 
-    modifier onlyDapp() {
-        require (msg.sender == rootAddress || msg.sender == tx.origin);
+    modifier onlyAllow() {
+        require (allowAddresses[msg.sender], "The address is not allowed");
         _;
     }
 
-    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength) public {
+    modifier onlyInvited(string email) {
+        require(invitedEmails[email], "The email is not allowed");
+        _;
+    }
+
+    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) public {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
@@ -50,38 +57,46 @@ contract Bright {
         teamUid = teamId;
         initialSeasonTimestamp = block.timestamp;
         seasonLengthSecs = seasonLength * DAY_LENGTH_SECS;
+        allowAddresses[rootAddress] = true;
+        allowAddresses[msg.sender] = true;
+        allowAddresses[userAdmin] = true;
     }
 
-    function setProfile (string name, string email) public {
+    function inviteUserEmail(string email) public {
+        invitedEmails[email] = true;
+    }
+
+    function setProfile (string name, string email) public onlyInvited(email) {
         address user = tx.origin;
         bytes32 emailId = keccak256(email);
-        if (bytes(hashUserMap.map[user].email).length == 0){
-            BrightModels.UserProfile storage newUser = hashUserMap.map[user];
-            newUser.name = name;
-            newUser.email = email;
-            newUser.hash = user;
-            emailUserMap.map[emailId] = user;
-            allUsersArray.push(user);
-            remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
-        }
+        require(bytes(hashUserMap.map[user].email).length == 0, "User alredy exist");
+        BrightModels.UserProfile storage newUser = hashUserMap.map[user];
+        newUser.name = name;
+        newUser.email = email;
+        newUser.hash = user;
+        emailUserMap.map[emailId] = user;
+        allUsersArray.push(user);
+        remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
+        allowAddresses[user] = true;
+        root.allowNewUser(user);
     }
 
-    function setSeasonLength(uint256 seasonLengthDays) public onlyRoot {
+    function setSeasonLength(uint256 seasonLengthDays) public {
         uint256 changeLimitTime = initialSeasonTimestamp + seasonLengthSecs - LIMIT_CHANGE_LENGTH;
         require(currentSeasonIndex == 1 &&  block.timestamp < changeLimitTime, "Not able to change the seasons length");
         require(seasonLengthDays < MAX_SEASON_LENGTH, "Invalid season length");
         seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
     }
 
-    function getUsersAddress() public onlyDapp view returns (address[]) {
+    function getUsersAddress() public onlyAllow view returns (address[]) {
         return allUsersArray;
     }
 
-    function getAddressByEmail(bytes32 email) public onlyDapp view returns(address) {
+    function getAddressByEmail(bytes32 email) public onlyAllow view returns(address) {
         return emailUserMap.map[email];
     }
 
-    function getUser (address userHash) public onlyDapp view returns (string, string, uint256, uint256, uint256, address) {
+    function getUser (address userHash) public onlyAllow view returns (string, string, uint256, uint256, uint256, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.name,
             user.email,
@@ -92,7 +107,7 @@ contract Bright {
         );
     }
 
-    function getUserSeasonReputation(address userHash, uint256 seasonIndex) public onlyDapp view returns(string, string, uint256, uint256, uint256, uint256, address, uint256) {
+    function getUserSeasonReputation(address userHash, uint256 seasonIndex) public onlyAllow view returns(string, string, uint256, uint256, uint256, uint256, address, uint256) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
         return (user.name,
@@ -139,7 +154,7 @@ contract Bright {
         }
     }
 
-    function removeUserCommit(bytes32 url) public onlyDapp {
+    function removeUserCommit(bytes32 url) public onlyAllow {
         address userHash = tx.origin;
         uint256 finish;
         uint256 pending;
@@ -162,7 +177,7 @@ contract Bright {
         remoteCloudEventDispatcher.emitDeletedCommitEvent(teamUid, userHash, url);
     }
     
-    function getUserSeasonState(address userHash, uint256 indSeason) public onlyDapp view returns(uint256, uint256, uint256, uint256, uint256) {
+    function getUserSeasonState(address userHash, uint256 indSeason) public onlyAllow view returns(uint256, uint256, uint256, uint256, uint256) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
         return (UtilsLib.getNonEmptyPositions(userSeason.pendingReviews),
                 UtilsLib.getNonEmptyPositions(userSeason.finishedReviews),
@@ -172,7 +187,7 @@ contract Bright {
         );
     }
 
-    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end) public onlyDapp view returns(bytes32[], bytes32[], bytes32[], bytes32[], bytes32[]) {
+    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end) public onlyAllow view returns(bytes32[], bytes32[], bytes32[], bytes32[], bytes32[]) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
         return (UtilsLib.splitArray(userSeason.pendingReviews, start, end),
                 UtilsLib.splitArray(userSeason.finishedReviews, start, end),
@@ -182,7 +197,7 @@ contract Bright {
         );
     }
 
-    function getNumbers() public onlyDapp view returns(uint){
+    function getNumbers() public onlyAllow view returns(uint){
         return allUsersArray.length;
     }
 
@@ -208,16 +223,16 @@ contract Bright {
         remoteCloudEventDispatcher.emitNewReviewEvent(teamUid, sender, reviewer.globalStats.reviewsMade);
     }
 
-    function setUserName(string name) public onlyDapp {
+    function setUserName(string name) public onlyAllow {
         address userHash = tx.origin;
         hashUserMap.map[userHash].name = name;
     }
 
-    function getUserName(address userHash) public onlyDapp view returns (string) {
+    function getUserName(address userHash) public onlyAllow view returns (string) {
         return (hashUserMap.map[userHash].name);
     }
 
-    function getFeedback(bytes32 url) public onlyDapp view returns (bool){
+    function getFeedback(bytes32 url) public onlyAllow view returns (bool){
         address sender = tx.origin;
         BrightModels.UserSeason storage userSeason = hashUserMap.map[sender].seasonData[currentSeasonIndex];
         bool read = false;
@@ -270,15 +285,15 @@ contract Bright {
         season.agreedPercentage = (season.positeVotes * FEEDBACK_MULTIPLER) / (season.positeVotes + season.negativeVotes);
     }
 
-    function getToRead(address userHash) public onlyDapp view returns (bytes32[]) {
+    function getToRead(address userHash) public onlyAllow view returns (bytes32[]) {
         return (hashUserMap.map[userHash].seasonData[currentSeasonIndex].toRead);
     }
 
-    function getVotes(address userHash, bool global, uint256 indSeason) public onlyDapp view returns (uint, uint) {
+    function getVotes(address userHash, bool global, uint256 indSeason) public onlyAllow view returns (uint, uint) {
         return global ? (hashUserMap.map[userHash].globalStats.positeVotes, hashUserMap.map[userHash].globalStats.negativeVotes) : (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
     }
 
-    function getCurrentSeason() public onlyDapp view returns (uint256, uint256, uint256) {
+    function getCurrentSeason() public onlyAllow view returns (uint256, uint256, uint256) {
         uint256 totalTimeSeasons = currentSeasonIndex * seasonLengthSecs;
         uint256 seasonFinaleTime = initialSeasonTimestamp + totalTimeSeasons;
         return (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs);
@@ -295,11 +310,11 @@ contract Bright {
         }
     }
 
-    function checkCommitSeason(bytes32 url,address author) public onlyDapp view returns (bool) {
+    function checkCommitSeason(bytes32 url,address author) public onlyAllow view returns (bool) {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
 
-    function getTeamId() public onlyDapp view returns (uint256) {
+    function getTeamId() public onlyAllow view returns (uint256) {
         return teamUid;
     }
 }

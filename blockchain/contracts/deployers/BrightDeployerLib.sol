@@ -8,4 +8,9 @@ library BrightDeployerLib {
     function deploy() public returns (address) {
         return new Bright();
     }
+
+    function inviteUserEmail(address brightAddress, string email) public {
+        Bright remoteBright = Bright(brightAddress);
+        remoteBright.inviteUserEmail(email);
+    }
 }

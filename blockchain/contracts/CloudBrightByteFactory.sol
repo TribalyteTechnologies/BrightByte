@@ -65,6 +65,11 @@ contract CloudBrightByteFactory {
     function getEventDispatcherAddress() public view returns (address) {
         return eventDispatcherAddress;
     }
+
+    function inviteUserEmail(uint256 teamUid, string email) public {
+        TeamContracts memory contracts = teamContracts[teamUid];
+        BrightDeployerLib.inviteUserEmail(contracts.brightAddress, email);
+    }
     
     function allowEventDispatcherForContract(address contractAddress) private{
         remoteEventDispatcher.addContractAllow(contractAddress);
