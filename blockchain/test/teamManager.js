@@ -50,6 +50,7 @@ contract("CloudTeamManager", accounts => {
             .then(teamMembers => {
                 let isUserCreatedAdmin = teamMembers[0].find(adminAddress => adminAddress === adminOwnerAccount) === adminOwnerAccount;
                 assert(isUserCreatedAdmin, "Creator user is not admin");
+                return deployTeamContracts(teamManagerInstance, team1Uid, INITIAL_SEASON_LENGTH, adminOwnerAccount);
             });
         }
     );
@@ -328,4 +329,11 @@ function parseBn(bigNumber) {
 
 function openConnection() {
     return new Web3(new Web3.providers.HttpProvider(NODE_URL));
+}
+
+async function deployTeamContracts(teamManagerInstance, teamUid, seasonLength, adminUserAddress) {
+    tx = await teamManagerInstance.deployBright(teamUid, { from: adminUserAddress });
+    tx = await teamManagerInstance.deployCommits(teamUid, { from: adminUserAddress });
+    tx = await teamManagerInstance.deployThreshold(teamUid, { from: adminUserAddress });
+    tx = await teamManagerInstance.deployRoot(teamUid, seasonLength, { from: adminUserAddress });
 }
