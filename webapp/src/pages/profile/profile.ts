@@ -369,9 +369,16 @@ export class Profile {
                     this.contractManagerService.inviteToCurrentTeam(emails, userType)
                     .then(() => {
                         this.isInvitingUser = false;
-                        let newInvitedUsers = emails.map(email => {
+                        let newInvitedUsers = new Array<InvitedUser>();
+                        emails.forEach(email => {
                             let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
-                            return new InvitedUser(email, expDateMilis, userType); 
+                            let isAlreadyInTheList = this.invitedUsers.filter(user => user.email === email);
+                            if (isAlreadyInTheList.length > 0) {
+                                let index = this.invitedUsers.indexOf(isAlreadyInTheList[0]);
+                                this.invitedUsers[index] = new InvitedUser(email, expDateMilis, userType);
+                            } else {
+                                newInvitedUsers.push(new InvitedUser(email, expDateMilis, userType)); 
+                            }
                         });
                         this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
                         this.successInviteMsg = this.successMessageInvitation;
