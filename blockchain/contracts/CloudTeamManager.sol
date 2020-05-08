@@ -298,8 +298,7 @@ contract CloudTeamManager {
         addrTeamMap.indexTeamUidMap[addrTeamMap.teamsCount] = teamUid;
         addrTeamMap.teamUidIndexMap[teamUid] = addrTeamMap.teamsCount;
         addrTeamMap.teamsCount++;
-        delete team.invitedUsersEmail[email];
-        delete invitedUserTeamMap[email];
+        removeInvitation(teamUid, email);
     }
     
     function getUserIndexAndType(uint256 teamUid, address memberAddress)  private view returns (uint256, UserType){
