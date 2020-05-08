@@ -16,8 +16,8 @@ library BrightByteLib {
         uint256 totalReviews;
         for(uint i = 0; i < numberOfUsers; i++) {
             BrightModels.UserSeason memory userSeason = hashUserMap.map[usersAddress[i]].seasonData[currentSeasonIndex];
-            totalCommits = userSeason.urlSeasonCommits.length;
-            totalReviews = userSeason.finishedReviews.length;
+            totalCommits += userSeason.urlSeasonCommits.length;
+            totalReviews += userSeason.finishedReviews.length;
         }
         uint256 averageNumberOfCommits = totalCommits / numberOfUsers;
         uint256 averageNumberOfReviews = totalReviews / numberOfUsers;
