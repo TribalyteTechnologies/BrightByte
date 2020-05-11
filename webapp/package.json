@@ -62,6 +62,7 @@
         "path": "0.12.7",
         "sass-lint": "1.12.1",
         "shx": "0.3.2",
+        "readable-stream": "2.3.7",
         "types-ethereumjs-util": "0.0.8",
         "typescript": "2.4.2",
         "utf8": "3.0.0",
