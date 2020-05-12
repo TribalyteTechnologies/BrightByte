@@ -50,7 +50,7 @@ contract("CloudTeamManager", accounts => {
             .then(teamMembers => {
                 let isUserCreatedAdmin = teamMembers[0].find(adminAddress => adminAddress === adminOwnerAccount) === adminOwnerAccount;
                 assert(isUserCreatedAdmin, "Creator user is not admin");
-                return deployTeamContracts(teamManagerInstance, team1Uid, INITIAL_SEASON_LENGTH, adminOwnerAccount);
+                return deployTeamContracts(emailUser0, teamManagerInstance, team1Uid, INITIAL_SEASON_LENGTH, adminOwnerAccount);
             });
         }
     );
@@ -123,7 +123,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(response => {
                 assert(response.receipt.status);
-                return teamManagerInstance.deployRoot(team1Uid, INITIAL_SEASON_LENGTH, { from: adminOwnerAccount });
+                return teamManagerInstance.deployRoot(emailUser0, team1Uid, INITIAL_SEASON_LENGTH, { from: adminOwnerAccount });
             })
             .then(response => {
                 assert(response.receipt.status);
@@ -331,9 +331,9 @@ function openConnection() {
     return new Web3(new Web3.providers.HttpProvider(NODE_URL));
 }
 
-async function deployTeamContracts(teamManagerInstance, teamUid, seasonLength, adminUserAddress) {
+async function deployTeamContracts(userMail, teamManagerInstance, teamUid, seasonLength, adminUserAddress) {
     tx = await teamManagerInstance.deployBright(teamUid, { from: adminUserAddress });
     tx = await teamManagerInstance.deployCommits(teamUid, { from: adminUserAddress });
     tx = await teamManagerInstance.deployThreshold(teamUid, { from: adminUserAddress });
-    tx = await teamManagerInstance.deployRoot(teamUid, seasonLength, { from: adminUserAddress });
+    tx = await teamManagerInstance.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
 }

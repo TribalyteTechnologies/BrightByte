@@ -22,7 +22,7 @@ contract CloudTeamManager {
         string email;
     }
 
-    struct AddressTeamMap{
+    struct AddressTeamMap {
         uint256 teamsCount;
         mapping (uint256 => uint256) indexTeamUidMap;
         mapping (uint256 => uint256) teamUidIndexMap;
@@ -55,9 +55,9 @@ contract CloudTeamManager {
     constructor(address bbFactoryAddr, uint256 seasonLength) public {
         owner = msg.sender;
         teamCount = 0;
-        createTeam("unregistered@brightbyteapp.com", "Default team");
         bbFactoryAddress = bbFactoryAddr;
         remoteBbFactory = CloudBrightByteFactory(bbFactoryAddress);
+        createTeam("unregistered@brightbyteapp.com", "Default team");
         seasonLengthInDays = seasonLength;
     }
 
@@ -83,13 +83,13 @@ contract CloudTeamManager {
         _;
     }
 
-    function createTeam(string email, string teamName) public returns (uint256){
+    function createTeam(string email, string teamName) public returns (uint256) {
         Team memory team = Team(teamCount, teamName, 0, 0, 0);
         createdTeams[teamCount] = team;
         address userAddr = teamCount == 0 ? address(0) : msg.sender;
         addToTeam(teamCount, userAddr, email, UserType.Admin);
         teamCount++;
-        return teamCount-1;
+        return teamCount - 1;
     }
 
     function deployBright(uint256 teamUid) public onlyAdmins(teamUid) {
@@ -104,23 +104,24 @@ contract CloudTeamManager {
         remoteBbFactory.deployThreshold(teamUid);
     }
 
-    function deployRoot(uint256 teamUid, uint256 seasonLength) public onlyAdmins(teamUid) {
+    function deployRoot(string email, uint256 teamUid, uint256 seasonLength) public onlyAdmins(teamUid) {
         remoteBbFactory.deployRoot(teamUid, createdTeams[teamUid].admins[0].memberAddress, seasonLength);
+        remoteBbFactory.inviteUserEmail(teamUid, email);
     }
 
     function getTeamContractAddresses(uint256 teamUid) public view onlyMembersOrAdmins(teamUid) returns (address, address, address, address) {
         return remoteBbFactory.getTeamContractAddresses(teamUid);
     }
 
-    function getTeamName(uint256 teamUid) public view returns (string){
+    function getTeamName(uint256 teamUid) public view returns (string) {
         return createdTeams[teamUid].teamName;
     }
 
-    function setTeamName(uint256 teamUid, string teamName) public onlyAdmins(teamUid){
+    function setTeamName(uint256 teamUid, string teamName) public onlyAdmins(teamUid) {
         createdTeams[teamUid].teamName = teamName;
     }
 
-    function toggleUserType(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid){
+    function toggleUserType(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) {
         Team storage team = createdTeams[teamUid];
         UserType userType = team.users[memberAddress];
         string memory email;
@@ -131,7 +132,7 @@ contract CloudTeamManager {
         addToTeam(teamUid, memberAddress, email, userType == UserType.Admin ? UserType.Member : UserType.Admin);
     }
 
-    function inviteToTeam(uint256 teamUid, string email, UserType userType, uint256 expSecs) public onlyAdmins(teamUid){
+    function inviteToTeam( uint256 teamUid, string email, UserType userType, uint256 expSecs) public onlyAdmins(teamUid) {
         if (expSecs == 0) {
             expSecs = INVITATION_DURATION_IN_SECS;
         }
@@ -143,15 +144,15 @@ contract CloudTeamManager {
             team.invitedUsersCount++;
         }
         InvitedUser storage user = invitedUserTeamMap[email];
+        require(teamUid != 0);
         if (user.teamExpirationMap[teamUid] == 0) {
-            user.indexTeamUidMap[user.numberOfInvitations] == teamUid;
+            user.indexTeamUidMap[user.numberOfInvitations] = teamUid;
             user.numberOfInvitations++;
         }
         user.teamExpirationMap[teamUid] = now + expSecs;
-        remoteBbFactory.inviteUserEmail(teamUid, email);
     }
 
-    function removeInvitationToTeam(uint256 teamUid, string email) public onlyAdmins(teamUid){
+    function removeInvitationToTeam(uint256 teamUid, string email) public onlyAdmins(teamUid) {
         removeInvitation(teamUid, email);
     }
 
@@ -166,9 +167,9 @@ contract CloudTeamManager {
     function getAllTeamInvitationsByEmail(string email) public view returns (uint256[]) {
         InvitedUser storage user = invitedUserTeamMap[email];
         uint256[] memory teamUidInvitations = new uint256[](user.numberOfInvitations);
-        for (uint i = 0; i < user.numberOfInvitations; i++) {
+        for (uint256 i = 0; i < user.numberOfInvitations; i++) {
             uint256 teamUid = user.indexTeamUidMap[i];
-            if (teamUid != 0){
+            if (teamUid != 0) {
                 teamUidInvitations[i] = teamUid;
             }
         }
@@ -181,43 +182,44 @@ contract CloudTeamManager {
         return (teamUid, invitedUser.teamExpirationMap[teamUid], userType);
     }
 
-    function registerToTeam(address memberAddress, string email, uint256 teamUid) public onlySender(memberAddress){
+    function registerToTeam( address memberAddress, string email, uint256 teamUid) public onlySender(memberAddress) {
         require(teamUid != 0 && isUserEmailInvitedToTeam(email, teamUid), "TeamUid is 0 or email is not invited to team");
         if (invitedUserTeamMap[email].teamExpirationMap[teamUid] > now) {
             addToTeam(teamUid, memberAddress, email, UserType.NotRegistered);
+            remoteBbFactory.inviteUserEmail(teamUid, email);
         } else {
             removeInvitation(teamUid, email);
         }
     }
 
-    function getTeamMembers(uint256 teamUid) public view returns(address[], address[]) {
-        uint adminsCount = createdTeams[teamUid].adminsCount;
-        uint membersCount = createdTeams[teamUid].membersCount;
+    function getTeamMembers(uint256 teamUid) public view returns (address[], address[]) {
+        uint256 adminsCount = createdTeams[teamUid].adminsCount;
+        uint256 membersCount = createdTeams[teamUid].membersCount;
         address[] memory admins = new address[](adminsCount);
         address[] memory members = new address[](membersCount);
-        for (uint i = 0; i < adminsCount; i++) {
+        for (uint256 i = 0; i < adminsCount; i++) {
             admins[i] = createdTeams[teamUid].admins[i].memberAddress;
         }
-        for (uint j = 0; j < membersCount; j++) {
+        for (uint256 j = 0; j < membersCount; j++) {
             members[j] = createdTeams[teamUid].members[j].memberAddress;
         }
         return (admins, members);
     }
 
-    function getUserTeam(address memberAddress) public view returns(uint256[]) {
+    function getUserTeam(address memberAddress) public view returns (uint256[]) {
         AddressTeamMap storage addrTeamMap = userTeamMap[memberAddress];
         uint256[] memory teamUids = new uint256[](addrTeamMap.teamsCount);
-        for (uint i = 0; i < addrTeamMap.teamsCount; i++) {
+        for (uint256 i = 0; i < addrTeamMap.teamsCount; i++) {
             teamUids[i] = addrTeamMap.indexTeamUidMap[i];
         }
         return teamUids;
     }
 
-    function getUserType(uint256 teamUid, address memberAddress) public view returns (UserType){
+    function getUserType(uint256 teamUid, address memberAddress) public view returns (UserType) {
         return createdTeams[teamUid].users[memberAddress];
     }
 
-    function getUserInfo(uint256 teamUid, address memberAddress) public view returns (uint256, UserType, string){
+    function getUserInfo(uint256 teamUid, address memberAddress) public view returns (uint256, UserType, string) {
         Team storage team = createdTeams[teamUid];
         uint256 userIndex;
         UserType userType;
@@ -231,22 +233,23 @@ contract CloudTeamManager {
         return (userIndex, userType, email);
     }
 
-    function getInvitedUsersList(uint256 teamUid, uint256 blockPosition) public view returns(string, string, string, string, string){
+    function getInvitedUsersList(uint256 teamUid, uint256 blockPosition) public view returns (string, string, string, string, string) {
         Team storage team = createdTeams[teamUid];
         string[] memory emails = new string[](INVITED_USERS_BLOCK_SIZE);
-        uint256 start = blockPosition*INVITED_USERS_BLOCK_SIZE;
-        uint256 end = start+ INVITED_USERS_BLOCK_SIZE;
-        for (uint i = start; i < end; i++) {
+        uint256 start = blockPosition * INVITED_USERS_BLOCK_SIZE;
+        uint256 end = start + INVITED_USERS_BLOCK_SIZE;
+        for (uint256 i = start; i < end; i++) {
             string memory currentEmail = team.invitedUsersEmailList[i];
-            emails[i-start] = currentEmail;
+            emails[i - start] = currentEmail;
         }
-        return (emails[0], emails[1], emails[2],emails[3], emails[4]);
+        return (emails[0], emails[1], emails[2], emails[3], emails[4]);
     }
 
-    function getNumberOfInvitedBlockPositions(uint256 teamUid) public view returns(uint256) {
+    function getNumberOfInvitedBlockPositions(uint256 teamUid) public view returns (uint256) {
         Team storage team = createdTeams[teamUid];
-        uint256 blockPositions = team.invitedUsersCount/INVITED_USERS_BLOCK_SIZE;
-        if (team.invitedUsersCount%INVITED_USERS_BLOCK_SIZE != 0){
+        uint256 blockPositions = team.invitedUsersCount /
+            INVITED_USERS_BLOCK_SIZE;
+        if (team.invitedUsersCount % INVITED_USERS_BLOCK_SIZE != 0) {
             blockPositions++;
         }
         blockPositions--;
@@ -259,14 +262,14 @@ contract CloudTeamManager {
         owner = newOwner;
     }
 
-    function removeFromTeam(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) returns (string){
+    function removeFromTeam(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) returns (string) {
         require(memberAddress != owner, "Message sender is not owner");
         Team storage team = createdTeams[teamUid];
         uint256 userIndex;
         string memory email;
         UserType userType;
         (userIndex, userType, email) = getUserInfo(teamUid, memberAddress);
-         if (userType == UserType.Admin) {
+        if (userType == UserType.Admin) {
             delete team.admins[userIndex];
         } else if (userType == UserType.Member) {
             delete team.members[userIndex];
@@ -281,28 +284,31 @@ contract CloudTeamManager {
         return email;
     }
 
-    function removeInvitation(uint256 teamUid, string email) private{
+    function removeInvitation(uint256 teamUid, string email) private {
         Team storage team = createdTeams[teamUid];
         InvitedUser storage user = invitedUserTeamMap[email];
         delete team.invitedUsersEmail[email];
         delete user.teamExpirationMap[teamUid];
-        for (uint i = 0; i < user.numberOfInvitations; i++) {
-            if (user.indexTeamUidMap[i] == teamUid){
+        for (uint256 i = 0; i < user.numberOfInvitations; i++) {
+            if (user.indexTeamUidMap[i] == teamUid) {
                 delete user.indexTeamUidMap[i];
             }
         }
-        for (uint j = 0; j < team.invitedUsersCount; j++) {
+        for (uint256 j = 0; j < team.invitedUsersCount; j++) {
             if (keccak256(team.invitedUsersEmailList[j]) == keccak256(email)) {
                 delete team.invitedUsersEmailList[j];
             }
         }
     }
 
-    function addToTeam(uint256 teamUid, address memberAddress, string email, UserType userType) private {
+    function addToTeam( uint256 teamUid, address memberAddress, string email, UserType userType) private {
         Team storage team = createdTeams[teamUid];
         if (userType == UserType.NotRegistered) {
             userType = team.invitedUsersEmail[email];
-            require(userType == UserType.Admin || userType == UserType.Member, "UserType is neither admin or member");
+            require(
+                userType == UserType.Admin || userType == UserType.Member,
+                "UserType is neither admin or member"
+            );
         }
         if (userType == UserType.Admin) {
             team.admins[team.adminsCount] = TeamMember(memberAddress, email);
@@ -321,18 +327,21 @@ contract CloudTeamManager {
         removeInvitation(teamUid, email);
     }
 
-    function getUserIndexAndType(uint256 teamUid, address memberAddress)  private view returns (uint256, UserType){
+    function getUserIndexAndType(uint256 teamUid, address memberAddress)
+        private
+        view
+        returns (uint256, UserType) {
         Team storage team = createdTeams[teamUid];
         UserType memberType = team.users[memberAddress];
-        uint numberOfUsers = memberType == UserType.Admin ? team.adminsCount : team.membersCount;
+        uint256 numberOfUsers = memberType == UserType.Admin ? team.adminsCount : team.membersCount;
         TeamMember memory auxMember;
-        for (uint i = 0; i < numberOfUsers; i++) {
+        for (uint256 i = 0; i < numberOfUsers; i++) {
             if (memberType == UserType.Admin) {
-                auxMember  = team.admins[i];
+                auxMember = team.admins[i];
             } else if (memberType == UserType.Member) {
-                auxMember  = team.members[i];
+                auxMember = team.members[i];
             }
-            if (auxMember.memberAddress == memberAddress){
+            if (auxMember.memberAddress == memberAddress) {
                 return (i, memberType);
             }
         }

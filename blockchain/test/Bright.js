@@ -80,8 +80,8 @@ contract("Bright", accounts => {
     });
 
     it("Should Create two users", async () => {
-        inviteUser(cloudTeamManager, teamUid, EMAIL_USER_ONE, ADMIN_USERTYPE, LONG_EXP_SECS, adminUserAddress);
-        inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
+        await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_ONE, accountOne, ADMIN_USERTYPE, LONG_EXP_SECS, adminUserAddress);
+        await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
         let tx1 = await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
         let tx2 = await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
         let usersAddress = await brightInstance.getUsersAddress({ from: adminUserAddress });
@@ -152,11 +152,11 @@ contract("Bright", accounts => {
 async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName, seasonLength, adminUserAddress) {
     let tx = await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
     let response = await cloudTeamManager.getUserTeam(adminUserAddress);
-    let teamUid = parseBnToInt(response);
+    let teamUid = parseBnToInt(response[response.length-1]);
     tx = await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
     tx = await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
     tx = await cloudTeamManager.deployThreshold(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployRoot(teamUid, seasonLength, { from: adminUserAddress });
+    tx = await cloudTeamManager.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
     return teamUid;
 }
 
@@ -197,11 +197,24 @@ function openConnection() {
     return new Web3(new Web3.providers.HttpProvider(NODE_URL));
 }
 
-async function inviteUser(teamManagerInstance, team1Uid, email, usertype, expiration, senderAddress) {
+async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, usertype, expiration, senderAddress) {
     let response = await teamManagerInstance.inviteToTeam(team1Uid, email, usertype, expiration, { from: senderAddress });       
     assert(response.receipt.status);
     let isUserInvited = await teamManagerInstance.isUserEmailInvitedToTeam(email, team1Uid);
     assert(isUserInvited, "User is not invited to team");
     let invitedUserInfo = await teamManagerInstance.getInvitedUserInfo(email, team1Uid);
     assert(invitedUserInfo[2] == usertype, "User invitation is not member");
+    let tx = await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
+}
+
+async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyTeamId, shouldFail) {
+    let response = await teamManagerInstance.registerToTeam(userAddress, email, team1Uid, { from: userAddress })
+    assert(response.receipt.status);
+    let teamUids =  await teamManagerInstance.getUserTeam(userAddress);
+    if (shouldFail) {
+        assert(teamUids.length === empyTeamId, "Team was created incorrectly");
+    } else {
+        assert(teamUids.length !== empyTeamId, "Team was created incorrectly");
+    }
+    return team1Uid;
 }
