@@ -6,9 +6,21 @@ This project is divided in several folders.
 
  - /webapp contains the frontend project developed with Ionic 3.
  - /backend contains the backend project developed with NestJS.
+ - /blockchain contains smartcontracts, deploying algorithms and some tests.
  - /tools contains useful scripts for testing or code examples.
 
  Each one of them contains its own package.json with several commands and dependecies. Some of them also contains a README.md file with more information.
+
+## Quick local starup
+Run `npm start` in root directory to install and start a full local version of Brightbyte.
+
+## Startup order
+If you want to customize the code an run it by yourself, there is a specific order to start the system:
+
+1. Start ganache locally if needed with `npm run ganache` in blockchain folder.
+2. Deploy smartcontracts with `npm run truffle:migrate`.
+3. Go to webapp folder and run `npm start` to run the frontend.
+4. Finally go to backend folder and run `npm start`.
 
 ## Dependencies installation
 Run `npm install` in each directory for installing all the dependencies.
@@ -28,7 +40,7 @@ This project comes with a default terms and conditions text. This text can be mo
 
  #### More information
 
-For more information about BrightByte please visit our [blog post about BrightByte](https://tech.tribalyte.eu/blog-lanzamiento-brightbyte-v0-4) (in Spanish) or contact [Tribalyte Technologies](http://tribalyte.com).
+For more information about BrightByte please visit [BrightByte page](http://brightbyteapp.com/) or contact [Tribalyte Technologies](http://tribalyte.com).
 
 Licensed under the conditions of `LICENSE.md`.
 
