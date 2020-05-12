@@ -150,7 +150,7 @@ export class Profile {
         })
         .then((isAdmin: boolean) => {
             this.isCurrentUserAdmin = isAdmin;
-            return this.contractManagerService.getTeamName();
+            return this.contractManagerService.getCurrentTeamName();
         })
         .then((teamName: string) => {
             this.teamName = teamName;
@@ -171,7 +171,7 @@ export class Profile {
             this.log.d("The season thresholds are", seasonThreshold);
             this.commitThreshold = seasonThreshold[0];
             this.reviewThreshold = seasonThreshold[1];
-            return this.contractManagerService.getUserTeam();
+            return this.contractManagerService.getCurrentTeam();
         }).then(userTeam => {
             this.userTeam = userTeam;
             return this.http.get(this.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();

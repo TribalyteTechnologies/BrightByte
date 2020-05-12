@@ -1,7 +1,8 @@
 <div *ngIf="showCreateTeam; else showCreateProfile">
     <h4>{{ "setProfile.createTeamHeader" | translate }}</h4>
     <form [formGroup]="createTeamFG"
-        (ngSubmit)="createTeam(createTeamFG.get('teamName').value, createTeamFG.get('invitedEmails').value, createTeamFG.get('seasonLength').value)" novalidate>
+        (ngSubmit)="createTeam(createTeamFG.get('teamName').value, createTeamFG.get('invitedEmails').value, createTeamFG.get('seasonLength').value)"
+        novalidate>
         <ion-row class="mini-title">{{ "setProfile.enterTeamName" | translate }}</ion-row>
         <input formControlName="teamName" class="password-form" type="text"
             [placeholder]="'setProfile.teamName' | translate">
@@ -47,40 +48,49 @@
     </form>
 </div>
 <ng-template #showCreateProfile>
+    <ng-container *ngIf="showTeamList; else showProfileForm">
+        <h4>{{ "setProfile.selectTeamToregister" | translate }}</h4>
+        <p>{{ "setProfile.availableInvitations" | translate }}</p>
+        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue" (click)="registerToTeam(team.uid)">
+            {{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+    </ng-container>
+</ng-template>
+<ng-template #showProfileForm>
     <h4>{{ "setProfile.header" | translate }}</h4>
-    <form [formGroup]="setProfileFG"
-        (ngSubmit)="updateProfile(setProfileFG.get('name').value,setProfileFG.get('email').value)" novalidate>
-        <ion-row class="mini-title">{{ "setProfile.enterName" | translate }}</ion-row>
-        <input formControlName="name" class="password-form" type="text" [placeholder]="'setProfile.name' | translate">
-        <ion-row *ngIf="setProfileFG.get('name').errors && setProfileFG.get('name').dirty">
-            <ion-row class="error-body">
-                <div color="danger" *ngIf="setProfileFG.get('name').hasError('required')">
-                    {{ "addCommit.fieldRequire" | translate }}</div>
+        <form [formGroup]="setProfileFG"
+            (ngSubmit)="updateProfile(setProfileFG.get('name').value,setProfileFG.get('email').value)" novalidate>
+            <ion-row class="mini-title">{{ "setProfile.enterName" | translate }}</ion-row>
+            <input formControlName="name" class="password-form" type="text"
+                [placeholder]="'setProfile.name' | translate">
+            <ion-row *ngIf="setProfileFG.get('name').errors && setProfileFG.get('name').dirty">
+                <ion-row class="error-body">
+                    <div color="danger" *ngIf="setProfileFG.get('name').hasError('required')">
+                        {{ "addCommit.fieldRequire" | translate }}</div>
+                </ion-row>
             </ion-row>
-        </ion-row>
-        <ion-row >
-            <div class="mini-title">{{ "setProfile.enterEmail" | translate }}</div>
-            <div class="tooltip info-icon">
-                <ion-icon name="ios-information-circle-outline"></ion-icon>
-                <div class="tooltip-text" [innerHTML]="('setProfile.committerEmailInfo') | translate"></div>
+            <ion-row>
+                <div class="mini-title">{{ "setProfile.enterEmail" | translate }}</div>
+                <div class="tooltip info-icon">
+                    <ion-icon name="ios-information-circle-outline"></ion-icon>
+                    <div class="tooltip-text" [innerHTML]="('setProfile.committerEmailInfo') | translate"></div>
+                </div>
+            </ion-row>
+            <input formControlName="email" class="password-form" type="text"
+                [placeholder]="'setProfile.emailFormat' | translate">
+            <ion-row *ngIf="(setProfileFG.get('email').errors && setProfileFG.get('email').dirty) || msg">
+                <ion-row class="error-body">
+                    {{ msg }}
+                    <div color="danger" *ngIf="setProfileFG.get('email').hasError('pattern')">
+                        {{ "setProfile.notEmail" | translate }}</div>
+                    <div color="danger" *ngIf="setProfileFG.get('email').hasError('required')">
+                        {{ "addCommit.fieldRequire" | translate }}</div>
+                </ion-row>
+            </ion-row>
+            <div class="error-message">{{ msg }}</div>
+            <ion-spinner [hidden]="!isButtonPressed && !showCreateTeam"></ion-spinner>
+            <div class="buttons">
+                <button class="btn btn--full btn__blue" type="submit"
+                    [disabled]="setProfileFG.invalid || isButtonPressed">{{ "setProfile.set" | translate }}</button>
             </div>
-        </ion-row>
-        <input formControlName="email" class="password-form" type="text"
-            [placeholder]="'setProfile.emailFormat' | translate">
-        <ion-row *ngIf="(setProfileFG.get('email').errors && setProfileFG.get('email').dirty) || msg">
-            <ion-row class="error-body">
-                {{ msg }}
-                <div color="danger" *ngIf="setProfileFG.get('email').hasError('pattern')">
-                    {{ "setProfile.notEmail" | translate }}</div>
-                <div color="danger" *ngIf="setProfileFG.get('email').hasError('required')">
-                    {{ "addCommit.fieldRequire" | translate }}</div>
-            </ion-row>
-        </ion-row>
-        <div class="error-message">{{ msg }}</div>
-        <ion-spinner [hidden]="!isButtonPressed && !showCreateTeam"></ion-spinner>
-        <div class="buttons">
-            <button class="btn btn--full btn__blue" type="submit"
-                [disabled]="setProfileFG.invalid || isButtonPressed">{{ "setProfile.set" | translate }}</button>
-        </div>
-    </form>
+        </form>
 </ng-template>

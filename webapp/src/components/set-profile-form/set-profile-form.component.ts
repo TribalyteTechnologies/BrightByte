@@ -9,6 +9,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { FormatUtils } from "../../core/format-utils";
 import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
+import { Team } from "../../models/team.model";
 
 @Component({
     selector: "set-profile-form",
@@ -24,7 +25,9 @@ export class SetProfileForm {
     public createTeamFG: FormGroup;
     public isButtonPressed: boolean;
     public msg: string;
+    public teamList: Array<Team>;
     public showCreateTeam = false;
+    public showTeamList = false;
     public areEmailsWellFormated = true;
 
     private readonly EMAILS_SEPARATOR = "\n";
@@ -63,22 +66,38 @@ export class SetProfileForm {
         this.isButtonPressed = true;
         this.userEmail = email;
         this.userName = name;
-        let promise;
         let isInvited;
+        let allTeamUids;
         this.contractManagerService.isInvitedToTeam(email)
             .then((isInvitedToTeam: boolean) => {
+                let promise;
                 isInvited = isInvitedToTeam;
                 if (isInvitedToTeam) {
-                    promise = this.contractManagerService.registerToTeam(email);
+                    promise = this.contractManagerService.getAllTeamInvitationsByEmail(email);
                 } else {
                     this.showCreateTeam = true;
                     this.isButtonPressed = false;
                 }
                 return promise;
             })
-            .then((teamUid: number) => {
+            .then((teamUids: Array<number>) => {
+                allTeamUids = teamUids;
+                let promises: Array<Promise<string>>;
+                let promise;
                 if (isInvited) {
-                    this.setContractsAndProfile(teamUid);
+                    this.showTeamList = true;
+                    promises = teamUids.map(teamUid => this.contractManagerService.getTeamName(teamUid));
+                    promise = Promise.all(promises);
+                } else {
+                    promise =  Promise.resolve();
+                }
+                return promise;
+            })
+            .then((teamNames: Array<string>) => {
+                if (teamNames) {
+                    this.teamList = allTeamUids.map((teamUid, i) => {
+                        return new Team(teamUid, teamNames[i]);
+                    });
                 }
             })
             .catch((e) => {
@@ -89,6 +108,21 @@ export class SetProfileForm {
                     });
                 throw e;
             });
+    }
+
+    public registerToTeam(teamUid: number) {
+        this.contractManagerService.registerToTeam(this.userEmail, teamUid)
+        .then((uid: number) => {
+            this.setContractsAndProfile(uid);
+        })
+        .catch((e) => {
+            this.translateService.get("setProfile.getEmails").subscribe(
+                msg => {
+                    this.msg = msg;
+                    this.log.e(msg, e);
+                });
+            throw e;
+        });
     }
 
     public createTeam(teamName: string, invitedEmails: string, seasonLength: number) {

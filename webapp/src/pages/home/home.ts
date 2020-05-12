@@ -43,7 +43,7 @@ export class HomePage {
         this.contractManagerService.getUserDetails(this.user.address)
         .then((user) => {
             this.userName = user.name;
-            return this.contractManagerService.getTeamName();
+            return this.contractManagerService.getCurrentTeamName();
         })
         .then(teamName => {
             this.teamName =  teamName;

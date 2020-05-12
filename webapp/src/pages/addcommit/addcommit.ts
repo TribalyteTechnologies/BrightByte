@@ -111,7 +111,7 @@ export class AddCommitPopover {
                         this.setEmailFromList(mail);
                     });
                 }
-                return this.contractManagerService.getUserTeam();
+                return this.contractManagerService.getCurrentTeam();
             }).then(userTeam =>  {
                 this.log.d("The user team is: ", userTeam);
                 this.userTeam = userTeam;

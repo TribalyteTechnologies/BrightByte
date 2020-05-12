@@ -271,7 +271,11 @@
         "reviewThreshold": "Review Threshold",
         "invalidThreshold": "Invalid new thresholds",
         "errorSettingThreshold": "Error setting season threshold. Please contact the service provider.",
-        "successSettingThreshold": "Success setting new season threshold"
+        "successSettingThreshold": "Success setting new season threshold",
+        "selectTeamToregister": "Select a team to login.",
+        "availableInvitations": "Available invitations:",
+        "noAvailableInvitations": "There is not invitations to this account",
+        "avaialableTeams": "Available teams:"
     },
     "commitDetails": {
         "author": "Author",

@@ -102,7 +102,7 @@ export class RankingPage {
                 this.log.d("The season Threshold are", seasonThreshold);
                 this.minNumberCommit = seasonThreshold[0];
                 this.minNumberReview = seasonThreshold[1];
-                return this.contractManagerService.getTeamName();
+                return this.contractManagerService.getCurrentTeamName();
             })
             .then((teamName: string) => {
                 this.teamName = teamName;

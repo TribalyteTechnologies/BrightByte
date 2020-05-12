@@ -42,7 +42,8 @@ export class ContractManagerService {
     private web3: Web3;
     private initProm: Promise<Array<ITrbSmartContact>>;
     private currentUser: Account;
-    private teamUid: number;
+    private teamUids: Array<number>;
+    private currentTeamUid: number;
 
 
     constructor(
@@ -129,6 +130,7 @@ export class ContractManagerService {
             return this.getTeamContractAddresses(teamUid);
         })
         .then((contractAddresses: Array<string>) => {
+            this.setCurrentTeam(teamUid);
             let contractBright = new this.web3.eth.Contract(this.contractJsonBright.abi, contractAddresses[0]);
             this.contractAddressBright = contractAddresses[0];
             let contractCommits = new this.web3.eth.Contract(this.contractJsonCommits.abi, contractAddresses[1]);
@@ -144,10 +146,7 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamUid: number) => {
-            return teamManagerContract.methods.getUserType(teamUid, this.currentUser.address).call();
+            return teamManagerContract.methods.getUserType(this.currentTeamUid, this.currentUser.address).call();
         })
         .then(userType => {
             return parseInt(userType) === AppConfig.UserType.Admin;
@@ -156,20 +155,15 @@ export class ContractManagerService {
 
     public getInvitedUsersInfo(): Promise<Array<InvitedUser>> {
         let teamManagerContract;
-        let teamUid;
         let invitedEmails;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamId: number) => {
-            teamUid = teamId;
-            return teamManagerContract.methods.getNumberOfInvitedBlockPositions(teamUid).call();
+            return teamManagerContract.methods.getNumberOfInvitedBlockPositions(this.currentTeamUid).call();
         })
         .then((blockPositions: number) => {
             let promises = new Array<Promise<Array<String>>>();
             for(let i = 0; i <= blockPositions; i++){
-                promises.push(teamManagerContract.methods.getInvitedUsersList(teamUid, i).call());
+                promises.push(teamManagerContract.methods.getInvitedUsersList(this.currentTeamUid, i).call());
             }
             return Promise.all(promises);
         })
@@ -181,7 +175,7 @@ export class ContractManagerService {
             }));
             invitedEmails = invitedEmails.flat().filter(email => email);
             let promises = invitedEmails.map(email => {
-                return teamManagerContract.methods.getInvitedUserInfo(email).call();
+                return teamManagerContract.methods.getInvitedUserInfo(email, this.currentTeamUid).call();
             });
             return Promise.all(promises);
         })
@@ -196,28 +190,23 @@ export class ContractManagerService {
 
     public getTeamMembersInfo(): Promise<Array<Array<TeamMember>>> {
         let teamManagerContract;
-        let teamUid;
         let teamMembers = new Array<Array<TeamMember>>(); 
         teamMembers[0] = new Array<TeamMember>();
         teamMembers[1] = new Array<TeamMember>();
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamId: number) => {
-            teamUid = teamId;
-            return teamManagerContract.methods.getTeamMembers(teamUid).call();
+            return teamManagerContract.methods.getTeamMembers(this.currentTeamUid).call();
         })
         .then((memberAddresses: Array<Array<string>>) => {
             let adminPromises;
             let memberPromises;
             adminPromises = memberAddresses[0].map((memberAddress: string) => {
                 teamMembers[0].push(new TeamMember(memberAddress));
-                return teamManagerContract.methods.getUserInfo(teamUid, memberAddress).call();
+                return teamManagerContract.methods.getUserInfo(this.currentTeamUid, memberAddress).call();
             });
             memberPromises = memberAddresses[1].map(memberAddress => {
                 teamMembers[1].push(new TeamMember(memberAddress));
-                return teamManagerContract.methods.getUserInfo(teamUid, memberAddress).call();
+                return teamManagerContract.methods.getUserInfo(this.currentTeamUid, memberAddress).call();
             });
             return Promise.all([Promise.all(adminPromises), Promise.all(memberPromises)]);
         })
@@ -232,16 +221,33 @@ export class ContractManagerService {
         });
     }
 
-    public removeTeamMember(memberAddress: string): Promise<void | TransactionReceipt> {
+    public getUserEmail(teamUid: number, memberAddress: string): Promise<string> {
         let teamManagerContract;
-        let teamUid;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamId: number) => {
-            teamUid = teamId;
-            let byteCodeData = teamManagerContract.methods.removeFromTeam(teamUid, memberAddress).encodeABI();
+            return teamManagerContract.methods. getUserInfo(teamUid, memberAddress).call();
+        }).then((userInfo: Array<string>) => {
+            return userInfo[2];
+        });
+    }
+
+    public getAllTeamInvitationsByEmail(email: string): Promise<Array<number>> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return teamManagerContract.methods.getAllTeamInvitationsByEmail(email).call();
+        }).then((teamUidInvitations: Array<string>) => {
+            return teamUidInvitations
+            .map(teamUid => parseInt(teamUid))
+            .filter(teamUid => teamUid !== 0);
+        });
+    }
+
+    public removeTeamMember(memberAddress: string): Promise<void | TransactionReceipt> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            let byteCodeData = teamManagerContract.methods.removeFromTeam(this.currentTeamUid, memberAddress).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
     }
@@ -256,10 +262,7 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamUid: number) => {
-            return this.inviteMultipleEmailsToTeam(teamUid, emails, userType, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
+            return this.inviteMultipleEmailsToTeam(this.currentTeamUid, emails, userType, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
         });
     }
 
@@ -287,42 +290,40 @@ export class ContractManagerService {
 
     public removeInvitation(email: string): Promise<void | TransactionReceipt> {
         let teamManagerContract;
-        let teamUid;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamId: number) => {
-            teamUid = teamId;
-            let byteCodeData = teamManagerContract.methods.removeInvitationToTeam(teamUid, email).encodeABI();
+            let byteCodeData = teamManagerContract.methods.removeInvitationToTeam(this.currentTeamUid, email).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
     }
 
-    public getUserTeam(): Promise<number> {
+    public getUserTeam(): Promise<Array<number>> {
         let promise;
-        if (this.teamUid) {
-            promise = new Promise(resolve => resolve(this.teamUid));
+        if (this.teamUids) {
+            promise = new Promise(resolve => resolve(this.teamUids));
         } else {
             promise = this.initProm.then(([bright, commit, root, teamManager]) => {
                 return teamManager.methods.getUserTeam(this.currentUser.address).call();
             })
-            .then((teamUidStr: string) => {
-                return parseInt(teamUidStr);
+            .then((teamUidStr: Array<string>) => {
+                return teamUidStr.map(teamUid => parseInt(teamUid));
             });
         }
         return promise;
     }
 
-    public registerToTeam(email: string): Promise<number> {
+    public registerToTeam(email: string, teamUid: number): Promise<number> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, email).encodeABI();
+            let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, email, teamUid).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
             return this.getUserTeam();
+        })
+        .then((teamUids: Array<number>) => {
+            return teamUids[teamUids.length - 1];
         });
     }
 
@@ -337,19 +338,19 @@ export class ContractManagerService {
         .then(() => {
             return this.getUserTeam();
         })
-        .then((teamId: number) => {
-            teamUid = teamId;
+        .then((teamUids: Array<number>) => {
+            teamUid = teamUids[teamUids.length - 1];
             return teamManagerContract.methods.getTeamMembers(teamUid).call();
         })
         .then((members: any) => {
-            return this.deployAllContracts(teamUid, seasonLength);
+            return this.deployAllContracts(email, teamUid, seasonLength);
         })
         .then(() => {
             return teamUid;
         });
     }
 
-    public deployAllContracts(teamUId: number, seasonLength: number): Promise<void | TransactionReceipt | Array<string>> {
+    public deployAllContracts(email: string, teamUId: number, seasonLength: number): Promise<void | TransactionReceipt | Array<string>> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
@@ -365,7 +366,7 @@ export class ContractManagerService {
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.methods.deployRoot(teamUId, seasonLength).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployRoot(email, teamUId, seasonLength).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
@@ -379,25 +380,23 @@ export class ContractManagerService {
         });
     }
 
-    public getTeamName(): Promise<string> {
+    public getTeamName(teamUid: number): Promise<string> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamUid: number) => {
             return teamManagerContract.methods.getTeamName(teamUid).call();
         });
+    }
+
+    public getCurrentTeamName(): Promise<string> {
+        return this.getTeamName(this.currentTeamUid);
     }
 
     public changeTeamName(teamName: string): Promise<void | TransactionReceipt> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return this.getUserTeam();
-        })
-        .then((teamUid: number) => {
-            let byteCodeData = teamManagerContract.methods.setTeamName(teamUid, teamName).encodeABI();
+            let byteCodeData = teamManagerContract.methods.setTeamName(this.currentTeamUid, teamName).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
     }
@@ -491,12 +490,13 @@ export class ContractManagerService {
             return this.getCurrentSeasonState();
         }).then(seasonState => {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
-            return brightContract.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, seasonState[2]).call();
+            return brightContract.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, seasonState[2])
+                .call({ from: this.currentUser.address});
         }).then((allUserCommits: Array<any>) => {
             let promisesPending = new Array<Promise<UserCommit>>();
             promisesPending = allUserCommits[2].map(userCommit => {
                 if(userCommit !== AppConfig.EMPTY_COMMIT_HASH) {
-                    return commitContract.methods.getDetailsCommits(userCommit).call()
+                    return commitContract.methods.getDetailsCommits(userCommit).call({ from: this.currentUser.address})
                     .then((commitVals: any) => UserCommit.fromSmartContract(commitVals, true));
                 }
             });
@@ -514,17 +514,19 @@ export class ContractManagerService {
             return this.initProm;
         }).then(([bright, commit]) => {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
-            return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex).call()
+            return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex)
+            .call({ from: this.currentUser.address})
                 .then((allUserCommits: Array<any>) => {
                     let promisesPending = allUserCommits[0].map(userCommit => {
                         if(userCommit !== AppConfig.EMPTY_COMMIT_HASH) {
-                            return commit.methods.getDetailsCommits(userCommit).call()
+                            return commit.methods.getDetailsCommits(userCommit).call({ from: this.currentUser.address})
                             .then((commitVals: any) => {
                                 return UserCommit.fromSmartContract(commitVals, true);
                             });
                         }
                     });
-                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit)
+                    .call({ from: this.currentUser.address})
                         .then((commitVals: any) => {
                             return UserCommit.fromSmartContract(commitVals, false);
                         }));
@@ -541,11 +543,12 @@ export class ContractManagerService {
         return this.initProm
         .then(([bright]) => {
             brightContract = bright;
-            return bright.methods.getCurrentSeason().call();
+            return bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
         }).then(seasonData => {
             let currentSeason = seasonData[0];
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
-            return brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason).call();
+            return brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
+                .call({ from: this.currentUser.address});
         }).catch(err => {
             this.log.e("Error obtaining the state of the user commmits:", err);
             throw err;
@@ -561,21 +564,25 @@ export class ContractManagerService {
     public getSeasonCommitsToReview(endIndex: number): Promise<UserCommit[][]> {
         return this.initProm
             .then(([bright, commit]) => {
-                return bright.methods.getCurrentSeason().call()
+                return bright.methods.getCurrentSeason().call({ from: this.currentUser.address})
                 .then(seasonData => {
                     let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
                     startIndex = startIndex < 0 ? 0 : startIndex;
-                    return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex).call();
+                    return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
+                    .call({ from: this.currentUser.address});
                 }).then((allUserCommits: Array<any>) => {
-                    let promisesAllReviews = allUserCommits[4].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    let promisesAllReviews = allUserCommits[4].map(userCommit => commit.methods.getDetailsCommits(userCommit)
+                    .call({ from: this.currentUser.address})
                         .then((commitVals: any) => {
                             return UserCommit.fromSmartContract(commitVals, true);
                         }));
-                    let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit)
+                    .call({ from: this.currentUser.address})
                         .then((commitVals: any) => {
                             return UserCommit.fromSmartContract(commitVals, true);
                         }));
-                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit).call()
+                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit)
+                    .call({ from: this.currentUser.address})
                         .then((commitVals: any) => {
                             return UserCommit.fromSmartContract(commitVals, false);
                         }));
@@ -590,7 +597,7 @@ export class ContractManagerService {
     public getAllUserAddresses(): Promise<Array<string>> {
         return this.initProm
             .then(([bright]) => {
-                return bright.methods.getUsersAddress().call();
+                return bright.methods.getUsersAddress().call({ from: this.currentUser.address });
             }).catch(err => {
                 this.log.e("Error checking commit season :", err);
                 throw err;
@@ -613,7 +620,7 @@ export class ContractManagerService {
 
     public getCommitDetails(url: string, returnsUserCommits = true): Promise<UserCommit | CommitDetails> {
         return this.initProm.then(([bright, commit]) => {
-            return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call()
+            return commit.methods.getDetailsCommits(this.web3.utils.keccak256(url)).call({ from: this.currentUser.address})
                 .then((commitVals: any) => {
                     let result;
                     if (returnsUserCommits) {
@@ -647,11 +654,13 @@ export class ContractManagerService {
     public getCommentsOfCommit(url: string): Promise<Array<CommitComment>> {
         return this.initProm.then(([bright, commit]) => {
             let urlKeccak = this.web3.utils.keccak256(url);
-            return commit.methods.getCommentsOfCommit(urlKeccak).call()
+            return commit.methods.getCommentsOfCommit(urlKeccak).call({ from: this.currentUser.address})
                 .then((allComments: Array<any>) => {
-                    let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment).call()
+                    let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment)
+                    .call({ from: this.currentUser.address})
                         .then((commitVals: any) => {
-                            return Promise.all([commitVals, bright.methods.getUserName(commitVals[4]).call()]);
+                            return Promise.all([commitVals, bright.methods.getUserName(commitVals[4])
+                            .call({ from: this.currentUser.address})]);
                         }).then((data) => {
                             return CommitComment.fromSmartContract(data[0], data[1]);
                         }));
@@ -666,7 +675,7 @@ export class ContractManagerService {
     public getCommitScores(url: string): Promise<Array<number>> {
         return this.initProm.then(([bright, commit]) => {
             let urlKeccak = this.web3.utils.keccak256(url);
-            return commit.methods.getCommitScores(urlKeccak).call();
+            return commit.methods.getCommitScores(urlKeccak).call({ from: this.currentUser.address});
         }).catch(err => {
             this.log.e("Error getting comments of commit :", err);
             throw err;
@@ -676,7 +685,7 @@ export class ContractManagerService {
     public getUserDetails(hash: string): Promise<UserDetails> {
         return this.userCacheSrv.getUser(hash).catch(() => {
             return this.initProm.then(([bright]) => {
-                return bright.methods.getUser(hash).call();
+                return bright.methods.getUser(hash).call({ from: this.currentUser.address });
             }).then((userVals: Array<any>) => {
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
@@ -758,19 +767,20 @@ export class ContractManagerService {
         let contractArtifact;
         return this.initProm.then(([bright]) => {
             contractArtifact = bright;
-            return contractArtifact.methods.getUsersAddress().call();
+            return contractArtifact.methods.getUsersAddress().call({ from: this.currentUser.address});
         }).then((usersAddress: String[]) => {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
                 let promise: Promise<any>;
                 if (global) {
-                    promise = contractArtifact.methods.getUser(userAddress).call()
+                    promise = contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address })
                         .then((commitsVals: Array<any>) => {
                             return UserReputation.fromSmartContractGlobalReputation(commitsVals);
                         });
                 } else {
-                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call()
+                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season)
+                    .call({ from: this.currentUser.address })
                         .then((commitsVals: Array<any>) => {
                             return UserReputation.fromSmartContract(commitsVals);
                         });
@@ -786,7 +796,7 @@ export class ContractManagerService {
 
     public getCurrentSeason(): Promise<Array<number>> {
         return this.initProm.then(([bright]) => {
-            return bright.methods.getCurrentSeason().call();
+            return bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
         }).then(seasonState => {
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, seasonState[0]);
             return seasonState;
@@ -799,7 +809,7 @@ export class ContractManagerService {
     public getFeedback(url): Promise<boolean> {
         let urlKeccak = this.web3.utils.keccak256(url);
         return this.initProm.then(contract => {
-            let promise = contract[0].methods.getFeedback(urlKeccak).call();
+            let promise = contract[0].methods.getFeedback(urlKeccak).call({ from: this.currentUser.address});
             return promise;
         }).catch(err => {
             this.log.e("Error getting urls (Feedback) :", err);
@@ -821,7 +831,7 @@ export class ContractManagerService {
     public getReviewers(url: string): Promise<string[][]> {
         return this.initProm.then(([bright, commit]) => {
             let urlKeccak = this.web3.utils.keccak256(url);
-            return commit.methods.getCommentsOfCommit(urlKeccak).call();
+            return commit.methods.getCommentsOfCommit(urlKeccak).call({ from: this.currentUser.address});
         }).catch(err => {
             this.log.e("Error getting commit reviewers :", err);
             throw err;
@@ -861,8 +871,12 @@ export class ContractManagerService {
         return this.initProm;
     }
 
-    public getAddresses() {
+    public getAddresses(): Array<string> {
         return ([this.contractAddressRoot, this.contractAddressBright, this.contractAddressCommits]);
+    }
+
+    public getCurrentTeam(): number {
+        return this.currentTeamUid;
     }
 
     public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
@@ -895,5 +909,9 @@ export class ContractManagerService {
                 this.log.e("Error in transaction (sendTx function): ", e);
                 throw e;
             });
+    }
+
+    private setCurrentTeam(teamUid: number) {
+        this.currentTeamUid = teamUid;
     }
 }

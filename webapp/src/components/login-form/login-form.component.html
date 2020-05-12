@@ -1,20 +1,45 @@
-<ion-row class="mini-title">{{ "app.uploadCredentials" | translate }}</ion-row>
-<ion-row class="upload-form">
-    <input type="file" (change)="openFile($event)">
-</ion-row>
-<ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
-<input class="password-form" [placeholder]="'app.password' | translate" [(ngModel)]="hidPass" (keyup.enter)="login(password)" (input)="hidePassword(hidPass)">
-<ion-row *ngIf="msg">
-    <ion-row class="error-body">
-        {{ msg }}
+<ion-grid *ngIf="!showTeamSelector; else teamSelector">
+    <ion-row class="mini-title">{{ "app.uploadCredentials" | translate }}</ion-row>
+    <ion-row class="upload-form">
+        <input type="file" (change)="openFile($event)">
     </ion-row>
-</ion-row>
-<ion-row class="remember">
-    <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
-    <ion-row class="text" (click)= "toggleKeepCredentials()">{{ "app.remember" | translate }}</ion-row>
-</ion-row>
-<div class="buttons">
-    <button class="btn btn--full btn__blue" (click)="login(password)">{{ "app.login" | translate }}</button>
-    <div class="separator"></div>
-    <button class="btn btn--full btn__grey" (click)="register()">{{ "app.register" | translate }}</button>
-</div>
+    <ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
+    <input class="password-form" [placeholder]="'app.password' | translate" [(ngModel)]="hidPass"
+        (keyup.enter)="login(password)" (input)="hidePassword(hidPass)">
+    <ion-row *ngIf="msg">
+        <ion-row class="error-body">
+            {{ msg }}
+        </ion-row>
+    </ion-row>
+    <ion-row class="remember">
+        <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
+        <ion-row class="text" (click)="toggleKeepCredentials()">{{ "app.remember" | translate }}</ion-row>
+    </ion-row>
+    <div class="buttons">
+        <button class="btn btn--full btn__blue" (click)="login(password)">{{ "app.login" | translate }}</button>
+        <div class="separator"></div>
+        <button class="btn btn--full btn__grey" (click)="register()">{{ "app.register" | translate }}</button>
+    </div>
+</ion-grid>
+<ng-template #teamSelector>
+    <ng-container *ngIf="!showNameInput; else showInput">
+        <h4>{{ "setProfile.selectTeamToregister" | translate }}</h4>
+        <h6>{{ "setProfile.avaialableTeams" | translate }}</h6>
+        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue"
+            (click)="logToTeam(team.uid)">{{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+        <h6>{{ "setProfile.availableInvitations" | translate }}</h6>
+        <ng-container *ngIf="invitationList.length > 0; else noInvitations">
+            <button margin *ngFor="let team of invitationList; let i = index" class="btn btn--full btn__blue"
+                (click)="showNameBox(team.uid)">{{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+        </ng-container>
+        <ng-template #noInvitations>
+            <p>{{ "setProfile.noAvailableInvitations" | translate }}</p>
+        </ng-template>
+    </ng-container>
+</ng-template>
+<ng-template #showInput>
+    <h4>{{ "setProfile.header" | translate }}</h4>
+    <ion-row class="mini-title">{{ "setProfile.enterName" | translate }}</ion-row>
+    <input class="password-form" type="text" [placeholder]="'setProfile.name' | translate" [(ngModel)]="userName">
+    <button margin class="btn btn--full btn__blue" (click)="registerToTeam()">Register</button>
+</ng-template>

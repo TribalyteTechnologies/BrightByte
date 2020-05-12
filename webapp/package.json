@@ -19,7 +19,7 @@
         "linters-ci": "npm run html-lint && npm run scss-lint && npm run lint",
         "prepush": "npm run linters-ci",
         "preinstall": "rm -fr node_modules/*/node_modules/*/.git/",
-        "postlinters-ci": "cd ../backend; npm run linters-ci",
+        "postlinters-ci": "cd ../backend; npm install; npm run linters-ci",
         "install:start": "npm install; npm run start & npm run wait:webapp",
         "wait:webapp": "wait-on http://localhost:8100"
     },
