@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Post, Delete } from "@nestjs/common";
+import { Controller, Get, Param, Post, Delete, Req } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { TeamDatabaseService } from "../services/team-database.service";
 import { ResponseDto } from "../dto/response/response.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
+import { EmailService } from "../services/email.service";
 
 
 @Controller("team")
@@ -11,6 +12,7 @@ export class TeamDatabaseController {
     private log: ILogger;
     public constructor(
         private teamDatabaseService: TeamDatabaseService,
+        private emailService: EmailService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ProfileImageController");
@@ -56,5 +58,11 @@ export class TeamDatabaseController {
     public removeTeamMember(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
         this.log.d("Request to delete a member from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamMember(teamUid, user);
+    }
+
+    @Post(":email/sendInvitation")
+    public sendInvitation(@Param("email") userEmail: string): Observable<ResponseDto> {
+        this.log.d("Request to send a invitation to participate for user: ", userEmail);
+        return this.emailService.sendInvitationEmail(userEmail);
     }
 }

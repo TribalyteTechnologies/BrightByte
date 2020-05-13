@@ -29,10 +29,21 @@ export class BackendConfig {
     public static readonly CLOUD_BB_FACTORY_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudBrightByteFactory.json";
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
     public static readonly STATIC_FILES_PATH = join(__dirname, "./www/");
+    public static readonly EMAIL_TEMPLATES = join(__dirname, "./templates");
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY;
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
     public static readonly BUFFER_SIZE = 1;
+
+    public static readonly EMAIL_TRANSPORT = {
+        host: "smtp.example.com",
+        port: 587,
+        secure: false,
+        auth: {
+            user: "user",
+            pass: "pass"
+        }
+    };
 }
 export namespace BackendConfig {
     export enum EventTypeEnum {

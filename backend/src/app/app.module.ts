@@ -17,8 +17,11 @@ import { ClientNotificationService } from "../services/client-notfication.servic
 import { CoreDatabaseService } from "../services/core-database.service";
 import { ContractManagerService } from "../services/contract-manager.service";
 import { DatabaseInitializationService } from "../services/database-initialization.service";
+import { EmailService } from "../services/email.service";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
 
 
 @Module({
@@ -30,6 +33,19 @@ import { ServeStaticModule } from "@nestjs/serve-static";
         }),
         ServeStaticModule.forRoot({
             rootPath: BackendConfig.STATIC_FILES_PATH
+        }),
+        MailerModule.forRoot({
+            transport: BackendConfig.EMAIL_TRANSPORT,
+            defaults: {
+                from: '"nest-modules" <modules@nestjs.com>'
+            },
+            template: {
+                dir: BackendConfig.EMAIL_TEMPLATES,
+                adapter: new PugAdapter(),
+                options: {
+                    strict: true
+                }
+            }
         })
     ],
     controllers: [
@@ -48,6 +64,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
         DispatcherService,
         EventHandlerService,
         ContractManagerService,
+        EmailService,
         ClientGateway,
         ClientNotificationService,
         DatabaseInitializationService,
