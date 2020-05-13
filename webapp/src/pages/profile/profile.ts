@@ -62,7 +62,6 @@ export class Profile {
     public reviewThreshold: number;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
-    private readonly TEAM_API = AppConfig.SERVER_BASE_URL + "/team/";
     private readonly WORKSPACE = "/workspace/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
@@ -174,7 +173,7 @@ export class Profile {
             return this.contractManagerService.getCurrentTeam();
         }).then(userTeam => {
             this.userTeam = userTeam;
-            return this.http.get(this.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
+            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.isBackendAvailable = false;
             if(result.status !== "Error") {
@@ -436,7 +435,7 @@ export class Profile {
         this.workspaceSuccessMsg = null;
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspace && workspaceIndex === -1) {
-            this.http.post(this.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then((response: IResponse) => {
+            this.http.post(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
                 this.teamWorkspaces.push(workspace);
                 this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
@@ -524,7 +523,7 @@ export class Profile {
         this.log.d("The user admin requested to deleted the workspace: ", workspace);
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if(workspaceIndex !== -1) {
-            this.http.delete(this.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then(result => {
+            this.http.delete(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then(result => {
                 this.teamWorkspaces.splice(workspaceIndex, 1);
                 this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
                     this.workspaceSuccessMsg = res;

@@ -22,7 +22,9 @@ export class AppConfig {
     public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
     
     public static readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
+    public static readonly TEAM_API = AppConfig.SERVER_BASE_URL + "/team/";
     public static readonly AVATAR_STATUS_PATH = "/status/";
+    public static readonly INVITATION_PATH = "/sendInvitation/";
     public static readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
     public static readonly IDENTICON_FORMAT = ".svg";
     public static readonly BRIGHTBYTE_LANDING_PAGE = "http://www.brightbyteapp.com/";
