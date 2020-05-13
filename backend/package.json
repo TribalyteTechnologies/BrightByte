@@ -6,7 +6,7 @@
 	"license": "SEE LICENSE IN LICENSE.md",
 	"private": true,
 	"scripts": {
-		"build": "shx rm -rf dist && tsc -p tsconfig.build.json && shx cp ../version.json ./dist/version.json && shx cp -r ./src/www ./dist/www" ,
+		"build": "shx rm -rf dist && tsc -p tsconfig.build.json && shx cp ../version.json ./dist/version.json && shx cp -r ./src/www ./dist/www",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"install:start": "npm install; npm start",
 		"start": "ts-node -r tsconfig-paths/register src/main.ts",
@@ -19,6 +19,7 @@
 		"linters-ci": "npm run lint"
 	},
 	"dependencies": {
+		"@nestjs-modules/mailer": "1.5.0",
 		"@nestjs/common": "6.0.0",
 		"@nestjs/core": "6.0.0",
 		"@nestjs/platform-express": "6.0.0",
@@ -29,6 +30,8 @@
 		"@types/lokijs": "1.5.2",
 		"jest": "24.9.0",
 		"lokijs": "1.5.6",
+		"nodemailer": "6.4.6",
+		"pug": "2.0.4",
 		"querystring": "0.2.0",
 		"reflect-metadata": "0.1.13",
 		"rxjs": "6.3.3",
