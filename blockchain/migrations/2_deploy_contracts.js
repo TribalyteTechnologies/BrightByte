@@ -19,6 +19,7 @@ const TEAM_UID = 1;
 const USER_ADMIN = "0x0000000000000000000000000000000000000000";
 const SEASON_LENGTH_DAYS = 15;
 var currentVersion = scVersionObj.version;
+var teamManagerAddress;
 
 module.exports = function(deployer) {
     deployer.deploy(BrightModels)
@@ -104,5 +105,13 @@ module.exports = function(deployer) {
     })
     .then(function(){
         return deployer.deploy(CloudTeamManager, CloudBBFactory.address, SEASON_LENGTH_DAYS);
+    }).then(function(){
+        return CloudTeamManager.deployed();
+    }).then(function(teamManager){
+        teamManagerAddress = teamManager.address;
+        return CloudBBFactory.deployed();
+    })
+    .then(function(bbFactory){
+        return bbFactory.init(teamManagerAddress);
     });
 };
