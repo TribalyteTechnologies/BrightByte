@@ -275,16 +275,6 @@ contract Bright {
         }
     }
 
-    function setSeasonFeedback(address user, uint256 vote) private {
-        BrightModels.UserStats storage season = hashUserMap.map[user].seasonData[currentSeasonIndex].seasonStats;
-        if(vote == 1){
-            season.positeVotes++;
-        } else {
-            season.negativeVotes++;
-        }
-        season.agreedPercentage = (season.positeVotes * FEEDBACK_MULTIPLER) / (season.positeVotes + season.negativeVotes);
-    }
-
     function getToRead(address userHash) public onlyAllow view returns (bytes32[]) {
         return (hashUserMap.map[userHash].seasonData[currentSeasonIndex].toRead);
     }
@@ -299,6 +289,14 @@ contract Bright {
         return (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs);
     }
 
+    function checkCommitSeason(bytes32 url,address author) public onlyAllow view returns (bool) {
+        return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
+    }
+
+    function getTeamId() public onlyAllow view returns (uint256) {
+        return teamUid;
+    }
+
     function checkSeason() private {
         uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
         if(block.timestamp > seasonFinale) {
@@ -310,11 +308,13 @@ contract Bright {
         }
     }
 
-    function checkCommitSeason(bytes32 url,address author) public onlyAllow view returns (bool) {
-        return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
-    }
-
-    function getTeamId() public onlyAllow view returns (uint256) {
-        return teamUid;
+    function setSeasonFeedback(address user, uint256 vote) private {
+        BrightModels.UserStats storage season = hashUserMap.map[user].seasonData[currentSeasonIndex].seasonStats;
+        if(vote == 1){
+            season.positeVotes++;
+        } else {
+            season.negativeVotes++;
+        }
+        season.agreedPercentage = (season.positeVotes * FEEDBACK_MULTIPLER) / (season.positeVotes + season.negativeVotes);
     }
 }
