@@ -182,8 +182,30 @@ export class LoginForm {
     public logToTeam(teamUid: number): Promise<void> {
         return this.contractManager.setBaseContracts(teamUid)
         .then(() => {
-            return this.contractManager.getAllUserAddresses();          
+            return this.initAvatarSrvAndContinue();          
+        });
+    }
+
+    public registerToTeam() {
+        this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn)
+        .then(() => {
+            return this.contractManager.setBaseContracts(this.teamToRegisterIn);
         })
+        .then(() => {
+            return this.contractManager.setProfile(this.userName, this.userEmail);
+        })
+        .then(() => {
+            return this.initAvatarSrvAndContinue(); 
+        });
+    }
+
+    public showNameBox(teamUid: number) {
+        this.teamToRegisterIn = teamUid;
+        this.showNameInput = true;
+    }
+
+    private initAvatarSrvAndContinue(): Promise<void> {
+        return this.contractManager.getAllUserAddresses()        
         .then((addresses: Array<string>) => {
             if (addresses.length > 0){
                 addresses.forEach(address => {
@@ -192,18 +214,6 @@ export class LoginForm {
                 this.navCtrl.push(TabsPage);
             }
         });
-    }
-
-    public registerToTeam() {
-        this.contractManager.setProfile(this.userName, this.userEmail)
-        .then(() => {
-            return this.logToTeam(this.teamToRegisterIn);  
-        });
-    }
-
-    public showNameBox(teamUid: number) {
-        this.teamToRegisterIn = teamUid;
-        this.showNameInput = true;
     }
 
     private getUserTeamAndInvitations(teamUid: number, address: string, alreadyRegisteredTeams: Array<number>) {
