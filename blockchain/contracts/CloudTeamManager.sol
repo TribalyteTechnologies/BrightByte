@@ -314,7 +314,6 @@ contract CloudTeamManager {
             team.admins[team.adminsCount] = TeamMember(memberAddress, email);
             team.adminsCount++;
             team.users[memberAddress] = UserType.Admin;
-            team.users[msg.sender] == UserType.Admin;
         } else if (userType == UserType.Member) {
             team.members[team.membersCount] = TeamMember(memberAddress, email);
             team.membersCount++;
