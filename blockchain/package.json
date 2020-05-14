@@ -30,7 +30,7 @@
     "@truffle/hdwallet-provider": "1.0.33",
     "async": "3.2.0",
     "ganache-cli": "6.9.0",
-    "remix-ide": "0.8.8",
+    "remix-ide": "0.10.1",
     "truffle": "5.0.39",
     "truffle-assertions": "0.9.2",
     "truffle-core": "5.0.34",
