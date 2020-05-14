@@ -55,20 +55,12 @@ contract Root{
         remoteThreshold.init(address(this), currentSeasonIndex);
         adminUsers[userAdmin] = true;
     }
-
-    function getHelperAddress() public view returns(address, address){
-        return(brightAddress,commitsAddress);
-    }
-
-    function getUserAddressByEmail(string email) public  view returns(address){
-        bytes32 index = keccak256(email);
-        address a = remoteBright.getAddressByEmail(index);
-        return a;
-    }
+    
     //sendNotificationOfNewCommit function must be called from the front after call setNewCommit
     function setNewCommit(bytes32 url) public onlyCommit {
         remoteBright.setCommit(url);
     }
+
     function notifyCommit (string url, bytes32[] _emails) public  {
         bytes32 _id = keccak256(url);
         address a;
@@ -122,7 +114,7 @@ contract Root{
         return remoteBright.checkCommitSeason(url,author);
     }
 
-    function getNumberOfReviews(bytes32 url) public view returns (uint, uint) {
+    function getNumberOfReviews(bytes32 url) public view onlyBright returns (uint, uint) {
         uint pending;
         uint finish;
         (pending, finish) = remoteCommits.getNumbersNeedUrl(url);
@@ -133,7 +125,7 @@ contract Root{
         remoteCommits.deleteCommit(url);
     }
 
-    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
+    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view onlyBright returns (address) {
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
     }
 
