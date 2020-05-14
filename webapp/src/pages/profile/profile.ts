@@ -371,12 +371,13 @@ export class Profile {
                         let newInvitedUsers = new Array<InvitedUser>();
                         emails.forEach(email => {
                             let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
-                            let isAlreadyInTheList = this.invitedUsers.filter(user => user.email === email);
-                            if (isAlreadyInTheList.length > 0) {
-                                let index = this.invitedUsers.indexOf(isAlreadyInTheList[0]);
-                                this.invitedUsers[index] = new InvitedUser(email, expDateMilis, userType);
+                            let emailsAlreadyInvited = this.invitedUsers.filter(user => user.email === email);
+                            let newUser = new InvitedUser(email, expDateMilis, userType);
+                            if (emailsAlreadyInvited.length > 0) {
+                                let index = this.invitedUsers.indexOf(emailsAlreadyInvited[0]);
+                                this.invitedUsers[index] = newUser;
                             } else {
-                                newInvitedUsers.push(new InvitedUser(email, expDateMilis, userType)); 
+                                newInvitedUsers.push(newUser); 
                             }
                         });
                         this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
