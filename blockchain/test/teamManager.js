@@ -332,8 +332,8 @@ function openConnection() {
 }
 
 async function deployTeamContracts(userMail, teamManagerInstance, teamUid, seasonLength, adminUserAddress) {
-    tx = await teamManagerInstance.deployBright(teamUid, { from: adminUserAddress });
-    tx = await teamManagerInstance.deployCommits(teamUid, { from: adminUserAddress });
-    tx = await teamManagerInstance.deployThreshold(teamUid, { from: adminUserAddress });
-    tx = await teamManagerInstance.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
+    await teamManagerInstance.deployBright(teamUid, { from: adminUserAddress });
+    await teamManagerInstance.deployCommits(teamUid, { from: adminUserAddress });
+    await teamManagerInstance.deployThreshold(teamUid, { from: adminUserAddress });
+    await teamManagerInstance.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
 }

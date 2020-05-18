@@ -60,7 +60,7 @@ contract("Bright", accounts => {
         let currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
         parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), INITIAL_SEASON_DAY_LENGTH_SECS, "The initial season length is not correct");
 
-        let tx = await rootInstance.setSeasonLength(NEW_SEASON_LENGTH, { from: adminUserAddress });
+        await rootInstance.setSeasonLength(NEW_SEASON_LENGTH, { from: adminUserAddress });
         currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
         parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), NEW_SEASON_LENGTH * DAY_TO_SECS, "The season length change was not done correctly");
     });
@@ -82,8 +82,8 @@ contract("Bright", accounts => {
     it("Should Create two users", async () => {
         await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_ONE, accountOne, ADMIN_USERTYPE, LONG_EXP_SECS, adminUserAddress);
         await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
-        let tx1 = await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
-        let tx2 = await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
+        await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
+        await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
         let usersAddress = await brightInstance.getUsersAddress({ from: adminUserAddress });
         assert(usersAddress.indexOf(accountOne) !== -1, "The user one is not registered");
         assert(usersAddress.indexOf(accountTwo) !== -1, "The user two is not registered");
@@ -107,7 +107,7 @@ contract("Bright", accounts => {
 
         await createNewCommit(brightInstance, commitInstance, rootInstance, accountOne, accountTwo);
 
-        let tx3 = await brightInstance.removeUserCommit(commitUrl, { from: accountOne });
+        await brightInstance.removeUserCommit(commitUrl, { from: accountOne });
 
         user1 = await brightInstance.getUser(accountOne, { from: accountOne });
         parseBnAndAssertEqual(user1[3], 0);
@@ -125,7 +125,7 @@ contract("Bright", accounts => {
         parseBnAndAssertEqual(userState[0], NUMBER_OF_REVIEWS);
         parseBnAndAssertEqual(userState[1], 0);
 
-        let tx1 = await commitInstance.setReview(COMMIT_URL, REVIEW_COMMENT, REVIEW_POINTS, { from: accountTwo })
+        await commitInstance.setReview(COMMIT_URL, REVIEW_COMMENT, REVIEW_POINTS, { from: accountTwo })
 
         userState = await brightInstance.getUserSeasonState(accountTwo, 1, { from: accountTwo });
         parseBnAndAssertEqual(userState[0], 0);
@@ -140,7 +140,7 @@ contract("Bright", accounts => {
         let commentDetails = await commitInstance.getCommentDetail(commitUrl, comments[1][0], { from: accountOne });
         parseBnAndAssertEqual(commentDetails[1], 0);
         
-        let tx1 = await rootInstance.setVote(COMMIT_URL, accountTwo, COMMENT_VOTE, { from: accountOne });
+        await rootInstance.setVote(COMMIT_URL, accountTwo, COMMENT_VOTE, { from: accountOne });
 
         commentDetails = await commitInstance.getCommentDetail(commitUrl, comments[1][0], { from: accountOne });
         parseBnAndAssertEqual(commentDetails[1], COMMENT_VOTE);
@@ -150,20 +150,20 @@ contract("Bright", accounts => {
 });
 
 async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName, seasonLength, adminUserAddress) {
-    let tx = await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
+    await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
     let response = await cloudTeamManager.getUserTeam(adminUserAddress);
     let teamUid = parseBnToInt(response[response.length-1]);
-    tx = await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployThreshold(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
+    await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deployThreshold(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
     return teamUid;
 }
 
 async function createNewCommit(brightInstance, commitInstance, rootInstance, committerAddr, reviewerAddr) {
     const web3 = openConnection();
 
-    let tx1 = await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: committerAddr });
+    await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: committerAddr });
     let user1 = await brightInstance.getUser(committerAddr, { from: committerAddr });
 
     parseBnAndAssertEqual(user1[3], NUMBER_OF_COMMITS);
@@ -173,7 +173,7 @@ async function createNewCommit(brightInstance, commitInstance, rootInstance, com
 
     let reviewers = new Array();
     reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
-    let tx2 = await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: committerAddr });
+    await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: committerAddr });
     userState = await brightInstance.getUserSeasonState(reviewerAddr, 1, { from: reviewerAddr });
     parseBnAndAssertEqual(userState[0], NUMBER_OF_REVIEWS);
 }
@@ -204,7 +204,7 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
     assert(isUserInvited, "User is not invited to team");
     let invitedUserInfo = await teamManagerInstance.getInvitedUserInfo(email, team1Uid);
     assert(invitedUserInfo[2] == usertype, "User invitation is not member");
-    let tx = await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
+    await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
 }
 
 async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyTeamId, shouldFail) {

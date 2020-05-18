@@ -4,7 +4,6 @@ const Root = artifacts.require("./Root.sol");
 const CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 const CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
 const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
-const truffleAssert = require("truffle-assertions");
 const Web3 = require("web3");
 
 require("truffle-test-utils").init();
@@ -65,14 +64,14 @@ contract("EventDispatcher", accounts => {
     it("Should Create two users", async () => {
         await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_ONE, accountOne, ADMIN_USERTYPE, LONG_EXP_SECS, adminUserAddress);
         await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
-        let tx1 = await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
-        let tx2 = await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
+        await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
+        await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
     });
 
     it("Should Create a new commit with one reviewer", async () => {
         const web3 = openConnection();
 
-        let tx1 = await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: accountOne });
+        await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: accountOne });
         let user1 = await brightInstance.getUser(accountOne, { from: accountOne });
         parseBnAndAssertEqual(user1[3], NUMBER_OF_COMMITS);
 
@@ -81,7 +80,7 @@ contract("EventDispatcher", accounts => {
 
         let reviewers = new Array();
         reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
-        let tx2 = await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
+        await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[0], NUMBER_OF_COMMITS);
     });
@@ -89,7 +88,7 @@ contract("EventDispatcher", accounts => {
     it("Should Create a new review", async () => {
         let reviewerState = await brightInstance.getUser(accountTwo, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[2], 0);
-        let tx1 = commitInstance.setReview(COMMIT_URL, REVIEW_TEXT, REVIEW_POINTS, { from: accountTwo });
+        commitInstance.setReview(COMMIT_URL, REVIEW_TEXT, REVIEW_POINTS, { from: accountTwo });
         const web3 = openConnection();
         reviewerState = await brightInstance.getUser(accountTwo, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[2], NUMBER_OF_REVIEWS);
@@ -115,18 +114,18 @@ contract("EventDispatcher", accounts => {
         const web3 = openConnection();
         let user1 = await brightInstance.getUser(accountOne, { from: accountOne });
         const initialNumberOfCommits = parseBnToInt(user1[3]);
-        const tx1 = await commitInstance.setNewCommit(COMMIT_TITTLE, urlCommit, NUMBER_OF_REVIEWERS, { from: accountOne });
+        await commitInstance.setNewCommit(COMMIT_TITTLE, urlCommit, NUMBER_OF_REVIEWERS, { from: accountOne });
         user1 = await brightInstance.getUser(accountOne, { from: accountOne });
         parseBnAndAssertEqual(user1[3], initialNumberOfCommits + 1);
 
         let reviewers = new Array();
         reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
-        const tx2 = await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
+        await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[0], 1);
 
         const urlKeccak = web3.utils.keccak256(urlCommit);
-        const tx3 = await brightInstance.removeUserCommit(urlKeccak, { from: accountOne });
+        await brightInstance.removeUserCommit(urlKeccak, { from: accountOne });
 
         user1 = await brightInstance.getUser(accountOne, { from: accountOne });
         parseBnAndAssertEqual(user1[3], initialNumberOfCommits);
@@ -139,13 +138,13 @@ contract("EventDispatcher", accounts => {
 });
 
 async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName, seasonLength, adminUserAddress) {
-    let tx = await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
+    await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
     let response = await cloudTeamManager.getUserTeam(adminUserAddress);
     let teamUid = parseBnToInt(response);
-    tx = await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployThreshold(teamUid, { from: adminUserAddress });
-    tx = await cloudTeamManager.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
+    await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deployThreshold(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
     return teamUid;
 }
 
@@ -183,7 +182,7 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
     assert(isUserInvited, "User is not invited to team");
     let invitedUserInfo = await teamManagerInstance.getInvitedUserInfo(email, team1Uid);
     assert(invitedUserInfo[2] == usertype, "User invitation is not member");
-    let tx = await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
+    await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
 }
 
 async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyTeamId, shouldFail) {
