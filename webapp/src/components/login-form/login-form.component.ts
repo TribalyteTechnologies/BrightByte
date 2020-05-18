@@ -146,14 +146,6 @@ export class LoginForm {
                 this.loginService.setAccount(account);
                 this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
-                    if(result) {
-                        this.backendApiSrv.initBackendConnection(account.address);
-                    } else {
-                        this.translateService.get("app.connectionFailure").subscribe(
-                            msg => {
-                                this.msg = msg;
-                            });
-                    }
                     return true;
                 }).catch((e) => {
                     this.spinnerService.hideLoader();
@@ -182,6 +174,8 @@ export class LoginForm {
     public logToTeam(teamUid: number): Promise<void> {
         return this.contractManager.setBaseContracts(teamUid)
         .then(() => {
+            let userAddress = this.loginService.getAccountAddress();
+            this.backendApiSrv.initBackendConnection(userAddress, teamUid);
             return this.initAvatarSrvAndContinue();          
         });
     }

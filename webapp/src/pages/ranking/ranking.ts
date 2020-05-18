@@ -237,7 +237,8 @@ export class RankingPage {
         this.log.d(userHash);
         this.isPageLoaded = false;
         if (this.isBackendOnline) {
-            this.achievementSrv.getCurrentUnlockedAchievements(userHash).subscribe(
+            let teamUid = this.contractManagerService.getCurrentTeam();
+            this.achievementSrv.getCurrentUnlockedAchievements(userHash, teamUid).subscribe(
                 response => {
                     this.achievementsUnlocked = response;
                     this.isPageLoaded = true;

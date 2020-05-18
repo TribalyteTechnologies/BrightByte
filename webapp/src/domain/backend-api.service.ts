@@ -4,7 +4,6 @@ import { WebSocketService } from "../core/websocket.service";
 import { Achievement } from "../models/achievement.model";
 import { AchievementService } from "./achievement.service";
 import { ILogger, LoggerService } from "../core/logger.service";
-import { LoginService } from "../core/login.service";
 import { BitbucketService } from "./bitbucket.service";
 
 @Injectable()
@@ -21,7 +20,6 @@ export class BackendApiService {
     public constructor(
         private websocketSrv: WebSocketService,
         private achievementSrv: AchievementService,
-        private loginSrv: LoginService,
         private bitbucketService: BitbucketService,
         loggerSrv: LoggerService
     ) {
@@ -30,12 +28,13 @@ export class BackendApiService {
         this.socket = this.websocketSrv.getSocket();
     }
 
-    public initBackendConnection(userAddress: string) {
-        this.socket.emit(this.ADD_USER, userAddress);
+    public initBackendConnection(userAddress: string, teamUid: number) {
+        let sessionId = userAddress + "-" + teamUid;
+        this.socket.emit(this.ADD_USER, sessionId);
         this.log.d("Backend connection established");
         this.registerNewAchievementListener();
         this.registerTokenListener();
-        this.registerConnectionListener();
+        this.registerConnectionListener(sessionId);
     }
 
     private registerNewAchievementListener() {
@@ -57,9 +56,9 @@ export class BackendApiService {
         });
     }
 
-    private registerConnectionListener() {
+    private registerConnectionListener(sessionId: string) {
         this.socket.on(this.CONNECTION, () => {
-            this.socket.emit(this.ADD_USER, this.loginSrv.getAccountAddress());
+            this.socket.emit(this.ADD_USER, sessionId);
             this.log.d("Sending user address to the backend");
         });
     }

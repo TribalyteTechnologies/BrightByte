@@ -31,11 +31,11 @@ export class AchievementService {
         this.log = loggerSrv.get("AchievementService");
     }
 
-    public getCurrentUnlockedAchievements(userHash: string): Observable<Array<Achievement>> {
+    public getCurrentUnlockedAchievements(userHash: string, teamUid: number): Observable<Array<Achievement>> {
         let achievementsObservable: Observable<Array<Achievement>>;
         let currentAchievements = new Array<Achievement>();
 
-        achievementsObservable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash)
+        achievementsObservable = this.http.get(AppConfig.SERVER_BASE_URL + this.REQ_ROUTE + userHash + "/" + teamUid)
         .map((response: IAchievementResponse) => {
                 if (response && response.status === AppConfig.STATUS_OK) {
                     for (let achievement of response.data) {
