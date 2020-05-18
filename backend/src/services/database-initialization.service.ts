@@ -25,7 +25,7 @@ export class DatabaseInitializationService {
         private dispatcher: DispatcherService
     ) {
         this.log = loggerSrv.get("DatabaseInitializationService");
-        this.initializeUsersDatabase().subscribe(result => this.log.d("The result of the initialization is ", result));
+        //this.initializeUsersDatabase().subscribe(result => this.log.d("The result of the initialization is ", result));
     }
 
     private initializeUsersDatabase(): Observable<any> {
@@ -34,7 +34,7 @@ export class DatabaseInitializationService {
             flatMap(users => {
                 this.initialUserData = users;
                 let obs = this.initialUserData.map(user =>
-                    this.userDbSrv.initializeNewUser(user.userHash, user.numberOfCommits, user.finishedReviews)
+                    this.userDbSrv.initializeNewUser(user.userHash, "0", user.numberOfCommits, user.finishedReviews)
                 );
                 return forkJoin(obs);
             }),
