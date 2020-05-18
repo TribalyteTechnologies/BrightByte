@@ -10,7 +10,6 @@ contract Threshold {
     struct BrightByteSeasonThreshold {
         uint256 commitThreshold;
         uint256 reviewThreshold;
-        bool isModifiedByRoot;
     }
 
     event newSeasonThreshold(uint256 currentSeasonIndex, uint256 commitThreshold, uint256 reviewThreshold);
@@ -48,13 +47,12 @@ contract Threshold {
 
     function setNewSeasonThreshold(uint256 seasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyRoot {
         currentSeasonIndex = seasonIndex;
-        initSeasonThreshold(seasonIndex, averageNumberOfCommits, averageNumberOfReviews, false);
+        initSeasonThreshold(seasonIndex, averageNumberOfCommits, averageNumberOfReviews);
         emit newSeason(currentSeasonIndex, block.timestamp);
     }
 
     function setCurrentSeasonThreshold(uint256 commitThreshold, uint256 reviewThreshold) public onlyRoot {
-        require(!seasonThresholds[currentSeasonIndex].isModifiedByRoot, "The threshold is alredy set");
-        initSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold, true);
+        initSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold);
     }
 
     function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyRoot {
@@ -62,15 +60,14 @@ contract Threshold {
         uint256 finalSeasonToFill = (currentSeasonIndex > totalNumberOfSeasons) ? totalNumberOfSeasons : currentSeasonIndex; 
           for(uint256 i = initialSeasonIndex; i <= finalSeasonToFill; i++) {
             uint256 index = i - initialSeasonIndex;
-            initSeasonThreshold(i, commitsThreshold[index],  reviewsThreshold[index], true);
+            initSeasonThreshold(i, commitsThreshold[index],  reviewsThreshold[index]);
         }
     }
 
-    function initSeasonThreshold(uint256 seasonIndex, uint256 commitThreshold, uint256 reviewThreshold, bool enable) private {
+    function initSeasonThreshold(uint256 seasonIndex, uint256 commitThreshold, uint256 reviewThreshold) private {
         BrightByteSeasonThreshold storage seasonThreshold = seasonThresholds[seasonIndex];
         seasonThreshold.commitThreshold = commitThreshold;
         seasonThreshold.reviewThreshold = reviewThreshold;
-        seasonThreshold.isModifiedByRoot = enable;
         emit newSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold);
     }
 }
