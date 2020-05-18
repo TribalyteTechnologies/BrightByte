@@ -53,7 +53,7 @@ export class ProfileImageController {
             this.log.d("Avatar available: " + hash);
             ret =  new SuccessResponseDto(this.ROUTE_AVATARS + hash);            
         } else {
-            this.log.d("User avatar does not exist: " + hash);
+            this.log.d("User avatar does not exists: " + hash);
             ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "User avatar not available");
         }
         return ret;

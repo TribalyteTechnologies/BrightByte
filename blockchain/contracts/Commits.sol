@@ -9,7 +9,7 @@ contract Commits {
     address private rootAddress;
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
-    mapping (address => bool) private allowAddresses;
+    mapping (address => bool) private allowedAddresses;
 
     uint256[] quality;
     uint256[] confidence;
@@ -55,8 +55,8 @@ contract Commits {
         require(msg.sender == rootAddress, "Invalid Root addresss");
         _;
     }
-    modifier onlyAllow() {
-        require (allowAddresses[msg.sender], "The address is not allowed.");
+    modifier onlyAllowed() {
+        require (allowedAddresses[msg.sender], "The address is not allowed.");
         _;
     }
 
@@ -64,7 +64,7 @@ contract Commits {
         require(rootAddress == uint80(0));
         root = Root(_root);
         rootAddress = _root;
-        allowAddresses[rootAddress] = true;
+        allowedAddresses[rootAddress] = true;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -77,7 +77,7 @@ contract Commits {
         rootAddress = a;
     }
 
-    function setNewCommit (string _title, string _url, uint256 _users) public onlyAllow {
+    function setNewCommit (string _title, string _url, uint256 _users) public onlyAllowed {
         address auth = tx.origin;
         address[] memory a;
         bytes32 _id = keccak256(_url);
@@ -119,7 +119,7 @@ contract Commits {
         delete storedData[url];
     }
 
-    function getDetailsCommits(bytes32 _url) public onlyAllow view returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
+    function getDetailsCommits(bytes32 _url) public onlyAllowed view returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,
@@ -133,27 +133,27 @@ contract Commits {
                 data.score
         );
     }
-    function getCommitScore(bytes32 _id) public onlyAllow view returns(uint256, uint256){
+    function getCommitScore(bytes32 _id) public onlyAllowed view returns(uint256, uint256){
         return(storedData[_id].score, storedData[_id].weightedComplexity);
     }
-    function getNumbers() public onlyAllow view returns(uint){
+    function getNumbers() public onlyAllowed view returns(uint){
         return allCommitsArray.length;
     }
-    function getAllCommitsId(uint index) public onlyAllow view returns(bytes32){
+    function getAllCommitsId(uint index) public onlyAllowed view returns(bytes32){
         return allCommitsArray[index];
     }
-    function getNumbersNeedUrl(bytes32 _url) public onlyAllow view returns (uint, uint){
+    function getNumbersNeedUrl(bytes32 _url) public onlyAllowed view returns (uint, uint){
         return (storedData[_url].pendingComments.length,
                 storedData[_url].finishedComments.length
         );
     }
-    function getCommentsOfCommit(bytes32 _url) public onlyAllow view returns(address[],address[]){
+    function getCommentsOfCommit(bytes32 _url) public onlyAllowed view returns(address[],address[]){
         return (
             storedData[_url].pendingComments,
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyAllow view returns(string, uint256, uint, uint, address, uint256[]){
+    function getCommentDetail(bytes32 url, address a) public onlyAllowed view returns(string, uint256, uint, uint, address, uint256[]){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
@@ -165,7 +165,7 @@ contract Commits {
         );
     }
 
-    function setReview(string _url,string _text, uint256[] points) onlyAllow public{
+    function setReview(string _url,string _text, uint256[] points) onlyAllowed public{
         bytes32 url = keccak256(_url);
         address author = tx.origin;
         
@@ -238,7 +238,7 @@ contract Commits {
         return (yes,auth);
     }
 
-    function getCommitScores(bytes32 url) public onlyAllow view returns (uint256, uint256, uint256, uint256) {
+    function getCommitScores(bytes32 url) public onlyAllowed view returns (uint256, uint256, uint256, uint256) {
         return(storedData[url].score, storedData[url].weightedComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
 
@@ -247,6 +247,6 @@ contract Commits {
     }
 
     function allowNewUser(address userAddress) public onlyRoot {
-        allowAddresses[userAddress] = true;
+        allowedAddresses[userAddress] = true;
     }
 }

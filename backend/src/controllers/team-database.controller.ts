@@ -15,7 +15,7 @@ export class TeamDatabaseController {
         private emailService: EmailService,
         loggerSrv: LoggerService
     ) {
-        this.log = loggerSrv.get("ProfileImageController");
+        this.log = loggerSrv.get("TeamDatabaseController");
     }
 
     @Get(":id/members")

@@ -97,7 +97,7 @@ contract("Bright", accounts => {
     it("Should give error creating an already created account", async () => {
         await truffleAssert.reverts(
             brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne }),
-            "User alredy exist"
+            "User already exists"
         );
     });
 
