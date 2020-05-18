@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
 import { Observable, throwError, of, forkJoin } from "rxjs";
 import { flatMap, tap, map, first, catchError, shareReplay } from "rxjs/operators";
-import { UserDto } from "../dto/user.dto";
+import { UserDto, UserData } from "../dto/user.dto";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import Loki from "lokijs";
 import { CoreDatabaseService } from "./core-database.service";
@@ -28,49 +28,66 @@ export class UserDatabaseService {
         this.init();
     }
 
-    public getCommitNumber(userIdentifier: string): Observable<ResponseDto> {
+    public getCommitNumber(userIdentifier: string, teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
-            map((user: UserDto) => new SuccessResponseDto(user.commitCount)),
+            map((user: UserDto) => {
+                let teamUser = user.teamsData.find(userData => userData.teamUid === teamUid);
+                return new SuccessResponseDto(teamUser.commitCount);
+            }),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
         );
     }
 
-    public getReviewNumber(userIdentifier: string): Observable<ResponseDto> {
+    public getReviewNumber(userIdentifier: string, teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
-            map((user: UserDto) => new SuccessResponseDto(user.reviewCount)),
+            map((user: UserDto) => {
+                let teamUser = user.teamsData.find(userData => userData.teamUid === teamUid);
+                return new SuccessResponseDto(teamUser.reviewCount);
+            }),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
         );
     }
 
-    public hasAchievement(userIdentifier: string, achievementIdentifier: string): Observable<ResponseDto> {
+    public hasAchievement(userIdentifier: string, teamUid: string, achievementIdentifier: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
-            map((user: UserDto) => user.obtainedAchievements),
+            map((user: UserDto) => {
+                let teamUser = user.teamsData.find(userData => userData.teamUid === teamUid);
+                return teamUser.obtainedAchievements;
+            }),
             map((achievements: Array<string>) => new SuccessResponseDto(achievements.includes(achievementIdentifier))),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
         );
     }
 
-    public getObtainedAchievements(userIdentifier: string): Observable<ResponseDto> {
+    public getObtainedAchievements(userIdentifier: string, teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
-            flatMap((user: UserDto) => this.achievementDbSrv.getAchievements(user.obtainedAchievements)),
+            flatMap((user: UserDto) => this.achievementDbSrv.getAchievements(
+                user.teamsData.find(userData => userData.teamUid === teamUid).obtainedAchievements)
+            ),
             map((achievements: Array<AchievementDto>) => new SuccessResponseDto(achievements)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
         );
     }
 
-    public createUser(userIdentifier: string): Observable<ResponseDto> {
+    public createUser(userIdentifier: string, teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret;
                 if (user) {
-                    ret = of(true);
+                    let teamUser = user.teamsData.find(userData => userData.teamUid === teamUid);
+                    if(teamUser) {
+                        ret = of(true);
+                    } else {
+                        user.teamsData.push(new UserData(teamUid));
+                        ret = this.databaseSrv.save(this.database, collection, user);
+                    }
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier)) as UserDto;
+                    user = collection.insert(new UserDto(userIdentifier, new UserData(teamUid))) as UserDto;
                     ret = this.databaseSrv.save(this.database, collection, user);
                 }
                 return ret;
@@ -80,15 +97,20 @@ export class UserDatabaseService {
         );
     }
 
-    public setCommitNumber(userIdentifier: string, num: number): Observable<ResponseDto> {
+    public setCommitNumber(userIdentifier: string, teamUid: string, num: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 if (user) {
-                    user.commitCount = num;
+                    let teamUser = user.teamsData.find(userData => userData.teamUid === teamUid);
+                    if(teamUser) {
+                        teamUser.commitCount = num;
+                    } else {
+                        user.teamsData.push(new UserData(teamUid, num));
+                    }
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, num, 0, new Array<string>())) as UserDto;
+                    user = collection.insert(new UserDto(userIdentifier, new UserData(teamUid, num))) as UserDto;
                 }
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);
@@ -100,15 +122,20 @@ export class UserDatabaseService {
         );
     }
 
-    public setReviewNumber(userIdentifier: string, num: number): Observable<ResponseDto> {
+    public setReviewNumber(userIdentifier: string, teamUid: string, num: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 if (user) {
-                    user.reviewCount = num;
+                    let teamUser = user.teamsData.find(userData => userData.teamUid === teamUid);
+                    if(teamUser) {
+                        teamUser.reviewCount = num;
+                    } else {
+                        user.teamsData.push(new UserData(teamUid, 0, num));
+                    }
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, num, 0, new Array<string>())) as UserDto;
+                    user = collection.insert(new UserDto(userIdentifier, new UserData(teamUid, 0, num))) as UserDto;
                 }
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);
@@ -120,18 +147,20 @@ export class UserDatabaseService {
         );
     }
 
-    public initializeNewUser(userIdentifier: string, numberOfCommits: number, numberOfReviews: number): Observable<ResponseDto> {
+    public initializeNewUser(
+        userIdentifier: string, teamUid: string, numberOfCommits: number, numberOfReviews: number
+    ): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 this.log.d("First Find the user with id " + userIdentifier);
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 if (!user) {
-                    user = collection.insert(new UserDto(userIdentifier, numberOfReviews, numberOfCommits, new Array<string>())) as UserDto;
+                    let userData = new UserData(teamUid, numberOfCommits, numberOfReviews);
+                    user = collection.insert(new UserDto(userIdentifier, userData)) as UserDto;
                 } else {
-                    user.reviewCount = numberOfReviews;
-                    user.commitCount = numberOfCommits;
-                    user.obtainedAchievements = user.obtainedAchievements;
+                    let userData = new UserData(teamUid, numberOfCommits, numberOfReviews);
+                    user.teamsData.push(userData);
                 }
                 ret = this.databaseSrv.save(this.database, collection, user);
                 return ret;
@@ -141,18 +170,24 @@ export class UserDatabaseService {
         );
     }
 
-    public setObtainedAchievement(userIdentifier: string, achievementIdentifiers: string): Observable<ResponseDto> {
+    public setObtainedAchievement(userIdentifier: string, teamUid: string, achievementIdentifiers: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let achievementIds = achievementIdentifiers.split(",");
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
+                let userData: UserData;
                 if (user) {
-                    let obtainedAchievements = user.obtainedAchievements;
-                    achievementIds.forEach(id => obtainedAchievements.push(id));
-                    user.obtainedAchievements = obtainedAchievements;
+                    let teamUser = user.teamsData.find(userTeamData => userTeamData.teamUid === teamUid);
+                    if(teamUser) {
+                        teamUser.obtainedAchievements = teamUser.obtainedAchievements.concat(achievementIds);
+                    } else {
+                        userData = new UserData(teamUid, 0, 0, achievementIds);
+                        user.teamsData.push(userData);
+                    }
                 } else {
-                    user = collection.insert(new UserDto(userIdentifier, 0, 0, achievementIds)) as UserDto;
+                    userData = new UserData(teamUid, 0, 0, achievementIds);
+                    user = collection.insert(new UserDto(userIdentifier, userData)) as UserDto;
                 }
                 if (user) {
                     ret = this.databaseSrv.save(this.database, collection, user);

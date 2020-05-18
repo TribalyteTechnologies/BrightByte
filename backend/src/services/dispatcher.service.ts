@@ -40,7 +40,7 @@ export class DispatcherService {
     public dispatch(event: AchievementEventDto): Observable<ResponseDto> {
         this.log.d("New event received:", event);
         return this.eventDbSrv.setEvent(event).pipe(
-            flatMap((res: ResponseDto) => this.userDbSrv.createUser(event.userHash)),
+            flatMap((res: ResponseDto) => this.userDbSrv.createUser(event.userHash, event.teamUid)),
             flatMap((res: ResponseDto) => this.teamDbSrv.addNewTeamMember(event.teamUid, event.userHash)),
             flatMap((res: ResponseDto) => {
                 let obs = this.achievementStack.map(achievementProcessor => achievementProcessor.process(event));
@@ -51,13 +51,15 @@ export class DispatcherService {
                 let currentThresholdedDate = (Date.now() / this.TIMESTAMP_DIVISION_FACTOR) - this.THRESHOLD_IN_SECS;
                 if (obtainedAchievements.length > 0 && event.timestamp > currentThresholdedDate) {
                     this.log.d("The obtained achivements for the event are: ", obtainedAchievements);
-                    this.clientNtSrv.sendNewAchievement(event.userHash, obtainedAchievements);
+                    this.clientNtSrv.sendNewAchievement(event.userHash, event.teamUid, obtainedAchievements);
                 }
             }),
             flatMap((obtainedAchievements: Array<AchievementDto>) => {
                 let ret = new Observable<Array<ResponseDto>>();
                 if (obtainedAchievements.length > 0) {
-                    let obs = obtainedAchievements.map(achivement => this.userDbSrv.setObtainedAchievement(event.userHash, achivement.id));
+                    let obs = obtainedAchievements.map(
+                        achivement => this.userDbSrv.setObtainedAchievement(event.userHash, event.teamUid, achivement.id)
+                    );
                     ret = combineLatest(obs);
                 } else {
                     let aux = new Array<ResponseDto>();

@@ -1,6 +1,6 @@
-export class UserDto {
+export class UserData {
     public constructor(
-        public id: string,
+        public teamUid: string,
         public commitCount?: number,
         public reviewCount?: number,
         public obtainedAchievements?: Array<string>
@@ -12,7 +12,20 @@ export class UserDto {
             this.reviewCount = 0;
         }
         if (obtainedAchievements === undefined) {
-            this.obtainedAchievements = [];
+            this.obtainedAchievements = new Array<string>();
+        }
+    }
+}
+
+export class UserDto {
+    public teamsData: Array<UserData>;
+    public constructor(
+        public id: string,
+        userData?: UserData
+    ) {
+        this.teamsData = new Array<UserData>();
+        if (userData) {
+            this.teamsData.push(userData);
         }
     }
 
