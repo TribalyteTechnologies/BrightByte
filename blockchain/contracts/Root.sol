@@ -9,7 +9,7 @@ import { Reputation } from "./Reputation.sol";
 
 contract Root{
     mapping (address => bool) private adminUsers;
-    mapping (address => bool) private allowAddresses;
+    mapping (address => bool) private allowedAddresses;
 
     Bright remoteBright;
     address brightAddress;
@@ -33,6 +33,11 @@ contract Root{
     }
     modifier onlyBright() {
         require(msg.sender == brightAddress);
+        _;
+    }
+
+     modifier onlyAllowed() {
+        require (allowedAddresses[msg.sender], "The address is not allowed.");
         _;
     }
     
@@ -61,7 +66,7 @@ contract Root{
         remoteBright.setCommit(url);
     }
 
-    function notifyCommit (string url, bytes32[] _emails) public  {
+    function notifyCommit (string url, bytes32[] _emails) public onlyAllowed {
         bytes32 _id = keccak256(url);
         address a;
         bool yes;
@@ -79,7 +84,7 @@ contract Root{
         }
     }
 
-    function readCommit(string url) public  {
+    function readCommit(string url) public onlyAllowed {
         remoteCommits.readCommit(keccak256(url));
     }
     
@@ -87,13 +92,13 @@ contract Root{
         remoteBright.setReview(url,a);
     }
 
-    function setVote(string url, address user, uint256 vote) public  {
+    function setVote(string url, address user, uint256 vote) public onlyAllowed {
         bytes32 url_bytes = keccak256(url); 
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
 
-    function setFeedback(string url,address user) public  {
+    function setFeedback(string url,address user) public onlyAllowed {
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
@@ -101,7 +106,7 @@ contract Root{
         return Reputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
-    function calculateUserReputation(bytes32 commitsUrl, uint256 reputation, uint256 cumulativeComplexity) public view returns (uint256, uint256) {
+    function calculateUserReputation(bytes32 commitsUrl, uint256 reputation, uint256 cumulativeComplexity) public onlyBright view returns (uint256, uint256) {
         uint256 commitScore;
         uint256 commitPonderation;
         uint256 previousScore;
@@ -129,11 +134,11 @@ contract Root{
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
     }
 
-    function getSeasonThreshold(uint256 seasonIndex) public view returns (uint256, uint256) {
+    function getSeasonThreshold(uint256 seasonIndex) public onlyAllowed view returns (uint256, uint256) {
         return remoteThreshold.getSeasonThreshold(seasonIndex);
     }
 
-    function getCurrentSeasonThreshold() public view returns (uint256, uint256) {
+    function getCurrentSeasonThreshold() public onlyAllowed view returns (uint256, uint256) {
         return remoteThreshold.getCurrentSeasonThreshold();
     }
 
@@ -154,7 +159,7 @@ contract Root{
     }
 
     function allowNewUser(address userAddress) public onlyBright {
-        allowAddresses[userAddress] = true;
+        allowedAddresses[userAddress] = true;
         remoteCommits.allowNewUser(userAddress);
     }
 }
