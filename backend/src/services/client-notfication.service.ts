@@ -38,14 +38,10 @@ export class ClientNotificationService {
         return this.sessions.delete(userSession);
     }
 
-    public getSession(userAddress: string): string {
-        let userSession = this.getSession(userAddress);
-        return userSession;
-    }
-
-    public sendNewAchievement(userAddress: string, achievements: Array<AchievementDto>) {
+    public sendNewAchievement(userAddress: string, teamUid: string, achievements: Array<AchievementDto>) {
         this.log.d("Sending achievements: ", achievements);
-        this.send(userAddress, this.NEW_ACHIEVEMENT, achievements);
+        let userSession = userAddress + "-" + teamUid;
+        this.send(userSession, this.NEW_ACHIEVEMENT, achievements);
     }
 
     public sendToken(userAddress: string, token: string) {
@@ -59,7 +55,7 @@ export class ClientNotificationService {
             let userSessions = this.findKey(userAddress);
             try {
                 userSessions.forEach(session => {
-                    this.sockets[session].emit(event, content);
+                    let result = this.sockets[session].emit(event, content);
                 });
             } catch (error) {
                 this.log.e("Cannot send content to client", error);
@@ -68,7 +64,7 @@ export class ClientNotificationService {
     }
 
     private findKey(userAddress: string): Array<string> {
-        let userSessions = [];
+        let userSessions = new Array<string>();
         if (this.sessions.size > 0) {
             for (let [key, value] of this.sessions.entries()) {
                 if (value === userAddress) {
