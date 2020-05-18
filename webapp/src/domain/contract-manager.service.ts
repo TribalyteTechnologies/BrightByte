@@ -709,18 +709,18 @@ export class ContractManagerService {
 
     public getCurrentSeasonThreshold(): Promise<Array<number>> {
         return this.initProm.then(([bright, commit, root]) => {
-            return root.methods.getCurrentSeasonThreshold().call();
+            return root.methods.getCurrentSeasonThreshold().call({ from: this.currentUser.address});
         }).catch(e => {
-            this.log.e("Error setting thumbs: ", e);
+            this.log.e("Error getting current season threshold: ", e);
             throw e;
         });
     }
 
     public getSeasonThreshold(seasonIndex: number): Promise<Array<number>> {
         return this.initProm.then(([bright, commit, root]) => {
-            return root.methods.getSeasonThreshold(seasonIndex).call();
+            return root.methods.getSeasonThreshold(seasonIndex).call({ from: this.currentUser.address});
         }).catch(e => {
-            this.log.e("Error setting thumbs: ", e);
+            this.log.e("Error getting season threshold: ", e);
             throw e;
         });
     }
