@@ -55,7 +55,7 @@ export class AppConfig {
     public static readonly HOUR_TO_SECS = AppConfig.MIN_TO_SECS * 60;
     public static readonly DAY_TO_SECS = AppConfig.HOUR_TO_SECS * 24;
     public static readonly REPUTATION_FACTOR = 1000;
-    public static readonly FIRST_QUALIFYING_SEASON = 4;
+    public static readonly FIRST_QUALIFYING_SEASON = 0;
     public static readonly COMMITS_BLOCK_SIZE = 20;
     public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
     public static readonly EMPTY_TEAM_ID = 0;
