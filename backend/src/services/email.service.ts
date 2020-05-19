@@ -1,16 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
-import { from, Observable, of, forkJoin } from "rxjs";
+import { from, Observable, of } from "rxjs";
 import { ResponseDto } from "../dto/response/response.dto";
 import { map, catchError } from "rxjs/operators";
 import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { FailureResponseDto } from "../dto/response/failure-response.dto";
+import { BackendConfig } from "../backend.config";
 
 @Injectable()
 export class EmailService {
 
     private readonly INVITATION_SUBJECT = "Invitation to participate on BrightByte";
-    private readonly FROM_EMAIL = "noreply@nestjs.com";
+    private readonly FROM_EMAIL = BackendConfig.SMTP_EMAIL;
     private readonly INVITATION_TEMPLATE = "invitation";
 
     constructor(private mailerService: MailerService) { }
