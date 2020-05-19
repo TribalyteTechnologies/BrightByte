@@ -28,10 +28,11 @@ export class AuthenticationController {
     }
 
 
-    @Get("authorize/:userCode")
-    public getAuthCallback(@Param("userCode") code): ResponseDto {
+    @Get("authorize/:user/:teamUid")
+    public getAuthCallback(@Param("user") user: string, @Param("teamUid") teamUid: string): ResponseDto {
         let ret: ResponseDto;
         if(BackendConfig.BITBUCKET_KEY) {
+            const code = user + "-" + teamUid;
             this.log.d("The user requesting authentication is: " + code);
             ret = new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code);
         } else {
