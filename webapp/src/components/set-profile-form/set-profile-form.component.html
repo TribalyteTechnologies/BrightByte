@@ -20,9 +20,9 @@
         <ion-row *ngIf="createTeamFG.get('seasonLength').errors && createTeamFG.get('seasonLength').dirty">
             <ion-row class="error-body">
                 <div color="danger" *ngIf="createTeamFG.get('seasonLength').hasError('min')">
-                    {{ "setProfile.minSeasonLength" | translate: {length: MIN_SEASON_LENGTH} }}</div>
+                    {{ "setProfile.minSeasonLength" | translate: {length: MIN_SEASON_LENGTH_DAYS} }}</div>
                 <div color="danger" *ngIf="createTeamFG.get('seasonLength').hasError('max')">
-                    {{ "setProfile.minSeasonLength" | translate: {length: MAX_SEASON_LENGTH} }}</div>
+                    {{ "setProfile.minSeasonLength" | translate: {length: MAX_SEASON_LENGTH_DAYS} }}</div>
             </ion-row>
         </ion-row>
         <ion-row class="mini-title">{{ "setProfile.emailsToInvite" | translate }}</ion-row>

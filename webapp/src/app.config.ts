@@ -60,8 +60,8 @@ export class AppConfig {
     public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
     public static readonly EMPTY_TEAM_ID = 0;
     public static readonly DEFAULT_INVITATION_EXP_IN_SECS = 60 * 60 * 24 * 7;
-    public static readonly MAX_SEASON_LENGTH = 365 * 10;
-
+    public static readonly MAX_SEASON_LENGTH_DAYS = 365 * 10;
+    public static readonly MIN_SEASON_LENGTH_DAYS = 1;
     
     
     public static readonly STATUS_OK = "OK";

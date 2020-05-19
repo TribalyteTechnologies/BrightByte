@@ -20,7 +20,8 @@ import { Team } from "../../models/team.model";
 export class SetProfileForm {
     public readonly TEAM_NAME_MAX_LENGTH = 20;
     public readonly DEFAULT_SEASON_LENGTH = 14;
-    public readonly MIN_SEASON_LENGTH = 1;
+    public readonly MIN_SEASON_LENGTH_DAYS = AppConfig.MIN_SEASON_LENGTH_DAYS;
+    public readonly MAX_SEASON_LENGTH_DAYS = AppConfig.MAX_SEASON_LENGTH_DAYS;
     public setProfileFG: FormGroup;
     public createTeamFG: FormGroup;
     public isButtonPressed: boolean;
@@ -57,7 +58,7 @@ export class SetProfileForm {
             invitedEmails: ["", [Validators.required]],
             seasonLength: [
                 this.DEFAULT_SEASON_LENGTH,
-                [Validators.required, Validators.min(this.MIN_SEASON_LENGTH), Validators.max(AppConfig.MAX_SEASON_LENGTH)]
+                [Validators.required, Validators.min(this.MIN_SEASON_LENGTH_DAYS), Validators.max(this.MAX_SEASON_LENGTH_DAYS)]
             ]
         });
     }

@@ -5,7 +5,7 @@ import { AppConfig } from "../../app.config";
 import { TranslateService } from "@ngx-translate/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { catchError, map, flatMap } from "rxjs/operators";
+import { catchError, flatMap } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
 import { IResponse, IWorkspaceResponse } from "../../models/response.model";
@@ -133,8 +133,6 @@ export class Profile {
             this.invitationEmailFormatError = translation["setProfile.invitationEmailFormatError"];
             this.userTypeError = translation["setProfile.userTypeError"];
             this.alreadyRegisteredError = translation["setProfile.alreadyRegisteredError"];
-
-
         });
         this.uploadForm = this.formBuilder.group({
             image: [""],
@@ -176,7 +174,7 @@ export class Profile {
             return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.isBackendAvailable = false;
-            if(result.status !== "Error") {
+            if (result.status !== "Error") {
                 this.teamWorkspaces = result.data;
                 this.isBackendAvailable = true;    
             }
@@ -300,7 +298,7 @@ export class Profile {
             Promise.all(promises).then(() => {
                 this.log.d("The user profile changed his profile");
                 this.spinnerService.hideLoader();
-                if(!this.errorMsg) {
+                if (!this.errorMsg) {
                     this.dismiss();
                 }
             });
@@ -329,20 +327,26 @@ export class Profile {
         this.seasonLength = seasonLength;
         this.seasonErrorMsg = null;
         this.seasonSuccessMsg = null;
-        this.isSettingSeasonData = true;
-        this.contractManagerService.setSeasonLength(this.seasonLength)
-        .then(() => {
-            this.isSettingSeasonData = false;
-            return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
-        }).then(res => {
-            this.seasonSuccessMsg = res;
-        }).catch(e => {
-            this.log.e("Error setting the new season duration", e);
-            this.isSettingSeasonData = false;
-            return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
-        }).then(res => {
-            this.seasonErrorMsg = res;
-        });
+        if(seasonLength >= AppConfig.MIN_SEASON_LENGTH_DAYS && seasonLength < AppConfig.MAX_SEASON_LENGTH_DAYS) {
+            this.isSettingSeasonData = true;
+            this.contractManagerService.setSeasonLength(this.seasonLength)
+            .then(() => {
+                this.isSettingSeasonData = false;
+                return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
+            }).then(res => {
+                this.seasonSuccessMsg = res;
+            }).catch(e => {
+                this.log.e("Error setting the new season duration", e);
+                this.isSettingSeasonData = false;
+                return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
+            }).then(res => {
+                this.seasonErrorMsg = res;
+            });
+        } else {
+            this.translateSrv.get("setProfile.seasonLengthErrorMsg").subscribe(res => {
+                this.seasonErrorMsg = res;
+            });
+        }
     }
 
     public inviteUsersToTeam(invitedEmails: string, userType: AppConfig.UserType) {
@@ -351,7 +355,7 @@ export class Profile {
         this.errorInviteMsg = null;
         let emails = invitedEmails.split(this.EMAILS_SEPARATOR).map(email => {
             let mail = email.trim();
-            if (areEmailsWellFormated && mail !== ""){
+            if (areEmailsWellFormated && mail !== "") {
                 areEmailsWellFormated = FormatUtils.getEmailValidatorPattern().test(mail);
             }
             return mail;
@@ -377,7 +381,7 @@ export class Profile {
                                 let index = this.invitedUsers.indexOf(emailsAlreadyInvited[0]);
                                 this.invitedUsers[index] = newUser;
                             } else {
-                                newInvitedUsers.push(newUser); 
+                                newInvitedUsers.push(newUser);
                             }
                         });
                         this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
@@ -488,11 +492,11 @@ export class Profile {
         );
     }
 
-    public changeSeasonThreshold(commitThreshold: number, reviewThreshold: number): any {
+    public changeSeasonThreshold(commitThreshold: number, reviewThreshold: number) {
         let error: boolean;
         this.commitThreshold = commitThreshold;
         this.reviewThreshold = reviewThreshold;
-        if(this.commitThreshold > 0 && this.reviewThreshold > 0) {
+        if (this.commitThreshold >= 0 && this.reviewThreshold >= 0) {
             this.isSettingSeasonData = true;
             from(this.contractManagerService.setCurrentSeasonThreshold(this.commitThreshold, this.reviewThreshold)).pipe(
                 flatMap(res => {
@@ -503,16 +507,16 @@ export class Profile {
                     this.log.e("Error: ", e);
                     error = true;
                     return this.translateSrv.get("setProfile.errorSettingThreshold");
-                }),
-                map((res: string) => {
-                    this.isSettingSeasonData = false;
-                    if(error) {
-                        this.seasonErrorMsg = res;
-                    } else {
-                        this.seasonSuccessMsg = res;
-                    }
                 })
-            ).subscribe();
+            ).subscribe((res: string) => {
+                this.isSettingSeasonData = false;
+                if (error) {
+                    this.seasonErrorMsg = res;
+                } else {
+                    this.seasonSuccessMsg = res;
+                }
+
+            });
         } else {
             this.translateSrv.get("setProfile.invalidThreshold").subscribe(res => {
                 this.seasonErrorMsg = res;
