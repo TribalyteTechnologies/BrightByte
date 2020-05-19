@@ -33,6 +33,7 @@ export class BitbucketApiConstants {
 export class BitbucketService {
     private userToken: string;
     private userIdentifier: string;
+    private userTeamUid: number;
     private headers: HttpHeaders;
     private log: ILogger;
     private authWindow: Window;
@@ -53,9 +54,10 @@ export class BitbucketService {
         return this.eventEmitter;
     }
 
-    public checkProviderAvailability(userAddress: string): Promise<boolean> {
+    public checkProviderAvailability(userAddress: string, teamUid: number): Promise<boolean> {
         this.log.d("Checks the api works correctly");
         this.userIdentifier = userAddress;
+        this.userTeamUid = teamUid;
         return this.getUsername().then(name => {
             this.log.d("The api provider works, the user nickname is:", name);
             this.eventEmitter.emit(true);
@@ -162,9 +164,10 @@ export class BitbucketService {
         return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
     }
 
-    private loginToBitbucket(userAddress: string): Promise<string> {
+    private loginToBitbucket(userAddress: string, teamUid: number): Promise<string> {
         this.userIdentifier = userAddress;
-        return this.http.get(BitbucketApiConstants.SERVER_AUTHENTICATION_URL + userAddress).toPromise()
+        this.userTeamUid = teamUid;
+        return this.http.get(BitbucketApiConstants.SERVER_AUTHENTICATION_URL + userAddress + "/" + teamUid).toPromise()
         .then((response: IResponse) => {
             if (response.status === AppConfig.STATUS_OK) {
                 let url = response.data;
@@ -187,7 +190,7 @@ export class BitbucketService {
 
     private refreshToken(): Promise<string> {
         this.log.d("Token experied, getting a new one for user: " + this.userIdentifier);
-        return this.loginToBitbucket(this.userIdentifier)
+        return this.loginToBitbucket(this.userIdentifier, this.userTeamUid)
         .then(authUrl => {
             this.log.d("Refreshing token", authUrl);
             return authUrl;

@@ -419,7 +419,7 @@ export class AddCommitPopover {
     private loginToBitbucket() {
         this.userAddress = this.loginService.getAccountAddress();
         this.commitMethod = this.BATCH_METHOD;
-        this.bitbucketSrv.checkProviderAvailability(this.userAddress).then(user => {
+        this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam).then(user => {
             this.log.d("Waiting for the user to introduce their credentials");
             this.isServiceAvailable = true;
         }).catch(e => {
