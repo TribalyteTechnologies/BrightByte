@@ -11,7 +11,7 @@ contract Bright {
     uint256 private constant HOUR_TO_SECS = 60 * 60;
     uint256 private constant DAY_LENGTH_SECS = 24 * HOUR_TO_SECS;
     uint256 private constant LIMIT_CHANGE_LENGTH = 2 * HOUR_TO_SECS;
-    uint256 private constant MAX_SEASON_LENGTH = 365 * 10;
+    uint256 private constant MAX_SEASON_LENGTH_DAYS = 365 * 10;
     uint256 private deploymentTimestamp;
     uint256 private currentSeasonIndex;
     uint256 private initialSeasonTimestamp;
@@ -83,7 +83,7 @@ contract Bright {
     function setSeasonLength(uint256 seasonLengthDays) public {
         uint256 changeLimitTime = initialSeasonTimestamp + seasonLengthSecs - LIMIT_CHANGE_LENGTH;
         require(currentSeasonIndex == 1 &&  block.timestamp < changeLimitTime, "Not able to change the seasons length");
-        require(seasonLengthDays < MAX_SEASON_LENGTH, "Invalid season length");
+        require(seasonLengthDays > 0 && seasonLengthDays < MAX_SEASON_LENGTH_DAYS, "Invalid season length");
         seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
     }
 
