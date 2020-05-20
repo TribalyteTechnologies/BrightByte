@@ -23,10 +23,9 @@ const COMMIT_TITTLE = "Example Commit";
 const COMMIT_URL = "https://bitbucket.org/tribalyte/exampleRepo/commits/ffffffffffffffffffff";
 const REVIEW_TEXT = "Example Review";
 const REVIEW_POINTS =  [500, 200, 100];
-const INITIAL_SEASON_LENGTH = 15;
+const INITIAL_SEASON_LENGTH_DAYS = 15;
 const TEAM_NAME = "TEAM 1";
 const MEMBER_USERTYPE = 2;
-const ADMIN_USERTYPE = 1;
 const LONG_EXP_SECS = 2000;
 
 
@@ -49,7 +48,7 @@ contract("EventDispatcher", accounts => {
     it("Creating the enviroment" ,async () => {
         cloudBBFactory = await CloudBBFactory.deployed();
         cloudTeamManager = await CloudTeamManager.deployed();
-        teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH, adminUserAddress);
+        teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
         let contractsAddresses = await cloudTeamManager.getTeamContractAddresses(teamUid, { from: adminUserAddress });
         cloudEventDispatcherAddress = await cloudBBFactory.getEventDispatcherAddress();
         cloudEventDispatcher = await CloudEventDispatcher.at(cloudEventDispatcherAddress);

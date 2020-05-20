@@ -11,7 +11,7 @@ contract("CloudTeamManager", accounts => {
 
     const ADMIN_USERTYPE = 1;
     const MEMBER_USERTYPE = 2;
-    const INITIAL_SEASON_LENGTH = 15;
+    const INITIAL_SEASON_LENGTH_DAYS = 15;
 
     const LONG_EXP_SECS = 2000;
     const SHORT_EXP_SECS = 1;
@@ -50,7 +50,7 @@ contract("CloudTeamManager", accounts => {
             .then(teamMembers => {
                 let isUserCreatedAdmin = teamMembers[0].find(adminAddress => adminAddress === adminOwnerAccount) === adminOwnerAccount;
                 assert(isUserCreatedAdmin, "Creator user is not admin");
-                return deployTeamContracts(emailUser0, teamManagerInstance, team1Uid, INITIAL_SEASON_LENGTH, adminOwnerAccount);
+                return deployTeamContracts(emailUser0, teamManagerInstance, team1Uid, INITIAL_SEASON_LENGTH_DAYS, adminOwnerAccount);
             });
         }
     );
@@ -123,7 +123,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(response => {
                 assert(response.receipt.status);
-                return teamManagerInstance.deployRoot(emailUser0, team1Uid, INITIAL_SEASON_LENGTH, { from: adminOwnerAccount });
+                return teamManagerInstance.deployRoot(emailUser0, team1Uid, INITIAL_SEASON_LENGTH_DAYS, { from: adminOwnerAccount });
             })
             .then(response => {
                 assert(response.receipt.status);
@@ -153,7 +153,7 @@ contract("CloudTeamManager", accounts => {
             })
             .catch(() => {
                 assert(true);
-                return teamManagerInstance.deployRoot(team1Uid, INITIAL_SEASON_LENGTH, { from: user1Account });
+                return teamManagerInstance.deployRoot(team1Uid, INITIAL_SEASON_LENGTH_DAYS, { from: user1Account });
             })
             .catch(() => {
                 assert(true);

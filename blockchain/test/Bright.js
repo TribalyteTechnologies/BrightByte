@@ -22,13 +22,12 @@ const REVIEW_POINTS = [5, 3, 3];
 const COMMENT_VOTE = 2;
 const LONG_EXP_SECS = 2000;
 const MEMBER_USERTYPE = 2;
-const ADMIN_USERTYPE = 1;
 
 const DAY_TO_SECS = 24 * 60 * 60;
-const INITIAL_SEASON_LENGTH = 15;
-const INITIAL_SEASON_DAY_LENGTH_SECS = INITIAL_SEASON_LENGTH * DAY_TO_SECS;
-const NEW_SEASON_LENGTH = 24;
-const INVALID_SEASON_LENGTH = 365 * 11;
+const INITIAL_SEASON_LENGTH_DAYS = 15;
+const INITIAL_SEASON_DAY_LENGTH_SECS = INITIAL_SEASON_LENGTH_DAYS * DAY_TO_SECS;
+const NEW_SEASON_LENGTH_DAYS = 24;
+const INVALID_SEASON_LENGTH_DAYS = 365 * 11;
 
 contract("Bright", accounts => {
     let cloudTeamManager;
@@ -46,7 +45,7 @@ contract("Bright", accounts => {
 
     it("Creating the enviroment" ,async () => {
         cloudTeamManager = await CloudTeamManager.deployed();
-        teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH, adminUserAddress);
+        teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
         let contractsAddresses = await cloudTeamManager.getTeamContractAddresses(teamUid, { from: adminUserAddress });
         brightAddress = contractsAddresses[0];
         brightInstance = await Bright.at(brightAddress);
@@ -60,21 +59,21 @@ contract("Bright", accounts => {
         let currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
         parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), INITIAL_SEASON_DAY_LENGTH_SECS, "The initial season length is not correct");
 
-        await rootInstance.setSeasonLength(NEW_SEASON_LENGTH, { from: adminUserAddress });
+        await rootInstance.setSeasonLength(NEW_SEASON_LENGTH_DAYS, { from: adminUserAddress });
         currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
-        parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), NEW_SEASON_LENGTH * DAY_TO_SECS, "The season length change was not done correctly");
+        parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), NEW_SEASON_LENGTH_DAYS * DAY_TO_SECS, "The season length change was not done correctly");
     });
 
     it("Should give error changing the season length with an invalid address", async () => {
         await truffleAssert.reverts(
-            rootInstance.setSeasonLength(NEW_SEASON_LENGTH, { from: invalidUser }),
+            rootInstance.setSeasonLength(NEW_SEASON_LENGTH_DAYS, { from: invalidUser }),
             "The origin address is not allowed"
         );
     });
 
     it("Should give error changing the season length with an invalid length", async () => {
         await truffleAssert.reverts(
-            rootInstance.setSeasonLength(INVALID_SEASON_LENGTH, { from: adminUserAddress }),
+            rootInstance.setSeasonLength(INVALID_SEASON_LENGTH_DAYS, { from: adminUserAddress }),
             "Invalid season length"
         );
     });
