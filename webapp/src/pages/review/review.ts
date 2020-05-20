@@ -187,7 +187,6 @@ export class ReviewPage {
         if (this.loadedCommits === this.maxReviews) {
             this.spinnerService.showLoader();
         }
-        commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
         .then((comments: Array<CommitComment>) => {
             this.openedComments = true;
@@ -212,11 +211,15 @@ export class ReviewPage {
         }).then((name) => {
             this.currentCommitName = name[0];
             this.currentCommitEmail = name[1];
-            return this.contractManagerService.setFeedback(commit.url);
+            return commit.isReadNeeded ? this.contractManagerService.setFeedback(commit.url) :
+                Promise.resolve();
         }).then((val) => {
+            commit.isReadNeeded = false;
             this.log.d("Feedback response: " + val);
             let idx = this.filterArrayCommits.indexOf(commit);
-            this.filterArrayCommits[idx].isReadNeeded = false;
+            if (idx && this.filterArrayCommits){
+                this.filterArrayCommits[idx].isReadNeeded = false;
+            }
         }).catch(err => {
             this.spinnerService.hideLoader();
             this.log.e(err);
