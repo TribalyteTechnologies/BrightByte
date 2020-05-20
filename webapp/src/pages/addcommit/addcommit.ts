@@ -284,8 +284,10 @@ export class AddCommitPopover {
         this.isFinishedLoadingRepo = false;
         this.showNextReposOption = false;
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
-            seasonDate = new Date(1000 * seasonEndDate[1]);
+            let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
             seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
+            seasonDate = seasonEndDate[1] < dateNowSecs ? 
+                new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
             return seasonDate;
         }).then(() => {
             this.showSpinner = true;
