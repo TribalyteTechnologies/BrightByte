@@ -46,8 +46,10 @@ export class TeamDatabaseService {
         return this.initObs.pipe(
             flatMap(collection => {
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
-                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                if (!team) {
+                let ret: Observable<string>;
+                if (team) {
+                    ret = throwError(BackendConfig.STATUS_FAILURE);
+                } else {
                     team = collection.insert(new TeamDto(teamUid)) as TeamDto;
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }
@@ -63,7 +65,7 @@ export class TeamDatabaseService {
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
                 let team = collection.findOne({ id: teamUid }) as TeamDto;
-                if (team && team.workspaces.indexOf(workspace) === -1) {
+                if (team && team.workspaces && team.workspaces.indexOf(workspace) < 0) {
                     team.workspaces.push(workspace);
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }
