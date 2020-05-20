@@ -24,24 +24,26 @@ contract Root{
 
 
     modifier onlyAdmin() {
-       require (adminUsers[msg.sender], "The origin address is not allowed. Not an admin");
+        require (adminUsers[msg.sender], "The origin address is not allowed. Not an admin");
         _;
     }
     modifier onlyCommit() {
-        require(msg.sender == commitsAddress);
+        require(msg.sender == commitsAddress, "Sender is not commit contract");
         _;
     }
     modifier onlyBright() {
-        require(msg.sender == brightAddress);
+        require(msg.sender == brightAddress, "Sender is not bright contract");
         _;
     }
 
-     modifier onlyAllowed() {
+    modifier onlyAllowed() {
         require (allowedAddresses[msg.sender], "The address is not allowed.");
         _;
     }
-    
-    constructor (address bright, address commits, address threshold, address cloudEventDispatcher, address userAdmin, uint256 teamId, uint256 seasonLength) public {
+
+    constructor (
+        address bright, address commits, address threshold, address cloudEventDispatcher,
+        address userAdmin, uint256 teamId, uint256 seasonLength) public {
         owner = msg.sender;
         remoteBright = Bright(bright);
         brightAddress = bright;
@@ -60,7 +62,7 @@ contract Root{
         remoteThreshold.init(address(this), currentSeasonIndex);
         adminUsers[userAdmin] = true;
     }
-    
+
     //sendNotificationOfNewCommit function must be called from the front after call setNewCommit
     function setNewCommit(bytes32 url) public onlyCommit {
         remoteBright.setCommit(url);
@@ -72,9 +74,9 @@ contract Root{
         bool yes;
         bool auth;
         (yes, auth) = remoteCommits.isCommit(_id);
-        require(auth);
+        require(auth, "Url is not a commit");
         if(remoteBright.checkCommitSeason(_id, msg.sender)) {
-            for (uint i = 0; i <_emails.length; i++){
+            for (uint i = 0; i < _emails.length; i++) {
                 a = remoteBright.getAddressByEmail(_emails[i]);
                 if(a != address(0) && a != msg.sender){
                     remoteCommits.notifyCommit(_id,a);
@@ -87,13 +89,13 @@ contract Root{
     function readCommit(string url) public onlyAllowed {
         remoteCommits.readCommit(keccak256(url));
     }
-    
+
     function setReview(bytes32 url,address a) public onlyCommit {
         remoteBright.setReview(url,a);
     }
 
     function setVote(string url, address user, uint256 vote) public onlyAllowed {
-        bytes32 url_bytes = keccak256(url); 
+        bytes32 url_bytes = keccak256(url);
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
@@ -102,17 +104,20 @@ contract Root{
         remoteBright.setFeedback(keccak256(url), user, false, 0);
     }
 
-    function calculatePonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge) public onlyCommit view returns(uint256, uint256) {
+    function calculatePonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge)
+    public onlyCommit view returns(uint256, uint256) {
         return Reputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
-    function calculateUserReputation(bytes32 commitsUrl, uint256 reputation, uint256 cumulativeComplexity) public onlyBright view returns (uint256, uint256) {
+    function calculateUserReputation(bytes32 commitsUrl, uint256 reputation, uint256 cumulativeComplexity)
+    public onlyBright view returns (uint256, uint256) {
         uint256 commitScore;
         uint256 commitPonderation;
         uint256 previousScore;
         uint256 previousPonderation;
         (commitScore, commitPonderation, previousScore, previousPonderation) = remoteCommits.getCommitScores(commitsUrl);
-        return  Reputation.calculateUserReputation(reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
+        return  Reputation.calculateUserReputation(
+            reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }
 
     function checkCommitSeason(bytes32 url,address author) public onlyCommit view returns (bool) {
@@ -154,7 +159,8 @@ contract Root{
         return remoteBright.setSeasonLength(seasonLengthDays);
     }
 
-    function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyBright {
+    function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews)
+    public onlyBright {
         remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 

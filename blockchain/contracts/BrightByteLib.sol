@@ -3,14 +3,14 @@ import "./Root.sol";
 import { BrightModels } from "./BrightModels.sol";
 
 library BrightByteLib {
-    
     uint256 public constant TIME_TO_MIGRATE_SECS = 60 * 60 * 24;
 
     function getTimeToMigrate() public pure returns (uint256) {
         return TIME_TO_MIGRATE_SECS;
     }
 
-    function calculateSeasonAverages(BrightModels.HashUserMap storage hashUserMap, address[] memory usersAddress, uint256 currentSeasonIndex) public returns (uint256, uint256) {
+    function calculateSeasonAverages(BrightModels.HashUserMap storage hashUserMap, address[] memory usersAddress, uint256 currentSeasonIndex)
+        public returns (uint256, uint256) {
         uint256 numberOfUsers = usersAddress.length;
         uint256 totalCommits;
         uint256 totalReviews;
@@ -24,9 +24,12 @@ library BrightByteLib {
         return (averageNumberOfCommits, averageNumberOfReviews);
     }
 
-    function setAllUserData(address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap, BrightModels.EmailUserMap storage emailUserMap, uint256 deploymentTimestamp, string name, string mail, address hash, uint256 perct, uint256 pos, uint256 neg, uint256 rev, uint256 comMade) public {
-        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
-        require (bytes(hashUserMap.map[hash].name).length == 0 && bytes(hashUserMap.map[hash].email).length == 0);
+    function setAllUserData(
+        address[] storage allUsersArray, BrightModels.HashUserMap storage hashUserMap,
+        BrightModels.EmailUserMap storage emailUserMap, uint256 deploymentTimestamp, string name, string mail,
+        address hash, uint256 perct, uint256 pos, uint256 neg, uint256 rev, uint256 comMade) public {
+        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp, "Migrate time has expired");
+        require (bytes(hashUserMap.map[hash].name).length == 0 && bytes(hashUserMap.map[hash].email).length == 0, "Setted user doesn't exists");
         BrightModels.UserProfile storage user = hashUserMap.map[hash];
         user.name = name;
         user.email = mail;
@@ -40,9 +43,12 @@ library BrightByteLib {
         emailUserMap.map[emailId] = hash;
         allUsersArray.push(hash);
     }
-    
-    function setAllUserSeasonData(BrightModels.HashUserMap storage hashUserMap, uint seasonIndex, address userAddr, uint perct, uint positeVotes, uint negativeVotes, uint reputation, uint rev, uint comMade, uint complexity, uint256 deploymentTimestamp) public {
-        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
+
+    function setAllUserSeasonData(
+        BrightModels.HashUserMap storage hashUserMap, uint seasonIndex,
+        address userAddr, uint perct, uint positeVotes, uint negativeVotes, uint reputation, uint rev,
+        uint comMade, uint complexity, uint256 deploymentTimestamp) public {
+        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp, "Migrate time has expired");
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
         season.seasonStats.agreedPercentage = perct;
@@ -53,9 +59,12 @@ library BrightByteLib {
         season.seasonStats.commitsMade = comMade;
         season.seasonStats.cumulativeComplexity = complexity;
     }
-    
-    function setSeasonUrls(BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp, uint256 seasonIndex, address userAddr, bytes32[] urls, bytes32[] finRev, bytes32[] pendRev, bytes32[] toRd, bytes32[] allRev) public {
-        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp);
+
+    function setSeasonUrls(
+        BrightModels.HashUserMap storage hashUserMap, uint256 deploymentTimestamp,
+        uint256 seasonIndex, address userAddr, bytes32[] urls, bytes32[] finRev,
+        bytes32[] pendRev, bytes32[] toRd, bytes32[] allRev) public {
+        require((TIME_TO_MIGRATE_SECS + deploymentTimestamp) > block.timestamp, "Migrate time has expired");
         BrightModels.UserProfile storage user = hashUserMap.map[userAddr];
         BrightModels.UserSeason storage season = user.seasonData[seasonIndex];
         for(uint256 i = 0; i < urls.length; i++) {

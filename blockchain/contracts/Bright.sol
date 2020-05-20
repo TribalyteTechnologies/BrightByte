@@ -30,8 +30,6 @@ contract Bright {
     address private rootAddress;
     CloudEventDispatcher private remoteCloudEventDispatcher;
 
-    constructor() public {}
-
     modifier onlyRoot() {
         require(msg.sender == rootAddress, "Invalid Root addresss");
         _;
@@ -48,7 +46,7 @@ contract Bright {
     }
 
     function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) public {
-        require(rootAddress == uint80(0));
+        require(rootAddress == uint80(0), "Root address canot be 0");
         root = Root(_root);
         rootAddress = _root;
         cloudEventDispatcherAddress = _cloudEventDispatcherAddress;
@@ -65,7 +63,7 @@ contract Bright {
         invitedEmails[email] = true;
     }
 
-    function setProfile (string name, string email) public onlyInvited(email) {
+    function setProfile(string name, string email) public onlyInvited(email) {
         address user = tx.origin;
         bytes32 emailId = keccak256(email);
         require(bytes(hashUserMap.map[user].email).length == 0, "User already exists");
@@ -82,7 +80,7 @@ contract Bright {
 
     function setSeasonLength(uint256 seasonLengthDays) public {
         uint256 changeLimitTime = initialSeasonTimestamp + seasonLengthSecs - LIMIT_CHANGE_LENGTH;
-        require(currentSeasonIndex == 1 &&  block.timestamp < changeLimitTime, "Not able to change the seasons length");
+        require(currentSeasonIndex == 1 && block.timestamp < changeLimitTime, "Not able to change the seasons length");
         require(seasonLengthDays > 0 && seasonLengthDays < MAX_SEASON_LENGTH_DAYS, "Invalid season length");
         seasonLengthSecs = seasonLengthDays * DAY_LENGTH_SECS;
     }
@@ -95,7 +93,7 @@ contract Bright {
         return emailUserMap.map[email];
     }
 
-    function getUser (address userHash) public onlyAllowed view returns (string, string, uint256, uint256, uint256, address) {
+    function getUser(address userHash) public onlyAllowed view returns (string, string, uint256, uint256, uint256, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.name,
             user.email,
@@ -106,7 +104,8 @@ contract Bright {
         );
     }
 
-    function getUserSeasonReputation(address userHash, uint256 seasonIndex) public onlyAllowed view returns(string, string, uint256, uint256, uint256, uint256, address, uint256) {
+    function getUserSeasonReputation(address userHash, uint256 seasonIndex)
+    public onlyAllowed view returns(string, string, uint256, uint256, uint256, uint256, address, uint256) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
         return (user.name,
@@ -134,10 +133,10 @@ contract Bright {
         remoteCloudEventDispatcher.emitNewCommitEvent(teamUid, sender, user.globalStats.commitsMade);
     }
 
-    function notifyCommit (string a, bytes32 email) public onlyRoot {
+    function notifyCommit(string a, bytes32 email) public onlyRoot {
         bytes32 url = keccak256(a);
         address user = getAddressByEmail(email);
-        require(user != address(0));
+        require(user != address(0), "User address is 0");
         BrightModels.UserSeason storage reviewerSeason = hashUserMap.map[user].seasonData[currentSeasonIndex];
         bool done = false;
         for (uint256 i = 0; i < reviewerSeason.pendingReviews.length; i++){
@@ -160,7 +159,7 @@ contract Bright {
         (pending, finish) = root.getNumberOfReviews(url);
         BrightModels.UserProfile storage user = hashUserMap.map[userHash];
         BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
-        require (userSeason.seasonCommits[url] && finish == 0);
+        require (userSeason.seasonCommits[url] && finish == 0, "Commit doesn't exists");
         for(uint i = 0; i < pending; i++) {
             address reviewerHash = root.getCommitPendingReviewer(url, i);
             BrightModels.UserSeason storage reviewerSeason = hashUserMap.map[reviewerHash].seasonData[currentSeasonIndex];
@@ -175,8 +174,9 @@ contract Bright {
         delete userSeason.seasonCommits[url];
         remoteCloudEventDispatcher.emitDeletedCommitEvent(teamUid, userHash, url);
     }
-    
-    function getUserSeasonState(address userHash, uint256 indSeason) public onlyAllowed view returns(uint256, uint256, uint256, uint256, uint256) {
+
+    function getUserSeasonState(address userHash, uint256 indSeason)
+    public onlyAllowed view returns(uint256, uint256, uint256, uint256, uint256) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
         return (UtilsLib.getNonEmptyPositions(userSeason.pendingReviews),
                 UtilsLib.getNonEmptyPositions(userSeason.finishedReviews),
@@ -186,7 +186,8 @@ contract Bright {
         );
     }
 
-    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end) public onlyAllowed view returns(bytes32[], bytes32[], bytes32[], bytes32[], bytes32[]) {
+    function getUserSeasonCommits(address userHash, uint256 indSeason, uint256 start, uint256 end)
+    public onlyAllowed view returns(bytes32[], bytes32[], bytes32[], bytes32[], bytes32[]) {
         BrightModels.UserSeason storage userSeason = hashUserMap.map[userHash].seasonData[indSeason];
         return (UtilsLib.splitArray(userSeason.pendingReviews, start, end),
                 UtilsLib.splitArray(userSeason.finishedReviews, start, end),
@@ -200,9 +201,9 @@ contract Bright {
         return allUsersArray.length;
     }
 
-    function setReview(bytes32 url,address author) public onlyRoot {
+    function setReview(bytes32 url, address author) public onlyRoot {
         address sender = tx.origin;
-        require(hashUserMap.map[author].hash == author && hashUserMap.map[sender].hash == sender);
+        require(hashUserMap.map[author].hash == author && hashUserMap.map[sender].hash == sender, "Author or sender is not correct");
         checkSeason();
         BrightModels.UserSeason storage userSeason = hashUserMap.map[author].seasonData[currentSeasonIndex];
         BrightModels.UserProfile storage reviewer = hashUserMap.map[sender];
@@ -246,7 +247,7 @@ contract Bright {
     function setFeedback(bytes32 url, address userAddr, bool value, uint256 vote) public onlyRoot{
         address sender = userAddr;
         address maker = tx.origin;
-        require(hashUserMap.map[sender].hash == sender && hashUserMap.map[maker].hash == maker);
+        require(hashUserMap.map[sender].hash == sender && hashUserMap.map[maker].hash == maker, "Author or sender is not correct");
         BrightModels.UserProfile storage user = hashUserMap.map[sender];
         BrightModels.UserSeason storage userSeason = user.seasonData[currentSeasonIndex];
         checkSeason();
@@ -274,12 +275,9 @@ contract Bright {
         }
     }
 
-    function getToRead(address userHash) public onlyAllowed view returns (bytes32[]) {
-        return (hashUserMap.map[userHash].seasonData[currentSeasonIndex].toRead);
-    }
-
     function getVotes(address userHash, bool global, uint256 indSeason) public onlyAllowed view returns (uint, uint) {
-        return global ? (hashUserMap.map[userHash].globalStats.positeVotes, hashUserMap.map[userHash].globalStats.negativeVotes) : (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
+        return global ? (hashUserMap.map[userHash].globalStats.positeVotes, hashUserMap.map[userHash].globalStats.negativeVotes) :
+            (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
     }
 
     function getCurrentSeason() public onlyAllowed view returns (uint256, uint256, uint256) {
@@ -290,10 +288,6 @@ contract Bright {
 
     function checkCommitSeason(bytes32 url,address author) public onlyAllowed view returns (bool) {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
-    }
-
-    function getTeamId() public onlyAllowed view returns (uint256) {
-        return teamUid;
     }
 
     function checkSeason() private {

@@ -15,6 +15,7 @@ pipelines:
           - npm run linters-ci
           - cd ../blockchain
           - npm install --unsafe-perm
+          - npm run linters-ci
           - npm run truffle:compile
           - npm run truffle:deploy:test
 definitions:

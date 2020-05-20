@@ -1,7 +1,7 @@
 pragma solidity 0.4.22;
 
 library BrightModels {
-    
+
     struct UserProfile {
         string name;
         string email;
@@ -9,7 +9,7 @@ library BrightModels {
         UserStats globalStats;
         mapping (uint256 => UserSeason) seasonData;
     }
-    
+
     struct UserStats {
         uint256 reputation;
         uint256 cumulativeComplexity;
@@ -20,7 +20,7 @@ library BrightModels {
         uint256 reviewsMade;
         uint256 commitsMade;
     }
-    
+
     struct UserSeason {
         UserStats seasonStats;
         mapping (bytes32 => bool) seasonCommits;
@@ -30,11 +30,11 @@ library BrightModels {
         bytes32[] pendingReviews;
         bytes32[] toRead;
     }
-    
+
     struct HashUserMap {
         mapping (address => UserProfile) map;
     }
-    
+
     struct EmailUserMap {
         mapping (bytes32 => address) map;
     }

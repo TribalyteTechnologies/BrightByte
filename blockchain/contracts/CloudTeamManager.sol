@@ -74,7 +74,8 @@ contract CloudTeamManager {
 
     modifier onlyMembersOrAdmins(uint256 teamUid) {
         Team storage team = createdTeams[teamUid];
-        require(team.users[msg.sender] == UserType.Member || team.users[msg.sender] == UserType.Admin, "Message sender is neither admin or member");
+        require(
+            team.users[msg.sender] == UserType.Member || team.users[msg.sender] == UserType.Admin, "Message sender is neither admin or member");
         _;
     }
 
@@ -133,8 +134,9 @@ contract CloudTeamManager {
     }
 
     function inviteToTeam( uint256 teamUid, string email, UserType userType, uint256 expSecs) public onlyAdmins(teamUid) {
-        if (expSecs == 0) {
-            expSecs = INVITATION_DURATION_IN_SECS;
+        uint256 exp = expSecs;
+        if (exp == 0) {
+            exp = INVITATION_DURATION_IN_SECS;
         }
         require(userType == UserType.Admin || userType == UserType.Member, "UserType is neither admin or member");
         uint256 userIndex;
@@ -148,12 +150,12 @@ contract CloudTeamManager {
                 team.invitedUsersCount++;
             }
             InvitedUser storage user = invitedUserTeamMap[email];
-            require(teamUid != 0);
+            require(teamUid != 0, "Cannot invite to default team");
             if (user.teamExpirationMap[teamUid] == 0) {
                 user.indexTeamUidMap[user.numberOfInvitations] = teamUid;
                 user.numberOfInvitations++;
             }
-            user.teamExpirationMap[teamUid] = now + expSecs;
+            user.teamExpirationMap[teamUid] = now + exp;
         }
     }
 
@@ -308,18 +310,19 @@ contract CloudTeamManager {
 
     function addToTeam( uint256 teamUid, address memberAddress, string email, UserType userType) private {
         Team storage team = createdTeams[teamUid];
-        if (userType == UserType.NotRegistered) {
-            userType = team.invitedUsersEmail[email];
+        UserType userTp = userType;
+        if (userTp == UserType.NotRegistered) {
+            userTp = team.invitedUsersEmail[email];
             require(
-                userType == UserType.Admin || userType == UserType.Member,
+                userTp == UserType.Admin || userTp == UserType.Member,
                 "UserType is neither admin or member"
             );
         }
-        if (userType == UserType.Admin) {
+        if (userTp == UserType.Admin) {
             team.admins[team.adminsCount] = TeamMember(memberAddress, email);
             team.adminsCount++;
             team.users[memberAddress] = UserType.Admin;
-        } else if (userType == UserType.Member) {
+        } else if (userTp == UserType.Member) {
             team.members[team.membersCount] = TeamMember(memberAddress, email);
             team.membersCount++;
             team.users[memberAddress] = UserType.Member;

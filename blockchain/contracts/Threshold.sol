@@ -6,7 +6,7 @@ contract Threshold {
 
     address private rootAddress;
     address private owner;
-    
+
     struct BrightByteSeasonThreshold {
         uint256 commitThreshold;
         uint256 reviewThreshold;
@@ -21,13 +21,13 @@ contract Threshold {
     }
 
     function init(address _root, uint256 indexCurrentSeason) public {
-        require(rootAddress == uint80(0));
+        require(rootAddress == uint80(0), "Root address cannot be 0");
         rootAddress = _root;
         currentSeasonIndex = indexCurrentSeason;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Sender address is not contract owner");
         _;
     }
     modifier onlyRoot() {
@@ -57,8 +57,8 @@ contract Threshold {
 
     function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyRoot {
         uint256 totalNumberOfSeasons = commitsThreshold.length + initialSeasonIndex - 1;
-        uint256 finalSeasonToFill = (currentSeasonIndex > totalNumberOfSeasons) ? totalNumberOfSeasons : currentSeasonIndex; 
-          for(uint256 i = initialSeasonIndex; i <= finalSeasonToFill; i++) {
+        uint256 finalSeasonToFill = (currentSeasonIndex > totalNumberOfSeasons) ? totalNumberOfSeasons : currentSeasonIndex;
+        for(uint256 i = initialSeasonIndex; i <= finalSeasonToFill; i++) {
             uint256 index = i - initialSeasonIndex;
             initSeasonThreshold(i, commitsThreshold[index],  reviewsThreshold[index]);
         }

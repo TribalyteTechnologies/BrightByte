@@ -48,7 +48,7 @@ contract Commits {
         owner = msg.sender;
     }
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Sender is not contract owner");
         _;
     }
     modifier onlyRoot() {
@@ -61,14 +61,14 @@ contract Commits {
     }
 
     function init(address _root) public {
-        require(rootAddress == uint80(0));
+        require(rootAddress == uint80(0), "Root address cannot be 0");
         root = Root(_root);
         rootAddress = _root;
         allowedAddresses[rootAddress] = true;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
+        require(newOwner != address(0), "New owner address cannot be 0");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
@@ -88,12 +88,12 @@ contract Commits {
                 root.setNewCommit(_id);
             }
         } else {
-            require(storedData[_id].author == auth);
+            require(storedData[_id].author == auth, "Author is not tx sender");
             storedData[_id].title = _title;
         }
     }
     function notifyCommit(bytes32 url,address a) public onlyRoot {
-        require(storedData[url].author == tx.origin);
+        require(storedData[url].author == tx.origin, "Author is not tx sender");
         bool saved = false;
         for(uint256 i = 0; i < storedData[url].pendingComments.length; i++){
             if(a == storedData[url].pendingComments[i]){
@@ -119,7 +119,8 @@ contract Commits {
         delete storedData[url];
     }
 
-    function getDetailsCommits(bytes32 _url) public onlyAllowed view returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
+    function getDetailsCommits(bytes32 _url) public onlyAllowed view
+    returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,
@@ -165,10 +166,10 @@ contract Commits {
         );
     }
 
-    function setReview(string _url,string _text, uint256[] points) onlyAllowed public{
+    function setReview(string _url,string _text, uint256[] points) public onlyAllowed {
         bytes32 url = keccak256(_url);
         address author = tx.origin;
-        
+
         Commit storage commit = storedData[url];
         bool saved = false;
         for (uint256 j = 0;j < commit.pendingComments.length; j++){
@@ -179,7 +180,7 @@ contract Commits {
                 break;
             }
         }
-        require(saved);
+        require(saved, "Didn't find the commit on pending comments");
         commit.finishedComments.push(author);
         Comment storage comment = commit.commitComments[author];
         comment.text = _text;
@@ -216,9 +217,9 @@ contract Commits {
         root.setReview(url, commit.author);
     }
     function setVote(bytes32 url, address user, uint256 vote) public onlyRoot {
-        require(storedData[url].author == tx.origin);
+        require(storedData[url].author == tx.origin, "Commit author is not sender");
         assert(vote == 1 || vote == 2 || vote == 3);
-        require(storedData[url].commitComments[user].author == user);
+        require(storedData[url].commitComments[user].author == user, "Comment author is not user");
         storedData[url].commitComments[user].vote = vote;
     }
     function readCommit(bytes32 _url) public onlyRoot {

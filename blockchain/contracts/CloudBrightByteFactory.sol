@@ -8,21 +8,21 @@ import { RootDeployerLib } from "./deployers/RootDeployerLib.sol";
 import "./CloudEventDispatcher.sol";
 
 contract CloudBrightByteFactory {
-    
+
     struct TeamContracts {
         address brightAddress;
         address commitsAddress;
         address thresholdAddress;
         address rootAddress;
     }
-    
+
     mapping(uint256 => TeamContracts) private teamContracts;
     string private currentVersion;
 
     address private teamManagerAddress;
     address private eventDispatcherAddress;
     CloudEventDispatcher private remoteEventDispatcher;
-    
+
     constructor(string version) public {
         currentVersion = version;
         deployEventDispatcher();
@@ -37,11 +37,11 @@ contract CloudBrightByteFactory {
         require(teamManagerAddress == uint80(0), "Contract already initialized");
         teamManagerAddress = teamMngrAddress;
     }
-    
+
     function getCurrentVersion() public view returns (string) {
         return currentVersion;
     }
-    
+
     function deployBright(uint256 teamUid) public onlyTeamManager{
         address addr = BrightDeployerLib.deploy();
         teamContracts[teamUid] = TeamContracts(addr, address(0), address(0), address(0));
@@ -50,7 +50,7 @@ contract CloudBrightByteFactory {
     function deployCommits(uint256 teamUid) public onlyTeamManager{
         teamContracts[teamUid].commitsAddress = CommitsDeployerLib.deploy();
     }
-    
+
     function deployThreshold(uint256 teamUid) public onlyTeamManager{
         teamContracts[teamUid].thresholdAddress = ThresholdDeployerLib.deploy();
     }
@@ -67,7 +67,7 @@ contract CloudBrightByteFactory {
         allowEventDispatcherForContract(threshold);
         allowEventDispatcherForContract(root);
     }
-    
+
     function getTeamContractAddresses(uint256 teamUid) public onlyTeamManager view returns (address, address, address, address) {
         TeamContracts storage contracts = teamContracts[teamUid];
         return (contracts.brightAddress, contracts.commitsAddress, contracts.thresholdAddress, contracts.rootAddress);
@@ -81,11 +81,11 @@ contract CloudBrightByteFactory {
         TeamContracts memory contracts = teamContracts[teamUid];
         BrightDeployerLib.inviteUserEmail(contracts.brightAddress, email);
     }
-    
+
     function allowEventDispatcherForContract(address contractAddress) private{
         remoteEventDispatcher.addContractAllow(contractAddress);
     }
-    
+
     function deployEventDispatcher() private{
         eventDispatcherAddress = new CloudEventDispatcher(address(this));
         remoteEventDispatcher = CloudEventDispatcher(eventDispatcherAddress);
