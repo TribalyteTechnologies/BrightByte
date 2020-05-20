@@ -137,19 +137,24 @@ contract CloudTeamManager {
             expSecs = INVITATION_DURATION_IN_SECS;
         }
         require(userType == UserType.Admin || userType == UserType.Member, "UserType is neither admin or member");
+        uint256 userIndex;
+        UserType userTp;
+        (userIndex, userTp) = getUserIndexAndType(teamUid, msg.sender);
         Team storage team = createdTeams[teamUid];
-        team.invitedUsersEmail[email] = userType;
-        if (!isUserEmailInvitedToTeam(email, teamUid)) {
-            team.invitedUsersEmailList[team.invitedUsersCount] = email;
-            team.invitedUsersCount++;
+        if (keccak256(team.admins[userIndex].email) != keccak256(email)) {
+            team.invitedUsersEmail[email] = userType;
+            if (!isUserEmailInvitedToTeam(email, teamUid)) {
+                team.invitedUsersEmailList[team.invitedUsersCount] = email;
+                team.invitedUsersCount++;
+            }
+            InvitedUser storage user = invitedUserTeamMap[email];
+            require(teamUid != 0);
+            if (user.teamExpirationMap[teamUid] == 0) {
+                user.indexTeamUidMap[user.numberOfInvitations] = teamUid;
+                user.numberOfInvitations++;
+            }
+            user.teamExpirationMap[teamUid] = now + expSecs;
         }
-        InvitedUser storage user = invitedUserTeamMap[email];
-        require(teamUid != 0);
-        if (user.teamExpirationMap[teamUid] == 0) {
-            user.indexTeamUidMap[user.numberOfInvitations] = teamUid;
-            user.numberOfInvitations++;
-        }
-        user.teamExpirationMap[teamUid] = now + expSecs;
     }
 
     function removeInvitationToTeam(uint256 teamUid, string email) public onlyAdmins(teamUid) {

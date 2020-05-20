@@ -62,7 +62,6 @@ contract("EventDispatcher", accounts => {
     });
 
     it("Should Create two users", async () => {
-        await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_ONE, accountOne, ADMIN_USERTYPE, LONG_EXP_SECS, adminUserAddress);
         await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
         await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
         await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
