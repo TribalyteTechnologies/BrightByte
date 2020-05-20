@@ -58,7 +58,8 @@ module.exports = function(deployer) {
     }).then(function() {
         return deployer.deploy(CloudEventDispatcher, "0x0000000000000000000000000000000000000000");
     }).then(function() {
-        deployer.link(Reputation, Root);
+        return deployer.link(Reputation, Root);
+    }).then(function() {
         return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     })
     .then(function(){

@@ -50,3 +50,5 @@ public/
 tools/ReputationAlgorithmTest/contracts
 blockchain/database
 bin/
+
+blockchain/coverage.json

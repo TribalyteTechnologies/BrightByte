@@ -20,9 +20,11 @@ module.exports = {
     besu: {
       provider: besuPrivateKeyProvider,
       network_id: "*",
-      gasPrice: 0,
+      gasPrice: 0
     }
   },
+
+  plugins: ["solidity-coverage"],
 
   // Set default mocha options here, use special reporters etc.
   mocha: {

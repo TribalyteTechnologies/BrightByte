@@ -21,7 +21,8 @@
     "ganache:quite": "ganache-cli -p 7545 -i 5777 -q",
     "remix:start": "remix-ide",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build",
-    "truffle:test": "truffle test"
+    "truffle:test": "truffle test",
+    "truffle:coverage": "truffle run coverage --network development"
   },
   "author": "Tribalyte Technologies",
   "license": "SEE LICENSE IN LICENSE.md",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "shx": "0.3.2",
+    "solidity-coverage": "0.7.5",
     "wait-on": "3.3.0"
   }
 }
