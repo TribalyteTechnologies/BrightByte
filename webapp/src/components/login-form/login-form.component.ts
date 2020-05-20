@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { NavController} from "ionic-angular";
+import { NavController } from "ionic-angular";
 import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
@@ -29,7 +29,11 @@ export class LoginForm {
     @Output() 
     public goToSetProfile = new EventEmitter();
 
-    
+    @Output() 
+    public setUserName = new EventEmitter();
+
+    @Output() 
+    public setUserEmail = new EventEmitter();
 
     public msg: string;
     public text: any;
@@ -198,6 +202,12 @@ export class LoginForm {
         this.showNameInput = true;
     }
 
+    public openCreateTeam() {
+        this.showTeamSelector = false;
+        this.setUserName.next(this.userName);
+        this.goToSetProfile.next(this.SET_PROFILE);
+    }
+
     private initAvatarSrvAndContinue(): Promise<void> {
         return this.contractManager.getAllUserAddresses()        
         .then((addresses: Array<string>) => {
@@ -216,6 +226,7 @@ export class LoginForm {
         this.contractManager.getUserEmail(teamUid, address)
         .then((email: string) => {
             this.userEmail = email;
+            this.setUserEmail.next(email);
             return this.contractManager.getAllTeamInvitationsByEmail(email);
         })
         .then((teamUids: Array<number>) => {

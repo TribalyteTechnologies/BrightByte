@@ -35,6 +35,11 @@
         <ng-template #noInvitations>
             <p>{{ "setProfile.noAvailableInvitations" | translate }}</p>
         </ng-template>
+        <h6>{{ "setProfile.createYourTeam" | translate }}:</h6>
+        <ion-row class="mini-title">{{ "setProfile.enterName" | translate }}</ion-row>
+        <input class="password-form" type="text" [placeholder]="'setProfile.name' | translate" [(ngModel)]="userName">
+        <button margin class="btn btn--full btn__blue" (click)="openCreateTeam()">
+            {{ "setProfile.createTeam" | translate }}</button>
     </ng-container>
 </ng-template>
 <ng-template #showInput>

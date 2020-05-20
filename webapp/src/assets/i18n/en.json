@@ -190,6 +190,7 @@
         "minSeasonLength": "Season duration should be minimum {{length}} day long",
         "maxSeasonLength": "Season duration should be maximum {{length}} days long",
         "set": "Set profile",
+        "createYourTeam": "Create your own team",
         "createTeam": "Create team",
         "teamMembers": "Team Members",
         "emailsToInvite": "Enter emails to invite members to the team (separated by line breaks)",

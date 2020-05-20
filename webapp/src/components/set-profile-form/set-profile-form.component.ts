@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { HttpClient } from "@angular/common/http";
@@ -18,6 +18,13 @@ import { Team } from "../../models/team.model";
 })
 
 export class SetProfileForm {
+
+    @Input() 
+    public userName: string;
+
+    @Input()
+    public userEmail: string;
+
     public readonly TEAM_NAME_MAX_LENGTH = 20;
     public readonly DEFAULT_SEASON_LENGTH = 14;
     public readonly MIN_SEASON_LENGTH_DAYS = AppConfig.MIN_SEASON_LENGTH_DAYS;
@@ -34,9 +41,6 @@ export class SetProfileForm {
     private readonly EMAILS_SEPARATOR = "\n";
 
     private log: ILogger;
-
-    private userName: string;
-    private userEmail: string;
 
     constructor(
         public navCtrl: NavController,
@@ -61,6 +65,18 @@ export class SetProfileForm {
                 [Validators.required, Validators.min(this.MIN_SEASON_LENGTH_DAYS), Validators.max(this.MAX_SEASON_LENGTH_DAYS)]
             ]
         });
+    }
+
+    public ngOnInit() {
+        if (this.userName && this.userEmail) {
+            this.openCreateTeam();
+        }
+    }
+
+    public openCreateTeam() {
+        this.showCreateTeam = true;
+        this.showTeamList = false;
+        this.isButtonPressed = false;
     }
 
     public updateProfile(name: string, email: string) {

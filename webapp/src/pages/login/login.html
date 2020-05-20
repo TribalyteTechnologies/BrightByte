@@ -26,9 +26,10 @@
             </ion-row>
             <ion-row justify-content-center class="form-container">
                 <ion-col col-8 [ngSwitch]="loginState">
-                    <login-form *ngSwitchCase="'login'" (goToRegister)="manageEvent($event)" (goToSetProfile)="manageEvent($event)"></login-form>
+                    <login-form *ngSwitchCase="'login'" (goToRegister)="manageEvent($event)" (goToSetProfile)="manageEvent($event)"
+                        (setUserEmail)="setEmail($event)" (setUserName)="setName($event)"></login-form>
                     <new-user-form *ngSwitchCase="'new-user'" (goToLogin)="manageEvent($event)"></new-user-form>
-                    <set-profile-form *ngSwitchCase="'set-profile'"></set-profile-form>
+                    <set-profile-form *ngSwitchCase="'set-profile'" [userName]="userName" [userEmail]="userEmail"></set-profile-form>
                 </ion-col>
             </ion-row>
             

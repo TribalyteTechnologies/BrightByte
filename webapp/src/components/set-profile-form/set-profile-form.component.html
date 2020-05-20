@@ -53,6 +53,9 @@
         <p>{{ "setProfile.availableInvitations" | translate }}</p>
         <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue" (click)="registerToTeam(team.uid)">
             {{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+        <p>{{ "setProfile.createYourTeam" | translate }}</p>
+        <button margin class="btn btn--full btn__blue" (click)="openCreateTeam()">
+            {{ "setProfile.createTeam" | translate }}</button>
     </ng-container>
 </ng-template>
 <ng-template #showProfileForm>

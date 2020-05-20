@@ -233,13 +233,25 @@ export class ContractManagerService {
 
     public getAllTeamInvitationsByEmail(email: string): Promise<Array<number>> {
         let teamManagerContract;
+        let teamInvitations: Array<number>;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             return teamManagerContract.methods.getAllTeamInvitationsByEmail(email).call();
         }).then((teamUidInvitations: Array<string>) => {
-            return teamUidInvitations
+            teamInvitations =  teamUidInvitations
             .map(teamUid => parseInt(teamUid))
             .filter(teamUid => teamUid !== 0);
+            let promises = teamInvitations.map(teamUid => teamManagerContract.methods.getInvitedUserInfo(email, teamUid).call());
+            return Promise.all(promises);
+        })
+        .then((teamUidInvitationsInfo: Array<string>) => {
+            for (let i = 0; i < teamInvitations.length; i++){
+                let exp = parseInt(teamUidInvitationsInfo[i][1]);
+                if (exp < Date.now() / AppConfig.SECS_TO_MS) {
+                    teamInvitations.splice(i, 1);
+                }
+            }
+            return teamInvitations;
         });
     }
 

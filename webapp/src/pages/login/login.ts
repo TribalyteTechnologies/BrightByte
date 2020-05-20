@@ -23,6 +23,8 @@ export class LoginPage {
     public appVersion = "DEV";
     public migrationDone = false;
     public loginState = "login";
+    public userEmail: string;
+    public userName: string;
     private log: ILogger;
 
     constructor(
@@ -42,6 +44,9 @@ export class LoginPage {
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
         );
+    }
+
+    public ngOnInit() {
         if(!this.storageSrv.get(AppConfig.StorageKey.REGISTERTUTORIALVISITED)) {
             this.showRegisterTutorialSlide();
         }
@@ -49,6 +54,14 @@ export class LoginPage {
 
     public manageEvent(e: string) {
         this.loginState = e;
+    }
+
+    public setEmail(email: string) {
+        this.userEmail = email;
+    }
+
+    public setName(name: string) {
+        this.userName = name;
     }
 
     public showTerms() {
