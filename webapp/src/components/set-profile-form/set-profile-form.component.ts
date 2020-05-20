@@ -29,8 +29,8 @@ export class SetProfileForm {
     public readonly DEFAULT_SEASON_LENGTH = 14;
     public readonly MIN_SEASON_LENGTH_DAYS = AppConfig.MIN_SEASON_LENGTH_DAYS;
     public readonly MAX_SEASON_LENGTH_DAYS = AppConfig.MAX_SEASON_LENGTH_DAYS;
-    public setProfileFG: FormGroup;
-    public createTeamFG: FormGroup;
+    public setProfileFg: FormGroup;
+    public createTeamFg: FormGroup;
     public isButtonPressed: boolean;
     public msg: string;
     public teamList: Array<Team>;
@@ -53,11 +53,11 @@ export class SetProfileForm {
     ) {
         let emailValidator = FormatUtils.getEmailValidatorPattern();
         this.log = loggerSrv.get("SetProfilePage");
-        this.setProfileFG = this.fb.group({
+        this.setProfileFg = this.fb.group({
             name: ["", [Validators.required]],
             email: ["", [Validators.required, Validators.pattern(emailValidator)]]
         });
-        this.createTeamFG = this.fb.group({
+        this.createTeamFg = this.fb.group({
             teamName: ["", [Validators.required, Validators.maxLength(this.TEAM_NAME_MAX_LENGTH)]],
             invitedEmails: ["", [Validators.required]],
             seasonLength: [
