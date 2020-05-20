@@ -100,6 +100,10 @@
                         <ion-row>
                             <ion-row padding>
                                 <h6 color="dark">{{ "setProfile.setSeasonThreshold" | translate }}: </h6>
+                                <div class="tooltip info-icon">
+                                    <ion-icon name="ios-information-circle-outline"></ion-icon>
+                                    <div class="tooltip-text" [innerHTML]="('setProfile.thresholdDescription') | translate"></div>
+                                </div>
                                 <ion-row>
                                     <ion-col col-6>
                                         <ion-item>
