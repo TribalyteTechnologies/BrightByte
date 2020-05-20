@@ -10,7 +10,7 @@ export class InvitedUser {
         this.email = email;
         this.invitationExp = new Date(invitationExp * AppConfig.SECS_TO_MS);
         this.userType = userType;
-        this.displayDate = this.invitationExp.getDay() + "/" + this.invitationExp.getMonth()
+        this.displayDate = this.invitationExp.getDate() + "/" + (this.invitationExp.getMonth() + 1)
         + "/" + this.invitationExp.getFullYear() + " - " + this.invitationExp.getHours()
         + ":" + this.padWithZeroes(this.invitationExp.getMinutes(), 2);
     }
