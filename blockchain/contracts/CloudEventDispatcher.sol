@@ -6,6 +6,7 @@ contract CloudEventDispatcher {
     event UserNewCommit (uint256 teamUid, address userHash, uint256 numberOfCommits, uint256 timestamp);
     event UserNewReview (uint256 teamUid, address userHash, uint256 numberOfReviews, uint256 timestamp);
     event DeletedCommit (uint256 teamUid, address userHash, bytes32 url);
+    event NewSeason(uint256 teamUid, uint256 currentSeasonIndex);
 
     address private owner;
     mapping (address => bool) private contractList;
@@ -49,5 +50,9 @@ contract CloudEventDispatcher {
 
     function emitDeletedCommitEvent(uint256 teamUid, address userAddress, bytes32 url) public onlyAllowed {
         emit DeletedCommit(teamUid, userAddress, url);
+    }
+
+    function emitNewSeason (uint256 teamUid, uint256 currentSeasonIndex) public onlyAllowed {
+        emit NewSeason(teamUid, currentSeasonIndex);
     }
 }

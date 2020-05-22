@@ -293,11 +293,8 @@ contract Bright {
     function checkSeason() private {
         uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
         if(block.timestamp > seasonFinale) {
-            uint256 commitAverage;
-            uint256 reviewAverage;
-            (commitAverage, reviewAverage) = BrightByteLib.calculateSeasonAverages(hashUserMap, allUsersArray, currentSeasonIndex);
             currentSeasonIndex++;
-            root.setNewSeasonThreshold(currentSeasonIndex, commitAverage, reviewAverage);
+            remoteCloudEventDispatcher.emitNewSeason(teamUid, currentSeasonIndex);
         }
     }
 
