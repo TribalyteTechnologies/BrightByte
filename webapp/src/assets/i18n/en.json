@@ -276,7 +276,7 @@
         "selectTeamToregister": "Select a team to login.",
         "availableInvitations": "Available invitations:",
         "noAvailableInvitations": "There is not invitations to this account",
-        "avaialableTeams": "Available teams:",
+        "avaialableTeams": "Your teams:",
         "thresholdDescription": "Each season you can set a threshold for the users to participate in the current season."
     },
     "commitDetails": {
