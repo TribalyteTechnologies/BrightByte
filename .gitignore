@@ -30,7 +30,6 @@ plugins/android.json
 plugins/ios.json
 /webapp/www/
 $RECYCLE.BIN/
-package-lock.json
 
 .DS_Store
 Thumbs.db
