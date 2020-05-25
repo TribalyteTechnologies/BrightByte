@@ -17,7 +17,7 @@ This project is divided in several folders.
  Each one of them contains its own package.json with several commands and dependecies. Some of them also contains a README.md file with more information.
 
 ## Quick local starup
-Run `npm start` in root directory to install and start a full local version of Brightbyte.
+Run `npm install` then `npm start` in root directory to install and start a full local version of Brightbyte.
 
 ## Startup order
 If you want to customize the code an run it by yourself, there is a specific order to start the system:

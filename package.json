@@ -5,9 +5,10 @@
   "main": "",
   "scripts": {
     "start": "npm run start:blockchain; npm run start:webapp && npm run start:backend",
-    "start:blockchain": "cd ./blockchain; npm run install:migrate",
-    "start:webapp": "cd ./webapp; npm run install:start",
-    "start:backend": "cd ./backend; npm run install:start",
+    "install": "cd ./blockchain; npm install",
+    "start:blockchain": "cd ./blockchain; npm run start:migrate",
+    "start:webapp": "cd ./webapp; npm run wait:start",
+    "start:backend": "cd ./backend; npm run start",
     "linters-ci": "cd webapp; npm run linters-ci",
     "postlinters-ci": "cd backend; npm run linters-ci"
   },
