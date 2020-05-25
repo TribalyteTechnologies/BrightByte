@@ -118,9 +118,9 @@ export class LoginForm {
     public hidePassword(pass: string) {
         let passLength = pass.length;
         let lastPassLength = this.lastPassword.length;
-        if (pass !== "" && lastPassLength < passLength) {
-            this.password = this.password + pass[passLength - 1];
-        }else if (pass !== "" && lastPassLength >= passLength) {
+        if (pass !== "" && lastPassLength <= passLength) {
+            this.password = this.password + pass.substring(lastPassLength, passLength);
+        } else if (pass !== "" && lastPassLength > passLength) {
             this.password = this.password.substring(0, this.password.length - (lastPassLength - passLength));
         } else {
             this.password = "";
