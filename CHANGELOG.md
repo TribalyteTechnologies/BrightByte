@@ -13,6 +13,25 @@ BrightByte cloud is a multi team implementation for base BrightByte v0.7.0. Open
 
 `No migration needed for v0.1.0-cloud`
 
+
+#### v0.7.2 (WIP)
+
+- This version is in progress.
+- Bug fix on Bright contract when the season change.
+- The migration process is not provided.
+
+`Migration needed from 0.7.1 to 0.7.2`
+
+#### v0.7.1
+
+- Solved twitter sharing not showing up.
+- New settings button.
+- New alerts for enabling popup windows.
+- Some feedback improvements.
+- Minor bug fixes.
+
+`No migration needed from 0.7.0 to 0.7.1`
+
 #### v0.7.0
 
 - New feature, change user name.
