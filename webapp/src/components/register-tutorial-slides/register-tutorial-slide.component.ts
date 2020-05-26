@@ -10,7 +10,7 @@ import { AppConfig } from "../../app.config";
 })
 export class RegisterSlidePopover {
 
-  public readonly SLIDES_CONTENT_IDS = [1, 2, 3];
+  public readonly SLIDES_CONTENT_IDS = [1, 2, 3, 4];
 
   @ViewChild(Slides) public slides: Slides;
   
