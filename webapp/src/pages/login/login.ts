@@ -8,6 +8,8 @@ import { UpdateCheckService } from "../../core/update-check.service";
 import { AppConfig } from "../../app.config";
 import { RegisterSlidePopover } from "../../components/register-tutorial-slides/register-tutorial-slide.component";
 import { LocalStorageService } from "../../core/local-storage.service";
+import { PopupService } from "../../domain/popup.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: "page-login",
@@ -25,6 +27,10 @@ export class LoginPage {
     public loginState = "login";
     public userEmail: string;
     public userName: string;
+
+    private readonly WARNING_KEY = "alerts.warning";
+    private readonly NOT_FOR_MOBILE_KEY = "alerts.notForMobileDevice";
+
     private log: ILogger;
 
     constructor(
@@ -33,10 +39,12 @@ export class LoginPage {
         private appVersionSrv: AppVersionService,
         private versionCheckSrv: UpdateCheckService,
         private storageSrv: LocalStorageService,
+        private popupSrv: PopupService,
+        private translateSrv: TranslateService,
         loggerSrv: LoggerService
 
     ) {
-
+        this.checkMobileBrowser();
         this.log = loggerSrv.get("LoginPage");
         this.migrationDone = this.userLoggerService.getMigration();
         this.versionCheckSrv.start(AppConfig.UPDATE_CHECK_INTERVAL_MINS);
@@ -72,6 +80,16 @@ export class LoginPage {
     public showRegisterTutorialSlide() {
         let popover = this.popoverCtrl.create(RegisterSlidePopover, {}, { cssClass: "tutorial-slide" });
         popover.present();
+    }
+
+    private checkMobileBrowser() {
+        let platformsRegex = [/Android/i, /webOS/i, /iPhone/i, /iPod/i, /BlackBerry/i, /Windows Phone/i];
+        let userAgent = navigator.userAgent;
+        let isMobile = platformsRegex.some(reg => reg.test(userAgent));
+        if (isMobile) {
+            this.translateSrv.get([this.WARNING_KEY, this.NOT_FOR_MOBILE_KEY])
+            .subscribe(response => this.popupSrv.showAlert(response[this.WARNING_KEY], response[this.NOT_FOR_MOBILE_KEY]));
+        }
     }
 }
 
