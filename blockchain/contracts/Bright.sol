@@ -2,7 +2,6 @@ pragma solidity 0.4.22;
 import "./Root.sol";
 import "./CloudEventDispatcher.sol";
 
-import { BrightByteLib } from "./BrightByteLib.sol";
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
@@ -290,9 +289,14 @@ contract Bright {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
 
-    function checkSeason() private {
+    function setSeasonThresholds(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyAllowed {
+        root.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
+    }
+
+    function checkSeason() public onlyAllowed {
         uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
-        if(block.timestamp > seasonFinale) {
+        bool isSeasonEnded = now > seasonFinale;
+        if (isSeasonEnded) {
             currentSeasonIndex++;
             remoteCloudEventDispatcher.emitNewSeason(teamUid, currentSeasonIndex);
         }

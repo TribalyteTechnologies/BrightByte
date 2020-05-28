@@ -4,7 +4,6 @@ var Threshold = artifacts.require("./Threshold.sol");
 var CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
 var Root = artifacts.require("./Root.sol");
 var Reputation = artifacts.require("./Reputation.sol");
-var BrightByteLib = artifacts.require("./BrightByteLib.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
 var UtilsLib = artifacts.require("./UtilsLib.sol");
 var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
@@ -24,19 +23,10 @@ var teamManagerAddress;
 module.exports = function(deployer) {
     deployer.deploy(BrightModels)
     .then(function(){
-        return deployer.link(BrightModels, BrightByteLib);
-    })
-    .then(function(){
-        return deployer.deploy(BrightByteLib);
-    })
-    .then(function(){
         return deployer.deploy(UtilsLib);
     })
     .then(function(){
         return deployer.link(BrightModels, Bright);
-    })
-    .then(function(){
-        return deployer.link(BrightByteLib, Bright);
     })
     .then(function(){
         return deployer.link(UtilsLib, Bright);
@@ -63,16 +53,10 @@ module.exports = function(deployer) {
         return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     })
     .then(function(){
-        return deployer.link(BrightByteLib, BrightDeployerLib);
-    })
-    .then(function(){
         return deployer.link(UtilsLib, BrightDeployerLib);
     })
     .then(function(){
         return deployer.deploy(BrightDeployerLib);
-    })
-    .then(function(){
-        return deployer.link(BrightByteLib, CommitsDeployerLib);
     })
     .then(function(){
         return deployer.link(UtilsLib, CommitsDeployerLib);
