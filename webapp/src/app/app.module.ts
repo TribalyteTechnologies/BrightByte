@@ -31,6 +31,7 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { AchievementService } from "../domain/achievement.service";
 import { UpdateCheckService } from "../core/update-check.service";
 import { SocketIoModule } from "ng-socket-io";
+import { EncryptDataService } from "../core/encrypt-data.service";
 
 
 /// domain
@@ -170,7 +171,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         ContractManagerService,
         AppVersionService,
         UpdateCheckService,
-        TransactionQueueService
+        TransactionQueueService,
+        EncryptDataService
     ]
 })
 
