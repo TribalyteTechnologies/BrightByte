@@ -111,12 +111,26 @@ export class RankingPage {
     }
 
     public refresh() {
+        let commitsAverages = 0;
+        let reviewAverages = 0;
+        let isSeasonEnded = this.seasonSelected === this.numberOfSeasons && Date.now() > this.seasonFinale && !this.globalSelected;
         this.contractManagerService.getSeasonThreshold(this.seasonSelected).then(seasonThreshold => {
                 this.log.d("The season thresholds are", seasonThreshold);
                 this.minNumberCommit = seasonThreshold[0];
                 this.minNumberReview = seasonThreshold[1];
                 return this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected);
         }).then((usersRep: UserReputation[]) => {
+            let initNewSeason;
+            if (isSeasonEnded){
+                usersRep.forEach(rep => {
+                    commitsAverages += rep.numberCommitsMade;
+                    reviewAverages += rep.numberReviewsMade;
+                });
+                commitsAverages = Math.round(commitsAverages / usersRep.length);
+                reviewAverages = Math.round(reviewAverages / usersRep.length);
+                initNewSeason = this.contractManagerService.passToNewSeasonAndSetThresholds(
+                    this.numberOfSeasons + 1, commitsAverages, reviewAverages);
+            }
             this.usersRep = usersRep.sort((a: UserReputation, b: UserReputation) => {
                 let ret: number;
                 if(this.globalSelected) {
@@ -148,6 +162,7 @@ export class RankingPage {
             });
             this.userHash = this.account.address;
             this.setUser(this.account.address);
+            return initNewSeason;
         }).catch((e) => {
             this.translateService.get("ranking.getReputation").subscribe(
                 msg => {

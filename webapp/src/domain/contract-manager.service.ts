@@ -737,6 +737,21 @@ export class ContractManagerService {
         });
     }
 
+    public passToNewSeasonAndSetThresholds(seasonIndex: number, commitThreshold: number, reviewThreshold: number): Promise<any> {
+        let brightContract;
+        return this.initProm.then(([bright, commit, root]) => {
+            brightContract = bright;
+            let tx =  bright.methods.checkSeason().encodeABI();
+            return this.sendTx(tx, this.contractAddressBright);
+        }).then((passedSeason) => {
+            let tx = brightContract.methods.setSeasonThresholds(seasonIndex, commitThreshold, reviewThreshold).encodeABI();
+            return this.sendTx(tx, this.contractAddressBright);
+        }).catch(e => {
+            this.log.e("Error getting season threshold: ", e);
+            throw e;
+        });
+    }
+
     public setCurrentSeasonThreshold(commitThreshold: number, reviewThreshold: number): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
             let bytecodeData =  root.methods.setCurrentSeasonThresholdOwner(commitThreshold, reviewThreshold).encodeABI();
