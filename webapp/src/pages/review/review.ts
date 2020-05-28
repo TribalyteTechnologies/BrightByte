@@ -146,7 +146,7 @@ export class ReviewPage {
             return Promise.all(commitsPromises);
         }).then((rsp) => {
             commits = rsp;
-            this.log.d("Response received: " + rsp);
+            this.log.d("Response received: ", rsp);
             if (this.loadedCommits < this.maxReviews) {
                 this.displayCommitsToReview.push(...commits);
                 event.complete();
@@ -285,20 +285,19 @@ export class ReviewPage {
         }
     }
 
-    public setReview(urlCom: string, text: string, points: number[]) {
-        let point: number[] = points;
+    public setReview(urlCom: string, text: string, points: Array<number>) {
         this.transactionQueueService.enqueue(this.contractManagerService.setReview(urlCom, text, points))
         .then((response) => {
-            this.log.d("Received response " + point);
+            this.log.d("Received response " + points);
             this.log.d("Received response " + response);
             this.needReview = false;
             let commitComment = new CommitComment();
             commitComment.name = this.name;
             commitComment.creationDateMs = Date.now();
             commitComment.text = text;
-            commitComment.quality = point[0] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.difficulty = point[1] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.confidence = point[2] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.quality = points[0] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.difficulty = points[1] / AppConfig.SCORE_DIVISION_FACTOR;
+            commitComment.confidence = points[2] / AppConfig.SCORE_DIVISION_FACTOR;
             commitComment.vote = 0;
             commitComment.lastModificationDateMs = Date.now();
             commitComment.user = this.userAdress;
@@ -310,7 +309,7 @@ export class ReviewPage {
 
             let commitSearch = this.displayCommitsToReview.filter(comm => comm.url === urlCom);
             let commit = commitSearch[0];
-            commit.score = point[0] * AppConfig.OPTIMISTIC_SCORE_MULTIPLY_FACTOR;
+            commit.score = points[0] * AppConfig.OPTIMISTIC_SCORE_MULTIPLY_FACTOR;
             commit.lastModificationDateMs = Date.now();
             commit.isReadNeeded = false;
             commit.isPending = false;
