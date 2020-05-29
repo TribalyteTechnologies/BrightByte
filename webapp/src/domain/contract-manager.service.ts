@@ -65,7 +65,6 @@ export class ContractManagerService {
         let configNet = AppConfig.NETWORK_CONFIG[cont];
         this.web3Service = new Web3Service(this.loggerSrv);
         this.web3 = this.web3Service.getWeb3();
-        this.log.d("Initializing with URL: " + configNet.urlNode);
         this.currentUser = user;
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
