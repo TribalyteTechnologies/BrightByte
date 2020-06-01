@@ -311,7 +311,8 @@
         "congratulations": "Congratulations!"
     },
     "errors": {
-        "backendOffline": "Can't connect to BrightByte servers. Please try again later or contact your service provider."
+        "degradedService": "Degraded service",
+        "backendOffline": "The BrightByte server seems to be down. Please try again later or contact your service provider. The service will keep working but some features (batch commit upload, achievements, profile image) may not work temporarily."
     },
     "social": {
         "facebookShareText": "I'm using BrightByte, a reputation network for code developers. Check it out at http://brightbyteapp.com",

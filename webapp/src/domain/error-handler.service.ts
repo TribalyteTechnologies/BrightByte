@@ -1,6 +1,7 @@
 import { ErrorHandler, Injectable } from "@angular/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { AlertController } from "ionic-angular";
+import { TranslateService } from "@ngx-translate/core";
 
 @Injectable()
 export class ErrorHandlerService implements ErrorHandler {
@@ -8,7 +9,10 @@ export class ErrorHandlerService implements ErrorHandler {
     private readonly MAX_ERROR_LENGTH = 150;
     private log: ILogger;
 
-    constructor(loggerSrv: LoggerService, public alertCtrl: AlertController){ 
+    constructor( 
+        public alertCtrl: AlertController,
+        private translateSrv: TranslateService,
+        loggerSrv: LoggerService){ 
         this.log = loggerSrv.get("ErrorHandlerService");
 
     }
@@ -28,12 +32,15 @@ export class ErrorHandlerService implements ErrorHandler {
         }
     }
 
-    public showUserAlert(text: string){
-        const alert = this.alertCtrl.create({
-            title: "An error has ocurred",
-            subTitle: text,
-            buttons: ["OK"]
-          });
-        alert.present();
+    public showUserAlert(text: string, title?: string){
+        this.translateSrv.get("alerts.error").subscribe(msg => {
+            title = title ? title : msg;
+            const alert = this.alertCtrl.create({
+                title: title,
+                subTitle: text,
+                buttons: ["OK"]
+            });
+            alert.present();
+        });
     }
 }

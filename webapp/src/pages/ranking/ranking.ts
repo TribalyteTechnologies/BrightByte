@@ -259,8 +259,8 @@ export class RankingPage {
                     this.isPageLoaded = true;
                 },
                 error => {
-                    this.translateService.get("errors.backendOffline")
-                        .subscribe(msg => this.errorHndlr.showUserAlert(msg));
+                    this.translateService.get(["errors.backendOffline", "errors.degradedService"])
+                        .subscribe(msg => this.errorHndlr.showUserAlert(msg["errors.backendOffline"], msg["errors.degradedService"]));
                     this.isBackendOnline = false;
                 });
         }
