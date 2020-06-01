@@ -324,7 +324,12 @@ export class AddCommitPopover {
             this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
             return Promise.resolve();
-        }).catch(err => { throw err; });
+        }).catch(err => { 
+            this.showSpinner = false;
+            this.isServiceAvailable = false;
+            this.isBatchLogged = false;
+            this.log.e(err); 
+        });
     }
 
     public addRepoStartingFrom(repoSelection: string, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
