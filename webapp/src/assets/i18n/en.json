@@ -302,7 +302,7 @@
         "accept": "Accept",
         "cancel": "Cancel",
         "allowPopUpWindow": "You must allow popup windows to continue.",
-        "notForMobileDevice": "BrightByte is a PC web application. To see the full web go to a PC browser or use desktop mode on your device."
+        "notForMobileDevice": "BrightByte is a desktop web application. To see the full web go to a desktop browser or use desktop mode on your device."
 
     },
     "achievements": {
