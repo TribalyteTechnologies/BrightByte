@@ -17,6 +17,8 @@ contract("CloudTeamManager", accounts => {
     const SHORT_EXP_SECS = 1;
     const EXP_TIMEOUT_MILIS = 5000;
 
+    const PROJECTS = ["pj0", "pj1", "pj2", "pj3"];
+
     let adminOwnerAccount = accounts[0];
     let emailUser0 = EMAIL_ACCOUNTS[0];
     let teamName = TEAM_NAMES[0];
@@ -254,6 +256,81 @@ contract("CloudTeamManager", accounts => {
                     !teamMembers[1].find(address => address === user1Account);
                 assert(isUserRemovedFromTeam, "User was not removed from team");
             });
+        }
+    );
+
+    it("should add a project to a team", () => {
+        let teamManagerInstance;
+        return CloudTeamManager.deployed()
+            .then(instance => {
+                teamManagerInstance = instance;
+                return teamManagerInstance.doesTeamExists(team1Uid, { from: adminOwnerAccount });
+            })
+            .then(doesTeamExists => {
+                assert(!doesTeamExists);
+                return teamManagerInstance.addProject(team1Uid, PROJECTS[0], { from: adminOwnerAccount });
+            })
+            .then(() => {
+                return teamManagerInstance.doesTeamExists(team1Uid, { from: adminOwnerAccount });
+            })
+            .then(doesTeamExists => {
+                assert(doesTeamExists);
+                return teamManagerInstance.getNumberOfProjectBlockPositions(team1Uid, { from: adminOwnerAccount });
+            })
+            .then(numberOfPositions => {
+                return teamManagerInstance.getAllProjects(team1Uid, numberOfPositions, { from: adminOwnerAccount });
+            })
+            .then(projects => {
+                let isProjectCreated = Object.values(projects).some(proj => proj === PROJECTS[0]);
+                assert(isProjectCreated);
+            });
+        }
+    );
+
+    it("should clear all team projects", () => {
+        let teamManagerInstance;
+        return CloudTeamManager.deployed()
+            .then(instance => {
+                teamManagerInstance = instance;
+                return teamManagerInstance.getAllProjects(team1Uid, 0, { from: adminOwnerAccount });
+            })
+            .then(projects => {
+                let isProjectCreated = Object.values(projects).some(proj => proj === PROJECTS[0]);
+                assert(isProjectCreated);
+                return teamManagerInstance.clearAllProjects(team1Uid, { from: adminOwnerAccount });
+            })
+            .then(() => {
+                return teamManagerInstance.getAllProjects(team1Uid, 0, { from: adminOwnerAccount });
+            })
+            .then(projects => {
+                let isProjectCreated = Object.values(projects).some(proj => proj !== "");
+                assert(!isProjectCreated);
+            });
+        }
+    );
+
+    it("should fail adding, getting, clearing and checking team projects because is sender not member", () => {
+        let teamManagerInstance;
+        return CloudTeamManager.deployed()
+            .then(instance => {
+                teamManagerInstance = instance;
+                return teamManagerInstance.addProject(team1Uid, PROJECTS[0], { from: user1Account });
+            })
+            .catch(() => {
+                assert(true);
+                return teamManagerInstance.doesTeamExists(team1Uid, { from: user1Account });
+            })
+            .catch(() => {
+                assert(true);
+                return teamManagerInstance.clearAllProjects(team1Uid, { from: user1Account });
+            })
+            .catch(() => {
+                assert(true);
+                return teamManagerInstance.getNumberOfProjectBlockPositions(team1Uid, { from: user1Account });
+            })
+            .catch(() => {
+                assert(true);
+            })
         }
     );
 });

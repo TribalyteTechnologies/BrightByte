@@ -1,6 +1,7 @@
 pragma solidity 0.4.22;
 
 import "./CloudBrightByteFactory.sol";
+import "./CloudProjectStore.sol";
 
 contract CloudTeamManager {
 
@@ -50,6 +51,9 @@ contract CloudTeamManager {
     address private bbFactoryAddress;
     CloudBrightByteFactory private remoteBbFactory;
 
+    address private projStoreAddress;
+    CloudProjectStore private remoteProjStore;
+
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor(address bbFactoryAddr, uint256 seasonLength) public {
@@ -57,6 +61,8 @@ contract CloudTeamManager {
         teamCount = 0;
         bbFactoryAddress = bbFactoryAddr;
         remoteBbFactory = CloudBrightByteFactory(bbFactoryAddress);
+        projStoreAddress = new CloudProjectStore(this);
+        remoteProjStore = CloudProjectStore(projStoreAddress);
         createTeam("unregistered@brightbyteapp.com", "Default team");
         seasonLengthInDays = seasonLength;
     }
@@ -289,6 +295,27 @@ contract CloudTeamManager {
         delete addrTeamMap.teamUidIndexMap[teamUid];
 
         return email;
+    }
+
+    function addProject(uint256 teamUid, string project) public onlyMembersOrAdmins(teamUid) {
+        remoteProjStore.addProject(teamUid, project);
+    }
+
+    function clearAllProjects(uint256 teamUid) public onlyMembersOrAdmins(teamUid) {
+        remoteProjStore.clearAllProjects(teamUid);
+    }
+
+    function getAllProjects(uint256 teamUid, uint256 blockPosition) public onlyMembersOrAdmins(teamUid)
+        view returns (string, string, string, string, string) {
+        return remoteProjStore.getAllProjects(teamUid, blockPosition);
+    }
+
+    function getNumberOfProjectBlockPositions(uint256 teamUid) public onlyMembersOrAdmins(teamUid) view returns (uint256) {
+        return remoteProjStore.getNumberOfProjectBlockPositions(teamUid);
+    }
+
+    function doesTeamExists(uint256 teamUid) public onlyMembersOrAdmins(teamUid) view returns (bool) {
+        return remoteProjStore.doesTeamExists(teamUid);
     }
 
     function removeInvitation(uint256 teamUid, string email) private {
