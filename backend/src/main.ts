@@ -20,17 +20,20 @@ class BrightByteCloudBackend {
 
         await app.init();
 
-        const credentials = {
-            key: this.readSecretsFile("private.key"),
-            cert: this.readSecretsFile("certificate.crt")
-        };
         // HTTP + HTTPS servers
         http.createServer(server).listen(this.DB_PORT);
-        https.createServer(credentials, server).listen(this.DB_SECURE_PORT);
+
+        if (fs.existsSync(BackendConfig.SECRET_SECURE_PATH)) {
+            const credentials = {
+                key: this.readSecretsFile("private.key"),
+                cert: this.readSecretsFile("certificate.crt")
+            };
+            https.createServer(credentials, server).listen(this.DB_SECURE_PORT);
+        } 
     }
 
     private readSecretsFile(fileName: string): string {
-        return fs.readFileSync(`./secrets/${fileName}`, { encoding: "utf8" });
+        return fs.readFileSync(BackendConfig.SECRET_SECURE_PATH + fileName, { encoding: "utf8" });
     }
 }
 
