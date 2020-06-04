@@ -18,7 +18,7 @@ export class AppConfig {
         netId: 5777,
         urlNode: "http://127.0.0.1:7545"
     }];
-    public static readonly SERVER_BASE_URL = "http://localhost:3000";
+    public static readonly SERVER_BASE_URL = "https://localhost:3000";
     public static readonly SERVER_NETWORK_CONFIG: SocketIoConfig = { url: AppConfig.SERVER_BASE_URL, options: {} };
     
     public static readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";

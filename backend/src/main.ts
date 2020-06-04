@@ -13,23 +13,23 @@ class BrightByteCloudBackend {
     private readonly DB_SECURE_PORT = BackendConfig.BRIGHTBYTE_DB_SECURE_PORT;
 
     public async launch() {
-
         const server = express();
-        const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
-        app.enableCors({ "origin": BackendConfig.WEBAPP_URL });
-
-        await app.init();
-
-        // HTTP + HTTPS servers
-        http.createServer(server).listen(this.DB_PORT);
-
+        let httpsOptions;
         if (fs.existsSync(BackendConfig.SECRET_SECURE_PATH)) {
-            const credentials = {
+            httpsOptions = {
                 key: this.readSecretsFile("private.key"),
                 cert: this.readSecretsFile("certificate.crt")
             };
-            https.createServer(credentials, server).listen(this.DB_SECURE_PORT);
-        } 
+        }
+        const applicationOptions = {
+            cors: {
+                origin: [BackendConfig.WEBAPP_URL]
+            },
+            httpsOptions: httpsOptions
+        };
+
+        const app = await NestFactory.create(AppModule, new ExpressAdapter(server), applicationOptions);
+        await app.listen(this.DB_PORT);
     }
 
     private readSecretsFile(fileName: string): string {
