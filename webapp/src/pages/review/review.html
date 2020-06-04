@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content no-padding class="main-container">
-    <filter-selection [projects]="projects" [parentFilterValue]="filterValue" [parentPendingFilter]="filterIsPending"
+    <filter-selection [getProjectsFromBc]="true" [parentFilterValue]="filterValue" [parentPendingFilter]="filterIsPending"
         (filterEmit)="setFilter($event)" (projectEmit)="setProject($event)"></filter-selection>
     <ion-row no-padding>
         <ion-col col-6 padding class="text-details text-details--bold">

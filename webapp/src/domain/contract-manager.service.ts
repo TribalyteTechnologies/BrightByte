@@ -16,6 +16,7 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { TeamMember } from "../models/team-member.model";
 import { InvitedUser } from "../models/invited-user.model";
 import { EncryptDataService } from "../core/encrypt-data.service";
+import { FormatUtils } from "../core/format-utils";
 
 interface IContractJson {
     abi: Array<Object>;
@@ -464,11 +465,15 @@ export class ContractManagerService {
 
     public addCommit(url: string, title: string, usersMail: string[]): Promise<any> {
         let rootContract;
+        let teamManagerContract;
+        let project = FormatUtils.getProjectFromUrl(url);
+        const encodedProject = this.encryptSrv.encodeStringToHex(project);
         const encodeUrl = this.encryptSrv.encodeStringToHex(url);
         const encodeTitle = this.encryptSrv.encodeStringToHex(title);
         let isAlreadyUploaded = false;
-        return this.initProm.then(([bright, commit, root]) => {
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
             rootContract = root;
+            teamManagerContract = teamManager;
             this.log.d("Variables: url ", url);
             this.log.d("UsersMail: ", usersMail);
             // let project = this.splitService.getProject(url);
@@ -496,12 +501,45 @@ export class ContractManagerService {
             ).encodeABI();
             this.log.d("ByteCodeData of notifyCommit: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressRoot);
+        }).then(() => {
+            let bytecodeData = teamManagerContract.methods.addProject(
+                this.currentTeamUid,
+                encodedProject
+            ).encodeABI();
+            this.log.d("ByteCodeData of notifyCommit: ", bytecodeData);
+            return this.sendTx(bytecodeData, this.contractAddressTeamManager);
         }).catch(e => {
             if (isAlreadyUploaded) {
                 this.deleteCommit(encodeUrl);
             }
             this.log.e("Error in addcommit: ", e);
             throw e;
+        });
+    }
+
+    public getAllProjects(): Promise<Array<string>> {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            teamManagerContract = teamManager;
+            return teamManagerContract.methods.getNumberOfProjectBlockPositions(this.currentTeamUid).call({from: this.currentUser.address});
+        })
+        .then((blockPositions: number) => {
+            let promises = new Array<Promise<Array<String>>>();
+            for(let i = 0; i <= blockPositions; i++){
+                promises.push(teamManagerContract.methods.getAllProjects(this.currentTeamUid, i).call({from: this.currentUser.address}));
+            }
+            return Promise.all(promises);
+        })
+        .then((allProjects: Array<Array<string>>) => {
+            let projects = new Array<string>();
+            allProjects.forEach((projs: Array<string>) => {
+                let decodedProjs = Object.keys(projs)
+                .map(key => projs[key])
+                .map((proj: string) => this.encryptSrv.decodeHexToString(proj))
+                .filter((proj: string) => proj !== "");
+                projects = projects.concat(decodedProjs);
+            });
+            return projects;
         });
     }
 
@@ -596,6 +634,9 @@ export class ContractManagerService {
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
             return brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
                 .call({ from: this.currentUser.address});
+        }).then(seasonState => {
+            return Object.keys(seasonState)
+            .map(key => parseInt(seasonState[key]));
         }).catch(err => {
             this.log.e("Error obtaining the state of the user commmits:", err);
             throw err;
@@ -780,13 +821,19 @@ export class ContractManagerService {
 
     public passToNewSeasonAndSetThresholds(seasonIndex: number, commitThreshold: number, reviewThreshold: number): Promise<any> {
         let brightContract;
-        return this.initProm.then(([bright, commit, root]) => {
+        let teamManagerContract;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
             brightContract = bright;
+            teamManagerContract = teamManager;
             let tx =  bright.methods.checkSeason().encodeABI();
             return this.sendTx(tx, this.contractAddressBright);
-        }).then((passedSeason) => {
+        }).then(() => {
             let tx = brightContract.methods.setSeasonThresholds(seasonIndex, commitThreshold, reviewThreshold).encodeABI();
             return this.sendTx(tx, this.contractAddressBright);
+        })
+        .then(() => {
+            let tx = teamManagerContract.methods.clearAllProjects(this.currentTeamUid).encodeABI();
+            return this.sendTx(tx, this.contractAddressTeamManager);
         }).catch(e => {
             this.log.e("Error getting season threshold: ", e);
             throw e;

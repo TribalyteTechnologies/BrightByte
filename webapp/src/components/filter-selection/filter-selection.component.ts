@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { ContractManagerService } from "../../domain/contract-manager.service";
 
 @Component({
     selector: "filter-selection",
@@ -21,15 +22,15 @@ export class FilterComponent {
     @Output()
     public projectEmit = new EventEmitter<string>();
 
-    private _projects: string[];
-
     @Input()
     public set projects(val: string[]){
-        this._projects = val.sort((inA, inB) => {
-            const a = inA.toLowerCase();
-            const b = inB.toLowerCase();            
-            return a > b ? 1 : a < b ? -1 : 0;
-        });
+        if (val){
+            this._projects = val.sort((inA, inB) => {
+                const a = inA.toLowerCase();
+                const b = inB.toLowerCase();            
+                return a > b ? 1 : a < b ? -1 : 0;
+            });
+        }
     }
 
     public get projects(){
@@ -54,6 +55,26 @@ export class FilterComponent {
         return this.filterIsPending;
     }
 
+    @Input()
+    public getProjectsFromBc: boolean;
+
+    private _projects: string[];
+
+    constructor(private contractManager: ContractManagerService){
+    }
+
+    public ngOnInit() {
+        if (this.getProjectsFromBc){
+            this.contractManager.getAllProjects()
+            .then(projs => { 
+                this.projects = projs.sort((inA, inB) => {
+                    const a = inA.toLowerCase();
+                    const b = inB.toLowerCase();            
+                    return a > b ? 1 : a < b ? -1 : 0;
+                });
+            });
+        }
+    }
 
     public ngDoCheck(): void {
         this.projects = this._projects; 

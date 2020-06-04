@@ -25,6 +25,8 @@ export class ReviewPage {
     public readonly COMPLETE = "complete";
     public readonly PENDING = "pending";
     public readonly TRUE_STRING = "true";
+    public readonly RELOAD_EVENT = "reload";
+
 
     public userAdress: string;
     public displayCommitsToReview: Array<UserCommit>;
@@ -101,8 +103,9 @@ export class ReviewPage {
     }
 
     public refresh(event?) {
+        let isReloadEvent = event && event.type === this.RELOAD_EVENT;
         this.log.d("Refreshing page");
-        if (this.initializing) {
+        if (this.initializing || isReloadEvent) {
             this.spinnerService.showLoader();
         }
         let commits: Array<UserCommit>;
@@ -149,7 +152,9 @@ export class ReviewPage {
             this.log.d("Response received: ", rsp);
             if (this.loadedCommits < this.maxReviews) {
                 this.displayCommitsToReview.push(...commits);
-                event.complete();
+                if (!isReloadEvent){
+                    event.complete();
+                }
             } else {
                 this.displayCommitsToReview = commits;
             }
@@ -157,7 +162,6 @@ export class ReviewPage {
             let projects = commits.map(commit => commit.project);
             this.projects = projects.filter((value, index, array) => array.indexOf(value) === index);
             this.loadedCommits -= AppConfig.COMMITS_BLOCK_SIZE;
-            this.spinnerService.hideLoader();
             return this.contractManagerService.getUserDetails(this.userAdress);
         }).then((ud) => {
             this.name = ud.name;
@@ -167,6 +171,14 @@ export class ReviewPage {
                 let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
                 let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
                 this.shouldOpen(filteredCommit[0]);
+            }
+            let doReload = !this.disabledInfiniteScroll
+                && isReloadEvent;
+            if (doReload) {
+                this.refresh(new Event(this.RELOAD_EVENT));
+            }
+            if (!doReload || this.maxReviews === 0){
+                this.spinnerService.hideLoader();
             }
         }).catch((e) => {
             this.translateService.get("commits.getCommits").subscribe(
@@ -275,6 +287,9 @@ export class ReviewPage {
     public setProject(name: string) {
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);
+        if (this.filterArrayCommits.length < AppConfig.COMMITS_BLOCK_SIZE && !this.disabledInfiniteScroll) {
+            this.refresh(new Event(this.RELOAD_EVENT));
+        }
     }
 
     public setStyle(idx: number): string {
