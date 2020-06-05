@@ -374,7 +374,7 @@ export class ReviewPage {
     private applyStateFilter(state: ReviewStateFilterTypes): void {
         this.initializing = true;
         this.currentReviewFilterState = state;
-        this.refresh();
+        this.refresh(new Event(this.RELOAD_EVENT));
     }
 
     private setPendingFilter(userCommits: Array<UserCommit>): Array<UserCommit> {
