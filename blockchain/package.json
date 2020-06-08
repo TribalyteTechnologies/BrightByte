@@ -7,7 +7,6 @@
   "scripts": {
     "start:migrate": "npm run truffle:deploy",
     "preinstall": "mkdir -p ./node_modules; find ./node_modules -type d -name .git -exec rm -fr {} +",
-    "postinstall": "cd ../webapp; npm install",
     "truffle:migrate": "truffle migrate --reset",
     "posttruffle:migrate": "npm run copy:contracts",
     "truffle:custom-deploy": "truffle migrate --network custom --reset",

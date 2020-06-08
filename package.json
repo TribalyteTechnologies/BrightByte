@@ -5,7 +5,7 @@
   "main": "",
   "scripts": {
     "start": "npm run start:blockchain; npm run start:webapp && npm run start:backend",
-    "install": "cd ./blockchain; npm install",
+    "install": "cd blockchain && npm install && cd ../webapp && npm install && cd ../backend && npm install",
     "start:blockchain": "cd ./blockchain; npm run start:migrate",
     "start:webapp": "cd ./webapp; npm run wait:start",
     "start:backend": "cd ./backend; npm run start",
