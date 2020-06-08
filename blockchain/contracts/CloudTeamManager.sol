@@ -326,11 +326,13 @@ contract CloudTeamManager {
         for (uint256 i = 0; i < user.numberOfInvitations; i++) {
             if (user.indexTeamUidMap[i] == teamUid) {
                 delete user.indexTeamUidMap[i];
+                break;
             }
         }
         for (uint256 j = 0; j < team.invitedUsersCount; j++) {
             if (keccak256(team.invitedUsersEmailList[j]) == keccak256(email)) {
                 delete team.invitedUsersEmailList[j];
+                break;
             }
         }
     }
