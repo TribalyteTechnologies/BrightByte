@@ -2,9 +2,9 @@
 This is the BrightByte developer reputation project.
 
 ## Branch distribution
-In this repositorie there are two different implementations for brighbyte, a simple mono-team platform called, "base Brightbyte" marked with the tags vX.X.X and a multi-team version for called "Brightbyte cloud" uploaded to the master branch and marked with the tags vX.X.X-cloud.
+In this repository there are two different implementations for brighbyte, a simple mono-team platform called, "base Brightbyte" marked with the tags vX.X.X and a multi-team version for called "Brightbyte cloud" uploaded to the master branch and marked with the tags vX.X.X-cloud.
 
-Brightbyte cloud is builded on top of base brightbyte adding all the team managing features.
+Brightbyte cloud is built on top of base BrightByte adding all the team managing features.
 
 ## Folder organization
 This project is divided in several folders.
