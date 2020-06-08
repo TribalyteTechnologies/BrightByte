@@ -62,9 +62,9 @@ export class CommitPage {
     public refresh() {
         this.log.d("Refreshing page");
         this.spinnerService.showLoader();
-        let commits: UserCommit[];
+        let commits: Array<UserCommit>;
         this.contractManagerService.getCommits()
-            .then((commitConcat: UserCommit[]) => {
+            .then((commitConcat: Array<UserCommit>) => {
                 this.log.d("User Commits received");
                 commits = commitConcat.filter(commit => commit);
 

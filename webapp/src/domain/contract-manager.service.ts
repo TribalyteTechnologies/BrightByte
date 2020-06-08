@@ -463,7 +463,7 @@ export class ContractManagerService {
         });
     }
 
-    public addCommit(url: string, title: string, usersMail: string[]): Promise<any> {
+    public addCommit(url: string, title: string, usersMail: Array<string>): Promise<any> {
         let rootContract;
         let teamManagerContract;
         let project = FormatUtils.getProjectFromUrl(url);
@@ -573,33 +573,18 @@ export class ContractManagerService {
         });
     }
 
-    public getCommitsToReview(): Promise<UserCommit[][]> {
+    public getCommitsToReview(): Promise<Array<Array<UserCommit>>> {
         let endIndex: number;
         return this.getCurrentSeasonState().then(seasonState => {
             endIndex = (seasonState[0] > seasonState[1]) ? seasonState[0] : seasonState[1];
             return this.initProm;
-        }).then(([bright, commit]) => {
+        }).then(([bright]) => {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
             return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex)
             .call({ from: this.currentUser.address})
                 .then((allUserCommits: Array<any>) => {
-                    let promisesPending = allUserCommits[0].map(userCommit => {
-                        if(userCommit !== AppConfig.EMPTY_COMMIT_HASH) {
-                            return commit.methods.getDetailsCommits(userCommit).call({ from: this.currentUser.address})
-                            .then((commitVals: any) => {
-                                commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                                commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                                return UserCommit.fromSmartContract(commitVals, true);
-                            });
-                        }
-                    });
-                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit)
-                    .call({ from: this.currentUser.address})
-                        .then((commitVals: any) => {
-                            commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                            commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                            return UserCommit.fromSmartContract(commitVals, false);
-                        }));
+                    let promisesPending = allUserCommits[0].map(userCommit => this.getUserCommitDetails(userCommit));
+                    let promisesFinished = allUserCommits[1].map(userCommit => this.getUserCommitDetails(userCommit, false));
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
                 });
         }).catch(err => {
@@ -634,7 +619,7 @@ export class ContractManagerService {
         });
     }
 
-    public getSeasonCommitsToReview(endIndex: number): Promise<UserCommit[][]> {
+    public getSeasonCommitsToReview(endIndex: number): Promise<Array<Array<UserCommit>>> {
         return this.initProm
             .then(([bright, commit]) => {
                 return bright.methods.getCurrentSeason().call({ from: this.currentUser.address})
@@ -644,27 +629,9 @@ export class ContractManagerService {
                     return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
                     .call({ from: this.currentUser.address});
                 }).then((allUserCommits: Array<any>) => {
-                    let promisesAllReviews = allUserCommits[4].map(userCommit => commit.methods.getDetailsCommits(userCommit)
-                    .call({ from: this.currentUser.address})
-                        .then((commitVals: any) => {
-                            commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                            commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                            return UserCommit.fromSmartContract(commitVals, true);
-                        }));
-                    let promisesPending = allUserCommits[0].map(userCommit => commit.methods.getDetailsCommits(userCommit)
-                    .call({ from: this.currentUser.address})
-                        .then((commitVals: any) => {
-                            commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                            commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                            return UserCommit.fromSmartContract(commitVals, true);
-                        }));
-                    let promisesFinished = allUserCommits[1].map(userCommit => commit.methods.getDetailsCommits(userCommit)
-                    .call({ from: this.currentUser.address})
-                        .then((commitVals: any) => {
-                            commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                            commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                            return UserCommit.fromSmartContract(commitVals, false);
-                        }));
+                    let promisesAllReviews = allUserCommits[4].map(userCommit =>  this.getUserCommitDetails(userCommit));
+                    let promisesPending = allUserCommits[0].map(userCommit =>  this.getUserCommitDetails(userCommit));
+                    let promisesFinished = allUserCommits[1].map(userCommit =>  this.getUserCommitDetails(userCommit, false));
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished), Promise.all(promisesAllReviews)]);
                 });
             }).catch(err => {
@@ -718,7 +685,7 @@ export class ContractManagerService {
         });
     }
 
-    public setReview(url: string, text: string, points: number[]): Promise<any> {
+    public setReview(url: string, text: string, points: Array<number>): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
             let contractArtifact = commit;
             const encodeUrl = this.encryptSrv.encodeStringToHex(url);
@@ -880,7 +847,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright]) => {
             contractArtifact = bright;
             return contractArtifact.methods.getUsersAddress().call({ from: this.currentUser.address});
-        }).then((usersAddress: String[]) => {
+        }).then((usersAddress: Array<string>) => {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
