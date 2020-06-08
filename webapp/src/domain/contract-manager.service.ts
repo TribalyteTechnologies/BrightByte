@@ -560,27 +560,12 @@ export class ContractManagerService {
     }
 
     public getCommits(): Promise<Array<UserCommit>> {
-        let brightContract, commitContract: ITrbSmartContact;
-        return this.initProm.then(([bright, commit]) => {
-            brightContract = bright;
-            commitContract = commit;
-            return this.getCurrentSeasonState();
-        }).then(seasonState => {
-            let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
-            return brightContract.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, seasonState[2])
-                .call({ from: this.currentUser.address});
-        }).then((allUserCommits: Array<any>) => {
-            let promisesPending = new Array<Promise<UserCommit>>();
-            promisesPending = allUserCommits[2].map(userCommit => {
-                if(userCommit !== AppConfig.EMPTY_COMMIT_HASH) {
-                    return commitContract.methods.getDetailsCommits(userCommit).call({ from: this.currentUser.address})
-                    .then((commitVals: any) => {
-                        commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                        commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                        return UserCommit.fromSmartContract(commitVals, true);
-                    });
-                }
-            });
+        return this.getCurrentSeasonState()
+        .then(seasonState => {
+            let array = new Array<string>();
+            return this.getBatchCommits(seasonState[2], 0, array);
+        }).then((allUserCommits: Array<string>) => {
+            let promisesPending = allUserCommits.map(userCommit => this.getUserCommitDetails(userCommit));
             return Promise.all(promisesPending);
         }).catch(err => {
             this.log.e("Error obtaining user commits :", err);
@@ -1045,6 +1030,37 @@ export class ContractManagerService {
                 this.log.e("Error in transaction (sendTx function): ", e);
                 throw e;
             });
+    }
+
+    private getBatchCommits(totalNumberOfCommits: number, startIndex: number, allCommits: Array<string>): Promise<Array<string>> {
+        let endIndex = startIndex + AppConfig.COMMITS_BLOCK_SIZE;
+        return this.initProm.then(([bright]) => {
+            let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
+            return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, startIndex, endIndex)
+                .call({ from: this.currentUser.address});
+        }).then((allUserCommits: Array<any>) => {
+            let userCommits = allUserCommits[2].filter(commit => commit !== AppConfig.EMPTY_COMMIT_HASH);
+            allCommits = allCommits.concat(userCommits);
+            let batchLenght = allCommits.length;
+            return (totalNumberOfCommits > batchLenght) ? this.getBatchCommits(totalNumberOfCommits, endIndex, allCommits) : allCommits;
+        }).catch(err => {
+            this.log.e("Error obtaining user commits :", err);
+            throw err;
+        });
+    }
+
+    private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
+        return this.initProm.then(([bright, commit]) => {
+            return commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address})
+                .then((commitVals: any) => {
+                    commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
+                    commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
+                    return UserCommit.fromSmartContract(commitVals, isPending);
+                });
+        }).catch(err => {
+            this.log.e("Error getting commit details :", err);
+            throw err;
+        });
     }
 
     private setCurrentTeam(teamUid: number) {
