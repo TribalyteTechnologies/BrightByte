@@ -187,10 +187,6 @@ async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid,
     let response = await teamManagerInstance.registerToTeam(userAddress, email, team1Uid, { from: userAddress })
     assert(response.receipt.status);
     let teamUids =  await teamManagerInstance.getUserTeam(userAddress);
-    if (shouldFail) {
-        assert(teamUids.length === empyTeamId, "Team was created incorrectly");
-    } else {
-        assert(teamUids.length !== empyTeamId, "Team was created incorrectly");
-    }
+    assert(shouldFail ? teamUids.length === empyTeamId : teamUids.length !== empyTeamId, "Team was created incorrectly");
     return team1Uid;
 }
