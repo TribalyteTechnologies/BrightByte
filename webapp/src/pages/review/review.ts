@@ -103,7 +103,7 @@ export class ReviewPage {
     }
 
     public refresh(event?) {
-        let isReloadEvent = event && event.type === this.RELOAD_EVENT;
+        let isReloadEvent = (event && event.type === this.RELOAD_EVENT) || this.projectSelected !== this.ALL;
         this.log.d("Refreshing page");
         if (this.initializing || isReloadEvent) {
             this.spinnerService.showLoader();
@@ -172,7 +172,7 @@ export class ReviewPage {
                 let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
                 this.shouldOpen(filteredCommit[0]);
             }
-            let doReload = !this.disabledInfiniteScroll
+            let doReload = this.filterArrayCommits.length < AppConfig.COMMITS_BLOCK_SIZE && !this.disabledInfiniteScroll
                 && isReloadEvent;
             if (doReload) {
                 this.refresh(new Event(this.RELOAD_EVENT));
@@ -374,7 +374,11 @@ export class ReviewPage {
     private applyStateFilter(state: ReviewStateFilterTypes): void {
         this.initializing = true;
         this.currentReviewFilterState = state;
-        this.refresh(new Event(this.RELOAD_EVENT));
+        if (this.projectSelected !== this.ALL) {
+            this.refresh(new Event(this.RELOAD_EVENT));
+        } else {
+            this.refresh();
+        }
     }
 
     private setPendingFilter(userCommits: Array<UserCommit>): Array<UserCommit> {
