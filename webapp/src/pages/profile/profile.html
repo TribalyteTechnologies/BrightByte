@@ -192,7 +192,7 @@
                     </ion-row>
                 </div>
                 <h6>{{ "setProfile.teamMembers" | translate }}</h6>
-                <div class="separator">
+                <div class="separator" *ngIf="!isLoadingInfo">
                     <ion-row>
                         {{ "setProfile.admins" | translate }}
                     </ion-row>

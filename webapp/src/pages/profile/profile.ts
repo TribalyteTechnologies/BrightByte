@@ -54,6 +54,7 @@ export class Profile {
     public isInvitingUser = false;
     public isSettingSeasonData = false;
     public isSettingThreshold = false;
+    public isLoadingInfo = true;
     public teamMembers: Array<Array<TeamMember>>;
     public invitedUsers: Array<InvitedUser>;
     public teamWorkspaces: Array<string>;
@@ -100,6 +101,9 @@ export class Profile {
     ) {
         this.log = loggerSrv.get("ProfilePage");
         this.isBackendAvailable = true;
+        this.isLoadingInfo = true;
+        this.teamMembers = Array<Array<TeamMember>>();
+        this.teamWorkspaces = Array<string>();
     }
 
     public ngOnInit() {
@@ -178,6 +182,7 @@ export class Profile {
                 this.teamWorkspaces = result.data;
                 this.isBackendAvailable = true;    
             }
+            this.isLoadingInfo = false;
         }).catch(e => {
             this.log.e("Error: ", e);
             this.isBackendAvailable = false;
