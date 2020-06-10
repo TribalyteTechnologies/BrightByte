@@ -15,6 +15,9 @@ import { CommentDetailsDto } from "../dto/comment-details.dto";
 @Injectable()
 export class ContractManagerService {
 
+    private readonly TRANSACTION_HASH = "transactionHash";
+    private readonly BLOCK_NUMBER = "blockNumber";
+
     private contractAddressBright: string;
     private contractAddressCommits: string;
     private contractAddressEventDispatcher: string;
@@ -122,6 +125,16 @@ export class ContractManagerService {
 
     public getEventDispatcherSmartContract(): Observable<ITrbSmartContact> {
         return this.initObs.pipe(map(() => this.contracts[ContractsIndex.EventDispatcher]));
+    }
+
+    public getCurrentBlock(): Observable<number> {
+        return this.initObs.pipe(
+            flatMap(() => {
+                return this.web3.eth.getTransaction(this.eventDispatcherContractAbi.networks[BackendConfig.NET_ID][this.TRANSACTION_HASH]);
+            }),
+            map(txInfo => {
+                return txInfo[this.BLOCK_NUMBER];
+            }));
     }
 
     private getUserNumber(): Observable<Number> {

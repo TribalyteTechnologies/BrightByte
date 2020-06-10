@@ -1,5 +1,4 @@
 import { Injectable, HttpService } from "@nestjs/common";
-import { BackendConfig } from "../backend.config";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import Web3 from "web3";
@@ -11,6 +10,7 @@ import { DeleteEventDto } from "../dto/events/delete-event.dto";
 import { NewUserEventDto } from "../dto/events/newUser-event.dto";
 import { ContractManagerService } from "./contract-manager.service";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
+import { flatMap } from "rxjs/operators";
 
 @Injectable()
 export class EventHandlerService {
@@ -29,9 +29,8 @@ export class EventHandlerService {
     private readonly URL = "url";
     private readonly NUMBER_REVIEWS = "numberOfReviews";
     private readonly LATEST = "latest";
-    private readonly FIRST_BLOCK = 0;
-
-
+    
+    private firstBlock = 0;
     private contractAddress: string;
     private contract: ITrbSmartContact;
     private web3Service: Web3Service;
@@ -53,7 +52,12 @@ export class EventHandlerService {
 
     public init() {
         this.log.d("Initializing Event Handler Service");
-        this.contractManagerService.getEventDispatcherSmartContract().subscribe(contract => {
+        this.contractManagerService.getCurrentBlock().pipe(
+        flatMap((blockNumber: number) => {
+            this.firstBlock = blockNumber;
+            return this.contractManagerService.getEventDispatcherSmartContract();
+        }))
+        .subscribe(contract => {
             this.contract = contract;
             this.web3 = this.web3Service.openConnection();
             this.web3.eth.net.isListening()
@@ -104,7 +108,7 @@ export class EventHandlerService {
             }
         };
 
-        let block = initialization ? this.FIRST_BLOCK : this.LATEST;
+        let block = initialization ? this.firstBlock : this.LATEST;
 
         switch (type) {
             case this.COMMIT:
