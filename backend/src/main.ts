@@ -4,13 +4,13 @@ import { BackendConfig } from "./backend.config";
 import express from "express";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import * as fs from "fs";
-import http from "http";
-import https from "https";
+import { ILogger, LoggerService } from "./logger/logger.service";
 
 class BrightByteCloudBackend {
 
     private readonly DB_PORT = BackendConfig.BRIGHTBYTE_DB_PORT;
-    private readonly DB_SECURE_PORT = BackendConfig.BRIGHTBYTE_DB_SECURE_PORT;
+    private readonly loggerSrv = new LoggerService(true);
+    private readonly log: ILogger = this.loggerSrv.get("BrightByteCloudBackend");
 
     public async launch() {
         const server = express();
@@ -20,6 +20,7 @@ class BrightByteCloudBackend {
                 key: this.readSecretsFile("private.key"),
                 cert: this.readSecretsFile("certificate.crt")
             };
+            this.log.d("BrightByteCloudBackend will be serve with secure options (https)");
         }
         const applicationOptions = {
             cors: {
@@ -30,6 +31,7 @@ class BrightByteCloudBackend {
 
         const app = await NestFactory.create(AppModule, new ExpressAdapter(server), applicationOptions);
         await app.listen(this.DB_PORT);
+        this.log.d("BrightByteCloudBackend server listening on port " + this.DB_PORT);
     }
 
     private readSecretsFile(fileName: string): string {
