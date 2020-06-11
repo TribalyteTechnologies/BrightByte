@@ -11,7 +11,7 @@ import { BackendConfig } from "../backend.config";
 export class EmailService {
 
     private readonly INVITATION_SUBJECT = "Invitation to participate on BrightByte";
-    private readonly FROM_EMAIL = BackendConfig.SMTP_EMAIL;
+    private readonly FROM_EMAIL = BackendConfig.EMAIL_TRANSPORT.auth.user;
     private readonly INVITATION_TEMPLATE = "invitation";
 
     constructor(private mailerService: MailerService) { }

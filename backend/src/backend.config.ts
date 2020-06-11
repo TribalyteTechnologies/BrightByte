@@ -35,14 +35,13 @@ export class BackendConfig {
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY;
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
     public static readonly BUFFER_SIZE = 1;
-    public static readonly SMTP_EMAIL = process.env.EMAIL;
 
     public static readonly EMAIL_TRANSPORT = {
         host: process.env.SMTP_EMAIL_HOST,
         port: process.env.SMTP_EMAIL_PORT,
         secure: false,
         auth: {
-            user: BackendConfig.SMTP_EMAIL,
+            user: process.env.EMAIL,
             pass: process.env.EMAIL_PASS
         }
     };
