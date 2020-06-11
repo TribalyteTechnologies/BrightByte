@@ -8,7 +8,7 @@ import { ILogger, LoggerService } from "./logger/logger.service";
 
 class BrightByteCloudBackend {
 
-    private readonly DB_PORT = BackendConfig.BRIGHTBYTE_DB_PORT;
+    private readonly API_PORT = BackendConfig.BRIGHTBYTE_API_PORT;
     private readonly loggerSrv = new LoggerService(true);
     private readonly log: ILogger = this.loggerSrv.get("BrightByteCloudBackend");
 
@@ -30,8 +30,8 @@ class BrightByteCloudBackend {
         };
 
         const app = await NestFactory.create(AppModule, new ExpressAdapter(server), applicationOptions);
-        await app.listen(this.DB_PORT);
-        this.log.d("BrightByteCloudBackend server listening on port " + this.DB_PORT);
+        await app.listen(this.API_PORT);
+        this.log.d("BrightByteCloudBackend server listening on port " + this.API_PORT);
     }
 
     private readSecretsFile(fileName: string): string {
