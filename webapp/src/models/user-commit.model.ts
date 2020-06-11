@@ -1,6 +1,7 @@
 import { AppConfig } from "../app.config";
 import { UserDetails } from "./user-details.model";
 import { FormatUtils } from "../core/format-utils";
+import { EncryptionUtils } from "../core/encryption-utils";
 
 export class UserCommit { 
     public url = ""; 
@@ -20,9 +21,9 @@ export class UserCommit {
     public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
         if(commitVals[0]) {
-            commit.url = commitVals[0]; 
+            commit.url = EncryptionUtils.decode(commitVals[0]); 
             commit.urlHash = FormatUtils.getHashFromUrl(commit.url);
-            commit.title = commitVals[1];
+            commit.title = EncryptionUtils.decode(commitVals[1]);
             commit.author = commitVals[2];
             commit.project = FormatUtils.getProjectFromUrl(commit.url);
             commit.isPending = isPending;

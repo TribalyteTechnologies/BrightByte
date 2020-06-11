@@ -1,3 +1,5 @@
+import { EncryptionUtils } from "../core/encryption-utils";
+
 export class CommitDetails { 
     public url: string; 
     public title: string; 
@@ -10,8 +12,8 @@ export class CommitDetails {
     public score: number;
     public static fromSmartContract(commitVals: Array<any>): CommitDetails{ 
         let commit = new CommitDetails();
-        commit.url = commitVals[0]; 
-        commit.title = commitVals[1]; 
+        commit.url = EncryptionUtils.decode(commitVals[0]); 
+        commit.title = EncryptionUtils.decode(commitVals[1]);
         commit.author = commitVals[2];
         commit.creationDate = commitVals[3];
         commit.lastModDate = commitVals[4];

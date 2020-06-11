@@ -15,7 +15,7 @@ import { UserCacheService } from "../domain/user-cache.service";
 import { LocalStorageService } from "../core/local-storage.service";
 import { TeamMember } from "../models/team-member.model";
 import { InvitedUser } from "../models/invited-user.model";
-import { EncryptDataService } from "../core/encrypt-data.service";
+import { EncryptionUtils } from "../core/encryption-utils";
 import { FormatUtils } from "../core/format-utils";
 
 interface IContractJson {
@@ -47,18 +47,17 @@ export class ContractManagerService {
     private teamUids: Array<number>;
     private currentTeamUid: number;
 
-
     constructor(
         private http: HttpClient,
         private web3Service: Web3Service,
         private loggerSrv: LoggerService,
         private userCacheSrv: UserCacheService,
-        private storageSrv: LocalStorageService,
-        private encryptSrv: EncryptDataService
+        private storageSrv: LocalStorageService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
         this.web3Service = web3Service;
+        
     }
 
     public init(user: Account, cont: number): Promise<any> {
@@ -183,7 +182,7 @@ export class ContractManagerService {
         })
         .then(invitedUserInfo => {
             let invitedUsers = invitedUserInfo.map((userInfo: Array<string>, i: number) => {
-                const decodeEmail = this.encryptSrv.decodeHexToString(invitedEmails[i]);
+                const decodeEmail = EncryptionUtils.decode(invitedEmails[i]);
                 return new InvitedUser(decodeEmail, parseInt(userInfo[1]), parseInt(userInfo[2]));
             });
 
@@ -216,7 +215,7 @@ export class ContractManagerService {
         .then((membersInfo: Array<Array<any>>) => {
             for (let i = 0; i < membersInfo.length; i++){
                 for (let j = 0; j < membersInfo[i].length; j++){
-                    teamMembers[i][j].email = this.encryptSrv.decodeHexToString(membersInfo[i][j][2]);
+                    teamMembers[i][j].email = EncryptionUtils.decode(membersInfo[i][j][2]);
                     teamMembers[i][j].userType = membersInfo[i][j][1];
                 }
             } 
@@ -230,14 +229,14 @@ export class ContractManagerService {
             teamManagerContract = teamManager;
             return teamManagerContract.methods.getUserInfo(teamUid, memberAddress).call();
         }).then((userInfo: Array<string>) => {
-            return this.encryptSrv.decodeHexToString(userInfo[2]);
+            return EncryptionUtils.decode(userInfo[2]);
         });
     }
 
     public getAllTeamInvitationsByEmail(email: string): Promise<Array<number>> {
         let teamManagerContract;
         let teamInvitations: Array<number>;
-        const encodeEmail = this.encryptSrv.encodeStringToHex(email);
+        const encodeEmail = EncryptionUtils.encode(email);
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             return teamManagerContract.methods.getAllTeamInvitationsByEmail(encodeEmail).call();
@@ -270,7 +269,7 @@ export class ContractManagerService {
 
     public isInvitedToTeam(email: string): Promise<boolean> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            const encodeEmail = this.encryptSrv.encodeStringToHex(email);
+            const encodeEmail = EncryptionUtils.encode(email);
             return teamManager.methods.isUserEmailInvited(encodeEmail).call();
         });
     }
@@ -287,7 +286,7 @@ export class ContractManagerService {
         teamUid: number, email: string, 
         userType: AppConfig.UserType, expInSecs: number): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            const encodeEmail = this.encryptSrv.encodeStringToHex(email);
+            const encodeEmail = EncryptionUtils.encode(email);
             let byteCodeData = teamManager.methods.inviteToTeam(teamUid, encodeEmail, userType as number, expInSecs).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
@@ -301,7 +300,7 @@ export class ContractManagerService {
             return emails.reduce(
             (prevVal, email) => {
                 return prevVal.then(() => {
-                    let encodeEmail = this.encryptSrv.encodeStringToHex(email);
+                    let encodeEmail = EncryptionUtils.encode(email);
                     let byteCodeData = teamManager.methods.inviteToTeam(teamUid, encodeEmail, userType as number, expInSecs).encodeABI();
                     return this.sendTx(byteCodeData, this.contractAddressTeamManager);
                 });
@@ -321,7 +320,7 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            let encodeEmail = this.encryptSrv.encodeStringToHex(email);
+            let encodeEmail = EncryptionUtils.encode(email);
             let byteCodeData = teamManagerContract.methods.removeInvitationToTeam(this.currentTeamUid, encodeEmail).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
@@ -346,7 +345,7 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            const encodeEmail = this.encryptSrv.encodeStringToHex(email);
+            const encodeEmail = EncryptionUtils.encode(email);
             let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, encodeEmail, teamUid).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
@@ -361,8 +360,8 @@ export class ContractManagerService {
     public createTeam(email: string, teamName: string, seasonLength: number): Promise<number> {
         let teamManagerContract;
         let teamUid;
-        const encodeEmail = this.encryptSrv.encodeStringToHex(email);
-        const encodeTeamName = this.encryptSrv.encodeStringToHex(teamName);
+        const encodeEmail = EncryptionUtils.encode(email);
+        const encodeTeamName = EncryptionUtils.encode(teamName);
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             let byteCodeData =  teamManager.methods.createTeam(encodeEmail, encodeTeamName).encodeABI();
@@ -418,7 +417,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             return teamManagerContract.methods.getTeamName(teamUid).call();
-        }).then(teamName => this.encryptSrv.decodeHexToString(teamName));
+        }).then(teamName => EncryptionUtils.decode(teamName));
     }
 
     public getCurrentTeamName(): Promise<string> {
@@ -429,7 +428,7 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            const encodeTeamName = this.encryptSrv.encodeStringToHex(teamName);
+            const encodeTeamName = EncryptionUtils.encode(teamName);
             let byteCodeData = teamManagerContract.methods.setTeamName(this.currentTeamUid, encodeTeamName).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         });
@@ -451,8 +450,8 @@ export class ContractManagerService {
         return this.initProm.then(([bright]) => {
             contractArtifact = bright;
             this.log.d("Setting profile with name and mail: ", [name, mail]);
-            const encodeName = this.encryptSrv.encodeStringToHex(name);
-            const encodeEmail = this.encryptSrv.encodeStringToHex(mail);
+            const encodeName = EncryptionUtils.encode(name);
+            const encodeEmail = EncryptionUtils.encode(mail);
             let bytecodeData = contractArtifact.methods.setProfile(encodeName, encodeEmail).encodeABI();
             this.log.d("Bytecode data: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressBright);
@@ -467,9 +466,9 @@ export class ContractManagerService {
         let rootContract;
         let teamManagerContract;
         let project = FormatUtils.getProjectFromUrl(url);
-        const encodedProject = this.encryptSrv.encodeStringToHex(project);
-        const encodeUrl = this.encryptSrv.encodeStringToHex(url);
-        const encodeTitle = this.encryptSrv.encodeStringToHex(title);
+        const encodedProject = EncryptionUtils.encode(project);
+        const encodeUrl = EncryptionUtils.encode(url);
+        const encodeTitle = EncryptionUtils.encode(title);
         let isAlreadyUploaded = false;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             rootContract = root;
@@ -493,7 +492,7 @@ export class ContractManagerService {
         }).then(() => {
             isAlreadyUploaded = true;
             let emailsArray = usersMail.filter(email => !!email).map(email => 
-                this.web3.utils.keccak256(this.encryptSrv.encodeStringToHex(email))
+                this.web3.utils.keccak256(EncryptionUtils.encode(email))
             );
             let bytecodeData = rootContract.methods.notifyCommit(
                 encodeUrl,
@@ -535,7 +534,7 @@ export class ContractManagerService {
             allProjects.forEach((projs: Array<string>) => {
                 let decodedProjs = Object.keys(projs)
                 .map(key => projs[key])
-                .map((proj: string) => this.encryptSrv.decodeHexToString(proj))
+                .map((proj: string) => EncryptionUtils.decode(proj))
                 .filter((proj: string) => proj !== "");
                 projects = projects.concat(decodedProjs);
             });
@@ -548,7 +547,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright]) => {
             contractArtifact = bright;
             this.log.d("Request to delete the commit: " + url);
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
             let bytecodeData = contractArtifact.methods.removeUserCommit(urlKeccak).encodeABI();
             this.log.d("Bytecode data: ", bytecodeData);
@@ -666,17 +665,11 @@ export class ContractManagerService {
 
     public getCommitDetails(url: string, returnsUserCommits = true): Promise<UserCommit | CommitDetails> {
         return this.initProm.then(([bright, commit]) => {
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             return commit.methods.getDetailsCommits(this.web3.utils.keccak256(encodeUrl)).call({ from: this.currentUser.address})
                 .then((commitVals: any) => {
-                    let result;
-                    commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                    commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
-                    if (returnsUserCommits) {
-                        result = UserCommit.fromSmartContract(commitVals, false);
-                    } else {
-                        result = CommitDetails.fromSmartContract(commitVals);
-                    }
+                    let result = returnsUserCommits ? 
+                        UserCommit.fromSmartContract(commitVals, false) : CommitDetails.fromSmartContract(commitVals);
                     return result;
                 });
         }).catch(err => {
@@ -688,8 +681,8 @@ export class ContractManagerService {
     public setReview(url: string, text: string, points: Array<number>): Promise<any> {
         return this.initProm.then(([bright, commit, root]) => {
             let contractArtifact = commit;
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
-            const encodeText = this.encryptSrv.encodeStringToHex(text);
+            const encodeUrl = EncryptionUtils.encode(url);
+            const encodeText = EncryptionUtils.encode(text);
             let bytecodeData = contractArtifact.methods.setReview(encodeUrl, encodeText, points).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced text: ", text);
@@ -704,18 +697,17 @@ export class ContractManagerService {
 
     public getCommentsOfCommit(url: string): Promise<Array<CommitComment>> {
         return this.initProm.then(([bright, commit]) => {
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
             return commit.methods.getCommentsOfCommit(urlKeccak).call({ from: this.currentUser.address})
                 .then((allComments: Array<any>) => {
                     let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment)
                     .call({ from: this.currentUser.address})
                         .then((commitVals: any) => {
-                            commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
                             return Promise.all([commitVals, bright.methods.getUserName(commitVals[4])
                             .call({ from: this.currentUser.address})]);
                         }).then((data) => {
-                            return CommitComment.fromSmartContract(data[0], this.encryptSrv.decodeHexToString(data[1]));
+                            return CommitComment.fromSmartContract(data[0], data[1]);
                         }));
                     return Promise.all(promisesFinished);
                 });
@@ -727,7 +719,7 @@ export class ContractManagerService {
     
     public getCommitScores(url: string): Promise<Array<number>> {
         return this.initProm.then(([bright, commit]) => {
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
             return commit.methods.getCommitScores(urlKeccak).call({ from: this.currentUser.address});
         }).catch(err => {
@@ -741,8 +733,6 @@ export class ContractManagerService {
             return this.initProm.then(([bright]) => {
                 return bright.methods.getUser(hash).call({ from: this.currentUser.address });
             }).then((userVals: Array<any>) => {
-                userVals[0] = this.encryptSrv.decodeHexToString(userVals[0]);
-                userVals[1] = this.encryptSrv.decodeHexToString(userVals[1]);
                 let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
                 this.userCacheSrv.set(hash, userValsToUSerDetails);
                 return userValsToUSerDetails;
@@ -807,7 +797,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root]) => {
             return this.getCommentsOfCommit(url)
                 .then((arrayOfComments: Array<CommitComment>) => {
-                    const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+                    const encodeUrl = EncryptionUtils.encode(url);
                     let bytecodeData = root.methods.setVote(encodeUrl, arrayOfComments[index].user, value).encodeABI();
                     this.log.d("Introduced value: ", value);
                     return this.sendTx(bytecodeData, this.contractAddressRoot);
@@ -830,7 +820,7 @@ export class ContractManagerService {
 
     public reviewChangesCommitFlag(url: string) {
         return this.initProm.then(([bright, commit, root]) => {
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             let bytecodeData = root.methods.readCommit(encodeUrl).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("DATA: ", bytecodeData);
@@ -854,17 +844,11 @@ export class ContractManagerService {
                 let promise: Promise<any>;
                 if (global) {
                     promise = contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address })
-                        .then((userVals: Array<any>) => {
-                            userVals[0] = this.encryptSrv.decodeHexToString(userVals[0]);
-                            userVals[1] = this.encryptSrv.decodeHexToString(userVals[1]);
-                            return UserReputation.fromSmartContractGlobalReputation(userVals);
-                        });
+                        .then((userVals: Array<any>) => UserReputation.fromSmartContractGlobalReputation(userVals));
                 } else {
                     promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season)
                     .call({ from: this.currentUser.address })
                         .then((userVals: Array<any>) => {
-                            userVals[0] = this.encryptSrv.decodeHexToString(userVals[0]);
-                            userVals[1] = this.encryptSrv.decodeHexToString(userVals[1]);
                             return UserReputation.fromSmartContract(userVals);
                         });
                 }
@@ -890,7 +874,7 @@ export class ContractManagerService {
     }
 
     public getFeedback(url: string): Promise<boolean> {
-        const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+        const encodeUrl = EncryptionUtils.encode(url);
         let urlKeccak = this.web3.utils.keccak256(encodeUrl);
         return this.initProm.then(contract => {
             let promise = contract[0].methods.getFeedback(urlKeccak).call({ from: this.currentUser.address});
@@ -903,7 +887,7 @@ export class ContractManagerService {
 
     public setFeedback(url: string) {
         return this.initProm.then(([bright, commit, root]) => {
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             let bytecodeData = root.methods.setFeedback(encodeUrl, this.currentUser.address).encodeABI();
             this.log.d("Introduced url: ", url);
             return this.sendTx(bytecodeData, this.contractAddressRoot);
@@ -915,7 +899,7 @@ export class ContractManagerService {
 
     public getReviewers(url: string): Promise<Array<Array<string>>> {
         return this.initProm.then(([bright, commit]) => {
-            const encodeUrl = this.encryptSrv.encodeStringToHex(url);
+            const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
             return commit.methods.getCommentsOfCommit(urlKeccak).call({ from: this.currentUser.address});
         }).catch(err => {
@@ -944,7 +928,7 @@ export class ContractManagerService {
 
     public setUserName(name: string): Promise<any> {
         return this.initProm.then(([bright]) => {
-            const encodeName = this.encryptSrv.encodeStringToHex(name);
+            const encodeName = EncryptionUtils.encode(name);
             let bytecodeData = bright.methods.setUserName(encodeName).encodeABI();
             return this.sendTx(bytecodeData, this.contractAddressBright);
         }).then(() => {
@@ -1020,8 +1004,6 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit]) => {
             return commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address})
                 .then((commitVals: any) => {
-                    commitVals[0] = this.encryptSrv.decodeHexToString(commitVals[0]);
-                    commitVals[1] = this.encryptSrv.decodeHexToString(commitVals[1]);
                     return UserCommit.fromSmartContract(commitVals, isPending);
                 });
         }).catch(err => {

@@ -1,4 +1,5 @@
 import { AppConfig } from "../app.config";
+import { EncryptionUtils } from "../core/encryption-utils";
 
 export class UserReputation { 
     public email: string; 
@@ -14,8 +15,8 @@ export class UserReputation {
 
     public static fromSmartContract(userVals: Array<any>): UserReputation{ 
         let user = new UserReputation(); 
-        user.name = userVals[0];
-        user.email = userVals[1]; 
+        user.name = EncryptionUtils.decode(userVals[0]);
+        user.email = EncryptionUtils.decode(userVals[1]);
         user.reputation = Math.round((userVals[2] / AppConfig.WEIGHT_REPUTATION_FACTOR) * 100) / 100;
         user.numberReviewsMade = parseInt(userVals[3]);
         user.numberCommitsMade = parseInt(userVals[4]);
@@ -30,8 +31,8 @@ export class UserReputation {
 
     public static fromSmartContractGlobalReputation(userVals: Array<any>): UserReputation{ 
         let user = new UserReputation(); 
-        user.name = userVals[0];
-        user.email = userVals[1]; 
+        user.name = EncryptionUtils.decode(userVals[0]);
+        user.email = EncryptionUtils.decode(userVals[1]);
         user.reputation = 0;
         user.numberReviewsMade = parseInt(userVals[2]);
         user.numberCommitsMade = parseInt(userVals[3]);

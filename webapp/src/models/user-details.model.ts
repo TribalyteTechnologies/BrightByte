@@ -1,3 +1,5 @@
+import { EncryptionUtils } from "../core/encryption-utils";
+
 export class UserDetails { 
     public name: string; 
     public email: string; 
@@ -7,8 +9,8 @@ export class UserDetails {
     public userHash: string;
     public static fromSmartContract(userVals: Array<any>): UserDetails{ 
         let user = new UserDetails(); 
-        user.name = userVals[0]; 
-        user.email = userVals[1]; 
+        user.name = EncryptionUtils.decode(userVals[0]);
+        user.email = EncryptionUtils.decode(userVals[1]);
         user.numberReviewsMade = userVals[2]; 
         user.numberCommitsMade = userVals[3];
         user.agreedPercentage = userVals[4];
