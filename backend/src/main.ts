@@ -9,6 +9,8 @@ import { ILogger, LoggerService } from "./logger/logger.service";
 class BrightByteCloudBackend {
 
     private readonly API_PORT = BackendConfig.BRIGHTBYTE_API_PORT;
+    private readonly SECURE_KEY = BackendConfig.SECRET_PRIVATE_KEY;
+    private readonly SECURE_CERT = BackendConfig.SECRET_CERTIFICATE_CRT;
     private readonly loggerSrv = new LoggerService(true);
     private readonly log: ILogger = this.loggerSrv.get("BrightByteCloudBackend");
 
@@ -17,8 +19,8 @@ class BrightByteCloudBackend {
         let httpsOptions;
         if (fs.existsSync(BackendConfig.SECRET_SECURE_PATH)) {
             httpsOptions = {
-                key: this.readSecretsFile("private.key"),
-                cert: this.readSecretsFile("certificate.crt")
+                key: this.readSecretsFile(this.SECURE_KEY),
+                cert: this.readSecretsFile(this.SECURE_CERT)
             };
             this.log.d("BrightByteCloudBackend will be serve with secure options (https)");
         }
