@@ -67,6 +67,7 @@ export class ReviewPage {
     private maxReviews: number;
     private initializing: boolean;
     private currentReviewFilterState: ReviewStateFilterTypes;
+    private blockCount = 1;
 
     constructor(
         public popoverCtrl: PopoverController,
@@ -105,7 +106,7 @@ export class ReviewPage {
     public refresh(event?) {
         let isReloadEvent = (event && event.type === this.RELOAD_EVENT) || this.projectSelected !== this.ALL;
         this.log.d("Refreshing page");
-        if (this.initializing || isReloadEvent) {
+        if (this.initializing) {
             this.spinnerService.showLoader();
         }
         let commits: Array<UserCommit>;
@@ -152,11 +153,11 @@ export class ReviewPage {
             this.log.d("Response received: ", rsp);
             if (this.loadedCommits < this.maxReviews) {
                 this.displayCommitsToReview.push(...commits);
-                if (!isReloadEvent){
-                    event.complete();
-                }
             } else {
                 this.displayCommitsToReview = commits;
+            }
+            if (event && !event.type){
+                event.complete();
             }
             this.disabledInfiniteScroll = this.loadedCommits - AppConfig.COMMITS_BLOCK_SIZE < 0;
             let projects = commits.map(commit => commit.project);
@@ -164,6 +165,7 @@ export class ReviewPage {
             this.loadedCommits -= AppConfig.COMMITS_BLOCK_SIZE;
             return this.contractManagerService.getUserDetails(this.userAdress);
         }).then((ud) => {
+            this.blockCount = this.filterArrayCommits.length === 0 ? 1 : this.blockCount;
             this.name = ud.name;
             this.applyFilters(this.displayCommitsToReview);
             let url = new URLSearchParams(document.location.search);
@@ -172,8 +174,12 @@ export class ReviewPage {
                 let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
                 this.shouldOpen(filteredCommit[0]);
             }
-            let doReload = this.filterArrayCommits.length < AppConfig.COMMITS_BLOCK_SIZE && !this.disabledInfiniteScroll
-                && isReloadEvent;
+            let doReload;
+            let fullBlock = this.filterArrayCommits.length >= AppConfig.COMMITS_BLOCK_SIZE * this.blockCount;
+            doReload = !fullBlock && !this.disabledInfiniteScroll && isReloadEvent;
+            if (fullBlock) {
+                this.blockCount++;
+            }
             if (doReload) {
                 this.refresh(new Event(this.RELOAD_EVENT));
             }
@@ -285,6 +291,7 @@ export class ReviewPage {
     }
 
     public setProject(name: string) {
+        this.initializing = true;
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);
         if (this.filterArrayCommits.length < AppConfig.COMMITS_BLOCK_SIZE && !this.disabledInfiniteScroll) {
