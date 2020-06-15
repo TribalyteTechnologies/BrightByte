@@ -260,12 +260,15 @@ contract CloudTeamManager {
 
     function getNumberOfInvitedBlockPositions(uint256 teamUid) public view returns (uint256) {
         Team storage team = createdTeams[teamUid];
-        uint256 blockPositions = team.invitedUsersCount /
-            INVITED_USERS_BLOCK_SIZE;
-        if (team.invitedUsersCount % INVITED_USERS_BLOCK_SIZE != 0) {
-            blockPositions++;
+        uint256 blockPositions = 0;
+        if (team.invitedUsersCount != 0) {
+            blockPositions = team.invitedUsersCount /
+                INVITED_USERS_BLOCK_SIZE;
+            if (team.invitedUsersCount % INVITED_USERS_BLOCK_SIZE != 0) {
+                blockPositions++;
+            }
+            blockPositions--;
         }
-        blockPositions--;
         return blockPositions;
     }
 

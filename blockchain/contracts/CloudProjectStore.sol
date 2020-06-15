@@ -66,12 +66,15 @@ contract CloudProjectStore {
 
     function getNumberOfProjectBlockPositions(uint256 teamUid) public view returns (uint256) {
         ProjectMap storage savedProjMap = teamProjects[teamUid];
-        uint256 blockPositions = savedProjMap.projectCount /
-            PROJECT_BLOCK_SIZE;
-        if (savedProjMap.projectCount % PROJECT_BLOCK_SIZE != 0) {
-            blockPositions++;
+        uint256 blockPositions = 0;
+        if (savedProjMap.projectCount != 0) {
+            blockPositions = savedProjMap.projectCount /
+                PROJECT_BLOCK_SIZE;
+            if (savedProjMap.projectCount % PROJECT_BLOCK_SIZE != 0) {
+                blockPositions++;
+            }
+            blockPositions--;
         }
-        blockPositions--;
         return blockPositions;
     }
 }
