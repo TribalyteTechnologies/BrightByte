@@ -1,16 +1,15 @@
-import { Injectable, HttpService } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { Web3Service } from "../services/web3.service";
 import Web3 from "web3";
 import { DispatcherService } from "./dispatcher.service";
 import { CommitEventDto } from "../dto/events/commit-event.dto";
 import { ReviewEventDto } from "../dto/events/review-event.dto";
-import { SeasonEventDto } from "../dto/events/season-event.dto";
 import { DeleteEventDto } from "../dto/events/delete-event.dto";
 import { NewUserEventDto } from "../dto/events/newUser-event.dto";
 import { ContractManagerService } from "./contract-manager.service";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
-import { flatMap } from "rxjs/operators";
+import { flatMap, map } from "rxjs/operators";
 
 @Injectable()
 export class EventHandlerService {
@@ -31,18 +30,17 @@ export class EventHandlerService {
     private readonly LATEST = "latest";
     
     private firstBlock = 0;
-    private contractAddress: string;
+    private contractAddressEventDispatcher: string;
+    private eventDispatcherContract: ITrbSmartContractJson;
     private contract: ITrbSmartContact;
     private web3Service: Web3Service;
     private web3: Web3;
-    private jsonContractData: ITrbSmartContractJson;
     private log: ILogger;
 
     public constructor(
         web3Service: Web3Service,
         loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
-        private httpSrv: HttpService,
         private dispatcher: DispatcherService
     ) {
         this.log = loggerSrv.get("EventHandlerService");
@@ -55,19 +53,19 @@ export class EventHandlerService {
         this.contractManagerService.getCurrentBlock().pipe(
         flatMap((blockNumber: number) => {
             this.firstBlock = blockNumber;
-            return this.contractManagerService.getEventDispatcherSmartContract();
+            return this.contractManagerService.getEventDispatcherInfo();
+        }),
+        flatMap(contractInfo => {
+            this.eventDispatcherContract = contractInfo[0];
+            this.contractAddressEventDispatcher = contractInfo[1];
+            return this.web3Service.openConnection();
+        }),
+        map((web3: Web3) => {
+            this.web3 = web3;
+            this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
+            this.eventsSubscription(true);
         }))
-        .subscribe(contract => {
-            this.contract = contract;
-            this.web3 = this.web3Service.openConnection();
-            this.web3.eth.net.isListening()
-            .then((res) => {
-                this.log.d("Web3 Connection established");
-                this.eventsSubscription(true);
-            }).catch(e => {
-                this.log.e("Not able to open a connection " + e);
-            });
-        });
+        .subscribe();
     }
 
     public registerNewListener(type: string, initialization = false) {
@@ -130,8 +128,12 @@ export class EventHandlerService {
 
     private handlerDisconnects(error) {
         this.log.d("Disconnected from Provider");
-        this.web3 = this.web3Service.openConnection();
-        this.eventsSubscription();
+        this.web3Service.openConnection().pipe(
+        map((web3: Web3) => {
+            this.web3 = web3;
+            this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
+            this.eventsSubscription();
+        })).subscribe();
     }
 
     private eventsSubscription(initialization = false) {

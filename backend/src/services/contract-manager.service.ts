@@ -127,6 +127,10 @@ export class ContractManagerService {
         return this.initObs.pipe(map(() => this.contracts[ContractsIndex.EventDispatcher]));
     }
 
+    public getEventDispatcherInfo(): Observable<Array<any>> {
+        return this.initObs.pipe(map(() => [this.eventDispatcherContractAbi, this.contractAddressEventDispatcher]));
+    }
+
     public getCurrentBlock(): Observable<number> {
         return this.initObs.pipe(
             flatMap(() => {
@@ -185,7 +189,11 @@ export class ContractManagerService {
 
     private init() {
         this.log.d("Initializing Contract Manager Service");
-        this.initObs = this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL).pipe(
+        this.initObs = this.web3Service.openConnection().pipe(
+            flatMap(web3 => {
+                this.web3 = web3;
+                return this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL);
+            }),
             flatMap(response => {
                 this.bbFactoryContractAbi = response.data;
                 this.contractAddressBbFactory = this.bbFactoryContractAbi.networks[BackendConfig.NET_ID].address;
