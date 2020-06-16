@@ -9,9 +9,9 @@ This is the BrightByte backend project.
  Set `BITBUCKET_KEY`, `BITBUCKET_SECRET` and `BITBUCKET_WORKSPACES` in `src/backend.config.ts` to adapt to your preferences.
  For more information about how to get your own keys and secret you can check our explanation [here](https://tech.tribalyte.eu/blog-brightbyte-v0-6)
 
-Since version v2.0.0-cloud you can enable secure communications as the Transport Layer Security (TLS) has been implemented.
-Set `BACKEND_SECURE_PATH`, `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` in `src/backend.config.ts` to adapt to your preferences.
-`BACKEND_SECURE_PATH` it will indicate where to find your secure files, `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` will specify the name of your secrets files.
+Since version v0.3.0-cloud you can enable secure communications with the API via HTTPS.
+Set `BACKEND_SECURE_PATH`, `BACKEND_PRIVATE_KEY_PATH` and `BACKEND_SECRET_CERTIFICATE_PATH` in `src/backend.config.ts` to adapt to your preferences.
+`BACKEND_SECURE_PATH` it will indicate where to find your secure files, `BACKEND_PRIVATE_KEY_PATH` and `BACKEND_SECRET_CERTIFICATE_PATH` will specify the name of your secrets files.
 
  #### Run the backend
 
@@ -31,4 +31,4 @@ Set `BACKEND_SECURE_PATH`, `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` in 
 - Set the volume directories `HOST_DIRECTORY=/home/ubuntu/brightbyte-volume` and `CONTAINER_PERSISTENCE_PATH=$BACKEND_STORAGE_PATH`
 - Create and run de container `docker run -e "NODE_WEBSOCKET_URL=${WEBSOCKET_URL}" -e "WEBAPP_URL=${ORIGIN_URL}"  -e "PORT=${BACKEND_PORT}" -e "IMAGE_STORAGE_PATH=${BACKEND_STORAGE_PATH}" -p ${BACKEND_PORT}:${BACKEND_PORT}/udp -p  ${BACKEND_PORT}:${BACKEND_PORT}/tcp -d -v ${HOST_DIRECTORY}:${CONTAINER_PERSISTENCE_PATH} brightbyte/backend:latest` ('latest' can be changed for the tag of any version available at https://cloud.docker.com/u/brightbyte/repository/docker/brightbyte/backend)
 - To include the optional feature of the integration with Bitbucket add at the docker run instruction the necessary variables `-e "BITBUCKET_KEY=xxxxxx" -e "BITBUCKET_SECRET=XXXXXX" -e "BITBUCKET_WORKSPACES=workspace1"`
-- To include the security feature it is mandatory to use Docker, the following variables are for this purposes `-e "BACKEND_SECURE_PATH=/localDirectory" -e "SECRET_PRIVATE_KEY=private.key" -e "SECRET_CERTIFICATE_CRT=certificate.crt"`
+- To include the security feature it is mandatory to use Docker, the following variables are for this purposes `-e "BACKEND_SECURE_PATH=/localDirectory" -e "BACKEND_PRIVATE_KEY_PATH=private.key" -e "BACKEND_SECRET_CERTIFICATE_PATH=certificate.crt"`
