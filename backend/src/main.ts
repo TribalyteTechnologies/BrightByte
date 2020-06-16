@@ -30,6 +30,7 @@ class BrightByteCloudBackend {
             },
             httpsOptions: httpsOptions
         };
+        this.log.d("BrightByteCloudBackend server options are: ", applicationOptions);
 
         const app = await NestFactory.create(AppModule, new ExpressAdapter(server), applicationOptions);
         await app.listen(this.API_PORT);
