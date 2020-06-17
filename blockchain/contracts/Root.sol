@@ -1,19 +1,18 @@
 pragma solidity 0.4.22;
 
-import "./Bright.sol";
-import "./Commits.sol";
 import "./Threshold.sol";
 import "./CloudEventDispatcher.sol";
 
 import { Reputation } from "./Reputation.sol";
+import { IBright, ICommit, IRoot } from "./IBrightByte.sol";
 
-contract Root{
+contract Root is IRoot{
     mapping (address => bool) private adminUsers;
     mapping (address => bool) private allowedAddresses;
 
-    Bright remoteBright;
+    IBright remoteBright;
     address brightAddress;
-    Commits remoteCommits;
+    ICommit remoteCommits;
     address commitsAddress;
     Threshold remoteThreshold;
     address thresholdAddress;
@@ -45,9 +44,9 @@ contract Root{
         address bright, address commits, address threshold, address cloudEventDispatcher,
         address userAdmin, uint256 teamId, uint256 seasonLength) public {
         owner = msg.sender;
-        remoteBright = Bright(bright);
+        remoteBright = IBright(bright);
         brightAddress = bright;
-        remoteCommits = Commits(commits);
+        remoteCommits = ICommit(commits);
         commitsAddress = commits;
         remoteThreshold = Threshold(threshold);
         thresholdAddress = threshold;

@@ -1,11 +1,11 @@
 pragma solidity 0.4.22;
-import "./Root.sol";
 import "./CloudEventDispatcher.sol";
 
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";
+import { IRoot, IBright } from "./IBrightByte.sol";
 
-contract Bright {
+contract Bright is IBright {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant HOUR_TO_SECS = 60 * 60;
     uint256 private constant DAY_LENGTH_SECS = 24 * HOUR_TO_SECS;
@@ -25,7 +25,7 @@ contract Bright {
     address[] private allUsersArray;
 
     address private cloudEventDispatcherAddress;
-    Root private root;
+    IRoot private root;
     address private rootAddress;
     CloudEventDispatcher private remoteCloudEventDispatcher;
 
@@ -46,7 +46,7 @@ contract Bright {
 
     function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) public {
         require(rootAddress == uint80(0), "Root address canot be 0");
-        root = Root(_root);
+        root = IRoot(_root);
         rootAddress = _root;
         cloudEventDispatcherAddress = _cloudEventDispatcherAddress;
         remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcherAddress);

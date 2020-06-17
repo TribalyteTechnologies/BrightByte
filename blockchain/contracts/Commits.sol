@@ -1,11 +1,10 @@
 pragma solidity 0.4.22;
 
-import "./Root.sol";
 import { UtilsLib } from "./UtilsLib.sol";
+import { IRoot, ICommit } from "./IBrightByte.sol";
 
-
-contract Commits {
-    Root private root;
+contract Commits is ICommit {
+    IRoot private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
@@ -62,7 +61,7 @@ contract Commits {
 
     function init(address _root) public {
         require(rootAddress == uint80(0), "Root address cannot be 0");
-        root = Root(_root);
+        root = IRoot(_root);
         rootAddress = _root;
         allowedAddresses[rootAddress] = true;
     }
@@ -73,7 +72,7 @@ contract Commits {
         owner = newOwner;
     }
     function setRootAddress(address a) public onlyOwner {
-        root = Root(a);
+        root = IRoot(a);
         rootAddress = a;
     }
 
