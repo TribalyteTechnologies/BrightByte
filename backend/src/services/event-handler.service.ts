@@ -29,7 +29,7 @@ export class EventHandlerService {
     private readonly NUMBER_REVIEWS = "numberOfReviews";
     private readonly LATEST = "latest";
     
-    private firstBlock = 0;
+    private firstBlockNumber = 0;
     private contractAddressEventDispatcher: string;
     private eventDispatcherContract: ITrbSmartContractJson;
     private contract: ITrbSmartContact;
@@ -52,7 +52,7 @@ export class EventHandlerService {
         this.log.d("Initializing Event Handler Service");
         this.contractManagerService.getCurrentBlock().pipe(
         flatMap((blockNumber: number) => {
-            this.firstBlock = blockNumber;
+            this.firstBlockNumber = blockNumber;
             return this.contractManagerService.getEventDispatcherInfo();
         }),
         flatMap(contractInfo => {
@@ -106,7 +106,7 @@ export class EventHandlerService {
             }
         };
 
-        let block = initialization ? this.firstBlock : this.LATEST;
+        let block = initialization ? this.firstBlockNumber : this.LATEST;
 
         switch (type) {
             case this.COMMIT:
