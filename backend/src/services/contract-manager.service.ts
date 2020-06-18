@@ -134,7 +134,8 @@ export class ContractManagerService {
     public getCurrentBlock(): Observable<number> {
         return this.initObs.pipe(
             flatMap(() => {
-                return this.web3.eth.getTransaction(this.eventDispatcherContractAbi.networks[BackendConfig.NET_ID][this.TRANSACTION_HASH_PROPERTY]);
+                return this.web3.eth.getTransaction(this.eventDispatcherContractAbi.networks[BackendConfig.NET_ID]
+                    [this.TRANSACTION_HASH_PROPERTY]);
             }),
             map(txInfo => {
                 return txInfo[this.BLOCK_NUMBER_PROPERTY];
@@ -190,7 +191,7 @@ export class ContractManagerService {
     private init() {
         this.log.d("Initializing Contract Manager Service");
         this.initObs = this.web3Service.openConnection().pipe(
-            flatMap(web3 => {
+            flatMap((web3: Web3) => {
                 this.web3 = web3;
                 return this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL);
             }),
