@@ -121,7 +121,7 @@ export class ReviewPage {
             }
             return this.contractManagerService.getSeasonCommitsToReview(this.loadedCommits);
         })
-        .then((commitConcat: Array<UserCommit>[]) => {
+        .then((commitConcat: Array<Array<UserCommit>>) => {
             commits = commitConcat[this.currentReviewFilterState];
             if (this.numberOfReviews !== commitConcat[1].length) {
                 if (this.numberOfReviews !== -1) {

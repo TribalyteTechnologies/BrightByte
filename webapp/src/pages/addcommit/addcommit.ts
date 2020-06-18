@@ -333,51 +333,59 @@ export class AddCommitPopover {
     }
 
     public addRepoStartingFrom(repoSelection: string, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
-        this.updatingProgress = updatedProgress;
-        this.isUpdatingByBatch = true;
-        this.selectedRepositories.forEach((repo) => {
-            if (repo != null && repoSelection === repo.name) {
-                let percentage = Math.floor(this.PERCENTAGE_RANGE * this.FACTOR_PERCENTAGE_DECIMALS / (repo.numCommits + repo.numPrs)) 
-                                / this.FACTOR_PERCENTAGE_DECIMALS;
-                repo.commitsInfo.slice(commitIndex).reduce(
-                    (prevVal, commit) => {
-                        return prevVal.then(() => {
-                            this.updatingProgress += percentage;
-                            let comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
-                                + repoSelection.toLowerCase() + "/commits/" + commit.hash;
-                            commitIndex++;
-                            return this.addCommit(comUrl, commit.name);
-                        });
-                    },
-                    Promise.resolve()
-                ).then(() => {
-                    return repo.pullRequestsNotUploaded.slice(prIndex).reduce(
-                        (prevVal, pullrequest) => {
+        let errMsgId: string;
+        if (this.userAdded.every(userEmail => !userEmail)) {
+            errMsgId = "addCommit.emptyInput";
+        }
+        if (!errMsgId) {
+            this.updatingProgress = updatedProgress;
+            this.isUpdatingByBatch = true;
+            this.selectedRepositories.forEach((repo) => {
+                if (repo != null && repoSelection === repo.name) {
+                    let percentage = Math.floor(this.PERCENTAGE_RANGE * this.FACTOR_PERCENTAGE_DECIMALS / (repo.numCommits + repo.numPrs)) 
+                                    / this.FACTOR_PERCENTAGE_DECIMALS;
+                    repo.commitsInfo.slice(commitIndex).reduce(
+                        (prevVal, commit) => {
                             return prevVal.then(() => {
                                 this.updatingProgress += percentage;
-                                let prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
-                                    + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
-                                prIndex++;
-                                return this.addCommit(prUrl, pullrequest.title);
+                                let comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
+                                    + repoSelection.toLowerCase() + "/commits/" + commit.hash;
+                                commitIndex++;
+                                return this.addCommit(comUrl, commit.name);
                             });
                         },
                         Promise.resolve()
-                    );
-                }).then(() => {
-                    this.isUpdatingByBatch = false;
-                    this.viewCtrl.dismiss();
-                }).catch(err => {
-                    if (commitIndex < repo.commitsInfo.length || prIndex < repo.pullRequestsNotUploaded.length) {
-                        this.addRepoStartingFrom(repoSelection, commitIndex, prIndex, this.updatingProgress);
-                    } else {
+                    ).then(() => {
+                        return repo.pullRequestsNotUploaded.slice(prIndex).reduce(
+                            (prevVal, pullrequest) => {
+                                return prevVal.then(() => {
+                                    this.updatingProgress += percentage;
+                                    let prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
+                                        + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
+                                    prIndex++;
+                                    return this.addCommit(prUrl, pullrequest.title);
+                                });
+                            },
+                            Promise.resolve()
+                        );
+                    }).then(() => {
                         this.isUpdatingByBatch = false;
-                        if(!(err.msg)) {
-                            throw err;
+                        this.viewCtrl.dismiss();
+                    }).catch(err => {
+                        if (commitIndex < repo.commitsInfo.length || prIndex < repo.pullRequestsNotUploaded.length) {
+                            this.addRepoStartingFrom(repoSelection, commitIndex, prIndex, this.updatingProgress);
+                        } else {
+                            this.isUpdatingByBatch = false;
+                            if(!(err.msg)) {
+                                throw err;
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            this.showGuiMessage(errMsgId);
+        }
     }
 
     public loadNextRepos(): Promise<void>{
