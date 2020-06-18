@@ -38,7 +38,7 @@ contract CloudTeamManager {
     enum UserType { NotRegistered, Admin, Member }
 
     uint256 INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
-    uint256 INVITED_USERS_BLOCK_SIZE = 5;
+    uint256 INVITED_USERS_PAGE_SIZE = 5;
 
     mapping (uint256 => Team) private createdTeams;
     mapping (address => AddressTeamMap) private userTeamMap;
@@ -246,11 +246,11 @@ contract CloudTeamManager {
         return (userIndex, userType, email);
     }
 
-    function getInvitedUsersList(uint256 teamUid, uint256 blockPosition) public view returns (string, string, string, string, string) {
+    function getInvitedUsersList(uint256 teamUid, uint256 pageNumber) public view returns (string, string, string, string, string) {
         Team storage team = createdTeams[teamUid];
-        string[] memory emails = new string[](INVITED_USERS_BLOCK_SIZE);
-        uint256 start = blockPosition * INVITED_USERS_BLOCK_SIZE;
-        uint256 end = start + INVITED_USERS_BLOCK_SIZE;
+        string[] memory emails = new string[](INVITED_USERS_PAGE_SIZE);
+        uint256 start = pageNumber * INVITED_USERS_PAGE_SIZE;
+        uint256 end = start + INVITED_USERS_PAGE_SIZE;
         for (uint256 i = start; i < end; i++) {
             string memory currentEmail = team.invitedUsersEmailList[i];
             emails[i - start] = currentEmail;
@@ -258,18 +258,17 @@ contract CloudTeamManager {
         return (emails[0], emails[1], emails[2], emails[3], emails[4]);
     }
 
-    function getNumberOfInvitedBlockPositions(uint256 teamUid) public view returns (uint256) {
+    function getInvitedEmailsPageCount(uint256 teamUid) public view returns (uint256) {
         Team storage team = createdTeams[teamUid];
-        uint256 blockPositions = 0;
+        uint256 pages = 0;
         if (team.invitedUsersCount != 0) {
-            blockPositions = team.invitedUsersCount /
-                INVITED_USERS_BLOCK_SIZE;
-            if (team.invitedUsersCount % INVITED_USERS_BLOCK_SIZE != 0) {
-                blockPositions++;
+            pages = team.invitedUsersCount /
+                INVITED_USERS_PAGE_SIZE;
+            if (team.invitedUsersCount % INVITED_USERS_PAGE_SIZE == 0) {
+                pages--;
             }
-            blockPositions--;
         }
-        return blockPositions;
+        return pages;
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
@@ -313,8 +312,8 @@ contract CloudTeamManager {
         return remoteProjStore.getAllProjects(teamUid, blockPosition);
     }
 
-    function getNumberOfProjectBlockPositions(uint256 teamUid) public onlyMembersOrAdmins(teamUid) view returns (uint256) {
-        return remoteProjStore.getNumberOfProjectBlockPositions(teamUid);
+    function getProjectPageCount(uint256 teamUid) public onlyMembersOrAdmins(teamUid) view returns (uint256) {
+        return remoteProjStore.getProjectPageCount(teamUid);
     }
 
     function doesTeamExists(uint256 teamUid) public onlyMembersOrAdmins(teamUid) view returns (bool) {

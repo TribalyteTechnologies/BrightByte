@@ -275,7 +275,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(doesTeamExists => {
                 assert(doesTeamExists);
-                return teamManagerInstance.getNumberOfProjectBlockPositions(team1Uid, { from: adminOwnerAccount });
+                return teamManagerInstance.getProjectPageCount(team1Uid, { from: adminOwnerAccount });
             })
             .then(numberOfPositions => {
                 return teamManagerInstance.getAllProjects(team1Uid, numberOfPositions, { from: adminOwnerAccount });
@@ -326,7 +326,7 @@ contract("CloudTeamManager", accounts => {
             })
             .catch(() => {
                 assert(true);
-                return teamManagerInstance.getNumberOfProjectBlockPositions(team1Uid, { from: user1Account });
+                return teamManagerInstance.getProjectPageCount(team1Uid, { from: user1Account });
             })
             .catch(() => {
                 assert(true);

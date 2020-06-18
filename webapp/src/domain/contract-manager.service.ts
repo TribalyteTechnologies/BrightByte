@@ -159,7 +159,7 @@ export class ContractManagerService {
         let invitedEmails;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return teamManagerContract.methods.getNumberOfInvitedBlockPositions(this.currentTeamUid).call();
+            return teamManagerContract.methods.getInvitedEmailsPageCount(this.currentTeamUid).call();
         })
         .then((blockPositions: number) => {
             let promises = new Array<Promise<Array<String>>>();
@@ -517,7 +517,7 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            return teamManagerContract.methods.getNumberOfProjectBlockPositions(this.currentTeamUid).call({from: this.currentUser.address});
+            return teamManagerContract.methods.getProjectPageCount(this.currentTeamUid).call({from: this.currentUser.address});
         })
         .then((blockPositions: number) => {
             let promises = new Array<Promise<Array<string>>>();

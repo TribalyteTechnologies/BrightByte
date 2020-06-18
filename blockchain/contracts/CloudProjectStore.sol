@@ -8,9 +8,9 @@ contract CloudProjectStore {
         mapping(uint256 => string) indexProject;
     }
 
-    uint256 PROJECT_BLOCK_SIZE = 5;
+    uint256 private PROJECT_PAGE_SIZE = 5;
 
-    uint256 teamCount;
+    uint256 private teamCount;
     mapping(uint256 => ProjectMap) private teamProjects;
 
     address private teamManagerAddress;
@@ -30,18 +30,18 @@ contract CloudProjectStore {
         return teamProjects[teamUid].projectCount != 0;
     }
 
-    function addProject(uint256 teamUid, string project) public {
+    function addProject(uint256 teamUid, string projectName) public onlyTeamManager {
         require(teamUid != 0, "Cannot add project to default team");
         ProjectMap storage savedProjMap = teamProjects[teamUid];
-        string memory storedProjectName = savedProjMap.indexProject[savedProjMap.projects[project]];
-        if (keccak256(storedProjectName) != keccak256(project)){
-            savedProjMap.projects[project] = savedProjMap.projectCount;
-            savedProjMap.indexProject[savedProjMap.projectCount] = project;
+        string memory storedProjectName = savedProjMap.indexProject[savedProjMap.projects[projectName]];
+        if (keccak256(storedProjectName) != keccak256(projectName)){
+            savedProjMap.projects[projectName] = savedProjMap.projectCount;
+            savedProjMap.indexProject[savedProjMap.projectCount] = projectName;
             savedProjMap.projectCount++;
         }
     }
 
-    function clearAllProjects(uint256 teamUid) public {
+    function clearAllProjects(uint256 teamUid) public onlyTeamManager {
         require(teamUid != 0, "Cannot add project to default team");
         ProjectMap storage savedProjMap = teamProjects[teamUid];
         for(uint256 i = 0; i < savedProjMap.projectCount; i++) {
@@ -52,11 +52,11 @@ contract CloudProjectStore {
         savedProjMap.projectCount = 0;
     }
 
-    function getAllProjects(uint256 teamUid, uint256 blockPosition) public view returns (string, string, string, string, string) {
+    function getAllProjects(uint256 teamUid, uint256 pageNumber) public view returns (string, string, string, string, string) {
         ProjectMap storage savedProjMap = teamProjects[teamUid];
-        string[] memory projects = new string[](PROJECT_BLOCK_SIZE);
-        uint256 start = blockPosition * PROJECT_BLOCK_SIZE;
-        uint256 end = start + PROJECT_BLOCK_SIZE;
+        string[] memory projects = new string[](PROJECT_PAGE_SIZE);
+        uint256 start = pageNumber * PROJECT_PAGE_SIZE;
+        uint256 end = start + PROJECT_PAGE_SIZE;
         for (uint256 i = start; i < end; i++) {
             string memory currentProject = savedProjMap.indexProject[i];
             projects[i - start] = currentProject;
@@ -64,17 +64,16 @@ contract CloudProjectStore {
         return (projects[0], projects[1], projects[2], projects[3], projects[4]);
     }
 
-    function getNumberOfProjectBlockPositions(uint256 teamUid) public view returns (uint256) {
+    function getProjectPageCount(uint256 teamUid) public view returns (uint256) {
         ProjectMap storage savedProjMap = teamProjects[teamUid];
-        uint256 blockPositions = 0;
+        uint256 pages = 0;
         if (savedProjMap.projectCount != 0) {
-            blockPositions = savedProjMap.projectCount /
-                PROJECT_BLOCK_SIZE;
-            if (savedProjMap.projectCount % PROJECT_BLOCK_SIZE != 0) {
-                blockPositions++;
+            pages = savedProjMap.projectCount /
+                PROJECT_PAGE_SIZE;
+            if (savedProjMap.projectCount % PROJECT_PAGE_SIZE == 0) {
+                pages--;
             }
-            blockPositions--;
         }
-        return blockPositions;
+        return pages;
     }
 }
