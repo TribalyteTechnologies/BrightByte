@@ -174,10 +174,9 @@ export class ReviewPage {
                 let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
                 this.shouldOpen(filteredCommit[0]);
             }
-            let isDoReload;
-            let fullBlock = this.filterArrayCommits.length >= AppConfig.COMMITS_BLOCK_SIZE * this.blockCount;
-            isDoReload = !fullBlock && !this.disabledInfiniteScroll && isReloadEvent;
-            if (fullBlock) {
+            let isFullBlock = this.filterArrayCommits.length >= AppConfig.COMMITS_BLOCK_SIZE * this.blockCount;
+            let isDoReload = !isFullBlock && !this.disabledInfiniteScroll && isReloadEvent;
+            if (isFullBlock) {
                 this.blockCount++;
             }
             if (isDoReload) {
