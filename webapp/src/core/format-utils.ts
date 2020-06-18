@@ -34,5 +34,13 @@ export class FormatUtils {
         }
         return hash ? hash : null;
     }
+
+    public static padWithZeroes(value: number, length: number) {
+        let str = "" + value;
+        while (str.length < length) {
+            str = "0" + str;
+        }
+        return str;
+    }
 }
 

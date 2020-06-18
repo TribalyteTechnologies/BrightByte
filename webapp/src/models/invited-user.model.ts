@@ -1,25 +1,18 @@
 import { AppConfig } from "../app.config";
+import { FormatUtils } from "../core/format-utils";
 
 export class InvitedUser { 
     public email: string;
-    public invitationExp: Date;
+    public invitationExpDate: Date;
     public userType: AppConfig.UserType;
     public displayDate: string;
 
-    constructor(email: string, invitationExp: number, userType: AppConfig.UserType) {
+    constructor(email: string, invitationExpDate: number, userType: AppConfig.UserType) {
         this.email = email;
-        this.invitationExp = new Date(invitationExp * AppConfig.SECS_TO_MS);
+        this.invitationExpDate = new Date(invitationExpDate * AppConfig.SECS_TO_MS);
         this.userType = userType;
-        this.displayDate = this.invitationExp.getDate() + "/" + (this.invitationExp.getMonth() + 1)
-        + "/" + this.invitationExp.getFullYear() + " - " + this.invitationExp.getHours()
-        + ":" + this.padWithZeroes(this.invitationExp.getMinutes(), 2);
-    }
-
-    private padWithZeroes(value: number, length: number) {
-        let str = "" + value;
-        while (str.length < length) {
-            str = "0" + str;
-        }
-        return str;
+        this.displayDate = this.invitationExpDate.getDate() + "/" + (this.invitationExpDate.getMonth() + 1)
+        + "/" + this.invitationExpDate.getFullYear() + " - " + this.invitationExpDate.getHours()
+        + ":" + FormatUtils.padWithZeroes(this.invitationExpDate.getMinutes(), 2);
     }
 }

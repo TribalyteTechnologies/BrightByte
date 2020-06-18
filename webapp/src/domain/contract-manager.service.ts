@@ -170,11 +170,8 @@ export class ContractManagerService {
         })
         .then((invitedUsersEmails: Array<Array<string>>) => {
             invitedEmails = invitedUsersEmails.map(emails => Object.keys(emails)
-            .map(key => emails[key])
-            .map(email => {
-                return email;
-            }));
-            invitedEmails = invitedEmails.flat().filter(email => email);
+            .map(key => emails[key]));
+            invitedEmails = invitedEmails = invitedEmails.reduce((acc, val) => acc.concat(val.filter(email => !!email)), []);
             let promises = invitedEmails.map(email => {
                 return teamManagerContract.methods.getInvitedUserInfo(email, this.currentTeamUid).call();
             });
