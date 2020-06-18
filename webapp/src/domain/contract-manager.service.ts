@@ -520,7 +520,7 @@ export class ContractManagerService {
             return teamManagerContract.methods.getNumberOfProjectBlockPositions(this.currentTeamUid).call({from: this.currentUser.address});
         })
         .then((blockPositions: number) => {
-            let promises = new Array<Promise<Array<String>>>();
+            let promises = new Array<Promise<Array<string>>>();
             for(let i = 0; i <= blockPositions; i++){
                 promises.push(teamManagerContract.methods.getAllProjects(this.currentTeamUid, i).call({from: this.currentUser.address}));
             }

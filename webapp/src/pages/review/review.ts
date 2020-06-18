@@ -174,16 +174,16 @@ export class ReviewPage {
                 let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
                 this.shouldOpen(filteredCommit[0]);
             }
-            let doReload;
+            let isDoReload;
             let fullBlock = this.filterArrayCommits.length >= AppConfig.COMMITS_BLOCK_SIZE * this.blockCount;
-            doReload = !fullBlock && !this.disabledInfiniteScroll && isReloadEvent;
+            isDoReload = !fullBlock && !this.disabledInfiniteScroll && isReloadEvent;
             if (fullBlock) {
                 this.blockCount++;
             }
-            if (doReload) {
+            if (isDoReload) {
                 this.refresh(new Event(this.RELOAD_EVENT));
             }
-            if (!doReload || this.maxReviews === 0){
+            if (!isDoReload || this.maxReviews === 0){
                 this.spinnerService.hideLoader();
             }
         }).catch((e) => {

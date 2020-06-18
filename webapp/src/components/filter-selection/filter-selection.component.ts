@@ -25,11 +25,7 @@ export class FilterComponent {
     @Input()
     public set projects(val: string[]){
         if (val){
-            this._projects = val.sort((inA, inB) => {
-                const a = inA.toLowerCase();
-                const b = inB.toLowerCase();            
-                return a > b ? 1 : a < b ? -1 : 0;
-            });
+            this._projects = this.sortProjects(this.projects);
         }
     }
 
@@ -56,7 +52,7 @@ export class FilterComponent {
     }
 
     @Input()
-    public getProjectsFromBc: boolean;
+    public isGetProjectsFromBc: boolean;
 
     private _projects: string[];
 
@@ -64,14 +60,10 @@ export class FilterComponent {
     }
 
     public ngOnInit() {
-        if (this.getProjectsFromBc){
+        if (this.isGetProjectsFromBc){
             this.contractManager.getAllProjects()
             .then(projs => { 
-                this.projects = projs.sort((inA, inB) => {
-                    const a = inA.toLowerCase();
-                    const b = inB.toLowerCase();            
-                    return a > b ? 1 : a < b ? -1 : 0;
-                });
+                this.projects = this.sortProjects(this.projects);
             });
         }
     }
@@ -97,6 +89,14 @@ export class FilterComponent {
 
     public setProject(project: string){
         this.projectEmit.emit(project);
+    }
+
+    private sortProjects(projects: Array<string>): Array<string> {
+        return projects.sort((inA, inB) => {
+            const a = inA.toLowerCase();
+            const b = inB.toLowerCase();            
+            return a > b ? 1 : a < b ? -1 : 0;
+        });
     }
 
 }
