@@ -43,7 +43,7 @@ export class BackendConfig {
         port: process.env.SMTP_EMAIL_PORT,
         secure: false,
         auth: {
-            user: process.env.EMAIL,
+            user: process.env.EMAIL_ADDRESS,
             pass: process.env.EMAIL_PASS
         }
     };

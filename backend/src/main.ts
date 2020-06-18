@@ -12,8 +12,7 @@ class BrightByteCloudBackend {
     private readonly SECRET_PATH = BackendConfig.SECRET_SECURE_PATH;
     private readonly SECURE_KEY = BackendConfig.SECRET_PRIVATE_KEY;
     private readonly SECURE_CERT = BackendConfig.SECRET_CERTIFICATE_CRT;
-    private readonly loggerSrv = new LoggerService(true);
-    private readonly log: ILogger = this.loggerSrv.get("BrightByteCloudBackend");
+    private readonly log = new LoggerService(BackendConfig.LOG_DEBUG).get("BrightByteCloudBackend");
 
     public async launch() {
         const server = express();

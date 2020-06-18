@@ -190,7 +190,7 @@ export class ContractManagerService {
     private init() {
         this.log.d("Initializing Contract Manager Service");
         this.initObs = this.web3Service.openConnection().pipe(
-            flatMap(web3 => {
+            flatMap((web3: Web3) => {
                 this.web3 = web3;
                 return this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL);
             }),
