@@ -323,12 +323,11 @@ export class AddCommitPopover {
             this.showSpinner = false;
             this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
-            return Promise.resolve();
         }).catch(err => { 
             this.showSpinner = false;
             this.isServiceAvailable = false;
             this.isBatchLogged = false;
-            this.log.e(err); 
+            this.log.e("Error loading commits and PRs: " + err); 
         });
     }
 
