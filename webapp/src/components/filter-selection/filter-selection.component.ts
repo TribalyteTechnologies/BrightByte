@@ -25,7 +25,7 @@ export class FilterComponent {
     @Input()
     public set projects(val: string[]){
         if (val){
-            this._projects = this.sortProjects(this.projects);
+            this._projects = this.sortProjects(val);
         }
     }
 
@@ -63,7 +63,7 @@ export class FilterComponent {
         if (this.isGetProjectsFromBc){
             this.contractManager.getAllProjects()
             .then(projs => { 
-                this.projects = this.sortProjects(this.projects);
+                this.projects = this.sortProjects(projs);
             });
         }
     }
