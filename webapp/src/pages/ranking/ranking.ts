@@ -120,7 +120,7 @@ export class RankingPage {
                 this.minNumberReview = seasonThreshold[1];
                 return this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected);
         }).then((usersRep: UserReputation[]) => {
-            let initNewSeason;
+            let initNewSeason: Promise<void>;
             if (isSeasonEnded){
                 usersRep.forEach(rep => {
                     commitsAverages += rep.numberCommitsMade;
