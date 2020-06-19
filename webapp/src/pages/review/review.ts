@@ -66,6 +66,7 @@ export class ReviewPage {
     private loadedCommits: number;
     private maxReviews: number;
     private initializing: boolean;
+    private isSettingFilter = false;
     private currentReviewFilterState: ReviewStateFilterTypes;
     private blockCount = 1;
 
@@ -106,8 +107,9 @@ export class ReviewPage {
     public refresh(event?) {
         let isReloadEvent = (event && event.type === this.RELOAD_EVENT) || this.projectSelected !== this.ALL;
         this.log.d("Refreshing page");
-        if (this.initializing) {
+        if (this.initializing || this.isSettingFilter) {
             this.spinnerService.showLoader();
+            this.isSettingFilter = false;
         }
         let commits: Array<UserCommit>;
         this.contractManagerService.getReviewCommitsState()
@@ -290,7 +292,7 @@ export class ReviewPage {
     }
 
     public setProject(name: string) {
-        this.initializing = true;
+        this.isSettingFilter = true;
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);
         if (this.filterArrayCommits.length < AppConfig.COMMITS_BLOCK_SIZE && !this.disabledInfiniteScroll) {
