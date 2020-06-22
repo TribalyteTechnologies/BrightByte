@@ -55,17 +55,16 @@ export class EventHandlerService {
             this.firstBlockNumber = blockNumber;
             return this.contractManagerService.getEventDispatcherInfo();
         }),
-        flatMap(contractInfo => {
+        flatMap((contractInfo: [ITrbSmartContractJson, string]) => {
             this.eventDispatcherContract = contractInfo[0];
             this.contractAddressEventDispatcher = contractInfo[1];
             return this.web3Service.openConnection();
-        }),
-        map((web3: Web3) => {
+        }))
+        .subscribe((web3: Web3) => {
             this.web3 = web3;
             this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
             this.eventsSubscription(true);
-        }))
-        .subscribe();
+        });
     }
 
     public registerNewListener(type: string, initialization = false) {

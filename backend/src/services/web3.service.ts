@@ -8,15 +8,12 @@ import { map, catchError } from "rxjs/operators";
 @Injectable()
 export class Web3Service {
 
-    private web3: Web3;
-    private httpWeb3: Web3;
     private log: ILogger;
 
     public constructor(
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("Web3Service");
-        this.openConnection().subscribe(res => this.web3 = res);
     }
 
     public openConnection(): Observable<Web3> {
@@ -26,12 +23,11 @@ export class Web3Service {
         .pipe(
             map(res => {
                 this.log.d("Open connection ", res);
-                this.web3 = auxWeb3;
                 return auxWeb3;
             }),
             catchError(error => {
                 this.log.e("Not able to open a connection: ", error);
-                return error;
+                throw error;
             })
         );
     }

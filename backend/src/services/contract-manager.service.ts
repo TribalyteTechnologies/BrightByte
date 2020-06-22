@@ -127,7 +127,7 @@ export class ContractManagerService {
         return this.initObs.pipe(map(() => this.contracts[ContractsIndex.EventDispatcher]));
     }
 
-    public getEventDispatcherInfo(): Observable<Array<any>> {
+    public getEventDispatcherInfo(): Observable<[ITrbSmartContractJson, string]> {
         return this.initObs.pipe(map(() => [this.eventDispatcherContractAbi, this.contractAddressEventDispatcher]));
     }
 
