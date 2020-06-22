@@ -6,12 +6,11 @@ This is the BrightByte backend project.
  Since version v0.6.0 it is available a new optional feature that allows the user to use a integration with their favorites systems for version control, to automate the use of the webapp. Right now the only provider available is Bitbucket, in the future Github ang Gitlab will also be implemented.
  
  To enjoy this new feature you have to use a custom set of varibles.
- Set `BITBUCKET_KEY`, `BITBUCKET_SECRET` and `BITBUCKET_WORKSPACES` in `src/backend.config.ts` to adapt to your preferences.
+ Set `BITBUCKET_KEY` and `BITBUCKET_SECRET` in `src/backend.config.ts` to adapt to your preferences.
  For more information about how to get your own keys and secret you can check our explanation [here](https://tech.tribalyte.eu/blog-brightbyte-v0-6)
 
 Since version v0.3.0-cloud you can enable secure communications with the API via HTTPS.
-Set `BACKEND_SECURE_PATH`, `BACKEND_PRIVATE_KEY_PATH` and `BACKEND_SECRET_CERTIFICATE_PATH` in `src/backend.config.ts` to adapt to your preferences.
-`BACKEND_SECURE_PATH` it will indicate where to find your secure files, `BACKEND_PRIVATE_KEY_PATH` and `BACKEND_SECRET_CERTIFICATE_PATH` will specify the name of your secrets files.
+Set `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` in `src/backend.config.ts` to adapt to your preferences. These variables will indicate where to find your secure files.
 
  #### Run the backend
 
@@ -30,5 +29,5 @@ Set `BACKEND_SECURE_PATH`, `BACKEND_PRIVATE_KEY_PATH` and `BACKEND_SECRET_CERTIF
 - Set backend persintance path for the avatars `BACKEND_STORAGE_PATH=/public/`
 - Set the volume directories `HOST_DIRECTORY=/home/ubuntu/brightbyte-volume` and `CONTAINER_PERSISTENCE_PATH=$BACKEND_STORAGE_PATH`
 - Create and run de container `docker run -e "NODE_WEBSOCKET_URL=${WEBSOCKET_URL}" -e "WEBAPP_URL=${ORIGIN_URL}"  -e "PORT=${BACKEND_PORT}" -e "IMAGE_STORAGE_PATH=${BACKEND_STORAGE_PATH}" -p ${BACKEND_PORT}:${BACKEND_PORT}/udp -p  ${BACKEND_PORT}:${BACKEND_PORT}/tcp -d -v ${HOST_DIRECTORY}:${CONTAINER_PERSISTENCE_PATH} brightbyte/backend:latest` ('latest' can be changed for the tag of any version available at https://cloud.docker.com/u/brightbyte/repository/docker/brightbyte/backend)
-- To include the optional feature of the integration with Bitbucket add at the docker run instruction the necessary variables `-e "BITBUCKET_KEY=xxxxxx" -e "BITBUCKET_SECRET=XXXXXX" -e "BITBUCKET_WORKSPACES=workspace1"`
-- To include the security feature it is mandatory to use Docker, the following variables are for this purposes `-e "BACKEND_SECURE_PATH=/localDirectory" -e "BACKEND_PRIVATE_KEY_PATH=private.key" -e "BACKEND_SECRET_CERTIFICATE_PATH=certificate.crt"`
+- To include the optional feature of the integration with Bitbucket add at the docker run instruction the necessary variables `-e "BITBUCKET_KEY=xxxxxx" -e "BITBUCKET_SECRET=XXXXXX"`
+- To include the security feature it is mandatory to use Docker, the following variables are for this purposes `-e "BACKEND_PRIVATE_KEY_PATH=./private.key" -e "BACKEND_SECRET_CERTIFICATE_PATH=./certificate.crt"`
