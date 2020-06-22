@@ -58,7 +58,7 @@ export class Profile {
     public teamMembers: Array<Array<TeamMember>>;
     public invitedUsers: Array<InvitedUser>;
     public teamWorkspaces: Array<string>;
-    public isBackendAvailable: boolean;
+    public isBackendAvailable = true;
     public commitThreshold: number;
     public reviewThreshold: number;
 
@@ -100,14 +100,13 @@ export class Profile {
         private userNameSrv: UserNameService
     ) {
         this.log = loggerSrv.get("ProfilePage");
-        this.isBackendAvailable = true;
-        this.isLoadingInfo = true;
         this.teamMembers = Array<Array<TeamMember>>();
         this.teamWorkspaces = Array<string>();
     }
 
     public ngOnInit() {
         this.userAddress = this.loginSrv.getAccountAddress();
+        this.isLoadingInfo = true;
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
         this.translateSrv.get([
             "setProfile.uploadError",
