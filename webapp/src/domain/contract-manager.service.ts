@@ -11,6 +11,7 @@ import { UserDetails } from "../models/user-details.model";
 import { CommitComment } from "../models/commit-comment.model";
 import { UserCommit } from "../models/user-commit.model";
 import { UserReputation } from "../models/user-reputation.model";
+import { UserSeasonState } from "../models/user-season-state.model";
 import { UserCacheService } from "../domain/user-cache.service";
 import { LocalStorageService } from "../core/local-storage.service";
 import { TeamMember } from "../models/team-member.model";
@@ -557,9 +558,9 @@ export class ContractManagerService {
 
     public getCommits(): Promise<Array<UserCommit>> {
         return this.getCurrentSeasonState()
-        .then(seasonState => {
-            let array = new Array<string>();
-            return this.getBatchCommits(seasonState[2], 0, array);
+        .then((seasonState: UserSeasonState) => {
+            let batchCommits = new Array<string>();
+            return this.getBatchCommits(seasonState.seasonCommits, 0, batchCommits);
         }).then((allUserCommits: Array<string>) => {
             let promisesPending = allUserCommits.map(userCommit => this.getUserCommitDetails(userCommit));
             return Promise.all(promisesPending);
@@ -571,8 +572,10 @@ export class ContractManagerService {
 
     public getCommitsToReview(): Promise<Array<Array<UserCommit>>> {
         let endIndex: number;
-        return this.getCurrentSeasonState().then(seasonState => {
-            endIndex = (seasonState[0] > seasonState[1]) ? seasonState[0] : seasonState[1];
+        return this.getCurrentSeasonState().then((seasonState: UserSeasonState) => {
+            let pendingReviews = seasonState.pendingReviews;
+            let finishedReviews = seasonState.finishedReviews;
+            endIndex = (pendingReviews > finishedReviews) ? pendingReviews : finishedReviews;
             return this.initProm;
         }).then(([bright]) => {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
@@ -589,7 +592,7 @@ export class ContractManagerService {
         });
     }
 
-    public getCurrentSeasonState(): Promise<Array<number>> {
+    public getCurrentSeasonState(): Promise<UserSeasonState> {
         let brightContract;
         return this.initProm
         .then(([bright]) => {
@@ -601,8 +604,9 @@ export class ContractManagerService {
             return brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
                 .call({ from: this.currentUser.address});
         }).then(seasonState => {
-            return Object.keys(seasonState)
+            let arrayState =  Object.keys(seasonState)
             .map(key => parseInt(seasonState[key]));
+            return UserSeasonState.fromSmartContract(arrayState);
         }).catch(err => {
             this.log.e("Error obtaining the state of the user commmits:", err);
             throw err;
@@ -610,8 +614,8 @@ export class ContractManagerService {
     }
 
     public getReviewCommitsState(): Promise<Array<number>> {
-        return this.getCurrentSeasonState().then(seasonState => {
-            return [seasonState[0], seasonState[1], seasonState[4]];
+        return this.getCurrentSeasonState().then((seasonState: UserSeasonState) => {
+            return [seasonState.pendingReviews, seasonState.finishedReviews, seasonState.totalReviews];
         });
     }
 
