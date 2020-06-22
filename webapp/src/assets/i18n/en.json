@@ -4,7 +4,7 @@
         "cancel": "Cancel"
     },
     "app": {
-        "title": "BrightByte Cloud Beta",
+        "title": "BrightByte Cloud (beta)",
         "header": "Sign in",
         "presentation": "Who are you? Please, select your identity file and enter the security passphrase. Login in is a local operation, no information will be sent to any server.",
         "password": "Password",
@@ -18,7 +18,7 @@
         "remember": "Keep session?",
         "connectionFailure": "There is no node available for connection.",
         "anonymous": "Anonymous",
-        "welcome": "Welcome to BrightByte Cloud Beta",
+        "welcome": "Welcome to BrightByte Cloud (beta)",
         "enterCredentials": "Enter your credentials to sign in",
         "uploadCredentials": "Upload your credentials",
         "enterPass": "Enter your password",
@@ -34,7 +34,8 @@
         "reviews": "Reviews",
         "ranking": "Ranking",
         "versionOutdated": "Your BrightBight version is outdated. The page is going to refresh.",
-        "registerTutorial": "Registration help"
+        "registerTutorial": "Registration help",
+        "betaTitle": "(beta)"
     },
     "addCommit": {
         "title": "Add commit or PR",
