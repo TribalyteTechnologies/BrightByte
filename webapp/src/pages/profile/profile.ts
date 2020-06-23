@@ -66,7 +66,8 @@ export class Profile {
     private readonly WORKSPACE = "/workspace/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
-    private readonly EMAILS_SEPARATOR = ",";
+    private readonly EMAILS_SEPARATOR = /[\s,]+/;
+
 
     private noChangesError: string;
     private uploadError: string;
