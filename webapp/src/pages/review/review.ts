@@ -237,8 +237,8 @@ export class ReviewPage {
         }).then((val) => {
             commit.isReadNeeded = false;
             this.log.d("Feedback response: " + val);
-            let idx = this.filterArrayCommits.indexOf(commit);
-            if (idx && this.filterArrayCommits){
+            if (this.filterArrayCommits){
+                let idx = this.filterArrayCommits.indexOf(commit);
                 this.filterArrayCommits[idx].isReadNeeded = false;
             }
         }).catch(err => {
