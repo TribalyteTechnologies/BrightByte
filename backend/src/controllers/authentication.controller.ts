@@ -62,8 +62,8 @@ export class AuthenticationController {
                 this.clientNotificationService.sendToken(userIdentifier, userToken);
                 return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
             })
-        ).subscribe(res => {
-            this.log.d("The user has completed the authentication process", res);
+        ).subscribe(() => {
+            this.log.d("The user has completed the authentication process");
         });
     }
 }
