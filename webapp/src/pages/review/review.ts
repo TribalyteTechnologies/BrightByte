@@ -25,7 +25,6 @@ export class ReviewPage {
     public readonly COMPLETE = "complete";
     public readonly PENDING = "pending";
     public readonly TRUE_STRING = "true";
-    public readonly RELOAD_EVENT = "reload";
 
 
     public userAdress: string;
@@ -60,13 +59,16 @@ export class ReviewPage {
 
     public submitError = "";
 
+    private readonly RELOAD_EVENT_TYPE = "reload";
+    private readonly RELOAD_EVENT = new Event(this.RELOAD_EVENT_TYPE);
+
     private log: ILogger;
     private numberOfReviews = -1;
     private isNewReview = false;
     private loadedCommits: number;
     private maxReviews: number;
     private initializing: boolean;
-    private isSettingFilter = false;
+    private isShowSpinner = false;
     private currentReviewFilterState: ReviewStateFilterTypes;
     private blockCount = 1;
 
@@ -107,9 +109,9 @@ export class ReviewPage {
     public refresh(event?) {
         let isReloadEvent = (event && event.type === this.RELOAD_EVENT) || this.projectSelected !== this.ALL;
         this.log.d("Refreshing page");
-        if (this.initializing || this.isSettingFilter) {
+        if (this.initializing || this.isShowSpinner) {
             this.spinnerService.showLoader();
-            this.isSettingFilter = false;
+            this.isShowSpinner = false;
         }
         let commits: Array<UserCommit>;
         this.contractManagerService.getReviewCommitsState()
@@ -182,7 +184,7 @@ export class ReviewPage {
                 this.blockCount++;
             }
             if (isDoReload) {
-                this.refresh(new Event(this.RELOAD_EVENT));
+                this.refresh(this.RELOAD_EVENT);
             }
             if (!isDoReload || this.maxReviews === 0){
                 this.spinnerService.hideLoader();
@@ -261,6 +263,9 @@ export class ReviewPage {
         this.filterArrayCommits = pendingFilter.sort((c1, c2) => {
             return (c2.creationDateMs - c1.creationDateMs);
         });
+        if (this.filterValue === this.INCOMPLETE){
+            this.filterArrayCommits = this.filterArrayCommits.filter((commit: UserCommit) => commit.isPending);
+        }
     }
 
     public setFilter(name: string) {
@@ -292,11 +297,11 @@ export class ReviewPage {
     }
 
     public setProject(name: string) {
-        this.isSettingFilter = true;
+        this.isShowSpinner = true;
         this.projectSelected = name;
         this.applyFilters(this.displayCommitsToReview);
         if (this.filterArrayCommits.length < AppConfig.COMMITS_BLOCK_SIZE && !this.disabledInfiniteScroll) {
-            this.refresh(new Event(this.RELOAD_EVENT));
+            this.refresh(this.RELOAD_EVENT);
         }
     }
 
@@ -343,6 +348,10 @@ export class ReviewPage {
             commit.reviewers[1].push(userDetails);
             if (this.filterValue === this.INCOMPLETE) {
                 this.filterArrayCommits.splice(this.filterArrayCommits.indexOf(commit), 1);
+                if (this.filterArrayCommits.length === 0){
+                    this.isShowSpinner = true;
+                    this.refresh(this.RELOAD_EVENT);
+                }
             }
 
             let url = new URLSearchParams(document.location.search);
@@ -382,7 +391,7 @@ export class ReviewPage {
     private applyStateFilter(state: ReviewStateFilterTypes): void {
         this.initializing = true;
         this.currentReviewFilterState = state;
-        this.refresh(this.projectSelected !== this.ALL ? new Event(this.RELOAD_EVENT) : undefined);
+        this.refresh(this.projectSelected !== this.ALL ? this.RELOAD_EVENT : undefined);
     }
 
     private setPendingFilter(userCommits: Array<UserCommit>): Array<UserCommit> {
