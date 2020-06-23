@@ -4,7 +4,7 @@ import { encrypt, decrypt } from "ethereum-cryptography/aes";
 export class EncryptionUtils {
 
     private static readonly MAX_ENC_BUFFER_LENGTH = 16;
-    private static readonly BUFFER_ASCII_TYPE = "ascii";
+    private static readonly BUFFER_ASCII_TYPE = "utf-8";
     private static readonly BUFFER_HEX_TYPE = "hex";
     private static readonly WINDOW_LOCATION = window.location.href;
     private static readonly ENCODE_KEY = Buffer.from(
