@@ -19,6 +19,8 @@ contract Root is IRoot{
     CloudEventDispatcher remoteCloudEventDispatcher;
     address cloudEventDispatcherAddress;
     address owner;
+    bool private isVersionEnable;
+    bytes32 private brightbyteVersion;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
 
@@ -60,6 +62,18 @@ contract Root is IRoot{
         (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs) = remoteBright.getCurrentSeason();
         remoteThreshold.init(address(this), currentSeasonIndex);
         adminUsers[userAdmin] = true;
+        isVersionEnable = true;
+    }
+
+    function setVersion(bytes32 version) public {
+        if(isVersionEnable) {
+            brightbyteVersion = version;
+            isVersionEnable = false;
+        }
+    }
+
+    function getVersion() public view returns(bytes32) {
+        return brightbyteVersion;
     }
 
     //sendNotificationOfNewCommit function must be called from the front after call setNewCommit

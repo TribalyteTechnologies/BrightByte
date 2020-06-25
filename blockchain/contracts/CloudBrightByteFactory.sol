@@ -77,6 +77,12 @@ contract CloudBrightByteFactory {
         return eventDispatcherAddress;
     }
 
+    function setVersion(uint256 teamUid) public onlyTeamManager{
+        bytes32 version = keccak256(currentVersion);
+        TeamContracts memory contracts = teamContracts[teamUid];
+        RootDeployerLib.setVersion(contracts.rootAddress, version);
+    }
+
     function inviteUserEmail(uint256 teamUid, string email) public onlyTeamManager{
         TeamContracts memory contracts = teamContracts[teamUid];
         BrightDeployerLib.inviteUserEmail(contracts.brightAddress, email);

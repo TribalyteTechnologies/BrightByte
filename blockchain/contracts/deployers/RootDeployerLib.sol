@@ -10,4 +10,9 @@ library RootDeployerLib {
         address userAdmin, uint256 teamId, uint256 seasonLength)public returns (address) {
         return new Root(bright, commits, threshold, eventDispatcher, userAdmin, teamId, seasonLength);
     }
+
+    function setVersion(address rootAddress, bytes32 version) public {
+        Root remoteRoot = Root(rootAddress);
+        remoteRoot.setVersion(version);
+    }
 }
