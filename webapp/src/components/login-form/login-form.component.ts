@@ -9,7 +9,7 @@ import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
-import { Account } from "web3/types";
+import { Account } from "web3-eth-accounts";
 import { AppConfig } from "../../app.config";
 import { BackendApiService } from "../../domain/backend-api.service";
 import { AvatarService } from "../../domain/avatar.service";
