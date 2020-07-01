@@ -1,18 +1,18 @@
 # Change Log
 
-#### v0.7.2
-
-- Updated web3 dependencies to solve some bugs
-
-`No migration needed from 0.7.1 to 0.7.2`
-
-#### v0.7.2 (WIP)
+#### v0.8.0 (WIP)
 
 - This version is in progress.
 - Bug fix on Bright contract when the season change.
 - The migration process is not provided.
 
-`Migration needed from 0.7.1 to 0.7.2`
+`Migration needed from 0.7.2 to 0.8.2`
+
+#### v0.7.2
+
+- Updated web3 dependencies to solve some bugs
+
+`No migration needed from 0.7.1 to 0.7.2`
 
 #### v0.7.1
 
