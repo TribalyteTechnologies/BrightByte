@@ -4,7 +4,7 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TranslateService } from "@ngx-translate/core";
-import { Account } from "web3/types";
+import { Account } from "web3-eth-accounts";
 import { UserReputation } from "../../models/user-reputation.model";
 import { AppConfig } from "../../app.config";
 import { Achievement } from "../../models/achievement.model";

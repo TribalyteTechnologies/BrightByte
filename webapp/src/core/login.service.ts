@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Account } from "web3/types";
+import { Account } from "web3-eth-accounts";
 
 @Injectable()
 export class LoginService {
