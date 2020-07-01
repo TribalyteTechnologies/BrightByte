@@ -1,5 +1,11 @@
 # Change Log
 
+#### v0.7.2
+
+- Updated web3 dependencies to solve some bugs
+
+`No migration needed from 0.7.1 to 0.7.2`
+
 #### v0.7.1
 
 - Solved twitter sharing not showing up.
