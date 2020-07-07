@@ -178,7 +178,7 @@ export class AddCommitPopover {
                 if (!detailsCommits || !detailsCommits.url) {
                     ret = this.contractManagerService.addCommit(url, title, this.userAdded)
                     .catch(err => {
-                        throw err;
+                        ret = Promise.reject({ msg: "addCommit.errorAddCommit" });
                     });
                 } else {
                     ret = Promise.reject({ msg: "addCommit.urlDuplicated" });
@@ -377,6 +377,8 @@ export class AddCommitPopover {
                             this.isUpdatingByBatch = false;
                             if(!(err.msg)) {
                                 throw err;
+                            } else {
+                                this.showGuiMessage("addCommit.errorAddCommit"); 
                             }
                         }
                     });

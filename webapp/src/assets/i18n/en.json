@@ -67,7 +67,8 @@
         "bitbucketServiceNotAvailable": "Bitbucket provider not defined, feature not available. Please contact your BrightByte administrator to enable it.",
         "loadMoreRepositoriesMessage": "Is the repository you were looking for not listed? Try load more repositories",
         "loadMoreRepositoriesButtonText": "Load more",
-        "noMoreRepo": "No more repositories to load"
+        "noMoreRepo": "No more repositories to load",
+        "errorAddCommit": "Error adding new commit"
     },
     "commits": {
         "add": "Contribute",
