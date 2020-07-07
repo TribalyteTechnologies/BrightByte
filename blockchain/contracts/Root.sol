@@ -60,7 +60,7 @@ contract Root is IRoot{
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;
         (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs) = remoteBright.getCurrentSeason();
-        remoteThreshold.init(address(this), currentSeasonIndex);
+        remoteThreshold.initialize(address(this), currentSeasonIndex);
         adminUsers[userAdmin] = true;
         isVersionEnable = true;
     }

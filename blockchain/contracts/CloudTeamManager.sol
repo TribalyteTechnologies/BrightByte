@@ -1,5 +1,7 @@
 pragma solidity 0.5.2;
 
+//import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
 
@@ -61,8 +63,9 @@ contract CloudTeamManager {
         teamCount = 0;
         bbFactoryAddress = bbFactoryAddr;
         remoteBbFactory = CloudBrightByteFactory(bbFactoryAddress);
-        projStoreAddress = address(new CloudProjectStore(address(this)));
+        projStoreAddress = address(new CloudProjectStore());
         remoteProjStore = CloudProjectStore(projStoreAddress);
+        remoteProjStore.initialize(address(this));
         createTeam("unregistered@brightbyteapp.com", "Default team");
         seasonLengthInDays = seasonLength;
     }

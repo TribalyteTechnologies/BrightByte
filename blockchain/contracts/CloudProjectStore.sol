@@ -1,6 +1,8 @@
 pragma solidity 0.5.2;
 
-contract CloudProjectStore {
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
+contract CloudProjectStore is Initializable {
 
     struct ProjectMap {
         uint256 projectCount;
@@ -15,7 +17,7 @@ contract CloudProjectStore {
 
     address private teamManagerAddress;
 
-    constructor(address teamMngrAddress) public {
+    function initialize(address teamMngrAddress) public initializer {
         require(teamManagerAddress == address(0), "Contract already initialized");
         teamManagerAddress = teamMngrAddress;
         teamCount = 0;

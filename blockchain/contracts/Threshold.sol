@@ -1,6 +1,8 @@
 pragma solidity 0.5.2;
 
-contract Threshold {
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
+contract Threshold is Initializable {
     uint256 private currentSeasonIndex;
     mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
 
@@ -16,11 +18,7 @@ contract Threshold {
     event newSeason(uint256 currentSeasonIndex, uint256 currentTimeStamp);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    constructor () public {
-        currentSeasonIndex = 1;
-    }
-
-    function init(address _root, uint256 indexCurrentSeason) public {
+    function initialize(address _root, uint256 indexCurrentSeason) public initializer {
         require(rootAddress == address(0), "Root address cannot be 0");
         rootAddress = _root;
         currentSeasonIndex = indexCurrentSeason;

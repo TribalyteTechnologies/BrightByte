@@ -1,5 +1,7 @@
 pragma solidity 0.5.2;
 
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
 import { BrightDeployerLib } from "./deployers/BrightDeployerLib.sol";
 import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";
 import { ThresholdDeployerLib } from "./deployers/ThresholdDeployerLib.sol";
@@ -7,7 +9,7 @@ import { RootDeployerLib } from "./deployers/RootDeployerLib.sol";
 
 import "./CloudEventDispatcher.sol";
 
-contract CloudBrightByteFactory {
+contract CloudBrightByteFactory is Initializable {
 
     struct TeamContracts {
         address brightAddress;
@@ -23,7 +25,8 @@ contract CloudBrightByteFactory {
     address private eventDispatcherAddress;
     CloudEventDispatcher private remoteEventDispatcher;
 
-    constructor(string memory version) public {
+
+    function initialize(string memory version) public initializer {
         currentVersion = version;
         deployEventDispatcher();
     }

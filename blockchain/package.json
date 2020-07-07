@@ -28,7 +28,8 @@
   "author": "Tribalyte Technologies",
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
-    "@truffle/debug-utils": "1.0.19",
+    "@openzeppelin/upgrades": "2.8.0",
+    "@truffle/debug-utils": "4.1.8",
     "@truffle/hdwallet-provider": "1.0.33",
     "async": "3.2.0",
     "ganache-cli": "6.9.0",
@@ -38,7 +39,7 @@
     "truffle-core": "5.0.34",
     "truffle-environment": "0.1.10",
     "truffle-test-utils": "0.1.0",
-    "web3": "1.2.6"
+    "web3": "1.2.1"
   },
   "devDependencies": {
     "ethlint": "1.2.5",
