@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 contract Threshold {
     uint256 private currentSeasonIndex;
@@ -21,7 +21,7 @@ contract Threshold {
     }
 
     function init(address _root, uint256 indexCurrentSeason) public {
-        require(rootAddress == uint80(0), "Root address cannot be 0");
+        require(rootAddress == address(0), "Root address cannot be 0");
         rootAddress = _root;
         currentSeasonIndex = indexCurrentSeason;
     }
@@ -55,7 +55,8 @@ contract Threshold {
         initSeasonThreshold(currentSeasonIndex, commitThreshold, reviewThreshold);
     }
 
-    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyRoot {
+    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] memory commitsThreshold, uint256[] memory reviewsThreshold)
+    public onlyRoot {
         uint256 totalNumberOfSeasons = commitsThreshold.length + initialSeasonIndex - 1;
         uint256 finalSeasonToFill = (currentSeasonIndex > totalNumberOfSeasons) ? totalNumberOfSeasons : currentSeasonIndex;
         for(uint256 i = initialSeasonIndex; i <= finalSeasonToFill; i++) {

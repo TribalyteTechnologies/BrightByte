@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, ICommit } from "./IBrightByte.sol";
@@ -60,7 +60,7 @@ contract Commits is ICommit {
     }
 
     function init(address _root) public {
-        require(rootAddress == uint80(0), "Root address cannot be 0");
+        require(rootAddress == address(0), "Root address cannot be 0");
         root = IRoot(_root);
         rootAddress = _root;
         allowedAddresses[rootAddress] = true;
@@ -76,10 +76,10 @@ contract Commits is ICommit {
         rootAddress = a;
     }
 
-    function setNewCommit (string _title, string _url, uint256 _users) public onlyAllowed {
+    function setNewCommit (string memory _title, string memory _url, uint256 _users) public onlyAllowed {
         address auth = tx.origin;
         address[] memory a;
-        bytes32 _id = keccak256(_url);
+        bytes32 _id = keccak256(abi.encodePacked(_url));
         if(storedData[_id].author == address(0)){
             storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp,_users, 0, 0, 0, 0, 0, a,a);
             allCommitsArray.push(_id);
@@ -101,7 +101,7 @@ contract Commits is ICommit {
             }
         }
         if(!saved){
-            for(i = 0; i < storedData[url].finishedComments.length; i++){
+            for(uint256 i = 0; i < storedData[url].finishedComments.length; i++){
                 if(a == storedData[url].finishedComments[i]){
                     saved = true;
                     break;
@@ -119,7 +119,7 @@ contract Commits is ICommit {
     }
 
     function getDetailsCommits(bytes32 _url) public onlyAllowed view
-    returns(string, string, address, uint, uint, bool, uint256, uint256, uint256){
+    returns(string memory, string memory, address, uint, uint, bool, uint256, uint256, uint256){
         bytes32 id = _url;
         Commit memory data = storedData[id];
         return (data.url,
@@ -147,13 +147,14 @@ contract Commits is ICommit {
                 storedData[_url].finishedComments.length
         );
     }
-    function getCommentsOfCommit(bytes32 _url) public onlyAllowed view returns(address[],address[]){
+    function getCommentsOfCommit(bytes32 _url) public onlyAllowed view returns(address[] memory, address[] memory){
         return (
             storedData[_url].pendingComments,
             storedData[_url].finishedComments
         );
     }
-    function getCommentDetail(bytes32 url, address a) public onlyAllowed view returns(string, uint256, uint, uint, address, uint256[]){
+    function getCommentDetail(bytes32 url, address a)
+    public onlyAllowed view returns(string memory, uint256, uint, uint, address, uint256[] memory){
         Comment memory comment = storedData[url].commitComments[a];
         return(
             comment.text,
@@ -165,8 +166,8 @@ contract Commits is ICommit {
         );
     }
 
-    function setReview(string _url,string _text, uint256[] points) public onlyAllowed {
-        bytes32 url = keccak256(_url);
+    function setReview(string memory _url,string memory _text, uint256[] memory points) public onlyAllowed {
+        bytes32 url = keccak256(abi.encodePacked(_url));
         address author = tx.origin;
 
         Commit storage commit = storedData[url];

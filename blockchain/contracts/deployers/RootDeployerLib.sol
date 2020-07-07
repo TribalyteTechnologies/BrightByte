@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import "../Root.sol";
 
@@ -8,7 +8,7 @@ library RootDeployerLib {
     function deploy(
         address bright, address commits, address threshold, address eventDispatcher,
         address userAdmin, uint256 teamId, uint256 seasonLength)public returns (address) {
-        return new Root(bright, commits, threshold, eventDispatcher, userAdmin, teamId, seasonLength);
+        return address(new Root(bright, commits, threshold, eventDispatcher, userAdmin, teamId, seasonLength));
     }
 
     function setVersion(address rootAddress, bytes32 version) public {

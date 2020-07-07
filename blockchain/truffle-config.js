@@ -20,7 +20,15 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.4.22"
+      version: "0.5.2",
+      docker: false,
+      settings: {
+        optimizer: {
+          enabled: false,
+          runs: 200
+        },
+        evmVersion: "byzantium"
+      }
     }
   }
 }

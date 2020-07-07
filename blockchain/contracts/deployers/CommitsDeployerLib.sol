@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import "../Commits.sol";
 
@@ -6,6 +6,6 @@ import "../Commits.sol";
 library CommitsDeployerLib {
 
     function deploy() public returns (address) {
-        return new Commits();
+        return address(new Commits());
     }
 }

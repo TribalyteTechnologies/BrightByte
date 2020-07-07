@@ -1,8 +1,8 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 library UtilsLib {
 
-    function splitArray(bytes32[] array, uint256 start, uint256 end) public pure returns (bytes32[]) {
+    function splitArray(bytes32[] storage array, uint256 start, uint256 end) public view returns (bytes32[] memory) {
         bytes32[] memory newArray;
         uint arrayLength = array.length;
         if(arrayLength != 0 && end >= start && start < arrayLength) {
@@ -16,7 +16,7 @@ library UtilsLib {
         return newArray;
     }
 
-    function getNonEmptyPositions(bytes32[] array) public pure returns (uint256) {
+    function getNonEmptyPositions(bytes32[] storage array) public view returns (uint256) {
         uint256 nonEmptyCount = 0;
         uint arrayLength = array.length;
         for(uint256 i = 0; i < arrayLength; i++) {

@@ -1,8 +1,8 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 library Reputation {
     uint256 private constant WEIGHT_FACTOR = 10000000000;
-    function calculateCommitPonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge)
+    function calculateCommitPonderation(uint256[] memory cleanliness, uint256[] memory complexity, uint256[] memory revKnowledge)
     public pure returns (uint256, uint256) {
         uint256 weightedCleanliness = 0;
         uint256 complexityPonderation = 0;

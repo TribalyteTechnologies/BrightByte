@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 contract CloudProjectStore {
 
@@ -16,7 +16,7 @@ contract CloudProjectStore {
     address private teamManagerAddress;
 
     constructor(address teamMngrAddress) public {
-        require(teamManagerAddress == uint80(0), "Contract already initialized");
+        require(teamManagerAddress == address(0), "Contract already initialized");
         teamManagerAddress = teamMngrAddress;
         teamCount = 0;
     }
@@ -30,11 +30,11 @@ contract CloudProjectStore {
         return teamProjects[teamUid].projectCount != 0;
     }
 
-    function addProject(uint256 teamUid, string projectName) public onlyTeamManager {
+    function addProject(uint256 teamUid, string memory projectName) public onlyTeamManager {
         require(teamUid != 0, "Cannot add project to default team");
         ProjectMap storage savedProjMap = teamProjects[teamUid];
         string memory storedProjectName = savedProjMap.indexProject[savedProjMap.projects[projectName]];
-        if (keccak256(storedProjectName) != keccak256(projectName)){
+        if (keccak256(abi.encodePacked(storedProjectName)) != keccak256(abi.encodePacked(projectName))){
             savedProjMap.projects[projectName] = savedProjMap.projectCount;
             savedProjMap.indexProject[savedProjMap.projectCount] = projectName;
             savedProjMap.projectCount++;
@@ -52,7 +52,8 @@ contract CloudProjectStore {
         savedProjMap.projectCount = 0;
     }
 
-    function getAllProjects(uint256 teamUid, uint256 pageNumber) public view returns (string, string, string, string, string) {
+    function getAllProjects(uint256 teamUid, uint256 pageNumber)
+    public view returns (string memory, string memory, string memory, string memory, string memory) {
         ProjectMap storage savedProjMap = teamProjects[teamUid];
         string[] memory projects = new string[](PROJECT_PAGE_SIZE);
         uint256 start = pageNumber * PROJECT_PAGE_SIZE;

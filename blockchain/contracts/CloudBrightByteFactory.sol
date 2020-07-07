@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import { BrightDeployerLib } from "./deployers/BrightDeployerLib.sol";
 import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";
@@ -23,7 +23,7 @@ contract CloudBrightByteFactory {
     address private eventDispatcherAddress;
     CloudEventDispatcher private remoteEventDispatcher;
 
-    constructor(string version) public {
+    constructor(string memory version) public {
         currentVersion = version;
         deployEventDispatcher();
     }
@@ -34,11 +34,11 @@ contract CloudBrightByteFactory {
     }
 
     function init(address teamMngrAddress) public {
-        require(teamManagerAddress == uint80(0), "Contract already initialized");
+        require(teamManagerAddress == address(0), "Contract already initialized");
         teamManagerAddress = teamMngrAddress;
     }
 
-    function getCurrentVersion() public view returns (string) {
+    function getCurrentVersion() public view returns (string memory) {
         return currentVersion;
     }
 
@@ -78,12 +78,12 @@ contract CloudBrightByteFactory {
     }
 
     function setVersion(uint256 teamUid) public onlyTeamManager{
-        bytes32 version = keccak256(currentVersion);
+        bytes32 version = keccak256(abi.encodePacked(currentVersion));
         TeamContracts memory contracts = teamContracts[teamUid];
         RootDeployerLib.setVersion(contracts.rootAddress, version);
     }
 
-    function inviteUserEmail(uint256 teamUid, string email) public onlyTeamManager{
+    function inviteUserEmail(uint256 teamUid, string memory email) public onlyTeamManager{
         TeamContracts memory contracts = teamContracts[teamUid];
         BrightDeployerLib.inviteUserEmail(contracts.brightAddress, email);
     }
@@ -93,7 +93,7 @@ contract CloudBrightByteFactory {
     }
 
     function deployEventDispatcher() private{
-        eventDispatcherAddress = new CloudEventDispatcher(address(this));
+        eventDispatcherAddress = address(new CloudEventDispatcher(address(this)));
         remoteEventDispatcher = CloudEventDispatcher(eventDispatcherAddress);
     }
 }

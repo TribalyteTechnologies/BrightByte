@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import "./Threshold.sol";
 import "./CloudEventDispatcher.sol";
@@ -81,8 +81,8 @@ contract Root is IRoot{
         remoteBright.setCommit(url);
     }
 
-    function notifyCommit (string url, bytes32[] _emails) public onlyAllowed {
-        bytes32 _id = keccak256(url);
+    function notifyCommit (string memory url, bytes32[] memory _emails) public onlyAllowed {
+        bytes32 _id = keccak256(abi.encodePacked(url));
         address a;
         bool yes;
         bool auth;
@@ -99,25 +99,25 @@ contract Root is IRoot{
         }
     }
 
-    function readCommit(string url) public onlyAllowed {
-        remoteCommits.readCommit(keccak256(url));
+    function readCommit(string memory url) public onlyAllowed {
+        remoteCommits.readCommit(keccak256(abi.encodePacked(url)));
     }
 
     function setReview(bytes32 url,address a) public onlyCommit {
         remoteBright.setReview(url,a);
     }
 
-    function setVote(string url, address user, uint256 vote) public onlyAllowed {
-        bytes32 url_bytes = keccak256(url);
+    function setVote(string memory url, address user, uint256 vote) public onlyAllowed {
+        bytes32 url_bytes = keccak256(abi.encodePacked(url));
         remoteCommits.setVote(url_bytes,user,vote);
         remoteBright.setFeedback(url_bytes, user, true, vote);
     }
 
-    function setFeedback(string url,address user) public onlyAllowed {
-        remoteBright.setFeedback(keccak256(url), user, false, 0);
+    function setFeedback(string memory url,address user) public onlyAllowed {
+        remoteBright.setFeedback(keccak256(abi.encodePacked(url)), user, false, 0);
     }
 
-    function calculatePonderation(uint256[] cleanliness, uint256[] complexity, uint256[] revKnowledge)
+    function calculatePonderation(uint256[] memory cleanliness, uint256[] memory complexity, uint256[] memory revKnowledge)
     public onlyCommit view returns(uint256, uint256) {
         return Reputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
@@ -160,7 +160,8 @@ contract Root is IRoot{
         return remoteThreshold.getCurrentSeasonThreshold();
     }
 
-    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] commitsThreshold, uint256[] reviewsThreshold) public onlyAdmin {
+    function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] memory commitsThreshold, uint256[] memory reviewsThreshold)
+    public onlyAdmin {
         return remoteThreshold.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
     }
 

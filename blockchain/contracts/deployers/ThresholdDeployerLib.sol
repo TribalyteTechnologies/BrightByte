@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import "../Threshold.sol";
 
@@ -6,6 +6,6 @@ import "../Threshold.sol";
 library ThresholdDeployerLib {
 
     function deploy() public returns (address) {
-        return new Threshold();
+        return address(new Threshold());
     }
 }

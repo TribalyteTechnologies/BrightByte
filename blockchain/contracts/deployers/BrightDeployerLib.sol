@@ -1,4 +1,4 @@
-pragma solidity 0.4.22;
+pragma solidity 0.5.2;
 
 import "../Bright.sol";
 
@@ -6,10 +6,10 @@ import "../Bright.sol";
 library BrightDeployerLib {
 
     function deploy() public returns (address) {
-        return new Bright();
+        return address(new Bright());
     }
 
-    function inviteUserEmail(address brightAddress, string email) public {
+    function inviteUserEmail(address brightAddress, string memory email) public {
         Bright remoteBright = Bright(brightAddress);
         remoteBright.inviteUserEmail(email);
     }
