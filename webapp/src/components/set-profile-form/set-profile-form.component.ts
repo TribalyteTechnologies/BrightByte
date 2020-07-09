@@ -10,6 +10,8 @@ import { FormatUtils } from "../../core/format-utils";
 import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
+import { LoginService } from "../../core/login.service";
+import { BackendApiService } from "../../domain/backend-api.service";
 
 @Component({
     selector: "set-profile-form",
@@ -49,7 +51,9 @@ export class SetProfileForm {
         public translateService: TranslateService,
         public http: HttpClient,
         private contractManagerService: ContractManagerService,
-        private avatarSrv: AvatarService
+        private avatarSrv: AvatarService,
+        private loginService: LoginService,
+        private backendApiSrv: BackendApiService
     ) {
         let emailValidator = FormatUtils.getEmailValidatorPattern();
         this.log = loggerSrv.get("SetProfilePage");
@@ -185,6 +189,8 @@ export class SetProfileForm {
                 addresses.forEach(address => {
                     this.avatarSrv.addUser(address);
                 });
+                this.backendApiSrv.initBackendConnection(teamUid);
+                if (isCreatingTeam) {
                 this.navCtrl.push(TabsPage);
             }).catch((e) => {
                 this.translateService.get("setProfile.tx").subscribe(

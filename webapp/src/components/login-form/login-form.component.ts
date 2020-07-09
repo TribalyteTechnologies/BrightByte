@@ -178,8 +178,7 @@ export class LoginForm {
     public logToTeam(teamUid: number): Promise<void> {
         return this.contractManager.setBaseContracts(teamUid)
         .then(() => {
-            let userAddress = this.loginService.getAccountAddress();
-            this.backendApiSrv.initBackendConnection(userAddress, teamUid);
+            this.backendApiSrv.initBackendConnection(teamUid);
             return this.initAvatarSrvAndContinue();          
         });
     }
@@ -193,6 +192,7 @@ export class LoginForm {
             return this.contractManager.setProfile(this.userName, this.userEmail);
         })
         .then(() => {
+            this.backendApiSrv.initBackendConnection(this.teamToRegisterIn);
             return this.initAvatarSrvAndContinue(); 
         });
     }
