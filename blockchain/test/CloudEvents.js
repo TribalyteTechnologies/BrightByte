@@ -15,16 +15,16 @@ const NUMBER_OF_REVIEWERS = 1;
 const NUMBER_OF_COMMITS = 1;
 const NUMBER_OF_REVIEWS = 1;
 const DELETED_COMMITS = 1;
-const USER_ONE = "Manuel";
-const EMAIL_USER_ONE = "manuel@example.com";
-const USER_TWO = "Marcos";
-const EMAIL_USER_TWO = "marcos@example.com";
+USER_ONE = "Manuel";
+EMAIL_USER_ONE = "manuel@example.com";
+USER_TWO = "Marcos";
+EMAIL_USER_TWO = "marcos@example.com";
 const COMMIT_TITTLE = "Example Commit";
 const COMMIT_URL = "https://bitbucket.org/tribalyte/exampleRepo/commits/ffffffffffffffffffff";
 const REVIEW_TEXT = "Example Review";
 const REVIEW_POINTS =  [500, 200, 100];
 const INITIAL_SEASON_LENGTH_DAYS = 15;
-const TEAM_NAME = "TEAM 1";
+TEAM_NAME = "TEAM 1";
 const MEMBER_USERTYPE = 2;
 const LONG_EXP_SECS = 2000;
 
@@ -46,6 +46,7 @@ contract("EventDispatcher", accounts => {
     let teamUid;
 
     it("Creating the enviroment" ,async () => {
+        transformVariables();
         cloudBBFactory = await CloudBBFactory.deployed();
         cloudTeamManager = await CloudTeamManager.deployed();
         teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
@@ -77,7 +78,7 @@ contract("EventDispatcher", accounts => {
         parseBnAndAssertEqual(userState[0], 0);
 
         let reviewers = new Array();
-        reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
+        reviewers.push(EMAIL_USER_TWO);
         await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[0], NUMBER_OF_COMMITS);
@@ -117,7 +118,7 @@ contract("EventDispatcher", accounts => {
         parseBnAndAssertEqual(user1[3], initialNumberOfCommits + 1);
 
         let reviewers = new Array();
-        reviewers.push(web3.utils.keccak256(EMAIL_USER_TWO));
+        reviewers.push(EMAIL_USER_TWO);
         await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[0], 1);
@@ -137,7 +138,7 @@ contract("EventDispatcher", accounts => {
 
 async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName, seasonLength, adminUserAddress) {
     await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
-    let response = await cloudTeamManager.getUserTeam(adminUserAddress);
+    let response = await cloudTeamManager.getUserTeam(userMail);
     let teamUid = parseBnToInt(response);
     await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
     await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
@@ -186,7 +187,16 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
 async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyTeamId, shouldFail) {
     let response = await teamManagerInstance.registerToTeam(userAddress, email, team1Uid, { from: userAddress })
     assert(response.receipt.status);
-    let teamUids =  await teamManagerInstance.getUserTeam(userAddress);
+    let teamUids =  await teamManagerInstance.getUserTeam(email);
     assert(shouldFail ? teamUids.length === empyTeamId : teamUids.length !== empyTeamId, "Team was created incorrectly");
     return team1Uid;
+}
+
+async function transformVariables() {
+    const web3 = openConnection();
+    TEAM_NAME = web3.utils.keccak256(TEAM_NAME);
+    USER_ONE = web3.utils.keccak256(USER_ONE);
+    EMAIL_USER_ONE = web3.utils.keccak256(EMAIL_USER_ONE);
+    USER_TWO = web3.utils.keccak256(USER_TWO);
+    EMAIL_USER_TWO = web3.utils.keccak256(EMAIL_USER_TWO);
 }

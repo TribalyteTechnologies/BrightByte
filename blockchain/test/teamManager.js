@@ -4,8 +4,13 @@ const Web3 = require("web3");
 const NODE_URL = "http://127.0.0.1:7545";
 
 contract("CloudTeamManager", accounts => {
-    const EMAIL_ACCOUNTS = ["0@example.com", "1@example.com", "2@example.com"];
-    const TEAM_NAMES = ["team1"];
+    const web3 = openConnection();
+
+    var EMAIL_ACCOUNTS = ["0@example.com", "1@example.com", "2@example.com"];
+    EMAIL_ACCOUNTS = EMAIL_ACCOUNTS.map(email =>  web3.utils.keccak256(email));
+    var TEAM_NAMES = ["team1"];
+    TEAM_NAMES = TEAM_NAMES.map(name => web3.utils.keccak256(name));
+
     const EMPTY_TEAM_ID = 0;
     const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -43,7 +48,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(response => {
                 assert(response.receipt.status);
-                return teamManagerInstance.getUserTeam(adminOwnerAccount);
+                return teamManagerInstance.getUserTeam(emailUser0);
             }).then(teamUids => {
                 team1Uid = parseBn(teamUids[teamUids.length-1]);
                 assert(teamUids.length !== EMPTY_TEAM_ID, "Team was created incorrectly");
@@ -358,7 +363,7 @@ function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyT
     return teamManagerInstance.registerToTeam(userAddress, email, team1Uid, { from: userAddress })
     .then(response => {
         assert(response.receipt.status);
-        return teamManagerInstance.getUserTeam(userAddress);
+        return teamManagerInstance.getUserTeam(email);
     })
     .then(teamUids => {
         if (shouldFail) {

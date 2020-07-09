@@ -86,7 +86,7 @@ contract CloudBrightByteFactory is Initializable {
         RootDeployerLib.setVersion(contracts.rootAddress, version);
     }
 
-    function inviteUserEmail(uint256 teamUid, string memory email) public onlyTeamManager{
+    function inviteUserEmail(uint256 teamUid, bytes32 email) public onlyTeamManager{
         TeamContracts memory contracts = teamContracts[teamUid];
         BrightDeployerLib.inviteUserEmail(contracts.brightAddress, email);
     }

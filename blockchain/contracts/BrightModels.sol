@@ -4,7 +4,7 @@ library BrightModels {
 
     struct UserProfile {
         string name;
-        string email;
+        bytes32 email;
         address hash;
         UserStats globalStats;
         mapping (uint256 => UserSeason) seasonData;

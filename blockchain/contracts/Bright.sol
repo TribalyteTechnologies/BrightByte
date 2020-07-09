@@ -20,7 +20,7 @@ contract Bright is IBright {
 
     BrightModels.HashUserMap private hashUserMap;
     mapping (bytes32 => bool) private allCommits;
-    mapping (string => bool) private invitedEmails;
+    mapping (bytes32 => bool) private invitedEmails;
     mapping (address => bool) private allowedAddresses;
     BrightModels.EmailUserMap private emailUserMap;
     address[] private allUsersArray;
@@ -40,7 +40,7 @@ contract Bright is IBright {
         _;
     }
 
-    modifier onlyInvited(string memory email) {
+    modifier onlyInvited(bytes32 email) {
         require(invitedEmails[email], "The email is not allowed");
         _;
     }
@@ -59,19 +59,18 @@ contract Bright is IBright {
         allowedAddresses[userAdmin] = true;
     }
 
-    function inviteUserEmail(string memory email) public {
+    function inviteUserEmail(bytes32 email) public {
         invitedEmails[email] = true;
     }
 
-    function setProfile(string memory name, string memory email) public onlyInvited(email) {
+    function setProfile(string memory name, bytes32 email) public onlyInvited(email) {
         address user = tx.origin;
-        bytes32 emailId = keccak256(abi.encodePacked(email));
-        require(bytes(hashUserMap.map[user].email).length == 0, "User already exists");
+        require(hashUserMap.map[user].email[0] == 0, "User already exists");
         BrightModels.UserProfile storage newUser = hashUserMap.map[user];
         newUser.name = name;
         newUser.email = email;
         newUser.hash = user;
-        emailUserMap.map[emailId] = user;
+        emailUserMap.map[email] = user;
         allUsersArray.push(user);
         remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
         allowedAddresses[user] = true;
@@ -93,7 +92,7 @@ contract Bright is IBright {
         return emailUserMap.map[email];
     }
 
-    function getUser(address userHash) public onlyAllowed view returns (string memory, string memory, uint256, uint256, uint256, address) {
+    function getUser(address userHash) public onlyAllowed view returns (string memory, bytes32, uint256, uint256, uint256, address) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         return (user.name,
             user.email,
@@ -105,7 +104,7 @@ contract Bright is IBright {
     }
 
     function getUserSeasonReputation(address userHash, uint256 seasonIndex)
-    public onlyAllowed view returns(string memory, string memory, uint256, uint256, uint256, uint256, address, uint256) {
+    public onlyAllowed view returns(string memory, bytes32, uint256, uint256, uint256, uint256, address, uint256) {
         BrightModels.UserProfile memory user = hashUserMap.map[userHash];
         BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
         return (user.name,
