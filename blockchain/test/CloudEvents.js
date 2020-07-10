@@ -138,7 +138,7 @@ contract("EventDispatcher", accounts => {
 
 async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName, seasonLength, adminUserAddress) {
     await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
-    let response = await cloudTeamManager.getUserTeam(userMail);
+    let response = await cloudTeamManager.getUserTeam(adminUserAddress);
     let teamUid = parseBnToInt(response);
     await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
     await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
@@ -187,7 +187,7 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
 async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyTeamId, shouldFail) {
     let response = await teamManagerInstance.registerToTeam(userAddress, email, team1Uid, { from: userAddress })
     assert(response.receipt.status);
-    let teamUids =  await teamManagerInstance.getUserTeam(email);
+    let teamUids =  await teamManagerInstance.getUserTeam(userAddress);
     assert(shouldFail ? teamUids.length === empyTeamId : teamUids.length !== empyTeamId, "Team was created incorrectly");
     return team1Uid;
 }

@@ -48,7 +48,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(response => {
                 assert(response.receipt.status);
-                return teamManagerInstance.getUserTeam(emailUser0);
+                return teamManagerInstance.getUserTeam(adminOwnerAccount);
             }).then(teamUids => {
                 team1Uid = parseBn(teamUids[teamUids.length-1]);
                 assert(teamUids.length !== EMPTY_TEAM_ID, "Team was created incorrectly");
@@ -363,7 +363,7 @@ function registerToTeam(teamManagerInstance, userAddress, email, team1Uid, empyT
     return teamManagerInstance.registerToTeam(userAddress, email, team1Uid, { from: userAddress })
     .then(response => {
         assert(response.receipt.status);
-        return teamManagerInstance.getUserTeam(email);
+        return teamManagerInstance.getUserTeam(userAddress);
     })
     .then(teamUids => {
         if (shouldFail) {

@@ -29,7 +29,6 @@ contract CloudTeamManager is Initializable {
 
     struct UserData {
         uint256[] invitedTeams;
-        uint256[] participatingTeams;
         mapping (uint256 => InvitationStatus) userTeams;
     }
 
@@ -39,6 +38,7 @@ contract CloudTeamManager is Initializable {
 
     mapping (uint256 => Team) private createdTeams;
     mapping (bytes32 => UserData) private usersRegister;
+    mapping (address => uint256[]) private userTeams;
 
     uint256 private seasonLengthInDays;
     uint256 private teamCount;
@@ -216,11 +216,11 @@ contract CloudTeamManager is Initializable {
         return (admins, members);
     }
 
-    function getUserTeam(bytes32 email) public view returns (uint256[] memory) {
-        return usersRegister[email].participatingTeams;
+    function getUserTeam(address memberAddress) public view returns (uint256[] memory) {
+        return userTeams[memberAddress];
     }
 
-    function getUserType(uint256 teamUid, address memberAddress) public view returns (UserType) { //solo se llama una vez del CM, es lo mismo que la de abajo
+    function getUserType(uint256 teamUid, address memberAddress) public view returns (UserType) {
         return createdTeams[teamUid].users[memberAddress].userStatus;
     }
 
@@ -248,7 +248,7 @@ contract CloudTeamManager is Initializable {
         delete team.users[memberAddress];
         removeFromArray(team.usersList, memberAddress);
 
-        removeUintFromArray(usersRegister[email].participatingTeams, teamUid);
+        removeUintFromArray(userTeams[memberAddress], teamUid);
         delete usersRegister[email].userTeams[teamUid];
 
         return email;
@@ -294,8 +294,7 @@ contract CloudTeamManager is Initializable {
         }
         team.users[memberAddress] = TeamMember(email, userType);
         team.usersList.push(memberAddress);
-        
-        usersRegister[email].participatingTeams.push(teamUid);
+        userTeams[memberAddress].push(teamUid);
         user.isRegistered = true;
         removeInvitation(teamUid, email);
     }
@@ -312,8 +311,8 @@ contract CloudTeamManager is Initializable {
             }
         }
         if(isFound) {
-            array[index] = array[arrayLength -1];
-            delete array[arrayLength -1];
+            array[index] = array[arrayLength-1];
+            delete array[arrayLength-1];
             array.length--;
         }
     }
@@ -330,8 +329,8 @@ contract CloudTeamManager is Initializable {
             }
         }
         if(isFound) {
-            array[index] = array[arrayLength -1];
-            delete array[arrayLength -1];
+            array[index] = array[arrayLength-1];
+            delete array[arrayLength-1];
             array.length--;
         }
     }
