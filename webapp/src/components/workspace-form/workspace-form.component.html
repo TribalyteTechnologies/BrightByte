@@ -1,0 +1,14 @@
+<h4>{{ "setProfile.bitBucketWorkspaces" | translate }}</h4>
+<ion-row class="explanation-text">{{ "setProfile.workspacesFullDescription" | translate }}</ion-row>
+<ion-row class="mini-title">{{ "setProfile.addNewWorkspace" | translate }}</ion-row>
+<input class="password-form" type="text" [placeholder]="'setProfile.workspaceName' | translate" [(ngModel)]="workspace">
+<ion-row *ngIf="errorMsg">
+    <ion-row class="error-body">
+        {{ errorMsg }}
+    </ion-row>
+</ion-row>
+<div class="buttons">
+    <button class="btn btn--full btn__blue" [disabled]="!workspace || errorMsg" (click)="addWorkspaceAndContinue()">{{ "setProfile.addWorkspaceAndContinue" | translate }}</button>
+    <div class="separator"></div>
+    <button class="btn btn--full btn__grey" (click)="goToTabsPage()">{{ "setProfile.skipWorkspace" | translate }}</button>
+</div>

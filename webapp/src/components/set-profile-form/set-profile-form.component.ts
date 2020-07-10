@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { HttpClient } from "@angular/common/http";
@@ -27,6 +27,9 @@ export class SetProfileForm {
     @Input()
     public userEmail: string;
 
+    @Output()
+    public goToSetWorkspace = new EventEmitter();
+
     public readonly TEAM_NAME_MAX_LENGTH = 20;
     public readonly DEFAULT_SEASON_LENGTH = 14;
     public readonly MIN_SEASON_LENGTH_DAYS = AppConfig.MIN_SEASON_LENGTH_DAYS;
@@ -41,6 +44,7 @@ export class SetProfileForm {
     public areEmailsWellFormated = true;
 
     private readonly EMAILS_SEPARATOR = "\n";
+    private readonly SET_WORKSPACE_TAG = "set-workspace";
 
     private log: ILogger;
 
@@ -81,6 +85,10 @@ export class SetProfileForm {
         this.showCreateTeam = true;
         this.showTeamList = false;
         this.isButtonPressed = false;
+    }
+
+    public showSetWorkspace() {
+        this.goToSetWorkspace.next(this.SET_WORKSPACE_TAG);
     }
 
     public updateProfile(name: string, email: string) {
@@ -134,7 +142,7 @@ export class SetProfileForm {
     public registerToTeam(teamUid: number) {
         this.contractManagerService.registerToTeam(this.userEmail, teamUid)
         .then((uid: number) => {
-            this.setContractsAndProfile(uid);
+            this.setContractsAndProfile(uid, false);
         })
         .catch((e) => {
             this.translateService.get("setProfile.getEmails").subscribe(
@@ -172,7 +180,7 @@ export class SetProfileForm {
         }
     }
 
-    private setContractsAndProfile(teamUid: number): Promise<void> {
+    private setContractsAndProfile(teamUid: number, isCreatingTeam = true): Promise<void> {
         return this.contractManagerService.setBaseContracts(teamUid)
             .then(() => {
                 return this.contractManagerService.setProfile(this.userName, this.userEmail);
@@ -191,7 +199,10 @@ export class SetProfileForm {
                 });
                 this.backendApiSrv.initBackendConnection(teamUid);
                 if (isCreatingTeam) {
-                this.navCtrl.push(TabsPage);
+                    this.showSetWorkspace();
+                } else {
+                    this.navCtrl.push(TabsPage);
+                }
             }).catch((e) => {
                 this.translateService.get("setProfile.tx").subscribe(
                     msg => {
