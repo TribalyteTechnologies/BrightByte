@@ -150,7 +150,7 @@ contract("Bright", accounts => {
 
 async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName, seasonLength, adminUserAddress) {
     await cloudTeamManager.createTeam(userMail, teamName, { from: adminUserAddress });
-    let response = await cloudTeamManager.getUserTeam(userMail); // antes se hacia por el address
+    let response = await cloudTeamManager.getUserTeam(userMail);
     let teamUid = parseBnToInt(response[response.length-1]);
     await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
     await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });

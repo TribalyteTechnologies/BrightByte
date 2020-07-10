@@ -1,11 +1,11 @@
 pragma solidity 0.5.2;
 
-//import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
 
-contract CloudTeamManager {
+contract CloudTeamManager is Initializable {
 
     struct Team {
         uint256 uId;
@@ -52,7 +52,7 @@ contract CloudTeamManager {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    constructor(address bbFactoryAddr, uint256 seasonLength) public {
+    function initialize(address bbFactoryAddr, uint256 seasonLength) public initializer {
         owner = msg.sender;
         teamCount = 0;
         bbFactoryAddress = bbFactoryAddr;
