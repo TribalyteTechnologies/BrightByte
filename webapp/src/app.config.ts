@@ -46,6 +46,7 @@ export class AppConfig {
     public static readonly FIRST_QUALIFYING_SEASON = 4;
     public static readonly COMMITS_BLOCK_SIZE = 20;
     public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
+    public static readonly VALUES_ARENT_VALID_ERROR_IDENTIFIER = "Returned values aren't valid, did it run Out of Gas?";
     
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
