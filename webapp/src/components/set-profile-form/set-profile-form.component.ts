@@ -10,7 +10,6 @@ import { FormatUtils } from "../../core/format-utils";
 import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
-import { LoginService } from "../../core/login.service";
 import { BackendApiService } from "../../domain/backend-api.service";
 
 @Component({
@@ -56,7 +55,6 @@ export class SetProfileForm {
         public http: HttpClient,
         private contractManagerService: ContractManagerService,
         private avatarSrv: AvatarService,
-        private loginService: LoginService,
         private backendApiSrv: BackendApiService
     ) {
         let emailValidator = FormatUtils.getEmailValidatorPattern();
