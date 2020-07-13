@@ -35,7 +35,8 @@
         "ranking": "Ranking",
         "versionOutdated": "Your BrightBight version is outdated. The page is going to refresh.",
         "registerTutorial": "Registration help",
-        "betaTitle": "(beta)"
+        "betaTitle": "(beta)",
+        "fileNotSelected": "File was not selected correctly. Please select a file."
     },
     "addCommit": {
         "title": "Add commit or PR",

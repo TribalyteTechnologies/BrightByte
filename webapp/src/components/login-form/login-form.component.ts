@@ -96,9 +96,12 @@ export class LoginForm {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;
         let uploadedArray = <FileList>target.files;
+        let msg_identifier = "";
         this.log.d("Target: ", target);
         let input = uploadedArray[0];
-        if (input.type === "application/json") {
+        if (!input) {
+            msg_identifier = "app.fileNotSelected";
+        } else if (input.type === "application/json") {
             this.msg = "";
             this.log.d("Input: ", input);
             let reader = new FileReader();
@@ -108,11 +111,12 @@ export class LoginForm {
                 this.text = JSON.parse(String(reader.result));
             };
         } else {   
-            this.translateService.get("app.wrongFile").subscribe(
-                msg => {
-                    this.msg = msg;
-                });
-        } 
+            msg_identifier = "app.wrongFile";
+        }
+        if (msg_identifier){
+            this.translateService.get(msg_identifier)
+            .subscribe(msg => this.msg = msg );
+        }
     }
 
     public hidePassword(pass: string) {
