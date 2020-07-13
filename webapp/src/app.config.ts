@@ -63,6 +63,7 @@ export class AppConfig {
     public static readonly DEFAULT_INVITATION_EXP_IN_SECS = 60 * 60 * 24 * 7;
     public static readonly MAX_SEASON_LENGTH_DAYS = 365 * 10;
     public static readonly MIN_SEASON_LENGTH_DAYS = 1;
+    public static readonly VALUES_ARENT_VALID_ERROR_IDENTIFIER = "Returned values aren't valid, did it run Out of Gas?";
     
     
     public static readonly STATUS_OK = "OK";
