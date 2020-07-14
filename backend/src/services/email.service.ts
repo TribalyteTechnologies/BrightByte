@@ -13,12 +13,12 @@ export class EmailService {
 
     private readonly INVITATION_SUBJECT = "Invitation to participate on BrightByte";
     private readonly FROM_EMAIL = BackendConfig.EMAIL_TRANSPORT.auth.user;
-    private readonly INVITATION_TEMPLATE = "/invitation.html";
+    private readonly INVITATION_TEMPLATE_PATH = BackendConfig.EMAIL_TEMPLATES + "invitation.html";
 
     constructor(private mailerService: MailerService) { }
 
     public sendInvitationEmail(toEmail: string): Observable<ResponseDto> {
-        let content = this.readFileFrom(BackendConfig.EMAIL_TEMPLATES + this.INVITATION_TEMPLATE);
+        let content = this.readFileFrom(this.INVITATION_TEMPLATE_PATH);
         return from(this.mailerService.sendMail({
             to: toEmail,
             from: this.FROM_EMAIL,
