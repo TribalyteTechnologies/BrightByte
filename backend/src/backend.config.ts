@@ -31,7 +31,7 @@ export class BackendConfig {
     public static readonly SECRET_PRIVATE_KEY = process.env.BACKEND_PRIVATE_KEY_PATH || "./secrets/private.key";
     public static readonly SECRET_CERTIFICATE_CRT = process.env.BACKEND_SECRET_CERTIFICATE_PATH || "./secrets/certificate.crt";
     public static readonly STATIC_FILES_PATH = join(__dirname, "./www/");
-    public static readonly EMAIL_TEMPLATES = join(__dirname, "./templates");
+    public static readonly EMAIL_TEMPLATES = join(__dirname, "./templates/");
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY;
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
