@@ -15,19 +15,24 @@ const NUMBER_OF_REVIEWERS = 1;
 const NUMBER_OF_COMMITS = 1;
 const NUMBER_OF_REVIEWS = 1;
 const DELETED_COMMITS = 1;
-USER_ONE = "Manuel";
-EMAIL_USER_ONE = "manuel@example.com";
-USER_TWO = "Marcos";
-EMAIL_USER_TWO = "marcos@example.com";
+const USER_ONE = "Manuel";
+const EMAIL_USER_ONE = "manuel@example.com";
+const USER_TWO = "Marcos";
+const EMAIL_USER_TWO = "marcos@example.com";
 const COMMIT_TITTLE = "Example Commit";
 const COMMIT_URL = "https://bitbucket.org/tribalyte/exampleRepo/commits/ffffffffffffffffffff";
 const REVIEW_TEXT = "Example Review";
 const REVIEW_POINTS =  [500, 200, 100];
 const INITIAL_SEASON_LENGTH_DAYS = 15;
-TEAM_NAME = "TEAM 1";
+const TEAM_NAME = "TEAM 1";
 const MEMBER_USERTYPE = 2;
 const LONG_EXP_SECS = 2000;
 
+var teamNameHash;
+var userOneHash;
+var emailUserOneHash;
+var userTwoHash;
+var emailUserTwoHash;
 
 contract("EventDispatcher", accounts => {
     let cloudBBFactory;
@@ -49,7 +54,7 @@ contract("EventDispatcher", accounts => {
         transformVariables();
         cloudBBFactory = await CloudBBFactory.deployed();
         cloudTeamManager = await CloudTeamManager.deployed();
-        teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
+        teamUid = await createTeamAndDeployContracts(cloudTeamManager, emailUserOneHash, teamNameHash, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
         let contractsAddresses = await cloudTeamManager.getTeamContractAddresses(teamUid, { from: adminUserAddress });
         cloudEventDispatcherAddress = await cloudBBFactory.getEventDispatcherAddress();
         cloudEventDispatcher = await CloudEventDispatcher.at(cloudEventDispatcherAddress);
@@ -62,9 +67,9 @@ contract("EventDispatcher", accounts => {
     });
 
     it("Should Create two users", async () => {
-        await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
-        await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
-        await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
+        await inviteUser(cloudTeamManager, teamUid, emailUserTwoHash, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
+        await brightInstance.setProfile(userOneHash, emailUserOneHash, { from: accountOne });
+        await brightInstance.setProfile(userTwoHash, emailUserTwoHash, { from: accountTwo });
     });
 
     it("Should Create a new commit with one reviewer", async () => {
@@ -78,7 +83,7 @@ contract("EventDispatcher", accounts => {
         parseBnAndAssertEqual(userState[0], 0);
 
         let reviewers = new Array();
-        reviewers.push(EMAIL_USER_TWO);
+        reviewers.push(emailUserTwoHash);
         await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[0], NUMBER_OF_COMMITS);
@@ -118,7 +123,7 @@ contract("EventDispatcher", accounts => {
         parseBnAndAssertEqual(user1[3], initialNumberOfCommits + 1);
 
         let reviewers = new Array();
-        reviewers.push(EMAIL_USER_TWO);
+        reviewers.push(emailUserTwoHash);
         await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
         parseBnAndAssertEqual(reviewerState[0], 1);
@@ -194,9 +199,9 @@ async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid,
 
 async function transformVariables() {
     const web3 = openConnection();
-    TEAM_NAME = web3.utils.keccak256(TEAM_NAME);
-    USER_ONE = web3.utils.keccak256(USER_ONE);
-    EMAIL_USER_ONE = web3.utils.keccak256(EMAIL_USER_ONE);
-    USER_TWO = web3.utils.keccak256(USER_TWO);
-    EMAIL_USER_TWO = web3.utils.keccak256(EMAIL_USER_TWO);
+    teamNameHash = web3.utils.utf8ToHex(TEAM_NAME);
+    userOneHash = web3.utils.utf8ToHex(USER_ONE);
+    emailUserOneHash = web3.utils.utf8ToHex(EMAIL_USER_ONE);
+    userTwoHash = web3.utils.utf8ToHex(USER_TWO);
+    emailUserTwoHash = web3.utils.utf8ToHex(EMAIL_USER_TWO);
 }

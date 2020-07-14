@@ -10,11 +10,11 @@ const NUMBER_OF_USERS = 2;
 const NUMBER_OF_REVIEWERS = 1;
 const NUMBER_OF_REVIEWS = 1;
 const NUMBER_OF_COMMITS = 1;
-var TEAM_NAME = "TEAM 1";
-var USER_ONE = "Manuel";
-var EMAIL_USER_ONE = "manuel@example.com";
-var USER_TWO = "Marcos";
-var EMAIL_USER_TWO = "marcos@example.com";
+const TEAM_NAME = "TEAM 1";
+const USER_ONE = "Manuel";
+const EMAIL_USER_ONE = "manuel@example.com";
+const USER_TWO = "Marcos";
+const EMAIL_USER_TWO = "marcos@example.com";
 const COMMIT_TITTLE = "Example Commit";
 const COMMIT_URL = "https://bitbucket.org/exampleWorkspace/exampleRepo/commits/ffffffffffffffffffffsdsdfgfdsgsdfgsdffff";
 const REVIEW_COMMENT = "Well done";
@@ -22,12 +22,17 @@ const REVIEW_POINTS = [5, 3, 3];
 const COMMENT_VOTE = 2;
 const LONG_EXP_SECS = 2000;
 const MEMBER_USERTYPE = 2;
-
 const DAY_TO_SECS = 24 * 60 * 60;
 const INITIAL_SEASON_LENGTH_DAYS = 15;
 const INITIAL_SEASON_DAY_LENGTH_SECS = INITIAL_SEASON_LENGTH_DAYS * DAY_TO_SECS;
 const NEW_SEASON_LENGTH_DAYS = 24;
 const INVALID_SEASON_LENGTH_DAYS = 365 * 11;
+
+var teamNameHash;
+var userOneHash;
+var emailUserOneHash;
+var userTwoHash;
+var emailUserTwoHash;
 
 contract("Bright", accounts => {
     let cloudTeamManager;
@@ -46,7 +51,7 @@ contract("Bright", accounts => {
     it("Creating the enviroment" ,async () => {
         transformVariables();
         cloudTeamManager = await CloudTeamManager.deployed();
-        teamUid = await createTeamAndDeployContracts(cloudTeamManager, EMAIL_USER_ONE, TEAM_NAME, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
+        teamUid = await createTeamAndDeployContracts(cloudTeamManager, emailUserOneHash, teamNameHash, INITIAL_SEASON_LENGTH_DAYS, adminUserAddress);
         let contractsAddresses = await cloudTeamManager.getTeamContractAddresses(teamUid, { from: adminUserAddress });
         brightAddress = contractsAddresses[0];
         brightInstance = await Bright.at(brightAddress);
@@ -80,22 +85,23 @@ contract("Bright", accounts => {
     });
 
     it("Should Create two users", async () => {
-        await inviteUser(cloudTeamManager, teamUid, EMAIL_USER_TWO, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
-        await brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne });
-        await brightInstance.setProfile(USER_TWO, EMAIL_USER_TWO, { from: accountTwo });
+        await inviteUser(cloudTeamManager, teamUid, emailUserTwoHash, accountTwo, MEMBER_USERTYPE, LONG_EXP_SECS, adminUserAddress);
+        await brightInstance.setProfile(userOneHash, emailUserOneHash, { from: accountOne });
+        await brightInstance.setProfile(userTwoHash, emailUserTwoHash, { from: accountTwo });
         let usersAddress = await brightInstance.getUsersAddress({ from: adminUserAddress });
         assert(usersAddress.indexOf(accountOne) !== -1, "The user one is not registered");
         assert(usersAddress.indexOf(accountTwo) !== -1, "The user two is not registered");
         assert.equal(usersAddress.length, NUMBER_OF_USERS);
 
         let userDetails = await brightInstance.getUser(accountOne,  { from: accountOne });
-        assert.equal(userDetails[0], USER_ONE);
-        assert.equal(userDetails[1], EMAIL_USER_ONE);
+        assert.equal(userDetails[0], userOneHash);
+        let userEmail = Web3.utils.hexToUtf8(userDetails[1]);
+        assert.equal(userEmail, Web3.utils.hexToUtf8(emailUserOneHash));
     });
 
     it("Should give error creating an already created account", async () => {
         await truffleAssert.reverts(
-            brightInstance.setProfile(USER_ONE, EMAIL_USER_ONE, { from: accountOne }),
+            brightInstance.setProfile(userOneHash, emailUserOneHash, { from: accountOne }),
             "User already exists"
         );
     });
@@ -171,7 +177,7 @@ async function createNewCommit(brightInstance, commitInstance, rootInstance, com
     parseBnAndAssertEqual(userState[0], 0);
 
     let reviewers = new Array();
-    reviewers.push(EMAIL_USER_TWO);
+    reviewers.push(emailUserTwoHash);
     await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: committerAddr });
     userState = await brightInstance.getUserSeasonState(reviewerAddr, 1, { from: reviewerAddr });
     parseBnAndAssertEqual(userState[0], NUMBER_OF_REVIEWS);
@@ -216,9 +222,9 @@ async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid,
 
 async function transformVariables() {
     const web3 = openConnection();
-    TEAM_NAME = web3.utils.keccak256(TEAM_NAME);
-    USER_ONE = web3.utils.keccak256(USER_ONE);
-    EMAIL_USER_ONE = web3.utils.keccak256(EMAIL_USER_ONE);
-    USER_TWO = web3.utils.keccak256(USER_TWO);
-    EMAIL_USER_TWO = web3.utils.keccak256(EMAIL_USER_TWO);
+    teamNameHash = web3.utils.utf8ToHex(TEAM_NAME);
+    userOneHash = web3.utils.utf8ToHex(USER_ONE);
+    emailUserOneHash = web3.utils.utf8ToHex(EMAIL_USER_ONE);
+    userTwoHash = web3.utils.utf8ToHex(USER_TWO);
+    emailUserTwoHash = web3.utils.utf8ToHex(EMAIL_USER_TWO);
 }

@@ -6,10 +6,10 @@ const NODE_URL = "http://127.0.0.1:7545";
 contract("CloudTeamManager", accounts => {
     const web3 = openConnection();
 
-    var EMAIL_ACCOUNTS = ["0@example.com", "1@example.com", "2@example.com"];
-    EMAIL_ACCOUNTS = EMAIL_ACCOUNTS.map(email =>  web3.utils.keccak256(email));
-    var TEAM_NAMES = ["team1"];
-    TEAM_NAMES = TEAM_NAMES.map(name => web3.utils.keccak256(name));
+    const EMAIL_ACCOUNTS = ["0@example.com", "1@example.com", "2@example.com"];
+    const HASH_EMAIL_ACCOUNTS = EMAIL_ACCOUNTS.map(email =>  web3.utils.utf8ToHex(email));
+    const TEAM_NAMES = ["team1"];
+    const HASH_TEAM_NAMES = TEAM_NAMES.map(name => web3.utils.utf8ToHex(name));
 
     const EMPTY_TEAM_ID = 0;
     const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -25,14 +25,14 @@ contract("CloudTeamManager", accounts => {
     const PROJECTS = ["pj0", "pj1", "pj2", "pj3"];
 
     let adminOwnerAccount = accounts[0];
-    let emailUser0 = EMAIL_ACCOUNTS[0];
-    let teamName = TEAM_NAMES[0];
+    let emailUser0 = HASH_EMAIL_ACCOUNTS[0];
+    let teamName = HASH_TEAM_NAMES[0];
 
     let user1Account = accounts[1];
-    let emailUser1 = EMAIL_ACCOUNTS[1];
+    let emailUser1 = HASH_EMAIL_ACCOUNTS[1];
 
     let user2Account = accounts[2];
-    let emailUser2 = EMAIL_ACCOUNTS[2];
+    let emailUser2 = HASH_EMAIL_ACCOUNTS[2];
 
     let team1Uid;
     it("should create a team and ensure that the creator is an admin", () => {
