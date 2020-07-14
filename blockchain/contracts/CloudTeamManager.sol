@@ -17,14 +17,14 @@ contract CloudTeamManager is Initializable {
 
     struct TeamMember {
         bytes32 email;
-        UserType userStatus;
+        UserType userType;
     }
 
     struct InvitationStatus {
         bool isInvited;
         bool isRegistered;
         uint256 expirationTime;
-        UserType userStatus;
+        UserType userType;
     }
 
     struct UserData {
@@ -73,14 +73,14 @@ contract CloudTeamManager is Initializable {
 
     modifier onlyAdmins(uint256 teamUid) {
         Team storage team = createdTeams[teamUid];
-        require(team.users[msg.sender].userStatus == UserType.Admin, "Message sender is not admin");
+        require(team.users[msg.sender].userType == UserType.Admin, "Message sender is not admin");
         _;
     }
 
     modifier onlyMembersOrAdmins(uint256 teamUid) {
         Team storage team = createdTeams[teamUid];
         require(
-            team.users[msg.sender].userStatus == UserType.Member || team.users[msg.sender].userStatus == UserType.Admin, "Message sender is neither admin or member");
+            team.users[msg.sender].userType == UserType.Member || team.users[msg.sender].userType == UserType.Admin, "Message sender is neither admin or member");
         _;
     }
 
@@ -131,7 +131,7 @@ contract CloudTeamManager is Initializable {
 
     function toggleUserType(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) {
         Team storage team = createdTeams[teamUid];
-        UserType userType = team.users[memberAddress].userStatus;
+        UserType userType = team.users[memberAddress].userType;
         bytes32 email;
         if (userType == UserType.Admin) {
             require(memberAddress != owner, "Message sender is not owner");
@@ -153,7 +153,7 @@ contract CloudTeamManager is Initializable {
             usersRegister[email].invitedTeams.push(teamUid);
             createdTeams[teamUid].invitedUsersEmailList.push(email);
         }
-        user.userStatus = userType;
+        user.userType = userType;
         user.expirationTime = now + exp;
     }
 
@@ -175,7 +175,7 @@ contract CloudTeamManager is Initializable {
 
     function getInvitedUserInfo(bytes32 email, uint256 teamUid) public view returns (uint256, uint256, UserType) {
         InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
-        return (teamUid, user.expirationTime, user.userStatus);
+        return (teamUid, user.expirationTime, user.userType);
     }
 
     function registerToTeam(address memberAddress, bytes32 email, uint256 teamUid) public onlySender(memberAddress) {
@@ -195,7 +195,7 @@ contract CloudTeamManager is Initializable {
         Team storage team = createdTeams[teamUid];
         address[] memory users = team.usersList;
         for (uint256 j = 0; j < users.length; j++) {
-            if (team.users[users[j]].userStatus == UserType.Admin) {
+            if (team.users[users[j]].userType == UserType.Admin) {
                 adminsCount++;
             }
         }
@@ -205,7 +205,7 @@ contract CloudTeamManager is Initializable {
 
         for (uint256 i = 0; i < users.length; i++) {
             address userAddress = users[i];
-            if (team.users[userAddress].userStatus == UserType.Admin) {
+            if (team.users[userAddress].userType == UserType.Admin) {
                 admins[x] = userAddress;
                 x++;
             } else {
@@ -221,16 +221,15 @@ contract CloudTeamManager is Initializable {
     }
 
     function getUserType(uint256 teamUid, address memberAddress) public view returns (UserType) {
-        return createdTeams[teamUid].users[memberAddress].userStatus;
+        return createdTeams[teamUid].users[memberAddress].userType;
     }
 
     function getUserInfo(uint256 teamUid, address memberAddress) public view returns (UserType, bytes32) {
         TeamMember memory teamMember = createdTeams[teamUid].users[memberAddress];
-        return (teamMember.userStatus, teamMember.email);
+        return (teamMember.userType, teamMember.email);
     }
 
-    function getInvitedUsersList(uint256 teamUid)
-    public view returns (bytes32[] memory) {
+    function getInvitedUsersList(uint256 teamUid) public view returns (bytes32[] memory) {
         Team storage team = createdTeams[teamUid];
         return team.invitedUsersEmailList;
     }
@@ -286,7 +285,7 @@ contract CloudTeamManager is Initializable {
         InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
         UserType userTp = userType;
         if (userTp == UserType.NotRegistered) {
-            userTp = user.userStatus;
+            userTp = user.userType;
             require(
                 userTp == UserType.Admin || userTp == UserType.Member,
                 "UserType is neither admin or member"
@@ -311,8 +310,8 @@ contract CloudTeamManager is Initializable {
             }
         }
         if(isFound) {
-            array[index] = array[arrayLength-1];
-            delete array[arrayLength-1];
+            array[index] = array[arrayLength - 1];
+            delete array[arrayLength - 1];
             array.length--;
         }
     }
@@ -329,8 +328,8 @@ contract CloudTeamManager is Initializable {
             }
         }
         if(isFound) {
-            array[index] = array[arrayLength-1];
-            delete array[arrayLength-1];
+            array[index] = array[arrayLength - 1];
+            delete array[arrayLength - 1];
             array.length--;
         }
     }
