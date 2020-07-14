@@ -540,26 +540,34 @@ export class ContractManagerService {
     }
 
     private getUserReputationRecursive(contractArtifact: ITrbSmartContact, userAddress: string, 
-                                       season: number, global: boolean): Promise<UserReputation> {
+                                       season: number, global: boolean, iterationIndex = 0): Promise<UserReputation> {
         let promise: Promise<any>;
-        if (global) {
-            promise = contractArtifact.methods.getUser(userAddress).call();
+        let maxIterations = 10;
+        if (iterationIndex >= maxIterations) {
+            let error = new Error("Error getting reputation, maximimum number of retries reached");
+            this.log.e(error);
+            throw error;
         } else {
-            promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call();
-        }
-        return promise
-        .then((commitsVals: Array<any>) => {
-            return global ? UserReputation.fromSmartContractGlobalReputation(commitsVals) : UserReputation.fromSmartContract(commitsVals);
-        })
-        .catch(error => {
-            let ret: Promise<UserReputation>;
-            if (error.message === AppConfig.VALUES_ARENT_VALID_ERROR_IDENTIFIER){
-                ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global);
+            if (global) {
+                promise = contractArtifact.methods.getUser(userAddress).call();
             } else {
-                this.log.e("Error getting reputation:", error);
-                throw error;
+                promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call();
             }
-            return ret;
-        });
+            return promise
+            .then((commitsVals: Array<any>) => {
+                return global ? UserReputation.fromSmartContractGlobalReputation(commitsVals) : 
+                    UserReputation.fromSmartContract(commitsVals);
+            })
+            .catch(error => {
+                let ret: Promise<UserReputation>;
+                if (error.message === AppConfig.VALUES_ARENT_VALID_ERROR_IDENTIFIER){
+                    ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global, iterationIndex + 1);
+                } else {
+                    this.log.e("Error getting reputation:", error);
+                    throw error;
+                }
+                return ret;
+            });
+        }
     }
 }
