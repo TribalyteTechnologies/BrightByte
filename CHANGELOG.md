@@ -6,7 +6,13 @@
 - Bug fix on Bright contract when the season change.
 - The migration process is not provided.
 
-`Migration needed from 0.7.2 to 0.8.2`
+`Migration needed from 0.7.3 to 0.8.0`
+
+#### v0.7.3
+
+- Solved ranking page performance.
+
+`No migration needed from 0.7.1 to 0.7.2`
 
 #### v0.7.2
 
