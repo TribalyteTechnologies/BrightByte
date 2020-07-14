@@ -26,6 +26,10 @@ interface ITrbSmartContact { //Web3.Eth.Contract
 
 @Injectable()
 export class ContractManagerService {
+
+    private readonly MINIMUM_DELAY_MILIS = 0;
+    private readonly MAXIMUM_DELAY_MILIS = 2000;
+
     private contractAddressRoot: string;
     private contractAddressBright: string;
     private contractAddressCommits: string;
@@ -548,10 +552,15 @@ export class ContractManagerService {
             this.log.e(error);
             throw error;
         } else {
-            if (global) {
-                promise = contractArtifact.methods.getUser(userAddress).call();
+            if (iterationIndex > 0) {
+                promise = this.getRandomDelay(this.MINIMUM_DELAY_MILIS, this.MAXIMUM_DELAY_MILIS);
             } else {
-                promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call();
+                promise = Promise.resolve();
+            }
+            if (global) {
+                promise = promise.then(() => contractArtifact.methods.getUser(userAddress).call());
+            } else {
+                promise = promise.then(() => contractArtifact.methods.getUserSeasonReputation(userAddress, season).call());
             }
             return promise
             .then((commitsVals: Array<any>) => {
@@ -569,5 +578,10 @@ export class ContractManagerService {
                 return ret;
             });
         }
+    }
+
+    private getRandomDelay(minDelay: number, maxDelay: number): Promise<void> {
+        let delay =  Math.floor(Math.random() * maxDelay) + minDelay;
+        return new Promise(resolve => setTimeout(resolve, delay));
     }
 }
