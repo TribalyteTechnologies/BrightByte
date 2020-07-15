@@ -1,4 +1,4 @@
-pragma solidity 0.5.2;
+pragma solidity 0.5.17;
 
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, ICommit } from "./IBrightByte.sol";

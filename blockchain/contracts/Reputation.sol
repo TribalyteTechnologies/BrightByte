@@ -1,4 +1,4 @@
-pragma solidity 0.5.2;
+pragma solidity 0.5.17;
 
 library Reputation {
     uint256 private constant WEIGHT_FACTOR = 10000000000;

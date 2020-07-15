@@ -1,4 +1,4 @@
-pragma solidity 0.5.2;
+pragma solidity 0.5.17;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
@@ -22,7 +22,6 @@ contract CloudTeamManager is Initializable {
 
     struct InvitationStatus {
         bool isInvited;
-        bool isRegistered;
         uint256 expirationTime;
         UserType userType;
     }
@@ -149,10 +148,10 @@ contract CloudTeamManager is Initializable {
         require(teamUid != 0, "Cannot invite to default team");
         InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
         if (!user.isInvited) {
-            user.isInvited = true;
             usersRegister[email].invitedTeams.push(teamUid);
             createdTeams[teamUid].invitedUsersEmailList.push(email);
         }
+        user.isInvited = true;
         user.userType = userType;
         user.expirationTime = now + exp;
     }
@@ -275,9 +274,11 @@ contract CloudTeamManager is Initializable {
     }
 
     function removeInvitation(uint256 teamUid, bytes32 email) private {
-        InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
-        removeUintFromArray(usersRegister[email].invitedTeams, teamUid);
-        delete usersRegister[email].userTeams[teamUid];
+        UserData storage user = usersRegister[email];
+        removeUintFromArray(user.invitedTeams, teamUid);
+        delete user.userTeams[teamUid];
+        Team storage team = createdTeams[teamUid];
+        removeBytes32FromArray(team.invitedUsersEmailList, email);
     }
 
     function addToTeam(uint256 teamUid, address memberAddress, bytes32 email, UserType userType) private {
@@ -291,10 +292,10 @@ contract CloudTeamManager is Initializable {
                 "UserType is neither admin or member"
             );
         }
-        team.users[memberAddress] = TeamMember(email, userType);
+        team.users[memberAddress].email = email;
+        team.users[memberAddress].userType = userTp;
         team.usersList.push(memberAddress);
         userTeams[memberAddress].push(teamUid);
-        user.isRegistered = true;
         removeInvitation(teamUid, email);
     }
 
@@ -317,6 +318,24 @@ contract CloudTeamManager is Initializable {
     }
 
     function removeUintFromArray(uint256[] storage array, uint256 element) private {
+        uint index = 0;
+        bool isFound = false;
+        uint256 arrayLength = array.length;
+        for(uint i = 0; i < arrayLength; i++) {
+            if(array[i] == element) {
+                index = i;
+                isFound = true;
+                break;
+            }
+        }
+        if(isFound) {
+            array[index] = array[arrayLength - 1];
+            delete array[arrayLength - 1];
+            array.length--;
+        }
+    }
+
+    function removeBytes32FromArray(bytes32[] storage array, bytes32 element) private {
         uint index = 0;
         bool isFound = false;
         uint256 arrayLength = array.length;

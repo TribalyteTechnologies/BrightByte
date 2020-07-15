@@ -5,7 +5,7 @@ module.exports = {
     development: {
       host: "localhost",
       port: 7545,
-      network_id: 5777,
+      network_id: 5777
     },
     custom: truffleCustomConfig,
   },
@@ -20,7 +20,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.5.2",
+      version: "0.5.17",
       docker: false,
       settings: {
         optimizer: {
