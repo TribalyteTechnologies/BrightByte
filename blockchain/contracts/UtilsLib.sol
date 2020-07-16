@@ -45,4 +45,58 @@ library UtilsLib {
             }
         }
     }
+
+    function removeAddressFromArray(address[] storage array, address element) public {
+        uint index = 0;
+        bool isFound = false;
+        uint256 arrayLength = array.length;
+        for(uint i = 0; i < arrayLength; i++) {
+            if(array[i] == element) {
+                index = i;
+                isFound = true;
+                break;
+            }
+        }
+        if(isFound) {
+            array[index] = array[arrayLength - 1];
+            delete array[arrayLength - 1];
+            array.length--;
+        }
+    }
+
+    function removeUintFromArray(uint256[] storage array, uint256 element) public {
+        uint index = 0;
+        bool isFound = false;
+        uint256 arrayLength = array.length;
+        for(uint i = 0; i < arrayLength; i++) {
+            if(array[i] == element) {
+                index = i;
+                isFound = true;
+                break;
+            }
+        }
+        if(isFound) {
+            array[index] = array[arrayLength - 1];
+            delete array[arrayLength - 1];
+            array.length--;
+        }
+    }
+
+    function removeBytes32FromArray(bytes32[] storage array, bytes32 element) public {
+        uint index = 0;
+        bool isFound = false;
+        uint256 arrayLength = array.length;
+        for(uint i = 0; i < arrayLength; i++) {
+            if(array[i] == element) {
+                index = i;
+                isFound = true;
+                break;
+            }
+        }
+        if(isFound) {
+            array[index] = array[arrayLength - 1];
+            delete array[arrayLength - 1];
+            array.length--;
+        }
+    }
 }

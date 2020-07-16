@@ -91,6 +91,8 @@ module.exports = function(deployer) {
     .then(function(bbFactory){
         return bbFactory.initialize(currentVersion);
     }).then(function(){
+        return deployer.link(UtilsLib, CloudTeamManager);
+    }).then(function(){
         return deployer.deploy(CloudTeamManager);
     }).then(function(teamManager){
         return teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);

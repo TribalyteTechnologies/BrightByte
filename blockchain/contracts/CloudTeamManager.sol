@@ -4,6 +4,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
+import { UtilsLib } from "./UtilsLib.sol";
 
 contract CloudTeamManager is Initializable {
 
@@ -244,11 +245,9 @@ contract CloudTeamManager is Initializable {
         Team storage team = createdTeams[teamUid];
         bytes32 email = team.users[memberAddress].email;
         delete team.users[memberAddress];
-        removeFromArray(team.usersList, memberAddress);
-
-        removeUintFromArray(userTeams[memberAddress], teamUid);
+        UtilsLib.removeAddressFromArray(team.usersList, memberAddress);
+        UtilsLib.removeUintFromArray(userTeams[memberAddress], teamUid);
         delete usersRegister[email].userTeams[teamUid];
-
         return email;
     }
 
@@ -275,10 +274,10 @@ contract CloudTeamManager is Initializable {
 
     function removeInvitation(uint256 teamUid, bytes32 email) private {
         UserData storage user = usersRegister[email];
-        removeUintFromArray(user.invitedTeams, teamUid);
+        UtilsLib.removeUintFromArray(user.invitedTeams, teamUid);
         delete user.userTeams[teamUid];
         Team storage team = createdTeams[teamUid];
-        removeBytes32FromArray(team.invitedUsersEmailList, email);
+        UtilsLib.removeBytes32FromArray(team.invitedUsersEmailList, email);
     }
 
     function addToTeam(uint256 teamUid, address memberAddress, bytes32 email, UserType userType) private {
@@ -297,59 +296,5 @@ contract CloudTeamManager is Initializable {
         team.usersList.push(memberAddress);
         userTeams[memberAddress].push(teamUid);
         removeInvitation(teamUid, email);
-    }
-
-    function removeFromArray(address[] storage array, address element) private {
-        uint index = 0;
-        bool isFound = false;
-        uint256 arrayLength = array.length;
-        for(uint i = 0; i < arrayLength; i++) {
-            if(array[i] == element) {
-                index = i;
-                isFound = true;
-                break;
-            }
-        }
-        if(isFound) {
-            array[index] = array[arrayLength - 1];
-            delete array[arrayLength - 1];
-            array.length--;
-        }
-    }
-
-    function removeUintFromArray(uint256[] storage array, uint256 element) private {
-        uint index = 0;
-        bool isFound = false;
-        uint256 arrayLength = array.length;
-        for(uint i = 0; i < arrayLength; i++) {
-            if(array[i] == element) {
-                index = i;
-                isFound = true;
-                break;
-            }
-        }
-        if(isFound) {
-            array[index] = array[arrayLength - 1];
-            delete array[arrayLength - 1];
-            array.length--;
-        }
-    }
-
-    function removeBytes32FromArray(bytes32[] storage array, bytes32 element) private {
-        uint index = 0;
-        bool isFound = false;
-        uint256 arrayLength = array.length;
-        for(uint i = 0; i < arrayLength; i++) {
-            if(array[i] == element) {
-                index = i;
-                isFound = true;
-                break;
-            }
-        }
-        if(isFound) {
-            array[index] = array[arrayLength - 1];
-            delete array[arrayLength - 1];
-            array.length--;
-        }
     }
 }
