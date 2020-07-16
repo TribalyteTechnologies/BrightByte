@@ -1,9 +1,11 @@
 pragma solidity 0.5.17;
 
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, ICommit } from "./IBrightByte.sol";
 
-contract Commits is ICommit {
+contract Commits is ICommit, Initializable {
     IRoot private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;
@@ -59,7 +61,7 @@ contract Commits is ICommit {
         _;
     }
 
-    function init(address _root) public {
+    function initialize(address _root) public initializer {
         require(rootAddress == address(0), "Root address cannot be 0");
         root = IRoot(_root);
         rootAddress = _root;

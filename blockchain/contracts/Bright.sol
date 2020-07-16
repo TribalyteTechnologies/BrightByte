@@ -1,12 +1,13 @@
 pragma solidity 0.5.17;
 
 import "./CloudEventDispatcher.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, IBright } from "./IBrightByte.sol";
 
-contract Bright is IBright {
+contract Bright is IBright, Initializable {
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant HOUR_TO_SECS = 60 * 60;
     uint256 private constant DAY_LENGTH_SECS = 24 * HOUR_TO_SECS;
@@ -45,7 +46,8 @@ contract Bright is IBright {
         _;
     }
 
-    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) public {
+    function initialize (address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin)
+    public initializer {
         require(rootAddress == address(0), "Root address canot be 0");
         root = IRoot(_root);
         rootAddress = _root;

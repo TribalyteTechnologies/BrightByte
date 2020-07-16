@@ -17,7 +17,7 @@ interface IRoot {
 }
 
 interface IBright {
-    function init(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) external;
+    function initialize(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) external;
     function getCurrentSeason() external view returns (uint256, uint256, uint256);
     function setCommit(bytes32 url) external;
     function checkCommitSeason(bytes32 url,address author) external view returns (bool);
@@ -29,7 +29,7 @@ interface IBright {
 }
 
 interface ICommit {
-    function init(address _root) external;
+    function initialize(address _root) external;
     function isCommit(bytes32 _url) external view returns(bool,bool);
     function notifyCommit(bytes32 url,address a) external;
     function readCommit(bytes32 _url) external;

@@ -1,12 +1,12 @@
 pragma solidity 0.5.17;
 
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "./Threshold.sol";
 import "./CloudEventDispatcher.sol";
-
 import { Reputation } from "./Reputation.sol";
 import { IBright, ICommit, IRoot } from "./IBrightByte.sol";
 
-contract Root is IRoot{
+contract Root is IRoot, Initializable {
     mapping (address => bool) private adminUsers;
     mapping (address => bool) private allowedAddresses;
 
@@ -42,9 +42,9 @@ contract Root is IRoot{
         _;
     }
 
-    constructor (
+    function initialize (
         address bright, address commits, address threshold, address cloudEventDispatcher,
-        address userAdmin, uint256 teamId, uint256 seasonLength) public {
+        address userAdmin, uint256 teamId, uint256 seasonLength) public initializer {
         owner = msg.sender;
         remoteBright = IBright(bright);
         brightAddress = bright;
@@ -54,8 +54,8 @@ contract Root is IRoot{
         thresholdAddress = threshold;
         remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcher);
         cloudEventDispatcherAddress = cloudEventDispatcher;
-        remoteCommits.init(address(this));
-        remoteBright.init(address(this), cloudEventDispatcher, teamId, seasonLength, userAdmin);
+        remoteCommits.initialize(address(this));
+        remoteBright.initialize(address(this), cloudEventDispatcher, teamId, seasonLength, userAdmin);
         uint256 currentSeasonIndex;
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;
