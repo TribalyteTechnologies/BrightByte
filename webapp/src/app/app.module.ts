@@ -49,6 +49,7 @@ import { BrightByteApp } from "./app.component";
 import { CommitCard } from "../components/commit-card/commit-card.component";
 import { LoginForm } from "../components/login-form/login-form.component";
 import { NewUserForm } from "../components/new-user-form/new-user-form.component";
+import { WorkspaceForm } from "../components/workspace-form/workspace-form.component";
 import { SetProfileForm } from "../components/set-profile-form/set-profile-form.component";
 import { CommentComponent } from "../components/comment/comment.component";
 import { AchievementComponent } from "../components/achievement/achievement.component";
@@ -91,6 +92,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AchievementComponent,
         LoginForm,
         NewUserForm,
+        WorkspaceForm,
         AvatarComponent,
         Profile,
         SetProfileForm,
@@ -134,6 +136,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AchievementComponent,
         LoginForm,
         NewUserForm,
+        WorkspaceForm,
         AvatarComponent,
         Profile,
         SetProfileForm,

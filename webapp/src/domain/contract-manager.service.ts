@@ -852,27 +852,9 @@ export class ContractManagerService {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
-                let promise: Promise<any>;
-                if (global) {
-                    promise = contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address })
-                        .then((userVals: Array<any>) => {
-                            userVals[1] = this.web3.utils.toUtf8(userVals[1]);
-                            return UserReputation.fromSmartContractGlobalReputation(userVals);
-                        });
-                } else {
-                    promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season)
-                    .call({ from: this.currentUser.address })
-                        .then((userVals: Array<any>) => {
-                            userVals[1] = this.web3.utils.toUtf8(userVals[1]);
-                            return UserReputation.fromSmartContract(userVals);
-                        });
-                }
-                return promise;
+                return this.getUserReputationRecursive(contractArtifact, userAddress, season, global);
             });
             return Promise.all(promises);
-        }).catch(err => {
-            this.log.e("Error getting ranking: ", err);
-            throw err;
         });
     }
 
@@ -1029,5 +1011,29 @@ export class ContractManagerService {
 
     private setCurrentTeam(teamUid: number) {
         this.currentTeamUid = teamUid;
+    }
+
+    private getUserReputationRecursive(contractArtifact: ITrbSmartContact, userAddress: string, 
+                                       season: number, global: boolean): Promise<UserReputation> {
+        let promise: Promise<any>;
+        if (global) {
+            promise = contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address });
+        } else {
+            promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
+        }
+        return promise
+        .then((commitsVals: Array<any>) => {
+            return global ? UserReputation.fromSmartContractGlobalReputation(commitsVals) : UserReputation.fromSmartContract(commitsVals);
+        })
+        .catch(error => {
+            let ret: Promise<UserReputation>;
+            if (error.message === AppConfig.VALUES_ARENT_VALID_ERROR_IDENTIFIER){
+                ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global);
+            } else {
+                this.log.e("Error getting reputation:", error);
+                throw error;
+            }
+            return ret;
+        });
     }
 }

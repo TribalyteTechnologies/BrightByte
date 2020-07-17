@@ -5,6 +5,7 @@ import { Achievement } from "../models/achievement.model";
 import { AchievementService } from "./achievement.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { BitbucketService } from "./bitbucket.service";
+import { LoginService } from "../core/login.service";
 
 @Injectable()
 export class BackendApiService {
@@ -21,6 +22,7 @@ export class BackendApiService {
         private websocketSrv: WebSocketService,
         private achievementSrv: AchievementService,
         private bitbucketService: BitbucketService,
+        private loginSrv: LoginService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("BackendApiService");
@@ -28,7 +30,8 @@ export class BackendApiService {
         this.socket = this.websocketSrv.getSocket();
     }
 
-    public initBackendConnection(userAddress: string, teamUid: number) {
+    public initBackendConnection(teamUid: number) {
+        let userAddress = this.loginSrv.getAccountAddress();
         let sessionId = userAddress + "-" + teamUid;
         this.socket.emit(this.ADD_USER, sessionId);
         this.log.d("Backend connection established");

@@ -106,7 +106,7 @@ export class ReviewPage {
         this.refresh();
     }
 
-    public refresh(event?) {
+    public refresh(event?): Promise<void> {
         let isReloadEvent = (event && event.type === this.RELOAD_EVENT) || this.projectSelected !== this.ALL;
         this.log.d("Refreshing page");
         if (this.initializing || this.isShowSpinner) {
@@ -114,7 +114,7 @@ export class ReviewPage {
             this.isShowSpinner = false;
         }
         let commits: Array<UserCommit>;
-        this.contractManagerService.getReviewCommitsState()
+        return this.contractManagerService.getReviewCommitsState()
         .then(state => {
             if (!event){
                 this.loadedCommits = state[this.currentReviewFilterState];
@@ -347,10 +347,14 @@ export class ReviewPage {
                 (commit.reviewers[0].indexOf(userDetails), 1);
             commit.reviewers[1].push(userDetails);
             if (this.filterValue === this.INCOMPLETE) {
-                this.filterArrayCommits.splice(this.filterArrayCommits.indexOf(commit), 1);
-                if (this.filterArrayCommits.length === 0){
+                if (this.filterArrayCommits.length === 1){
                     this.isShowSpinner = true;
-                    this.refresh(this.RELOAD_EVENT);
+                    this.refresh(this.RELOAD_EVENT)
+                    .then(() => {
+                        this.removeCommitFromList(commit);
+                    });
+                } else {
+                    this.removeCommitFromList(commit);
                 }
             }
 
@@ -365,6 +369,10 @@ export class ReviewPage {
             this.log.e("Catched error " + error);
             throw error;
         });
+    }
+
+    private removeCommitFromList(commit: UserCommit){
+        this.filterArrayCommits.splice(this.filterArrayCommits.indexOf(commit), 1);
     }
 
     private getReviewerName(commit: UserCommit): Promise<Array<string>> {
