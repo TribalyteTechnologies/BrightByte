@@ -126,7 +126,7 @@ contract("CloudTeamManager", accounts => {
             })
             .then(response => {
                 assert(response.receipt.status);
-                return teamManagerInstance.deployThreshold(team1Uid, { from: adminOwnerAccount });
+                return teamManagerInstance.deploySettings(team1Uid, { from: adminOwnerAccount });
             })
             .then(response => {
                 assert(response.receipt.status);
@@ -416,6 +416,6 @@ function openConnection() {
 async function deployTeamContracts(userMail, teamManagerInstance, teamUid, seasonLength, adminUserAddress) {
     await teamManagerInstance.deployBright(teamUid, { from: adminUserAddress });
     await teamManagerInstance.deployCommits(teamUid, { from: adminUserAddress });
-    await teamManagerInstance.deployThreshold(teamUid, { from: adminUserAddress });
+    await teamManagerInstance.deploySettings(teamUid, { from: adminUserAddress });
     await teamManagerInstance.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
 }

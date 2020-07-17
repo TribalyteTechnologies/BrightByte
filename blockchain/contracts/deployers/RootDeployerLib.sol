@@ -6,10 +6,10 @@ import "../Root.sol";
 library RootDeployerLib {
 
     function deploy(
-        address bright, address commits, address threshold, address eventDispatcher,
+        address bright, address commits, address settings, address eventDispatcher,
         address userAdmin, uint256 teamId, uint256 seasonLength)public returns (address) {
         Root remoteRoot = new Root();
-        remoteRoot.initialize(bright, commits, threshold, eventDispatcher, userAdmin, teamId, seasonLength);
+        remoteRoot.initialize(bright, commits, settings, eventDispatcher, userAdmin, teamId, seasonLength);
         return address(remoteRoot);
     }
 

@@ -4,7 +4,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 import { BrightDeployerLib } from "./deployers/BrightDeployerLib.sol";
 import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";
-import { ThresholdDeployerLib } from "./deployers/ThresholdDeployerLib.sol";
+import { BrightByteSettingsDeployerLib } from "./deployers/BrightByteSettingsDeployerLib.sol";
 import { RootDeployerLib } from "./deployers/RootDeployerLib.sol";
 
 import "./CloudEventDispatcher.sol";
@@ -14,7 +14,7 @@ contract CloudBrightByteFactory is Initializable {
     struct TeamContracts {
         address brightAddress;
         address commitsAddress;
-        address thresholdAddress;
+        address settingsAddress;
         address rootAddress;
     }
 
@@ -51,26 +51,26 @@ contract CloudBrightByteFactory is Initializable {
         teamContracts[teamUid].commitsAddress = CommitsDeployerLib.deploy();
     }
 
-    function deployThreshold(uint256 teamUid) public onlyTeamManager{
-        teamContracts[teamUid].thresholdAddress = ThresholdDeployerLib.deploy();
+    function deploySettings(uint256 teamUid) public onlyTeamManager{
+        teamContracts[teamUid].settingsAddress = BrightByteSettingsDeployerLib.deploy();
     }
 
     function deployRoot(uint256 teamUId, address userAdmin, uint seasonLength) public onlyTeamManager returns (address){
         TeamContracts storage contracts = teamContracts[teamUId];
         address bright = contracts.brightAddress;
         address commits = contracts.commitsAddress;
-        address threshold = contracts.thresholdAddress;
-        address root = RootDeployerLib.deploy(bright, commits, threshold, eventDispatcherAddress, userAdmin, teamUId, seasonLength);
+        address settings = contracts.settingsAddress;
+        address root = RootDeployerLib.deploy(bright, commits, settings, eventDispatcherAddress, userAdmin, teamUId, seasonLength);
         contracts.rootAddress = root;
         allowEventDispatcherForContract(bright);
         allowEventDispatcherForContract(commits);
-        allowEventDispatcherForContract(threshold);
+        allowEventDispatcherForContract(settings);
         allowEventDispatcherForContract(root);
     }
 
     function getTeamContractAddresses(uint256 teamUid) public onlyTeamManager view returns (address, address, address, address) {
         TeamContracts storage contracts = teamContracts[teamUid];
-        return (contracts.brightAddress, contracts.commitsAddress, contracts.thresholdAddress, contracts.rootAddress);
+        return (contracts.brightAddress, contracts.commitsAddress, contracts.settingsAddress, contracts.rootAddress);
     }
 
     function getEventDispatcherAddress() public view returns (address) {

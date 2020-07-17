@@ -105,8 +105,8 @@ contract CloudTeamManager is Initializable {
         remoteBbFactory.deployCommits(teamUid);
     }
 
-    function deployThreshold(uint256 teamUid) public onlyAdmins(teamUid) {
-        remoteBbFactory.deployThreshold(teamUid);
+    function deploySettings(uint256 teamUid) public onlyAdmins(teamUid) {
+        remoteBbFactory.deploySettings(teamUid);
     }
 
     function deployRoot(bytes32 email, uint256 teamUid, uint256 seasonLength) public onlyAdmins(teamUid) {

@@ -2,9 +2,10 @@ pragma solidity 0.5.17;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract Threshold is Initializable {
+contract BrightByteSettings is Initializable {
     uint256 private currentSeasonIndex;
     mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
+    bytes32[] private textRules;
 
     address private rootAddress;
     address private owner;
@@ -61,6 +62,18 @@ contract Threshold is Initializable {
             uint256 index = i - initialSeasonIndex;
             initSeasonThreshold(i, commitsThreshold[index],  reviewsThreshold[index]);
         }
+    }
+
+    function getTextRules() public view onlyRoot returns(bytes32[] memory) {
+        return textRules;
+    }
+
+    function addTextRules(bytes32 newText) public onlyRoot {
+        textRules.push(newText);
+    }
+
+    function clearTextRules() public onlyRoot {
+        delete textRules;
     }
 
     function initSeasonThreshold(uint256 seasonIndex, uint256 commitThreshold, uint256 reviewThreshold) private {

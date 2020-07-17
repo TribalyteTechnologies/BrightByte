@@ -1,6 +1,6 @@
 var Bright = artifacts.require("./Bright.sol");
 var Commits = artifacts.require("./Commits.sol");
-var Threshold = artifacts.require("./Threshold.sol");
+var BrightByteSettings = artifacts.require("./BrightByteSettings.sol");
 var CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
 var Root = artifacts.require("./Root.sol");
 var Reputation = artifacts.require("./Reputation.sol");
@@ -10,7 +10,7 @@ var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 var BrightDeployerLib = artifacts.require("./BrightDeployerLib.sol");
 var CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
-var ThresholdDeployerLib = artifacts.require("./ThresholdDeployerLib.sol");
+var BrightByteSettingsDeployerLib = artifacts.require("./BrightByteSettingsDeployerLib.sol");
 var RootDeployerLib = artifacts.require("./RootDeployerLib.sol");
 var scVersionObj = require("../../version.json");
 
@@ -44,13 +44,13 @@ module.exports = function(deployer) {
         return deployer.deploy(Reputation);
     })
     .then(function() {
-        return deployer.deploy(Threshold);
+        return deployer.deploy(BrightByteSettings);
     }).then(function() {
         return deployer.deploy(CloudEventDispatcher, "0x0000000000000000000000000000000000000000");
     }).then(function() {
         return deployer.link(Reputation, Root);
     }).then(function() {
-        return deployer.deploy(Root, Bright.address, Commits.address, Threshold.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
+        return deployer.deploy(Root, Bright.address, Commits.address, BrightByteSettings.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     })
     .then(function(){
         return deployer.link(UtilsLib, BrightDeployerLib);
@@ -65,7 +65,7 @@ module.exports = function(deployer) {
         return deployer.deploy(CommitsDeployerLib);
     })
     .then(function(){
-        return deployer.deploy(ThresholdDeployerLib);
+        return deployer.deploy(BrightByteSettingsDeployerLib);
     })
     .then(function(){
         return deployer.link(Reputation, RootDeployerLib);
@@ -80,7 +80,7 @@ module.exports = function(deployer) {
         return deployer.link(CommitsDeployerLib, CloudBBFactory);
     })
     .then(function(){
-        return deployer.link(ThresholdDeployerLib, CloudBBFactory);
+        return deployer.link(BrightByteSettingsDeployerLib, CloudBBFactory);
     })
     .then(function(){
         return deployer.link(RootDeployerLib, CloudBBFactory);

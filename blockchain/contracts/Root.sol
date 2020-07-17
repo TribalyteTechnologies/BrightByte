@@ -1,7 +1,7 @@
 pragma solidity 0.5.17;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "./Threshold.sol";
+import "./BrightByteSettings.sol";
 import "./CloudEventDispatcher.sol";
 import { Reputation } from "./Reputation.sol";
 import { IBright, ICommit, IRoot } from "./IBrightByte.sol";
@@ -14,8 +14,8 @@ contract Root is IRoot, Initializable {
     address brightAddress;
     ICommit remoteCommits;
     address commitsAddress;
-    Threshold remoteThreshold;
-    address thresholdAddress;
+    BrightByteSettings remoteSettings;
+    address settingAddress;
     CloudEventDispatcher remoteCloudEventDispatcher;
     address cloudEventDispatcherAddress;
     address owner;
@@ -43,15 +43,15 @@ contract Root is IRoot, Initializable {
     }
 
     function initialize (
-        address bright, address commits, address threshold, address cloudEventDispatcher,
+        address bright, address commits, address settings, address cloudEventDispatcher,
         address userAdmin, uint256 teamId, uint256 seasonLength) public initializer {
         owner = msg.sender;
         remoteBright = IBright(bright);
         brightAddress = bright;
         remoteCommits = ICommit(commits);
         commitsAddress = commits;
-        remoteThreshold = Threshold(threshold);
-        thresholdAddress = threshold;
+        remoteSettings = BrightByteSettings(settings);
+        settingAddress = settings;
         remoteCloudEventDispatcher = CloudEventDispatcher(cloudEventDispatcher);
         cloudEventDispatcherAddress = cloudEventDispatcher;
         remoteCommits.initialize(address(this));
@@ -60,7 +60,7 @@ contract Root is IRoot, Initializable {
         uint256 seasonFinaleTime;
         uint256 seasonLengthSecs;
         (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs) = remoteBright.getCurrentSeason();
-        remoteThreshold.initialize(address(this), currentSeasonIndex);
+        remoteSettings.initialize(address(this), currentSeasonIndex);
         adminUsers[userAdmin] = true;
         isVersionEnable = true;
     }
@@ -157,20 +157,20 @@ contract Root is IRoot, Initializable {
     }
 
     function getSeasonThreshold(uint256 seasonIndex) public onlyAllowed view returns (uint256, uint256) {
-        return remoteThreshold.getSeasonThreshold(seasonIndex);
+        return remoteSettings.getSeasonThreshold(seasonIndex);
     }
 
     function getCurrentSeasonThreshold() public onlyAllowed view returns (uint256, uint256) {
-        return remoteThreshold.getCurrentSeasonThreshold();
+        return remoteSettings.getCurrentSeasonThreshold();
     }
 
     function setIniatialThreshold(uint256 initialSeasonIndex, uint256[] memory commitsThreshold, uint256[] memory reviewsThreshold)
     public onlyAdmin {
-        return remoteThreshold.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
+        return remoteSettings.setIniatialThreshold(initialSeasonIndex, commitsThreshold, reviewsThreshold);
     }
 
     function setCurrentSeasonThresholdOwner(uint256 commitsThreshold, uint256 reviewsThreshold) public onlyAdmin {
-        return remoteThreshold.setCurrentSeasonThreshold(commitsThreshold, reviewsThreshold);
+        return remoteSettings.setCurrentSeasonThreshold(commitsThreshold, reviewsThreshold);
     }
 
     function setSeasonLength(uint256 seasonLengthDays) public onlyAdmin {
@@ -179,11 +179,24 @@ contract Root is IRoot, Initializable {
 
     function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews)
     public onlyBright {
-        remoteThreshold.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
+        remoteSettings.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 
     function allowNewUser(address userAddress) public onlyBright {
         allowedAddresses[userAddress] = true;
         remoteCommits.allowNewUser(userAddress);
     }
+
+    function getTextRules() public view onlyAdmin returns(bytes32[] memory){
+        return remoteSettings.getTextRules();
+    }
+
+    function addTextRules(bytes32 newText) public onlyAdmin {
+        remoteSettings.addTextRules(newText);
+    }
+
+    function clearTextRules() public onlyAdmin {
+        remoteSettings.clearTextRules();
+    }
+
 }

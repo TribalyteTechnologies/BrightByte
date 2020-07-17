@@ -160,7 +160,7 @@ async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName
     let teamUid = parseBnToInt(response[response.length-1]);
     await cloudTeamManager.deployBright(teamUid, { from: adminUserAddress });
     await cloudTeamManager.deployCommits(teamUid, { from: adminUserAddress });
-    await cloudTeamManager.deployThreshold(teamUid, { from: adminUserAddress });
+    await cloudTeamManager.deploySettings(teamUid, { from: adminUserAddress });
     await cloudTeamManager.deployRoot(userMail, teamUid, seasonLength, { from: adminUserAddress });
     return teamUid;
 }
