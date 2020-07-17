@@ -86,23 +86,19 @@ module.exports = function(deployer) {
         return deployer.link(RootDeployerLib, CloudBBFactory);
     })
     .then(function(){
-        return deployer.deploy(CloudBBFactory);
-    })
-    .then(function(bbFactory){
-        return bbFactory.initialize(currentVersion);
-    }).then(function(){
         return deployer.link(UtilsLib, CloudTeamManager);
     }).then(function(){
         return deployer.deploy(CloudTeamManager);
-    }).then(function(teamManager){
-        return teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
+    })
+    .then(function(){
+        return deployer.deploy(CloudBBFactory);
+    })
+    .then(function(bbFactory){
+        teamManagerAddress = CloudTeamManager.address;
+        return bbFactory.initialize(currentVersion, teamManagerAddress);
     }).then(function(){
         return CloudTeamManager.deployed();
     }).then(function(teamManager){
-        teamManagerAddress = teamManager.address;
-        return CloudBBFactory.deployed();
+        return teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
     })
-    .then(function(bbFactory){
-        return bbFactory.init(teamManagerAddress);
-    });
 };

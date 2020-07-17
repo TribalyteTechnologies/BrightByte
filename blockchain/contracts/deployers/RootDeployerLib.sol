@@ -17,4 +17,9 @@ library RootDeployerLib {
         Root remoteRoot = Root(rootAddress);
         remoteRoot.setVersion(version);
     }
+
+    function addAdminUser(address rootAddress, address memberAddress) public {
+        Root remoteRoot = Root(rootAddress);
+        remoteRoot.addAdminUser(memberAddress);
+    }
 }

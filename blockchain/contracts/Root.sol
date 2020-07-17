@@ -72,6 +72,10 @@ contract Root is IRoot, Initializable {
         }
     }
 
+    function addAdminUser(address memberAddress) public {
+        adminUsers[memberAddress] = true;
+    }
+
     function getVersion() public view returns(bytes32) {
         return brightbyteVersion;
     }

@@ -26,19 +26,16 @@ contract CloudBrightByteFactory is Initializable {
     CloudEventDispatcher private remoteEventDispatcher;
 
 
-    function initialize(string memory version) public initializer {
+    function initialize(string memory version, address teamMngrAddress) public initializer {
         currentVersion = version;
         deployEventDispatcher();
+        require(teamManagerAddress == address(0), "Contract already initialized");
+        teamManagerAddress = teamMngrAddress;
     }
 
     modifier onlyTeamManager() {
         require(msg.sender == teamManagerAddress, "This method can only be called by the teamManager");
         _;
-    }
-
-    function init(address teamMngrAddress) public {
-        require(teamManagerAddress == address(0), "Contract already initialized");
-        teamManagerAddress = teamMngrAddress;
     }
 
     function getCurrentVersion() public view returns (string memory) {
@@ -89,6 +86,11 @@ contract CloudBrightByteFactory is Initializable {
     function inviteUserEmail(uint256 teamUid, bytes32 email) public onlyTeamManager{
         TeamContracts memory contracts = teamContracts[teamUid];
         BrightDeployerLib.inviteUserEmail(contracts.brightAddress, email);
+    }
+
+    function addAdminUser(uint256 teamUid, address memberAddress) public onlyTeamManager{
+        TeamContracts memory contracts = teamContracts[teamUid];
+        RootDeployerLib.addAdminUser(contracts.rootAddress, memberAddress);
     }
 
     function allowEventDispatcherForContract(address contractAddress) private{

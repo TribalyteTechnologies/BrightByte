@@ -1,12 +1,12 @@
 pragma solidity 0.5.17;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
 contract CloudTeamManager is Initializable {
+    uint256 constant public INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
 
     struct Team {
         uint256 uId;
@@ -33,8 +33,6 @@ contract CloudTeamManager is Initializable {
     }
 
     enum UserType { NotRegistered, Admin, Member }
-
-    uint256 INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
 
     mapping (uint256 => Team) private createdTeams;
     mapping (bytes32 => UserData) private usersRegister;
@@ -138,6 +136,9 @@ contract CloudTeamManager is Initializable {
         }
         email = removeFromTeam(teamUid, memberAddress);
         addToTeam(teamUid, memberAddress, email, userType == UserType.Admin ? UserType.Member : UserType.Admin);
+        if(userType == UserType.Admin) {
+            remoteBbFactory.addAdminUser(teamUid, memberAddress);
+        }
     }
 
     function inviteToTeam(uint256 teamUid, bytes32 email, UserType userType, uint256 expSecs) public onlyAdmins(teamUid) {
@@ -183,6 +184,9 @@ contract CloudTeamManager is Initializable {
         if (usersRegister[email].userTeams[teamUid].expirationTime > now) {
             addToTeam(teamUid, memberAddress, email, UserType.NotRegistered);
             remoteBbFactory.inviteUserEmail(teamUid, email);
+            if(createdTeams[teamUid].users[memberAddress].userType == UserType.Admin) {
+                remoteBbFactory.addAdminUser(teamUid, memberAddress);
+            }
         } else {
             removeInvitation(teamUid, email);
         }
