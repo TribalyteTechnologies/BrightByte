@@ -156,7 +156,7 @@ contract("CloudTeamManager", accounts => {
             })
             .catch(() => {
                 assert(true);
-                return teamManagerInstance.deployThreshold(team1Uid, { from: user1Account });
+                return teamManagerInstance.deploySettings(team1Uid, { from: user1Account });
             })
             .catch(() => {
                 assert(true);

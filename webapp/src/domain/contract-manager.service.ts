@@ -398,7 +398,7 @@ export class ContractManagerService {
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.methods.deployThreshold(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deploySettings(teamUId).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
@@ -1017,10 +1017,13 @@ export class ContractManagerService {
     }
 
     private getUserReputationRecursive(contractArtifact: ITrbSmartContact, userAddress: string, 
-                                       season: number, global: boolean): Promise<UserReputation> {
+                                       season: number, global: boolean, iterationIndex = 0): Promise<UserReputation> {
         let promise: Promise<any>;
-        if (global) {
-            promise = contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address });
+        let maxIterations = 10;
+        if (iterationIndex >= maxIterations) {
+            let error = new Error("Error getting reputation, maximimum number of retries reached");
+            this.log.e(error);
+            throw error;
         } else {
             if (iterationIndex > 0) {
                 promise = this.getRandomDelay(this.MINIMUM_DELAY_MILIS, this.MAXIMUM_DELAY_MILIS);
