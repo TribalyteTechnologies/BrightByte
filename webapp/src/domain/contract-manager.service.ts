@@ -32,6 +32,9 @@ interface ITrbSmartContact { //Web3.Eth.Contract
 @Injectable()
 export class ContractManagerService {
 
+    private readonly MINIMUM_DELAY_MILIS = 0;
+    private readonly MAXIMUM_DELAY_MILIS = 2000;
+
     private contractAddressRoot: string;
     private contractAddressBright: string;
     private contractAddressCommits: string;
@@ -1019,21 +1022,38 @@ export class ContractManagerService {
         if (global) {
             promise = contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address });
         } else {
-            promise = contractArtifact.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
+            if (iterationIndex > 0) {
+                promise = this.getRandomDelay(this.MINIMUM_DELAY_MILIS, this.MAXIMUM_DELAY_MILIS);
+            } else {
+                promise = Promise.resolve();
+            }
+            if (global) {
+                promise = promise
+                .then(() => contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address }));
+            } else {
+                promise = promise
+                .then(() => contractArtifact.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address }));
+            }
         }
         return promise
-        .then((commitsVals: Array<any>) => {
-            return global ? UserReputation.fromSmartContractGlobalReputation(commitsVals) : UserReputation.fromSmartContract(commitsVals);
+        .then((userVals: Array<any>) => {
+            userVals[1] = this.web3.utils.toUtf8(userVals[1]);
+            return global ? UserReputation.fromSmartContractGlobalReputation(userVals) : UserReputation.fromSmartContract(userVals);
         })
         .catch(error => {
             let ret: Promise<UserReputation>;
-            if (error.message === AppConfig.VALUES_ARENT_VALID_ERROR_IDENTIFIER){
-                ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global);
+            if (AppConfig.ERROR_IDENTIFIERS_ARRAY.some(error_id => error_id === error.message)){
+                ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global, iterationIndex + 1);
             } else {
                 this.log.e("Error getting reputation:", error);
                 throw error;
             }
             return ret;
         });
+    }
+
+    private getRandomDelay(minDelay: number, maxDelay: number): Promise<void> {
+        let delay =  Math.floor(Math.random() * maxDelay) + minDelay;
+        return new Promise(resolve => setTimeout(resolve, delay));
     }
 }
