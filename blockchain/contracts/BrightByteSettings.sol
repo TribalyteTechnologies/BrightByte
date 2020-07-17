@@ -4,6 +4,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 contract BrightByteSettings is Initializable {
     uint256 private currentSeasonIndex;
+    bool private isRandomReviewer;
     mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
     bytes32[] private textRules;
 
@@ -74,6 +75,14 @@ contract BrightByteSettings is Initializable {
 
     function clearTextRules() public onlyRoot {
         delete textRules;
+    }
+
+    function getRandomReviewer() public view onlyRoot returns(bool) {
+        return isRandomReviewer;
+    }
+
+    function setRandomReviewer(bool newValue) public onlyRoot {
+        isRandomReviewer = newValue;
     }
 
     function initSeasonThreshold(uint256 seasonIndex, uint256 commitThreshold, uint256 reviewThreshold) private {

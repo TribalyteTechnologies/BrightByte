@@ -199,4 +199,11 @@ contract Root is IRoot, Initializable {
         remoteSettings.clearTextRules();
     }
 
+    function getRandomReviewer() public view onlyAdmin returns(bool) {
+        return remoteSettings.getRandomReviewer();
+    }
+
+    function setRandomReviewer(bool newValue) public onlyAdmin {
+        remoteSettings.setRandomReviewer(newValue);
+    }
 }
