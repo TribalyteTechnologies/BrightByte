@@ -74,6 +74,7 @@ contract Root is IRoot, Initializable {
 
     function addAdminUser(address memberAddress) public {
         adminUsers[memberAddress] = true;
+        allowedAddresses[memberAddress] = true;
     }
 
     function getVersion() public view returns(bytes32) {
@@ -187,7 +188,7 @@ contract Root is IRoot, Initializable {
         remoteCommits.allowNewUser(userAddress);
     }
 
-    function getTextRules() public view onlyAdmin returns(bytes32[] memory){
+    function getTextRules() public view onlyAllowed returns(bytes32[] memory){
         return remoteSettings.getTextRules();
     }
 
@@ -199,7 +200,7 @@ contract Root is IRoot, Initializable {
         remoteSettings.clearTextRules();
     }
 
-    function getRandomReviewer() public view onlyAdmin returns(bool) {
+    function getRandomReviewer() public view onlyAllowed returns(bool) {
         return remoteSettings.getRandomReviewer();
     }
 
