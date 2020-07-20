@@ -47,6 +47,9 @@ export class AppConfig {
     public static readonly COMMITS_BLOCK_SIZE = 20;
     public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
     public static readonly VALUES_ARENT_VALID_ERROR_IDENTIFIER = "Returned values aren't valid, did it run Out of Gas?";
+    public static readonly NOT_CONVERTIBLE_STRING_ERROR_IDENTIFIER = "The returned value is not a convertible string";
+    public static readonly ERROR_IDENTIFIERS = [
+        AppConfig.NOT_CONVERTIBLE_STRING_ERROR_IDENTIFIER, AppConfig.VALUES_ARENT_VALID_ERROR_IDENTIFIER];
     
     public static readonly STATUS_OK = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
