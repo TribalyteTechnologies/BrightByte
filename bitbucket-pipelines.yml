@@ -18,8 +18,8 @@ pipelines:
           - npm run linters-ci
           - cd ../blockchain
           - npm install --unsafe-perm
-          - npm run truffle:compile
           - npm run truffle:deploy:test
+          - npm run truffle:compile
 definitions:
   caches:
     backendnode: backend/node_modules
