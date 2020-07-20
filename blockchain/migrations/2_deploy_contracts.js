@@ -1,104 +1,21 @@
-var Bright = artifacts.require("./Bright.sol");
-var Commits = artifacts.require("./Commits.sol");
-var BrightByteSettings = artifacts.require("./BrightByteSettings.sol");
-var CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
-var Root = artifacts.require("./Root.sol");
 var Reputation = artifacts.require("./Reputation.sol");
 var BrightModels = artifacts.require("./BrightModels.sol");
 var UtilsLib = artifacts.require("./UtilsLib.sol");
-var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
-var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 var BrightDeployerLib = artifacts.require("./BrightDeployerLib.sol");
 var CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
 var BrightByteSettingsDeployerLib = artifacts.require("./BrightByteSettingsDeployerLib.sol");
 var RootDeployerLib = artifacts.require("./RootDeployerLib.sol");
-var scVersionObj = require("../../version.json");
 
-const TEAM_UID = 1;
-const USER_ADMIN = "0x0000000000000000000000000000000000000000";
-const SEASON_LENGTH_DAYS = 15;
-var currentVersion = scVersionObj.version;
-var teamManagerAddress;
+module.exports = async function(deployer) {
 
-module.exports = function(deployer) {
-    deployer.deploy(BrightModels)
-    .then(function(){
-        return deployer.deploy(UtilsLib);
-    })
-    .then(function(){
-        return deployer.link(BrightModels, Bright);
-    })
-    .then(function(){
-        return deployer.link(UtilsLib, Bright);
-    })
-    .then(function(){
-        return deployer.deploy(Bright);
-    })
-    .then(function(){
-        return deployer.link(UtilsLib, Commits);
-    })
-    .then(function(){
-        return deployer.deploy(Commits);
-    })
-    .then(function() {
-        return deployer.deploy(Reputation);
-    })
-    .then(function() {
-        return deployer.deploy(BrightByteSettings);
-    }).then(function() {
-        return deployer.deploy(CloudEventDispatcher, "0x0000000000000000000000000000000000000000");
-    }).then(function() {
-        return deployer.link(Reputation, Root);
-    }).then(function() {
-        return deployer.deploy(Root, Bright.address, Commits.address, BrightByteSettings.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
-    })
-    .then(function(){
-        return deployer.link(UtilsLib, BrightDeployerLib);
-    })
-    .then(function(){
-        return deployer.deploy(BrightDeployerLib);
-    })
-    .then(function(){
-        return deployer.link(UtilsLib, CommitsDeployerLib);
-    })
-    .then(function(){
-        return deployer.deploy(CommitsDeployerLib);
-    })
-    .then(function(){
-        return deployer.deploy(BrightByteSettingsDeployerLib);
-    })
-    .then(function(){
-        return deployer.link(Reputation, RootDeployerLib);
-    })
-    .then(function(){
-        return deployer.deploy(RootDeployerLib);
-    })
-    .then(function(){
-        return deployer.link(BrightDeployerLib, CloudBBFactory);
-    })
-    .then(function(){
-        return deployer.link(CommitsDeployerLib, CloudBBFactory);
-    })
-    .then(function(){
-        return deployer.link(BrightByteSettingsDeployerLib, CloudBBFactory);
-    })
-    .then(function(){
-        return deployer.link(RootDeployerLib, CloudBBFactory);
-    })
-    .then(function(){
-        return deployer.link(UtilsLib, CloudTeamManager);
-    }).then(function(){
-        return deployer.deploy(CloudTeamManager);
-    })
-    .then(function(){
-        return deployer.deploy(CloudBBFactory);
-    })
-    .then(function(bbFactory){
-        teamManagerAddress = CloudTeamManager.address;
-        return bbFactory.initialize(currentVersion, teamManagerAddress);
-    }).then(function(){
-        return CloudTeamManager.deployed();
-    }).then(function(teamManager){
-        return teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
-    })
+    await deployer.deploy(UtilsLib);
+    await deployer.deploy(BrightModels);
+    await deployer.deploy(Reputation);
+    await deployer.deploy(BrightByteSettingsDeployerLib);
+    await deployer.link(UtilsLib, BrightDeployerLib);
+    await deployer.link(UtilsLib, CommitsDeployerLib);
+    await deployer.deploy(BrightDeployerLib);
+    await deployer.deploy(CommitsDeployerLib);
+    await deployer.link(Reputation, RootDeployerLib);
+    await deployer.deploy(RootDeployerLib);
 };
