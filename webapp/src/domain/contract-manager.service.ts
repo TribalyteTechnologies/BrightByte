@@ -1045,7 +1045,7 @@ export class ContractManagerService {
         })
         .catch(error => {
             let ret: Promise<UserReputation>;
-            if (AppConfig.ERROR_IDENTIFIERS_ARRAY.some(error_id => error_id === error.message)){
+            if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
                 ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global, iterationIndex + 1);
             } else {
                 this.log.e("Error getting reputation:", error);
