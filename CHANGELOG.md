@@ -8,11 +8,17 @@
 
 `Migration needed from 0.7.3 to 0.8.0`
 
+#### v0.7.4
+
+- Added new error support on ranking page.
+
+`No migration needed from 0.7.3 to 0.7.4`
+
 #### v0.7.3
 
 - Solved ranking page performance.
 
-`No migration needed from 0.7.1 to 0.7.2`
+`No migration needed from 0.7.2 to 0.7.3`
 
 #### v0.7.2
 
