@@ -1,7 +1,7 @@
 pragma solidity 0.5.17;
 
 import "./CloudEventDispatcher.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./openzeppelin/Initializable.sol";
 
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";

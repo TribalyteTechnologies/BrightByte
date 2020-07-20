@@ -1,6 +1,6 @@
 pragma solidity 0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./openzeppelin/Initializable.sol";
 import "./BrightByteSettings.sol";
 import "./CloudEventDispatcher.sol";
 import { Reputation } from "./Reputation.sol";

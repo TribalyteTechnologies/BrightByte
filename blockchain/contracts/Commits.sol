@@ -1,6 +1,6 @@
 pragma solidity 0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./openzeppelin/Initializable.sol";
 
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, ICommit } from "./IBrightByte.sol";

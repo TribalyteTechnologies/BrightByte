@@ -1,6 +1,6 @@
 pragma solidity 0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./openzeppelin/Initializable.sol";
 
 contract BrightByteSettings is Initializable {
     uint256 private currentSeasonIndex;

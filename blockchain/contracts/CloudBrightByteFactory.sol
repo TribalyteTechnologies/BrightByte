@@ -1,6 +1,6 @@
 pragma solidity 0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./openzeppelin/Initializable.sol";
 
 import { BrightDeployerLib } from "./deployers/BrightDeployerLib.sol";
 import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";

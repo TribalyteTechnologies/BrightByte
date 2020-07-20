@@ -1,6 +1,6 @@
 pragma solidity 0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./openzeppelin/Initializable.sol";
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
 import { UtilsLib } from "./UtilsLib.sol";
