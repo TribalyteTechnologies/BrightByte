@@ -239,7 +239,9 @@ export class ReviewPage {
             this.log.d("Feedback response: " + val);
             if (this.filterArrayCommits){
                 let idx = this.filterArrayCommits.indexOf(commit);
-                this.filterArrayCommits[idx].isReadNeeded = false;
+                if (this.filterArrayCommits[idx]) {
+                    this.filterArrayCommits[idx].isReadNeeded = false;
+                }
             }
         }).catch(err => {
             this.spinnerService.hideLoader();
