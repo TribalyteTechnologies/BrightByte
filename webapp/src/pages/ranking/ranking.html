@@ -61,20 +61,20 @@
                 <span class="text-details text-details--bold">{{ "ranking.details" | translate }}:</span>
             </ion-row>
             <ion-row padding class="profile-details-container">
-                <ion-col col-1 justify-content-center>
-                    <avatar [avatarUrl]="currentUserObs | async" [isBig]="true"></avatar>
+                <ion-col col-1>
+                    <ion-row justify-content-center>
+                        <avatar [avatarUrl]="currentUserObs | async" [isBig]="true"></avatar>
+                    </ion-row>
                 </ion-col>
                 <ion-col col-2 padding justify-content-center center class="vert-separator">
-                    <ion-row *ngIf="isCurrentUserName; else otherUser" class="text-title">
-                        {{ nameObs | async }}
+                    <ion-row> 
+                        <span *ngIf="isCurrentUserName; else otherUser" class="user-info text-title no-wrap"> {{ nameObs | async }} </span>
+                        <ng-template #otherUser>
+                            <span class="user-info text-title no-wrap"> {{ userRankDetails.name }} </span>
+                        </ng-template>
                     </ion-row>
-                    <ng-template #otherUser>
-                        <ion-row class="text-title">
-                            {{ userRankDetails.name }}
-                        </ion-row>
-                    </ng-template>
-                    <ion-row class="text-description text-ellipsis">
-                        {{ userRankDetails.email }}
+                    <ion-row>
+                        <span class="user-info text-description no-wrap"> {{ userRankDetails.email }} </span>
                     </ion-row>
                 </ion-col>
                 <ion-col col-4 class="vert-separator">
