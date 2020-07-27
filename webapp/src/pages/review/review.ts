@@ -173,13 +173,19 @@ export class ReviewPage {
             this.name = ud.name;
             this.applyFilters(this.displayCommitsToReview);
             let url = new URLSearchParams(document.location.search);
+            let isDoReload = false;
+            let isFullBlock = this.filterArrayCommits.length >= AppConfig.COMMITS_BLOCK_SIZE * this.blockCount;
             if (url.has(AppConfig.UrlKey.REVIEWID)) {
                 let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
-                let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
-                this.shouldOpen(filteredCommit[0]);
+                let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl)[0];
+                if (filteredCommit){
+                    this.shouldOpen(filteredCommit);
+                } else {
+                    isDoReload = !this.disabledInfiniteScroll;
+                }
+            } else {
+                isDoReload = !isFullBlock && !this.disabledInfiniteScroll && isReloadEvent;
             }
-            let isFullBlock = this.filterArrayCommits.length >= AppConfig.COMMITS_BLOCK_SIZE * this.blockCount;
-            let isDoReload = !isFullBlock && !this.disabledInfiniteScroll && isReloadEvent;
             if (isFullBlock) {
                 this.blockCount++;
             }
