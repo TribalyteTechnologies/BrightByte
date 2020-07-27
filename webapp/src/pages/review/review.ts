@@ -57,6 +57,9 @@ export class ReviewPage {
 
     public submitError = "";
 
+    private readonly RELOAD_EVENT_TYPE = "reload";
+    private readonly RELOAD_EVENT = new Event(this.RELOAD_EVENT_TYPE);
+
     private log: ILogger;
     private numberOfReviews = -1;
     private isNewReview = false;
@@ -100,7 +103,7 @@ export class ReviewPage {
 
     public refresh(event?) {
         this.log.d("Refreshing page");
-        if (this.initializing) {
+        if (this.initializing || event.type === this.RELOAD_EVENT_TYPE) {
             this.spinnerService.showLoader();
         }
         let commits: Array<UserCommit>;
@@ -147,7 +150,9 @@ export class ReviewPage {
             this.log.d("Response received: " + rsp);
             if (this.loadedCommits < this.maxReviews) {
                 this.displayCommitsToReview.push(...commits);
-                event.complete();
+                if (event.complete){
+                    event.complete();
+                }
             } else {
                 this.displayCommitsToReview = commits;
             }
@@ -155,7 +160,6 @@ export class ReviewPage {
             let projects = commits.map(commit => commit.project);
             this.projects = projects.filter((value, index, array) => array.indexOf(value) === index);
             this.loadedCommits -= AppConfig.COMMITS_BLOCK_SIZE;
-            this.spinnerService.hideLoader();
             return this.contractManagerService.getUserDetails(this.userAdress);
         }).then((ud) => {
             this.name = ud.name;
@@ -163,8 +167,15 @@ export class ReviewPage {
             let url = new URLSearchParams(document.location.search);
             if (url.has(AppConfig.UrlKey.REVIEWID)) {
                 let decodedUrl = decodeURIComponent(url.get(AppConfig.UrlKey.REVIEWID));
-                let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl);
-                this.shouldOpen(filteredCommit[0]);
+                let filteredCommit = this.filterArrayCommits.filter(c => c.url === decodedUrl)[0];
+                if (filteredCommit) {
+                    this.shouldOpen(filteredCommit);
+                    this.spinnerService.hideLoader();
+                } else if (!filteredCommit && !this.disabledInfiniteScroll) {
+                    this.refresh(this.RELOAD_EVENT);
+                }
+            } else {
+                this.spinnerService.hideLoader();
             }
         }).catch((e) => {
             this.translateService.get("commits.getCommits").subscribe(
