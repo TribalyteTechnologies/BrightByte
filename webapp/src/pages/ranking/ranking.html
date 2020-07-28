@@ -68,13 +68,10 @@
                 </ion-col>
                 <ion-col col-2 padding justify-content-center center class="vert-separator">
                     <ion-row> 
-                        <span *ngIf="isCurrentUserName; else otherUser" class="user-info text-title no-wrap"> {{ nameObs | async }} </span>
-                        <ng-template #otherUser>
-                            <span class="user-info text-title no-wrap"> {{ userRankDetails.name }} </span>
-                        </ng-template>
+                        <span class="user-info text-title"> {{ isCurrentUserName ? (nameObs | async) : userRankDetails.name }} </span>
                     </ion-row>
                     <ion-row>
-                        <span class="user-info text-description no-wrap"> {{ userRankDetails.email }} </span>
+                        <span class="user-info text-description"> {{ userRankDetails.email }} </span>
                     </ion-row>
                 </ion-col>
                 <ion-col col-4 class="vert-separator">
