@@ -17,6 +17,7 @@ export class ContractManagerService {
 
     private readonly TRANSACTION_HASH_PROPERTY = "transactionHash";
     private readonly BLOCK_NUMBER_PROPERTY = "blockNumber";
+    private readonly RANDOM_ADDRESS = "0xF19853c2C92684B2F6C3E48d614Ad114853D52Cb";
 
     private contractAddressBright: string;
     private contractAddressCommits: string;
@@ -168,7 +169,8 @@ export class ContractManagerService {
     }
 
     private getEventDispatcherAddress(): Observable<string> {
-        return from<string>(this.contracts[ContractsIndex.BbFactory].methods.getEventDispatcherAddress().call());
+        return from<string>(this.contracts[ContractsIndex.BbFactory].methods.getEventDispatcherAddress()
+        .call({ from: this.RANDOM_ADDRESS }));
     }
 
     private getCommentsDetailsObs(
