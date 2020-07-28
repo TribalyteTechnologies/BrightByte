@@ -3,10 +3,16 @@
 #### v0.8.0 (WIP)
 
 - This version is in progress.
-- Bug fix on Bright contract when the season change.
 - The migration process is not provided.
 
-`Migration needed from 0.7.3 to 0.8.0`
+`Migration needed from 0.7.5 to 0.8.0`
+
+#### v0.7.5
+
+- Added new error support on reviews page.
+- Solved new tab not working properly on reviews page.
+
+`No migration needed from 0.7.4 to 0.7.5`
 
 #### v0.7.4
 
