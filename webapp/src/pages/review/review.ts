@@ -116,7 +116,7 @@ export class ReviewPage {
                 this.initializing = false;
                 this.maxReviews = this.loadedCommits;
             }
-            return this.contractManagerService.getSeasonCommitsToReview(this.loadedCommits);
+            return this.contractManagerService.getSeasonCommitsToReviewRecursive(this.loadedCommits);
         })
         .then((commitConcat: Array<UserCommit>[]) => {
             commits = commitConcat[this.currentReviewFilterState];

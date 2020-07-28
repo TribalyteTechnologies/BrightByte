@@ -29,6 +29,7 @@ export class ContractManagerService {
 
     private readonly MINIMUM_DELAY_MILIS = 0;
     private readonly MAXIMUM_DELAY_MILIS = 2000;
+    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 10;
 
     private contractAddressRoot: string;
     private contractAddressBright: string;
@@ -239,8 +240,11 @@ export class ContractManagerService {
         });
     }
 
-    public getSeasonCommitsToReview(endIndex: number): Promise<UserCommit[][]> {
-        return this.initProm
+    public getSeasonCommitsToReviewRecursive(endIndex: number, iterationIndex = 0): Promise<UserCommit[][]> {
+        let promise = this.getMaxIterationsAndTimeout(
+            iterationIndex, "Error obtaining commits to review, maximimum number of retries reached");
+        return promise
+        .then(() => this.initProm)
             .then(([bright, commit]) => {
                 return bright.methods.getCurrentSeason().call()
                 .then(seasonData => {
@@ -263,8 +267,14 @@ export class ContractManagerService {
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished), Promise.all(promisesAllReviews)]);
                 });
             }).catch(err => {
-                this.log.e("Error obtaining commits to review :", err);
-                throw err;
+                let ret: Promise<Array<Array<UserCommit>>>;
+                if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === err.message)) {
+                    ret = this.getSeasonCommitsToReviewRecursive(endIndex, iterationIndex + 1);
+                } else {
+                    this.log.e("Error obtaining commits to review :", err);
+                    throw err;
+                }
+                return ret;
             });
     }
 
@@ -545,10 +555,35 @@ export class ContractManagerService {
 
     private getUserReputationRecursive(contractArtifact: ITrbSmartContact, userAddress: string, 
                                        season: number, global: boolean, iterationIndex = 0): Promise<UserReputation> {
+        let promise =  this.getMaxIterationsAndTimeout(
+            iterationIndex, "Error getting reputation, maximimum number of retries reached");
+        if (global) {
+            promise = promise.then(() => contractArtifact.methods.getUser(userAddress).call());
+        } else {
+            promise = promise.then(() => contractArtifact.methods.getUserSeasonReputation(userAddress, season).call());
+        }
+        return promise
+        .then((commitsVals: Array<any>) => {
+            return global ? UserReputation.fromSmartContractGlobalReputation(commitsVals) : 
+                UserReputation.fromSmartContract(commitsVals);
+        })
+        .catch(error => {
+            let ret: Promise<UserReputation>;
+            if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
+                ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global, iterationIndex + 1);
+            } else {
+                this.log.e("Error getting reputation:", error);
+                throw error;
+            }
+            return ret;
+        });
+    }
+
+    private getMaxIterationsAndTimeout(iterationIndex: number, errorMsg: string): Promise<any> {
         let promise: Promise<any>;
-        let maxIterations = 10;
+        let maxIterations = this.RECURSIVE_METHODS_MAX_ITERATIONS;
         if (iterationIndex >= maxIterations) {
-            let error = new Error("Error getting reputation, maximimum number of retries reached");
+            let error = new Error(errorMsg);
             this.log.e(error);
             throw error;
         } else {
@@ -557,27 +592,8 @@ export class ContractManagerService {
             } else {
                 promise = Promise.resolve();
             }
-            if (global) {
-                promise = promise.then(() => contractArtifact.methods.getUser(userAddress).call());
-            } else {
-                promise = promise.then(() => contractArtifact.methods.getUserSeasonReputation(userAddress, season).call());
-            }
-            return promise
-            .then((commitsVals: Array<any>) => {
-                return global ? UserReputation.fromSmartContractGlobalReputation(commitsVals) : 
-                    UserReputation.fromSmartContract(commitsVals);
-            })
-            .catch(error => {
-                let ret: Promise<UserReputation>;
-                if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
-                    ret =  this.getUserReputationRecursive(contractArtifact , userAddress, season, global, iterationIndex + 1);
-                } else {
-                    this.log.e("Error getting reputation:", error);
-                    throw error;
-                }
-                return ret;
-            });
         }
+        return promise;
     }
 
     private getRandomDelay(minDelay: number, maxDelay: number): Promise<void> {
