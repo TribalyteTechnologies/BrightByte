@@ -6,8 +6,7 @@ var CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
 var BrightByteSettingsDeployerLib = artifacts.require("./BrightByteSettingsDeployerLib.sol");
 var RootDeployerLib = artifacts.require("./RootDeployerLib.sol");
 
-module.exports = async function(deployer) {
-
+module.exports = async function (deployer) {
     await deployer.deploy(UtilsLib);
     await deployer.deploy(BrightModels);
     await deployer.deploy(Reputation);
