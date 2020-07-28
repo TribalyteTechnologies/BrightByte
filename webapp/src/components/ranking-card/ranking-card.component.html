@@ -6,14 +6,11 @@
         </ion-row>
     </ion-col>
     <ion-col col-3>
-        <ion-row>
-            <span *ngIf="isCurrentUserName; else otherUser" class="user-info text-title no-wrap"> {{ nameObs | async }} </span>
-            <ng-template #otherUser>
-                <span class="user-info text-title no-wrap"> {{ name }} </span>
-            </ng-template>
+        <ion-row> 
+            <span class="user-info text-title no-wrap"> {{ isCurrentUserName ? (nameObs | async) : name }} </span>
         </ion-row>
         <ion-row>
-            <span class="user-info text-description no-wrap"> {{ email }} </span>
+            <span class="user-info text-description"> {{ email }} </span>
         </ion-row>
     </ion-col>
     <ion-col col-7 class="tooltip-block">
