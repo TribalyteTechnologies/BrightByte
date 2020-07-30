@@ -11,12 +11,11 @@ contract Commits is ICommit, Initializable {
     bytes32[] private allCommitsArray;
     mapping (bytes32 => Commit) private storedData;
     mapping (address => bool) private allowedAddresses;
+    address private owner;
 
     uint256[] quality;
     uint256[] confidence;
     uint256[] complexity;
-
-    address private owner;
 
     struct Commit {
         string title;
@@ -43,11 +42,9 @@ contract Commits is ICommit, Initializable {
         uint256 creationDate;
         uint256 lastModificationDate;
     }
+
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    constructor() public {
-        owner = msg.sender;
-    }
     modifier onlyOwner() {
         require(msg.sender == owner, "Sender is not contract owner");
         _;
@@ -63,6 +60,7 @@ contract Commits is ICommit, Initializable {
 
     function initialize(address _root) public initializer {
         require(rootAddress == address(0), "Root address cannot be 0");
+        owner = msg.sender;
         root = IRoot(_root);
         rootAddress = _root;
         allowedAddresses[rootAddress] = true;

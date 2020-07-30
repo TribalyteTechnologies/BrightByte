@@ -7,22 +7,20 @@ import { Reputation } from "./Reputation.sol";
 import { IBright, ICommit, IRoot } from "./IBrightByte.sol";
 
 contract Root is IRoot, Initializable {
+
     mapping (address => bool) private adminUsers;
     mapping (address => bool) private allowedAddresses;
-
-    IBright remoteBright;
-    address brightAddress;
-    ICommit remoteCommits;
-    address commitsAddress;
-    BrightByteSettings remoteSettings;
-    address settingAddress;
-    CloudEventDispatcher remoteCloudEventDispatcher;
-    address cloudEventDispatcherAddress;
-    address owner;
+    IBright private remoteBright;
+    address private brightAddress;
+    ICommit private remoteCommits;
+    address private commitsAddress;
+    BrightByteSettings private remoteSettings;
+    address private settingAddress;
+    CloudEventDispatcher private remoteCloudEventDispatcher;
+    address private cloudEventDispatcherAddress;
+    address private owner;
     bool private isVersionEnable;
     bytes32 private brightbyteVersion;
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
 
     modifier onlyAdmin() {
         require (adminUsers[msg.sender], "The origin address is not allowed. Not an admin");

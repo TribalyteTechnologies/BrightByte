@@ -1,7 +1,6 @@
 pragma solidity 0.5.17;
 
 import "./openzeppelin/Initializable.sol";
-
 import { BrightDeployerLib } from "./deployers/BrightDeployerLib.sol";
 import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";
 import { BrightByteSettingsDeployerLib } from "./deployers/BrightByteSettingsDeployerLib.sol";
@@ -11,6 +10,11 @@ import "./CloudEventDispatcher.sol";
 
 contract CloudBrightByteFactory is Initializable {
 
+    string private currentVersion;
+    address private teamManagerAddress;
+    address private eventDispatcherAddress;
+    CloudEventDispatcher private remoteEventDispatcher;
+
     struct TeamContracts {
         address brightAddress;
         address commitsAddress;
@@ -19,23 +23,17 @@ contract CloudBrightByteFactory is Initializable {
     }
 
     mapping(uint256 => TeamContracts) private teamContracts;
-    string private currentVersion;
 
-    address private teamManagerAddress;
-    address private eventDispatcherAddress;
-    CloudEventDispatcher private remoteEventDispatcher;
-
+    modifier onlyTeamManager() {
+        require(msg.sender == teamManagerAddress, "This method can only be called by the teamManager");
+        _;
+    }
 
     function initialize(string memory version, address teamMngrAddress) public initializer {
         currentVersion = version;
         deployEventDispatcher();
         require(teamManagerAddress == address(0), "Contract already initialized");
         teamManagerAddress = teamMngrAddress;
-    }
-
-    modifier onlyTeamManager() {
-        require(msg.sender == teamManagerAddress, "This method can only be called by the teamManager");
-        _;
     }
 
     function getCurrentVersion() public view returns (string memory) {

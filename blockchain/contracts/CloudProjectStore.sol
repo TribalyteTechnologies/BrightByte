@@ -4,28 +4,25 @@ import "./openzeppelin/Initializable.sol";
 
 contract CloudProjectStore is Initializable {
 
+    uint256 private constant PROJECT_PAGE_SIZE = 5;
+    address private teamManagerAddress;
+
     struct ProjectMap {
         uint256 projectCount;
         mapping(string => uint256) projects;
         mapping(uint256 => string) indexProject;
     }
 
-    uint256 private PROJECT_PAGE_SIZE = 5;
-
-    uint256 private teamCount;
     mapping(uint256 => ProjectMap) private teamProjects;
-
-    address private teamManagerAddress;
-
-    function initialize(address teamMngrAddress) public initializer {
-        require(teamManagerAddress == address(0), "Contract already initialized");
-        teamManagerAddress = teamMngrAddress;
-        teamCount = 0;
-    }
 
     modifier onlyTeamManager() {
         require(msg.sender == teamManagerAddress, "This method can only be called by the teamManager");
         _;
+    }
+
+    function initialize(address teamMngrAddress) public initializer {
+        require(teamManagerAddress == address(0), "Contract already initialized");
+        teamManagerAddress = teamMngrAddress;
     }
 
     function doesTeamExists(uint256 teamUid) public view returns (bool) {

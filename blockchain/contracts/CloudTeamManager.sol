@@ -6,7 +6,17 @@ import "./CloudProjectStore.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
 contract CloudTeamManager is Initializable {
+
     uint256 constant public INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
+    enum UserType { NotRegistered, Admin, Member }
+    uint256 private seasonLengthInDays;
+    uint256 private teamCount;
+    address private owner;
+    address private bbFactoryAddress;
+    CloudBrightByteFactory private remoteBbFactory;
+    address private projStoreAddress;
+    CloudProjectStore private remoteProjStore;
+    mapping (address => uint256[]) private userTeams;
 
     struct Team {
         uint256 uId;
@@ -21,6 +31,8 @@ contract CloudTeamManager is Initializable {
         UserType userType;
     }
 
+    mapping (uint256 => Team) private createdTeams;
+
     struct InvitationStatus {
         bool isInvited;
         uint256 expirationTime;
@@ -32,37 +44,9 @@ contract CloudTeamManager is Initializable {
         mapping (uint256 => InvitationStatus) userTeams;
     }
 
-    enum UserType { NotRegistered, Admin, Member }
-
-    mapping (uint256 => Team) private createdTeams;
     mapping (bytes32 => UserData) private usersRegister;
-    mapping (address => uint256[]) private userTeams;
-
-    uint256 private seasonLengthInDays;
-    uint256 private teamCount;
-    address private owner;
-
-    address private bbFactoryAddress;
-    CloudBrightByteFactory private remoteBbFactory;
-
-    address private projStoreAddress;
-    CloudProjectStore private remoteProjStore;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    function initialize(address bbFactoryAddr, uint256 seasonLength) public initializer {
-        owner = msg.sender;
-        teamCount = 0;
-        bbFactoryAddress = bbFactoryAddr;
-        remoteBbFactory = CloudBrightByteFactory(bbFactoryAddress);
-        projStoreAddress = address(new CloudProjectStore());
-        remoteProjStore = CloudProjectStore(projStoreAddress);
-        remoteProjStore.initialize(address(this));
-        bytes32 defaultEmail = keccak256(abi.encodePacked("unregistered@brightbyteapp.com"));
-        bytes32 defaultTeamName = keccak256(abi.encodePacked("Default team"));
-        createTeam(defaultEmail, defaultTeamName);
-        seasonLengthInDays = seasonLength;
-    }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Message sender is not owner");
@@ -85,6 +69,20 @@ contract CloudTeamManager is Initializable {
     modifier onlySender(address userHash) {
         require (msg.sender == userHash, "Message sender is not the same as userHash");
         _;
+    }
+
+    function initialize(address bbFactoryAddr, uint256 seasonLength) public initializer {
+        owner = msg.sender;
+        teamCount = 0;
+        bbFactoryAddress = bbFactoryAddr;
+        remoteBbFactory = CloudBrightByteFactory(bbFactoryAddress);
+        projStoreAddress = address(new CloudProjectStore());
+        remoteProjStore = CloudProjectStore(projStoreAddress);
+        remoteProjStore.initialize(address(this));
+        bytes32 defaultEmail = keccak256(abi.encodePacked("unregistered@brightbyteapp.com"));
+        bytes32 defaultTeamName = keccak256(abi.encodePacked("Default team"));
+        createTeam(defaultEmail, defaultTeamName);
+        seasonLengthInDays = seasonLength;
     }
 
     function createTeam(bytes32 email, bytes32 teamName) public returns (uint256) {
@@ -255,7 +253,7 @@ contract CloudTeamManager is Initializable {
         return email;
     }
 
-    function addProject(uint256 teamUid, string memory project) public onlyMembersOrAdmins(teamUid) { //cambiar el string
+    function addProject(uint256 teamUid, string memory project) public onlyMembersOrAdmins(teamUid) {
         remoteProjStore.addProject(teamUid, project);
     }
 

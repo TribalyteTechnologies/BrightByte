@@ -3,28 +3,23 @@ pragma solidity 0.5.17;
 import "./openzeppelin/Initializable.sol";
 
 contract BrightByteSettings is Initializable {
+
     uint256 private currentSeasonIndex;
     bool private isRandomReviewer;
-    mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
-    bytes32[] private textRules;
-
     address private rootAddress;
     address private owner;
+    bytes32[] private textRules;
 
     struct BrightByteSeasonThreshold {
         uint256 commitThreshold;
         uint256 reviewThreshold;
     }
 
+    mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
+
     event newSeasonThreshold(uint256 currentSeasonIndex, uint256 commitThreshold, uint256 reviewThreshold);
     event newSeason(uint256 currentSeasonIndex, uint256 currentTimeStamp);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    function initialize(address _root, uint256 indexCurrentSeason) public initializer {
-        require(rootAddress == address(0), "Root address cannot be 0");
-        rootAddress = _root;
-        currentSeasonIndex = indexCurrentSeason;
-    }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Sender address is not contract owner");
@@ -33,6 +28,12 @@ contract BrightByteSettings is Initializable {
     modifier onlyRoot() {
         require(msg.sender == rootAddress, "The request origin is not allowed");
         _;
+    }
+
+    function initialize(address _root, uint256 indexCurrentSeason) public initializer {
+        require(rootAddress == address(0), "Root address cannot be 0");
+        rootAddress = _root;
+        currentSeasonIndex = indexCurrentSeason;
     }
 
     function getSeasonThreshold(uint256 seasonIndex) public view returns(uint256, uint256) {
