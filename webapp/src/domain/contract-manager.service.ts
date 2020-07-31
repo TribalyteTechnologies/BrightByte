@@ -848,6 +848,20 @@ export class ContractManagerService {
         });
     }
 
+    public readPendingCommit(url: string) {
+        return this.initProm.then(([bright]) => {
+            const encodeUrl = EncryptionUtils.encode(url);
+            let bytecodeData = bright.methods.readPendingCommit(encodeUrl).encodeABI();
+            this.log.d("Introduced url: ", url);
+            this.log.d("DATA: ", bytecodeData);
+            return this.sendTx(bytecodeData, this.contractAddressBright);
+
+        }).catch(e => {
+            this.log.e("Error getting nonce value: ", e);
+            throw e;
+        });
+    }
+
     public getAllUserReputation(season: number, global: boolean): Promise<Array<UserReputation>> {
         let contractArtifact;
         return this.initProm.then(([bright]) => {
@@ -875,11 +889,11 @@ export class ContractManagerService {
         });
     }
 
-    public getFeedback(url: string): Promise<boolean> {
+    public isCommitPendingToRead(url: string): Promise<boolean> {
         const encodeUrl = EncryptionUtils.encode(url);
         let urlKeccak = this.web3.utils.keccak256(encodeUrl);
         return this.initProm.then(contract => {
-            let promise = contract[0].methods.getFeedback(urlKeccak).call({ from: this.currentUser.address});
+            let promise = contract[0].methods.isCommitPendingToRead(urlKeccak).call({ from: this.currentUser.address});
             return promise;
         }).catch(err => {
             this.log.e("Error getting urls (Feedback) :", err);

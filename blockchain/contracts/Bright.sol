@@ -233,7 +233,7 @@ contract Bright is IBright, Initializable {
         return (hashUserMap.map[userHash].name);
     }
 
-    function getFeedback(bytes32 url) public onlyAllowed view returns (bool){
+    function isCommitPendingToRead(bytes32 url) public onlyAllowed view returns (bool){
         address sender = tx.origin;
         BrightModels.UserSeason storage userSeason = hashUserMap.map[sender].seasonData[currentSeasonIndex];
         bool read = false;
@@ -243,6 +243,13 @@ contract Bright is IBright, Initializable {
             }
         }
         return read;
+    }
+
+    function readPendingCommit(string memory urlCommit) public onlyAllowed {
+        address sender = msg.sender;
+        bytes32 url = keccak256(abi.encodePacked(urlCommit));
+        BrightModels.UserSeason storage userSeason = hashUserMap.map[sender].seasonData[currentSeasonIndex];
+        UtilsLib.removeFromArray(userSeason.toRead, url);
     }
 
     function setFeedback(bytes32 url, address userAddr, bool value, uint256 vote) public onlyRoot{
