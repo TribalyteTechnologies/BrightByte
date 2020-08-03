@@ -6,7 +6,7 @@
                     <img class="home-logo" src="../../assets/imgs/bright_logo.svg">
                 </div>
             </ion-row>
-            <ion-row >
+            <ion-row>
                 <h1 no-margin>{{ "home.title" | translate: {userName: userName, teamName: teamName} }}</h1>
             </ion-row>
             <ion-row class="home-text">
@@ -17,16 +17,23 @@
             </ion-row>
             <ion-row>
                 <button ion-button round class="home-button button-lowercase" (click)="goPage('CommitPage')">
-                    <img class="button-logo button-logo_commits" src="../../assets/imgs/menu/commits.svg">{{ "app.commits" | translate }}
+                    <img class="button-logo button-logo_commits"
+                        src="../../assets/imgs/menu/commits.svg">{{ "app.commits" | translate }}
                 </button>
 
                 <button ion-button round class="home-button button-lowercase" (click)="goPage('ReviewPage')">
                     <img class="button-logo" src="../../assets/imgs/menu/reviews.svg">{{ "app.reviews" | translate }}
-                </button> 
+                </button>
 
                 <button ion-button round class="home-button button-lowercase" (click)="goPage('RankingPage')">
                     <img class="button-logo" src="../../assets/imgs/menu/ranking.svg">{{ "app.ranking" | translate }}
-                </button> 
+                </button>
+            </ion-row>
+            <ion-row class="home-text">
+                <p class="home-go_to">{{ "setProfile.teamRules" | translate }}:</p>
+            </ion-row>
+            <ion-row class="home-text">
+                <div class="home-rules">{{ teamRules | translate }}</div>
             </ion-row>
         </div>
     </ion-row>

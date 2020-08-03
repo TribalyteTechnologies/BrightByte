@@ -191,6 +191,28 @@
                         </ion-list>
                     </ion-row>
                 </div>
+                <h6>{{ "setProfile.changeTeamRules" | translate }}</h6>
+                <ion-row class="separator">
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-row>
+                            {{ "setProfile.teamRules" | translate }}
+                        </ion-row>
+                        <ion-item class="rules-textarea">
+                            <ion-textarea class="estilo-textarea" rows="5" auto-grow="true" type="text" [(ngModel)]="teamRules"></ion-textarea>
+                        </ion-item> 
+                        <ion-row *ngIf="successRulesMsg" class="success-body">
+                            {{ successRulesMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="errorRulesMsg" class="error-body">
+                            {{ errorRulesMsg }}
+                        </ion-row>
+                        <ion-item class="team-name-submit">
+                            <button type="submit" class="btn save-button btn__blue" (click)="changeTextRules(teamRules)">
+                                {{ "setProfile.changeTextRules" | translate }}
+                            </button>
+                        </ion-item>
+                    </ion-list>
+                </ion-row>
                 <h6>{{ "setProfile.teamMembers" | translate }}</h6>
                 <div class="separator" *ngIf="!isLoadingInfo">
                     <ion-row>

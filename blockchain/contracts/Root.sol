@@ -192,8 +192,8 @@ contract Root is IRoot, Initializable {
         return remoteSettings.getTextRules();
     }
 
-    function addTextRules(bytes32 newText) public onlyAdmin {
-        remoteSettings.addTextRules(newText);
+    function setTextRules(bytes32[] memory newText) public onlyAdmin {
+        remoteSettings.setTextRules(newText);
     }
 
     function clearTextRules() public onlyAdmin {

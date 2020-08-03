@@ -219,13 +219,16 @@
         "tabCategoryProfile": "Profile settings",
         "tabCategoryTeam": "Team settings",
         "changeTeamName": "Change team name",
+        "changeTextRules": "Change team rules",
         "invitedUsers": "Invited users",
         "invitationStatus": "Invitation status",
         "expiration": "Expiration",
         "inviteToTeam": "Invite",
         "succesTeamNameChange": "Team name changed correctly",
+        "succesTeamRulesChange": "Team rules changed correctly",
         "successInvitation": "Users invited correctly",
         "changeTeamNameError": "Cannot change your team name. Please contact the service provider.",
+        "changeTextRuleError": "Cannot change your team rules. Please contact the service provider.",
         "invitationError": "Cannot invite emails. Please contact the service provider.",
         "invitationEmailFormatError": "One or more user emails wrong format. Ex: email@example.com",
         "userTypeError": "Please select a Member type.",
@@ -273,7 +276,9 @@
         "availableInvitations": "Available invitations:",
         "noAvailableInvitations": "There are no invitations available at the moment",
         "avaialableTeams": "Your teams:",
-        "thresholdDescription": "Users need to exceed the season qualification thresholds configured in order to participate in the current season."
+        "thresholdDescription": "Users need to exceed the season qualification thresholds configured in order to participate in the current season.",
+        "teamRules": "Team rules",
+        "changeTeamRules": "Change team rules"
     },
     "commitDetails": {
         "author": "Author",
