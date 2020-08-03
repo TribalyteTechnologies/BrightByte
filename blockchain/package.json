@@ -35,7 +35,7 @@
     "remix-ide": "0.10.1",
     "truffle": "5.1.33",
     "truffle-assertions": "0.9.2",
-    "truffle-core": "5.0.34",
+    "truffle-core": "5.0.30",
     "truffle-environment": "0.1.10",
     "truffle-test-utils": "0.1.0",
     "web3": "1.2.6"
