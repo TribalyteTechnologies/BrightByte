@@ -402,7 +402,8 @@ export class Profile {
                             this.isInvitingUser = false;
                             let newInvitedUsers = new Array<InvitedUser>();
                             emails.forEach(email => {
-                                let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
+                                let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) 
+                                + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
                                 let emailsAlreadyInvited = this.invitedUsers.filter(user => user.email === email);
                                 let newUser = new InvitedUser(email, expDateMilis, userType);
                                 if (emailsAlreadyInvited.length > 0) {

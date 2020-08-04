@@ -1064,7 +1064,8 @@ export class ContractManagerService {
         this.currentTeamUid = teamUid;
     }
 
-    private getUserReputationRecursive(contractArtifact: ITrbSmartContact, userAddress: string,
+    private getUserReputationRecursive(
+        contractArtifact: ITrbSmartContact, userAddress: string,
         season: number, global: boolean, iterationIndex = 0): Promise<UserReputation> {
         let promise: Promise<any>;
         let maxIterations = 10;
@@ -1083,7 +1084,8 @@ export class ContractManagerService {
                     .then(() => contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address }));
             } else {
                 promise = promise
-                    .then(() => contractArtifact.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address }));
+                    .then(() => contractArtifact.methods.getUserSeasonReputation(userAddress, season)
+                    .call({ from: this.currentUser.address }));
             }
         }
         return promise
