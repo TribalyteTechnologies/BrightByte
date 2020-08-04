@@ -70,8 +70,8 @@ contract BrightByteSettings is Initializable {
         return textRules;
     }
 
-    function addTextRules(bytes32 newText) public onlyRoot {
-        textRules.push(newText);
+    function setTextRules(bytes32[] memory newText) public onlyRoot {
+        textRules = newText;
     }
 
     function clearTextRules() public onlyRoot {

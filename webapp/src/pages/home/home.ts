@@ -18,6 +18,7 @@ export class HomePage {
 
     public userName: string;
     public teamName: string;
+    public teamRules: string;
 
     private log: ILogger;
     private user;
@@ -47,6 +48,10 @@ export class HomePage {
         })
         .then(teamName => {
             this.teamName =  teamName;
+            return this.contractManagerService.getTextRules();
+        })
+        .then((teamRules: string) => {
+            this.teamRules = teamRules;
         });
     }
 
@@ -58,6 +63,10 @@ export class HomePage {
         } else if(page === "RankingPage") {
             this.tabsPage.goTo(RankingPage);
         }
+    }
+
+    public teamRulesIsEmpty(rules: string): boolean {
+        return rules === "";
     }
 
 }
