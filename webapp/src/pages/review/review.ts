@@ -211,49 +211,51 @@ export class ReviewPage {
     }
 
     public shouldOpen(commit: UserCommit) {
-        if (this.loadedCommits === this.maxReviews) {
-            this.spinnerService.showLoader();
-        }
-        this.contractManagerService.getCommentsOfCommit(commit.url)
-        .then((comments: Array<CommitComment>) => {
-            this.openedComments = true;
-            this.commitComments = comments;
-            let allComments = comments;
-            this.userCommitComment = allComments.filter((commitUR) => {
-                return commitUR.user === this.userAdress;
-            });
-            let idx = allComments.indexOf(this.userCommitComment[0]);
-            if (idx !== -1) {
-                allComments.splice(idx, 1);
-                this.commitComments = allComments;
-                this.needReview = false;
-            } else {
-                this.commitComments = allComments;
-                this.needReview = true;
+        if (this.currentCommit !== commit){
+            if (this.loadedCommits === this.maxReviews) {
+                this.spinnerService.showLoader();
             }
-            this.currentCommit = commit;
-            this.openedComments = true;
-            this.spinnerService.hideLoader();
-            return this.getReviewerName(commit);
-        }).then((name) => {
-            this.currentCommitName = name[0];
-            this.currentCommitEmail = name[1];
-            return commit.isReadNeeded ? this.contractManagerService.readPendingCommit(commit.url) :
-                Promise.resolve();
-        }).then((val) => {
-            commit.isReadNeeded = false;
-            this.log.d("Feedback response: " + val);
-            if (this.filterArrayCommits){
-                let idx = this.filterArrayCommits.indexOf(commit);
-                if (this.filterArrayCommits[idx]) {
-                    this.filterArrayCommits[idx].isReadNeeded = false;
+            this.contractManagerService.getCommentsOfCommit(commit.url)
+            .then((comments: Array<CommitComment>) => {
+                this.openedComments = true;
+                this.commitComments = comments;
+                let allComments = comments;
+                this.userCommitComment = allComments.filter((commitUR) => {
+                    return commitUR.user === this.userAdress;
+                });
+                let idx = allComments.indexOf(this.userCommitComment[0]);
+                if (idx !== -1) {
+                    allComments.splice(idx, 1);
+                    this.commitComments = allComments;
+                    this.needReview = false;
+                } else {
+                    this.commitComments = allComments;
+                    this.needReview = true;
                 }
-            }
-        }).catch(err => {
-            this.spinnerService.hideLoader();
-            this.log.e(err);
-            throw err;
-        });
+                this.currentCommit = commit;
+                this.openedComments = true;
+                this.spinnerService.hideLoader();
+                return this.getReviewerName(commit);
+            }).then((name) => {
+                this.currentCommitName = name[0];
+                this.currentCommitEmail = name[1];
+                return commit.isReadNeeded ? this.contractManagerService.readPendingCommit(commit.url) :
+                    Promise.resolve();
+            }).then((val) => {
+                commit.isReadNeeded = false;
+                this.log.d("Feedback response: " + val);
+                if (this.filterArrayCommits){
+                    let idx = this.filterArrayCommits.indexOf(commit);
+                    if (this.filterArrayCommits[idx]) {
+                        this.filterArrayCommits[idx].isReadNeeded = false;
+                    }
+                }
+            }).catch(err => {
+                this.spinnerService.hideLoader();
+                this.log.e(err);
+                throw err;
+            });
+        }
     }
 
     public setReputation(value: number, starNum: number) {
