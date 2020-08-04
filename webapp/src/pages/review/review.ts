@@ -145,7 +145,7 @@ export class ReviewPage {
                 com.reviewers = reviewers[idx];
             });
             let commitsPromises = commits.map((com) => {
-                return this.contractManagerService.getFeedback(com.url)
+                return this.contractManagerService.isCommitPendingToRead(com.url)
                     .then((rsp) => {
                         com.isReadNeeded = rsp;
                         return com;
@@ -238,7 +238,7 @@ export class ReviewPage {
         }).then((name) => {
             this.currentCommitName = name[0];
             this.currentCommitEmail = name[1];
-            return commit.isReadNeeded ? this.contractManagerService.setFeedback(commit.url) :
+            return commit.isReadNeeded ? this.contractManagerService.readPendingCommit(commit.url) :
                 Promise.resolve();
         }).then((val) => {
             commit.isReadNeeded = false;
