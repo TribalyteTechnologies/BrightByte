@@ -29,7 +29,7 @@
                     <img class="button-logo" src="../../assets/imgs/menu/ranking.svg">{{ "app.ranking" | translate }}
                 </button>
             </ion-row>
-            <ion-row class="home-text">
+            <ion-row class="home-text" *ngIf="!teamRulesIsEmpty(teamRules)">
                 <p class="home-go_to">{{ "setProfile.teamRules" | translate }}:</p>
             </ion-row>
             <ion-row class="home-text">

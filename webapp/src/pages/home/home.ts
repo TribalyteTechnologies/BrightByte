@@ -65,4 +65,8 @@ export class HomePage {
         }
     }
 
+    public teamRulesIsEmpty(rules: string): boolean {
+        return rules === "";
+    }
+
 }
