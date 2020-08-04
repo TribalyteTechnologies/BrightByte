@@ -13,6 +13,7 @@ import { ErrorHandlerService } from "../../domain/error-handler.service";
 import { AvatarService } from "../../domain/avatar.service";
 import { Observable } from "rxjs";
 import { UserNameService } from "../../domain/user-name.service";
+import { SpinnerService } from "../../core/spinner.service";
 
 @Component({
     selector: "page-ranking",
@@ -66,7 +67,8 @@ export class RankingPage {
         private achievementSrv: AchievementService,
         private errorHndlr: ErrorHandlerService,
         private avatarSrv: AvatarService,
-        private userNameSrv: UserNameService
+        private userNameSrv: UserNameService,
+        public spinnerService: SpinnerService
     ) {
         this.log = loggerSrv.get("RankingPage");
         this.account = this.loginService.getAccount();
@@ -111,6 +113,8 @@ export class RankingPage {
     }
 
     public refresh() {
+        this.log.d("Refreshing page");
+        this.spinnerService.showLoader();
         let commitsAverages = 0;
         let reviewAverages = 0;
         let isSeasonEnded = this.seasonSelected === this.numberOfSeasons && Date.now() > this.seasonFinale && !this.globalSelected;
@@ -162,6 +166,7 @@ export class RankingPage {
             });
             this.userHash = this.account.address;
             this.setUser(this.account.address);
+            this.spinnerService.hideLoader();
             return initNewSeason;
         }).catch((e) => {
             this.translateService.get("ranking.getReputation").subscribe(
