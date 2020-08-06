@@ -27,7 +27,7 @@ contract CloudTeamManager is Initializable {
     }
 
     struct TeamMember {
-        bytes32 email;
+        bytes32 emailId;
         UserType userType;
     }
 
@@ -85,12 +85,12 @@ contract CloudTeamManager is Initializable {
         seasonLengthInDays = seasonLength;
     }
 
-    function createTeam(bytes32 email, bytes32 teamName) public returns (uint256) {
+    function createTeam(bytes32 emailId, bytes32 teamName) public returns (uint256) {
         Team storage team = createdTeams[teamCount];
         team.uId = teamCount;
         team.teamName = teamName;
         address userAddr = teamCount == 0 ? address(0) : msg.sender;
-        addToTeam(teamCount, userAddr, email, UserType.Admin);
+        addToTeam(teamCount, userAddr, emailId, UserType.Admin);
         teamCount++;
         return teamCount - 1;
     }
@@ -107,9 +107,9 @@ contract CloudTeamManager is Initializable {
         remoteBbFactory.deploySettings(teamUid);
     }
 
-    function deployRoot(bytes32 email, uint256 teamUid, uint256 seasonLength) public onlyAdmins(teamUid) {
+    function deployRoot(bytes32 emailId, uint256 teamUid, uint256 seasonLength) public onlyAdmins(teamUid) {
         remoteBbFactory.deployRoot(teamUid, msg.sender, seasonLength);
-        remoteBbFactory.inviteUserEmail(teamUid, email);
+        remoteBbFactory.inviteUserEmail(teamUid, emailId);
         remoteBbFactory.setVersion(teamUid);
     }
 
@@ -128,65 +128,65 @@ contract CloudTeamManager is Initializable {
     function toggleUserType(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) {
         Team storage team = createdTeams[teamUid];
         UserType userType = team.users[memberAddress].userType;
-        bytes32 email;
+        bytes32 emailId;
         if (userType == UserType.Admin) {
             require(memberAddress != owner, "Message sender is not owner");
         }
-        email = removeFromTeam(teamUid, memberAddress);
-        addToTeam(teamUid, memberAddress, email, userType == UserType.Admin ? UserType.Member : UserType.Admin);
+        emailId = removeFromTeam(teamUid, memberAddress);
+        addToTeam(teamUid, memberAddress, emailId, userType == UserType.Admin ? UserType.Member : UserType.Admin);
         if(userType == UserType.Admin) {
             remoteBbFactory.addAdminUser(teamUid, memberAddress);
         }
     }
 
-    function inviteToTeam(uint256 teamUid, bytes32 email, UserType userType, uint256 expSecs) public onlyAdmins(teamUid) {
+    function inviteToTeam(uint256 teamUid, bytes32 emailId, UserType userType, uint256 expSecs) public onlyAdmins(teamUid) {
         uint256 exp = expSecs;
         if (exp == 0) {
             exp = INVITATION_DURATION_IN_SECS;
         }
         require(userType == UserType.Admin || userType == UserType.Member, "UserType is neither admin or member");
         require(teamUid != 0, "Cannot invite to default team");
-        InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
+        InvitationStatus storage user = usersRegister[emailId].userTeams[teamUid];
         if (!user.isInvited) {
-            usersRegister[email].invitedTeams.push(teamUid);
-            createdTeams[teamUid].invitedUsersEmailList.push(email);
+            usersRegister[emailId].invitedTeams.push(teamUid);
+            createdTeams[teamUid].invitedUsersEmailList.push(emailId);
         }
         user.isInvited = true;
         user.userType = userType;
         user.expirationTime = now + exp;
     }
 
-    function removeInvitationToTeam(uint256 teamUid, bytes32 email) public onlyAdmins(teamUid) {
-        removeInvitation(teamUid, email);
+    function removeInvitationToTeam(uint256 teamUid, bytes32 emailId) public onlyAdmins(teamUid) {
+        removeInvitation(teamUid, emailId);
     }
 
-    function isUserEmailInvited(bytes32 email) public view returns (bool) {
-        return usersRegister[email].invitedTeams.length > 0;
+    function isUserEmailInvited(bytes32 emailId) public view returns (bool) {
+        return usersRegister[emailId].invitedTeams.length > 0;
     }
 
-    function isUserEmailInvitedToTeam(bytes32 email, uint256 teamUid) public view returns (bool) {
-        return usersRegister[email].userTeams[teamUid].isInvited;
+    function isUserEmailInvitedToTeam(bytes32 emailId, uint256 teamUid) public view returns (bool) {
+        return usersRegister[emailId].userTeams[teamUid].isInvited;
     }
 
-    function getAllTeamInvitationsByEmail(bytes32 email) public view returns (uint256[] memory) {
-        return usersRegister[email].invitedTeams;
+    function getAllTeamInvitationsByEmail(bytes32 emailId) public view returns (uint256[] memory) {
+        return usersRegister[emailId].invitedTeams;
     }
 
-    function getInvitedUserInfo(bytes32 email, uint256 teamUid) public view returns (uint256, uint256, UserType) {
-        InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
+    function getInvitedUserInfo(bytes32 emailId, uint256 teamUid) public view returns (uint256, uint256, UserType) {
+        InvitationStatus storage user = usersRegister[emailId].userTeams[teamUid];
         return (teamUid, user.expirationTime, user.userType);
     }
 
-    function registerToTeam(address memberAddress, bytes32 email, uint256 teamUid) public onlySender(memberAddress) {
-        require(teamUid != 0 && isUserEmailInvitedToTeam(email, teamUid), "TeamUid is 0 or email is not invited to team");
-        if (usersRegister[email].userTeams[teamUid].expirationTime > now) {
-            addToTeam(teamUid, memberAddress, email, UserType.NotRegistered);
-            remoteBbFactory.inviteUserEmail(teamUid, email);
+    function registerToTeam(address memberAddress, bytes32 emailId, uint256 teamUid) public onlySender(memberAddress) {
+        require(teamUid != 0 && isUserEmailInvitedToTeam(emailId, teamUid), "TeamUid is 0 or email is not invited to team");
+        if (usersRegister[emailId].userTeams[teamUid].expirationTime > now) {
+            addToTeam(teamUid, memberAddress, emailId, UserType.NotRegistered);
+            remoteBbFactory.inviteUserEmail(teamUid, emailId);
             if(createdTeams[teamUid].users[memberAddress].userType == UserType.Admin) {
                 remoteBbFactory.addAdminUser(teamUid, memberAddress);
             }
         } else {
-            removeInvitation(teamUid, email);
+            removeInvitation(teamUid, emailId);
         }
     }
 
@@ -228,7 +228,7 @@ contract CloudTeamManager is Initializable {
 
     function getUserInfo(uint256 teamUid, address memberAddress) public view returns (UserType, bytes32) {
         TeamMember memory teamMember = createdTeams[teamUid].users[memberAddress];
-        return (teamMember.userType, teamMember.email);
+        return (teamMember.userType, teamMember.emailId);
     }
 
     function getInvitedUsersList(uint256 teamUid) public view returns (bytes32[] memory) {
@@ -245,12 +245,12 @@ contract CloudTeamManager is Initializable {
     function removeFromTeam(uint256 teamUid, address memberAddress) public onlyAdmins(teamUid) returns (bytes32) {
         require(memberAddress != owner, "Message sender is not owner");
         Team storage team = createdTeams[teamUid];
-        bytes32 email = team.users[memberAddress].email;
+        bytes32 emailId = team.users[memberAddress].emailId;
         delete team.users[memberAddress];
         UtilsLib.removeAddressFromArray(team.usersList, memberAddress);
         UtilsLib.removeUintFromArray(userTeams[memberAddress], teamUid);
-        delete usersRegister[email].userTeams[teamUid];
-        return email;
+        delete usersRegister[emailId].userTeams[teamUid];
+        return emailId;
     }
 
     function addProject(uint256 teamUid, string memory project) public onlyMembersOrAdmins(teamUid) {
@@ -274,17 +274,17 @@ contract CloudTeamManager is Initializable {
         return remoteProjStore.doesTeamExists(teamUid);
     }
 
-    function removeInvitation(uint256 teamUid, bytes32 email) private {
-        UserData storage user = usersRegister[email];
+    function removeInvitation(uint256 teamUid, bytes32 emailId) private {
+        UserData storage user = usersRegister[emailId];
         UtilsLib.removeUintFromArray(user.invitedTeams, teamUid);
         delete user.userTeams[teamUid];
         Team storage team = createdTeams[teamUid];
-        UtilsLib.removeBytes32FromArray(team.invitedUsersEmailList, email);
+        UtilsLib.removeBytes32FromArray(team.invitedUsersEmailList, emailId);
     }
 
-    function addToTeam(uint256 teamUid, address memberAddress, bytes32 email, UserType userType) private {
+    function addToTeam(uint256 teamUid, address memberAddress, bytes32 emailId, UserType userType) private {
         Team storage team = createdTeams[teamUid];
-        InvitationStatus storage user = usersRegister[email].userTeams[teamUid];
+        InvitationStatus storage user = usersRegister[emailId].userTeams[teamUid];
         UserType userTp = userType;
         if (userTp == UserType.NotRegistered) {
             userTp = user.userType;
@@ -293,10 +293,10 @@ contract CloudTeamManager is Initializable {
                 "UserType is neither admin or member"
             );
         }
-        team.users[memberAddress].email = email;
+        team.users[memberAddress].emailId = emailId;
         team.users[memberAddress].userType = userTp;
         team.usersList.push(memberAddress);
         userTeams[memberAddress].push(teamUid);
-        removeInvitation(teamUid, email);
+        removeInvitation(teamUid, emailId);
     }
 }
