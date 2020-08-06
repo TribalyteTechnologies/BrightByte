@@ -951,6 +951,25 @@ export class ContractManagerService {
         });
     }
 
+    public setRandomReviewer(random: boolean): Promise<void | TransactionReceipt> {
+        return this.initProm.then(([bright, commit, root]) => {
+            let bytecodeData = root.methods.setRandomReviewer(random).encodeABI();
+            return this.sendTx(bytecodeData, this.contractAddressRoot);
+        }).catch(e => {
+            this.log.e("Error setting random reviewer: ", e);
+            throw e;
+        });
+    }
+
+    public getRandomReviewer(): Promise<boolean> {
+        return this.initProm.then(([bright, commit, root]) => {
+            return root.methods.getRandomReviewer().call({ from: this.currentUser.address });
+        }).catch(e => {
+            this.log.e("Error getting random reviewer: ", e);
+            throw e;
+        });
+    }
+
     public isCommitPendingToRead(url: string): Promise<boolean> {
         const encodeUrl = EncryptionUtils.encode(url);
         let urlKeccak = this.web3.utils.keccak256(encodeUrl);

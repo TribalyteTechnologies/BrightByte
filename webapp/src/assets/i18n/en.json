@@ -69,7 +69,8 @@
         "loadMoreRepositoriesMessage": "Is the repository you were looking for not listed? Try load more repositories",
         "loadMoreRepositoriesButtonText": "Load more",
         "noMoreRepo": "No more repositories to load",
-        "errorAddCommit": "Error adding new commit"
+        "errorAddCommit": "Error adding new commit",
+        "noAvailableSelectReviewers": "You can't select reviewers because the selection is random"
     },
     "commits": {
         "add": "Contribute",
@@ -279,7 +280,8 @@
         "avaialableTeams": "Your teams:",
         "thresholdDescription": "Users need to exceed the season qualification thresholds configured in order to participate in the current season.",
         "teamRules": "Team rules",
-        "changeTeamRules": "Change team rules (optional)"
+        "changeTeamRules": "Change team rules (optional)",
+        "randomReviewers": "Random reviewers"
     },
     "commitDetails": {
         "author": "Author",

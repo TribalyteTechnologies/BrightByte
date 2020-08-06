@@ -64,6 +64,7 @@ export class Profile {
     public commitThreshold: number;
     public reviewThreshold: number;
     public teamRules: string;
+    public randomReviewers: boolean;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly WORKSPACE = "/workspace/";
@@ -187,6 +188,9 @@ export class Profile {
                 return this.contractManagerService.getTextRules();
             }).then((teamRules: string) => {
                 this.teamRules = teamRules;
+                return this.contractManagerService.getRandomReviewer();
+            }).then((randomReviewers: boolean) => {
+                this.randomReviewers = randomReviewers;
                 return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
             }).then((result: IWorkspaceResponse) => {
                 this.isBackendAvailable = false;
@@ -551,11 +555,9 @@ export class Profile {
         }
     }
 
-    //public getTextRules() {
-    //    this.contractManagerService.getTextRules().then((res: string[]) => {
-    //        this.rules = res;
-    //    });
-    //}
+    public changeToggle() {
+        this.contractManagerService.setRandomReviewer(this.randomReviewers);
+    }
 
     private removeTeamWorkspace(workspace: string) {
         this.log.d("The user admin requested to deleted the workspace: ", workspace);
