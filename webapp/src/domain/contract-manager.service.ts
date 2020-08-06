@@ -910,7 +910,7 @@ export class ContractManagerService {
             let bytecodeData = root.methods.setRandomReviewer(random).encodeABI();
             return this.sendTx(bytecodeData, this.contractAddressRoot);
         }).catch(e => {
-            this.log.e("Error setting the new season length: ", e);
+            this.log.e("Error setting random reviewer: ", e);
             throw e;
         });
     }
