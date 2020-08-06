@@ -57,6 +57,7 @@ export class AddCommitPopover {
     public isUpdatingByBatch = false;
     public updatingProgress = 0;
     public searchInput = "";
+    public randomReviewers;
 
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
@@ -103,13 +104,17 @@ export class AddCommitPopover {
                 this.log.d("All user reputations: ", allReputations);
                 this.allEmails = allReputations.map(userRep => userRep.email).sort();
                 this.setUpList(this.searchInput);
-                let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
-                if (mailString) {
-                    let mailArray = mailString.split(";");
-                    mailArray.forEach(mail => {
-                        this.log.d("Setting email from local Storage: " + mail);
-                        this.setEmailFromList(mail);
-                    });
+                if (this.randomReviewers) {
+                    this.selectRandomReviewers();
+                } else{
+                    let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
+                    if (mailString) {
+                        let mailArray = mailString.split(";");
+                        mailArray.forEach(mail => {
+                            this.log.d("Setting email from local Storage: " + mail);
+                            this.setEmailFromList(mail);
+                        });
+                    }
                 }
                 return this.contractManagerService.getCurrentTeam();
             }).then(userTeam =>  {
@@ -122,6 +127,10 @@ export class AddCommitPopover {
 
     public ngOnInit() {
         this.log.d("Subscribing to event emitter");
+        this.contractManagerService.getRandomReviewer()
+        .then((randomReviewers: boolean) => {
+            this.randomReviewers = randomReviewers;
+        });
         this.loginSubscription = this.bitbucketSrv.getLoginEmitter()
         .subscribe(res => {
             this.log.d("Provider authentication completed", res);
@@ -235,6 +244,20 @@ export class AddCommitPopover {
             });
         }
         this.arraySearch = array;
+    }
+
+    public selectRandomReviewers() {
+        let random;
+        if (this.allEmails.length <= 4) {
+            this.userAdded = this.allEmails;
+        } else {
+            while (this.userAdded.length < 4) {
+                random = Math.floor(Math.random() * (this.allEmails.length));
+                if(this.userAdded.indexOf(this.allEmails[random]) < 0) {
+                    this.userAdded.push(this.allEmails[random]);
+                }
+            }  
+        }   
     }
 
     public refreshSearchbar() {

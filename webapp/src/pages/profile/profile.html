@@ -222,13 +222,26 @@
                     </ion-row>
                 </div>
                 <ion-row>
+                    <h6>{{ "setProfile.randomReviewers" | translate }}</h6>
+                </ion-row>
+                <div class="separator">
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-row>
+                            {{ "setProfile.randomReviewers" | translate }}
+                        </ion-row>
+                        <ion-row>
+                            <ion-toggle [(ngModel)]="randomReviewers" (ionChange)="changeToggle()"></ion-toggle>
+                        </ion-row>
+                    </ion-list>
+                </div> 
+                <ion-row>
                     <h6>{{ "setProfile.changeTeamRules" | translate }}</h6>
                     <div class="tooltip info-icon">
                         <ion-icon name="ios-information-circle-outline"></ion-icon>
                         <div class="tooltip-text" [innerHTML]="('setProfile.teamRulesDescription') | translate"></div>
                     </div>
                 </ion-row>
-                <ion-row class="separator">
+                <div class="separator">
                     <ion-list lines="full" class="team-name-list">
                         <ion-row>
                             {{ "setProfile.teamRules" | translate }}
@@ -248,7 +261,7 @@
                             </button>
                         </ion-item>
                     </ion-list>
-                </ion-row>
+                </div>
                 <ion-row class="bitbucket-container">
                     <h6>{{ "setProfile.bitBucketWorkspaces" | translate }}</h6>
                     <div class="tooltip info-icon">
