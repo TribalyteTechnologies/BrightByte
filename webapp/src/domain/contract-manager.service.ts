@@ -328,13 +328,22 @@ export class ContractManagerService {
             return emails.reduce(
             (prevVal, email) => {
                 return prevVal.then(() => {
-                    let encodeEmail = EncryptionUtils.encode(email);
-                    let bytesEmail = this.web3.utils.fromUtf8(encodeEmail);
-                    let byteCodeData = teamManager.methods.inviteToTeam(teamUid, bytesEmail, userType as number, expInSecs).encodeABI();
+                    let keyEmail = this.getEncodeKey(email);
+                    let byteCodeData = teamManager.methods.inviteToTeam(teamUid, keyEmail, userType as number, expInSecs).encodeABI();
                     return this.sendTx(byteCodeData, this.contractAddressTeamManager);
                 });
             },
             Promise.resolve());
+        }).then(res => {
+            this.log.d("Setting values in the dictionay");
+            return emails.reduce(
+                (prevVal, email) => {
+                    return prevVal.then(() => {
+                        return this.setValue(email);
+                    });
+                },
+                Promise.resolve()
+            );
         });
     }
 
@@ -374,9 +383,8 @@ export class ContractManagerService {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            const encodeEmail = EncryptionUtils.encode(email);
-            let bytesEmail = this.web3.utils.fromUtf8(encodeEmail);
-            let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, bytesEmail, teamUid).encodeABI();
+            let keyEmail = this.getEncodeKey(email);
+            let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, keyEmail, teamUid).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
