@@ -19,6 +19,7 @@ import { TeamMember } from "../models/team-member.model";
 import { InvitedUser } from "../models/invited-user.model";
 import { EncryptionUtils } from "../core/encryption-utils";
 import { FormatUtils } from "../core/format-utils";
+import { UnsignedTransaction } from "../models/unsigned-transaction-info.model";
 
 interface IContractJson {
     abi: Array<Object>;
@@ -729,7 +730,7 @@ export class ContractManagerService {
         });
     }
 
-    public setReview(url: string, text: string, points: Array<number>): Promise<any> {
+    public setReview(url: string, text: string, points: Array<number>): Promise<UnsignedTransaction> {
         return this.initProm.then(([bright, commit, root]) => {
             let contractArtifact = commit;
             const encodeUrl = EncryptionUtils.encode(url);
@@ -738,7 +739,7 @@ export class ContractManagerService {
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced text: ", text);
             this.log.d("Introduced points: ", points);
-            return this.sendTx(bytecodeData, this.contractAddressCommits);
+            return new UnsignedTransaction(bytecodeData, this.contractAddressCommits);
         }).catch(e => {
             this.log.e("Error setting a review: ", e);
             throw e;
@@ -888,14 +889,13 @@ export class ContractManagerService {
         });
     }
 
-    public readPendingCommit(url: string) {
+    public readPendingCommit(url: string): Promise<UnsignedTransaction> {
         return this.initProm.then(([bright]) => {
             const encodeUrl = EncryptionUtils.encode(url);
             let bytecodeData = bright.methods.readPendingCommit(encodeUrl).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("DATA: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressBright);
-
+            return new UnsignedTransaction(bytecodeData, this.contractAddressBright);
         }).catch(e => {
             this.log.e("Error getting nonce value: ", e);
             throw e;
