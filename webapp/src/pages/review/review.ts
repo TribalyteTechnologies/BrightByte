@@ -239,7 +239,8 @@ export class ReviewPage {
             }).then((name) => {
                 this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
-                return commit.isReadNeeded ? this.contractManagerService.readPendingCommit(commit.url) :
+                return commit.isReadNeeded ? 
+                    this.transactionQueueService.enqueue(this.contractManagerService.readPendingCommit(commit.url)) :
                     Promise.resolve();
             }).then((val) => {
                 commit.isReadNeeded = false;
