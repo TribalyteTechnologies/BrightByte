@@ -32,14 +32,13 @@ export class AddCommitPopover {
     public usersMail = new Array<string>();
     public isShowList = new Array<boolean>();
     public mockInputElementList = new Array<any>();
-    public arraySearch: string[];
+    public arraySearch = new Array<string>();
     public myForm: FormGroup;
     public userAdded = new Array<string>();
 
     public bitbucketForm: FormGroup;
     public bitbucketUser: string;
-    public bitbucketProjects: Array<string> = [];
-    public commitList = [];
+    public bitbucketProjects = new Array<string>();
     public formUrl = "";
     public formTitle = "";
     public currentProject = "";
@@ -66,6 +65,7 @@ export class AddCommitPopover {
     private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
     private userAddress: string;
+    private userEmail: string;
     private userTeam: number;
     private log: ILogger;
     private loginSubscription: EventEmitter<boolean>;
@@ -130,6 +130,9 @@ export class AddCommitPopover {
         this.contractManagerService.getRandomReviewer()
         .then((randomReviewers: boolean) => {
             this.randomReviewers = randomReviewers;
+            return this.contractManagerService.getUserDetails(this.userAddress);
+        }).then((user: UserDetails) => {
+            this.userEmail = user.email;
         });
         this.loginSubscription = this.bitbucketSrv.getLoginEmitter()
         .subscribe(res => {
@@ -156,6 +159,10 @@ export class AddCommitPopover {
         let errMsgId = null;
         let newCommit: UserCommit;
         return this.userDetailsProm.then(userDetails => {
+            let indexUser = this.userAdded.indexOf(this.userEmail);
+            if (indexUser > -1) {
+                this.userAdded.splice(indexUser, 1);
+            }
             for (let userEmail of this.userAdded) {
                 if (this.userAdded.indexOf(userEmail) < 0) {
                     errMsgId = "addCommit.unknownEmail";
@@ -229,13 +236,10 @@ export class AddCommitPopover {
                 return item;
             }
         });
-        this.userDetailsProm.then((userDetails: UserDetails) => {
-            array.find((value, index) => {
-                if (value === userDetails.email) {
-                    array.splice(index, 1);
-                }
-            });
-        });
+        let indexFound = array.indexOf(this.userEmail);
+        if (indexFound > -1) {
+            array.splice(indexFound, 1);
+        }
         for (let email of this.userAdded) {
             array.find((value, index) => {
                 if (value === email) {
@@ -248,6 +252,10 @@ export class AddCommitPopover {
 
     public selectRandomReviewers() {
         let random;
+        let indexFound = this.allEmails.indexOf(this.userEmail);
+        if (indexFound > -1) {
+            this.allEmails.splice(indexFound, 1);
+        }
         if (this.allEmails.length <= 4) {
             this.userAdded = this.allEmails;
         } else {
