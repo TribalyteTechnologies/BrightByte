@@ -1165,6 +1165,7 @@ export class ContractManagerService {
         contractArtifact: ITrbSmartContact, userAddress: string,
         season: number, global: boolean, iterationIndex = 0): Promise<UserReputation> {
         let promise = this.getMaxIterationsAndTimeout(iterationIndex, "Error getting reputation, maximimum number of retries reached");
+        let userVals;
         if (global) {
             promise = promise
             .then(() => contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address }));
@@ -1174,7 +1175,11 @@ export class ContractManagerService {
                 { from: this.currentUser.address }));
         }
         return promise
-            .then((userVals: Array<any>) => {
+            .then((user: Array<any>) => {
+                userVals = user;
+                return this.getValueFromContract(userVals[1]);
+            }).then(encodeEmail => {
+                userVals[1] = encodeEmail;
                 return global ? UserReputation.fromSmartContractGlobalReputation(userVals) : UserReputation.fromSmartContract(userVals);
             })
             .catch(error => {
