@@ -16,12 +16,10 @@ import { ClientGateway } from "../gateways/client-gateway";
 import { ClientNotificationService } from "../services/client-notfication.service";
 import { CoreDatabaseService } from "../services/core-database.service";
 import { ContractManagerService } from "../services/contract-manager.service";
-import { DatabaseInitializationService } from "../services/database-initialization.service";
 import { EmailService } from "../services/email.service";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { MailerModule } from "@nestjs-modules/mailer";
-import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
 
 
 @Module({
@@ -60,7 +58,6 @@ import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
         EmailService,
         ClientGateway,
         ClientNotificationService,
-        DatabaseInitializationService,
         { provide: LoggerService, useFactory: () => new LoggerService(BackendConfig.LOG_DEBUG) }
     ]
 })
