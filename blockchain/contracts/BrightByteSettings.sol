@@ -15,7 +15,7 @@ contract BrightByteSettings is Initializable {
         uint256 reviewThreshold;
     }
 
-    mapping (uint256 => BrightByteSeasonThreshold) seasonThresholds;
+    mapping (uint256 => BrightByteSeasonThreshold) private seasonThresholds;
 
     event newSeasonThreshold(uint256 currentSeasonIndex, uint256 commitThreshold, uint256 reviewThreshold);
     event newSeason(uint256 currentSeasonIndex, uint256 currentTimeStamp);

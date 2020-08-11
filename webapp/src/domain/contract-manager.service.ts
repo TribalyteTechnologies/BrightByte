@@ -68,7 +68,7 @@ export class ContractManagerService {
 
     }
 
-    public init(user: Account, cont: number): Promise<any> {
+    public init(user: Account, cont: number): Promise<Array<ITrbSmartContact>> {
         AppConfig.CURRENT_NODE_INDEX = cont;
         let configNet = AppConfig.NETWORK_CONFIG[cont];
         this.web3Service = new Web3Service(this.loggerSrv);
@@ -139,7 +139,7 @@ export class ContractManagerService {
         return this.initProm = Promise.all(contractPromises);
     }
 
-    public setBaseContracts(teamUid): Promise<ITrbSmartContact[]> {
+    public setBaseContracts(teamUid): Promise<Array<ITrbSmartContact>> {
         let teamManagerContract;
         let bbFactoryContract;
         let brightDictionaryContract;
@@ -426,33 +426,33 @@ export class ContractManagerService {
         });
     }
 
-    public deployAllContracts(email: string, teamUId: number, seasonLength: number): Promise<void | TransactionReceipt | Array<string>> {
+    public deployAllContracts(email: string, teamUid: number, seasonLength: number): Promise<void | TransactionReceipt | Array<string>> {
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
-            let byteCodeData = teamManagerContract.methods.deployBright(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployBright(teamUid).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.methods.deployCommits(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployCommits(teamUid).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.methods.deploySettings(teamUId).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deploySettings(teamUid).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            let byteCodeData = teamManagerContract.methods.deployRoot(email, teamUId, seasonLength).encodeABI();
+            let byteCodeData = teamManagerContract.methods.deployRoot(email, teamUid, seasonLength).encodeABI();
             return this.sendTx(byteCodeData, this.contractAddressTeamManager);
         })
         .then(() => {
-            return this.getTeamContractAddresses(teamUId);
+            return this.getTeamContractAddresses(teamUid);
         });
     }
 
-    public getTeamContractAddresses(teamUId: number): Promise<void | TransactionReceipt | Array<string>> {
+    public getTeamContractAddresses(teamUid: number): Promise<void | TransactionReceipt | Array<string>> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            return teamManager.methods.getTeamContractAddresses(teamUId).call({ from: this.currentUser.address });
+            return teamManager.methods.getTeamContractAddresses(teamUid).call({ from: this.currentUser.address });
         });
     }
 
@@ -591,13 +591,11 @@ export class ContractManagerService {
     }
 
     public deleteCommit(url: string): Promise<any> {
-        let contractArtifact;
         return this.initProm.then(([bright]) => {
-            contractArtifact = bright;
             this.log.d("Request to delete the commit: " + url);
             const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
-            let bytecodeData = contractArtifact.methods.removeUserCommit(urlKeccak).encodeABI();
+            let bytecodeData = bright.methods.removeUserCommit(urlKeccak).encodeABI();
             this.log.d("Bytecode data: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressBright);
         }).catch(e => {
@@ -625,7 +623,7 @@ export class ContractManagerService {
         return this.getCurrentSeasonState().then((seasonState: UserSeasonState) => {
             let pendingReviews = seasonState.pendingReviews;
             let finishedReviews = seasonState.finishedReviews;
-            endIndex = (pendingReviews > finishedReviews) ? pendingReviews : finishedReviews;
+            endIndex = Math.max(pendingReviews, finishedReviews);
             return this.initProm;
         }).then(([bright]) => {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
@@ -678,7 +676,7 @@ export class ContractManagerService {
             return bright.methods.getCurrentSeason().call({ from: this.currentUser.address })
             .then(seasonData => {
                 let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
-                startIndex = startIndex < 0 ? 0 : startIndex;
+                startIndex = Math.max(startIndex, 0);
                 return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
                     .call({ from: this.currentUser.address });
             }).then((allUserCommits: Array<any>) => {
@@ -798,9 +796,9 @@ export class ContractManagerService {
                 return this.getValueFromContract(userVals[1]);
             }).then(encodeEmail => {
                 userVals[1] = encodeEmail;
-                let userValsToUSerDetails = UserDetails.fromSmartContract(userVals);
-                this.userCacheSrv.set(hash, userValsToUSerDetails);
-                return userValsToUSerDetails;
+                let userValsToUserDetails = UserDetails.fromSmartContract(userVals);
+                this.userCacheSrv.set(hash, userValsToUserDetails);
+                return userValsToUserDetails;
             }).catch(err => {
                 this.log.e("Error getting user details :", err);
                 throw err;
@@ -890,9 +888,8 @@ export class ContractManagerService {
             this.log.d("Introduced url: ", url);
             this.log.d("DATA: ", bytecodeData);
             return this.sendTx(bytecodeData, this.contractAddressRoot);
-
         }).catch(e => {
-            this.log.e("Error getting nonce value: ", e);
+            this.log.e("Error changing commit flag: ", e);
             throw e;
         });
     }
@@ -905,7 +902,7 @@ export class ContractManagerService {
             this.log.d("DATA: ", bytecodeData);
             return new UnsignedTransaction(bytecodeData, this.contractAddressBright);
         }).catch(e => {
-            this.log.e("Error getting nonce value: ", e);
+            this.log.e("Error reading pending commit: ", e);
             throw e;
         });
     }
@@ -937,7 +934,7 @@ export class ContractManagerService {
         });
     }
 
-    public getTextRules(): Promise<String> {
+    public getTextRules(): Promise<string> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             return root.methods.getTextRules().call({ from: this.currentUser.address });
         }).then(textRules => {
@@ -1033,8 +1030,8 @@ export class ContractManagerService {
             let userFinished = rsp[1].map((usr) => {
                 return this.getUserDetails(usr);
             });
-            let userPromise = [userPending, userFinished];
-            return Promise.all(userPromise.map(UsrPro => {
+            let usrPromiseList = [userPending, userFinished];
+            return Promise.all(usrPromiseList.map(UsrPro => {
                 return Promise.all(UsrPro);
             })
             );

@@ -48,7 +48,7 @@ export class AddCommitPopover {
     public isFinishedLoadingRepo = false;
 
     public selectedRepositories = new Array<Repository>();
-    public repoSelection: String;
+    public repoSelection: string;
     public isBatchLogged = false;
     public isServiceAvailable = true;
     public showSpinner = false;
