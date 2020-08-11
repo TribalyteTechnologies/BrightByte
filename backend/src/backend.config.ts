@@ -23,8 +23,6 @@ export class BackendConfig {
     public static readonly NODE_CONFIG_URL = NodeConfig.NODE_WEBSOCKET_URL;
     public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:8100";
     public static readonly BRIGHTBYTE_API_PORT = process.env.PORT || 3000;
-    public static readonly BRIGHT_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Bright.json";
-    public static readonly COMMITS_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/Commits.json";
     public static readonly CLOUD_EVENT_DISPATCHER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudEventDispatcher.json";
     public static readonly CLOUD_BB_FACTORY_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudBrightByteFactory.json";
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";

@@ -53,11 +53,14 @@ export class EventHandlerService {
         this.contractManagerService.getCurrentBlock().pipe(
         flatMap((blockNumber: number) => {
             this.firstBlockNumber = blockNumber;
-            return this.contractManagerService.getEventDispatcherInfo();
+            return this.contractManagerService.getEventDispatcherAbi();
         }),
-        flatMap((contractInfo: [ITrbSmartContractJson, string]) => {
-            this.eventDispatcherContract = contractInfo[0];
-            this.contractAddressEventDispatcher = contractInfo[1];
+        flatMap((eventDispatcherContract: ITrbSmartContractJson) => {
+            this.eventDispatcherContract = eventDispatcherContract;
+            return this.contractManagerService.getEventDispatcherContractAddress();
+        }),
+        flatMap((contractAddressEventDispatcher: string) => {
+            this.contractAddressEventDispatcher = contractAddressEventDispatcher;
             return this.web3Service.openConnection();
         }))
         .subscribe((web3: Web3) => {
