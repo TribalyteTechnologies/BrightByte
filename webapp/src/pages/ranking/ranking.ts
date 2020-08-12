@@ -174,6 +174,7 @@ export class RankingPage {
                     this.msg = msg;
                     this.log.e(msg, e);
                 });
+            this.spinnerService.hideLoader();
             throw e;
         });        
     }

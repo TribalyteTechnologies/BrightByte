@@ -56,7 +56,7 @@ export class AddCommitPopover {
     public isUpdatingByBatch = false;
     public updatingProgress = 0;
     public searchInput = "";
-    public randomReviewers;
+    public randomReviewers: boolean;
 
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
@@ -251,15 +251,15 @@ export class AddCommitPopover {
     }
 
     public selectRandomReviewers() {
-        let random;
+        let random: number;
         let indexFound = this.allEmails.indexOf(this.userEmail);
         if (indexFound > -1) {
             this.allEmails.splice(indexFound, 1);
         }
-        if (this.allEmails.length <= 4) {
+        if (this.allEmails.length <= this.MAX_REVIEWERS) {
             this.userAdded = this.allEmails;
         } else {
-            while (this.userAdded.length < 4) {
+            while (this.userAdded.length < this.MAX_REVIEWERS) {
                 random = Math.floor(Math.random() * (this.allEmails.length));
                 if(this.userAdded.indexOf(this.allEmails[random]) < 0) {
                     this.userAdded.push(this.allEmails[random]);
