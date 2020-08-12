@@ -177,80 +177,35 @@ export class ContractManagerService {
     }
 
     public getInvitedUsersInfo(): Promise<Array<InvitedUser>> {
-        let teamManagerContract;
-        let invitedEmails;
-        let invitedUsersInfo;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            teamManagerContract = teamManager;
-            return teamManagerContract.methods.getInvitedUsersList(this.currentTeamUid).call({ from: this.currentUser.address});
+            return teamManager.methods.getInvitedUsersList(this.currentTeamUid).call({ from: this.currentUser.address});
         })
-        .then((invitedUsersEmails: Array<Array<string>>) => {
-            invitedEmails = invitedUsersEmails;
-            let promises = invitedEmails.map(email => {
-                return teamManagerContract.methods.getInvitedUserInfo(email, this.currentTeamUid).call({ from: this.currentUser.address});
+        .then((invitedUsersEmails: Array<string>) => {
+            let promises = invitedUsersEmails.map(email => {
+                return this.getInvitedUserInfo(email, this.currentTeamUid);
             });
             return Promise.all(promises);
-        })
-        .then(invitedUsers => {
-            invitedUsersInfo = invitedUsers;
-            let promises = invitedEmails.map(email => this.getValueFromContract(email));
-            return Promise.all(promises);
-        })
-        .then((emails: any) => {
-            let invitedUsers = invitedUsersInfo.map((userInfo: Array<string>, i: number) => {
-                const decodeEmail = EncryptionUtils.decode(emails[i]);
-                return new InvitedUser(decodeEmail, parseInt(userInfo[1]), parseInt(userInfo[2]));
-            });
-            return invitedUsers;
         });
     }
 
     public getTeamMembersInfo(): Promise<Array<Array<TeamMember>>> {
-        let teamManagerContract;
-        let teamMembers = new Array<Array<TeamMember>>();
-        teamMembers[0] = new Array<TeamMember>();
-        teamMembers[1] = new Array<TeamMember>();
-        let membersInfo;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            teamManagerContract = teamManager;
-            return teamManagerContract.methods.getTeamMembers(this.currentTeamUid).call({ from: this.currentUser.address});
+            return teamManager.methods.getTeamMembers(this.currentTeamUid).call({ from: this.currentUser.address});
         })
         .then((memberAddresses: Array<Array<string>>) => {
-            let adminPromises;
-            let memberPromises;
-            adminPromises = memberAddresses[0].map((memberAddress: string) => {
-                teamMembers[0].push(new TeamMember(memberAddress));
-                return teamManagerContract.methods.getUserInfo(this.currentTeamUid, memberAddress).call({ from: this.currentUser.address});
+            let adminPromises = memberAddresses[0].map((memberAddress: string) => {
+                return this.getTeamMemberInfo(this.currentTeamUid, memberAddress);
             });
-            memberPromises = memberAddresses[1].map(memberAddress => {
-                teamMembers[1].push(new TeamMember(memberAddress));
-                return teamManagerContract.methods.getUserInfo(this.currentTeamUid, memberAddress).call({ from: this.currentUser.address});
+            let memberPromises = memberAddresses[1].map((memberAddress: string) => {
+                return this.getTeamMemberInfo(this.currentTeamUid, memberAddress);
             });
             return Promise.all([Promise.all(adminPromises), Promise.all(memberPromises)]);
-        })
-        .then((usersInfo: Array<Array<any>>) => {
-            membersInfo = usersInfo;
-            let adminPromises = membersInfo[0].map(userInfo => this.getValueFromContract(userInfo[1]));
-            let memberPromises = membersInfo[1].map(userInfo => this.getValueFromContract(userInfo[1]));
-            return Promise.all([Promise.all(adminPromises), Promise.all(memberPromises)]);
-        })
-        .then((emails: Array<Array<any>>) => {
-            emails.forEach((memberType, i) => {
-                memberType.forEach((email, j) => {
-                    const decodeEmail = EncryptionUtils.decode(email);
-                    teamMembers[i][j].email = decodeEmail;
-                    teamMembers[i][j].userType = membersInfo[i][j][0];
-                });
-            });
-            return teamMembers;
         });
     }
 
     public getUserEmail(teamUid: number, memberAddress: string): Promise<string> {
-        let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
-            teamManagerContract = teamManager;
-            return teamManagerContract.methods.getUserInfo(teamUid, memberAddress).call({ from: memberAddress });
+            return teamManager.methods.getUserInfo(teamUid, memberAddress).call({ from: memberAddress });
         }).then((userInfo: Array<string>) => {
             return this.getValueFromContract(userInfo[1]);
         }).then(emailValue => {
@@ -301,11 +256,7 @@ export class ContractManagerService {
     }
 
     public inviteToCurrentTeam(emails: Array<string>, userType: AppConfig.UserType): Promise<void | TransactionReceipt> {
-        let teamManagerContract;
-        return this.initProm.then(([bright, commit, root, teamManager]) => {
-            teamManagerContract = teamManager;
-            return this.inviteMultipleEmailsToTeam(this.currentTeamUid, emails, userType, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
-        });
+        return this.inviteMultipleEmailsToTeam(this.currentTeamUid, emails, userType, AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
     }
 
     public inviteEmailToTeam(
@@ -418,7 +369,7 @@ export class ContractManagerService {
             teamUid = teamUids[teamUids.length - 1];
             return teamManagerContract.methods.getTeamMembers(teamUid).call({ from: this.currentUser.address });
         })
-        .then((members: any) => {
+        .then((members: Array<Array<string>>) => {
             return this.deployAllContracts(keyEmail, teamUid, seasonLength);
         })
         .then(() => {
@@ -493,7 +444,7 @@ export class ContractManagerService {
         });
     }
 
-    public setProfile(name: string, mail: string): Promise<any> {
+    public setProfile(name: string, mail: string): Promise<void | TransactionReceipt> {
         let contractArtifact;
         return this.initProm.then(([bright]) => {
             contractArtifact = bright;
@@ -510,7 +461,7 @@ export class ContractManagerService {
         });
     }
 
-    public addCommit(url: string, title: string, usersMail: Array<string>): Promise<any> {
+    public addCommit(url: string, title: string, usersMail: Array<string>): Promise<void | TransactionReceipt> {
         let rootContract;
         let teamManagerContract;
         let project = FormatUtils.getProjectFromUrl(url);
@@ -590,7 +541,7 @@ export class ContractManagerService {
         });
     }
 
-    public deleteCommit(url: string): Promise<any> {
+    public deleteCommit(url: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright]) => {
             this.log.d("Request to delete the commit: " + url);
             const encodeUrl = EncryptionUtils.encode(url);
@@ -629,7 +580,7 @@ export class ContractManagerService {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
             return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, 0, endIndex)
                 .call({ from: this.currentUser.address })
-                .then((allUserCommits: Array<any>) => {
+                .then((allUserCommits: Array<Array<string>>) => {
                     let promisesPending = allUserCommits[0].map(userCommit => this.getUserCommitDetails(userCommit));
                     let promisesFinished = allUserCommits[1].map(userCommit => this.getUserCommitDetails(userCommit, false));
                     return Promise.all([Promise.all(promisesPending), Promise.all(promisesFinished)]);
@@ -679,7 +630,7 @@ export class ContractManagerService {
                 startIndex = Math.max(startIndex, 0);
                 return bright.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
                     .call({ from: this.currentUser.address });
-            }).then((allUserCommits: Array<any>) => {
+            }).then((allUserCommits: Array<Array<string>>) => {
                 let promisesAllReviews = allUserCommits[4].map(userCommit => this.getUserCommitDetails(userCommit));
                 let promisesPending = allUserCommits[0].map(userCommit => this.getUserCommitDetails(userCommit));
                 let promisesFinished = allUserCommits[1].map(userCommit => this.getUserCommitDetails(userCommit, false));
@@ -725,7 +676,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit]) => {
             const encodeUrl = EncryptionUtils.encode(url);
             return commit.methods.getDetailsCommits(this.web3.utils.keccak256(encodeUrl)).call({ from: this.currentUser.address })
-                .then((commitVals: any) => {
+                .then((commitVals: Array<any>) => {
                     let result = returnsUserCommits ?
                         UserCommit.fromSmartContract(commitVals, false) : CommitDetails.fromSmartContract(commitVals);
                     return result;
@@ -758,10 +709,10 @@ export class ContractManagerService {
             const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
             return commit.methods.getCommentsOfCommit(urlKeccak).call({ from: this.currentUser.address })
-                .then((allComments: Array<any>) => {
+                .then((allComments: Array<Array<string>>) => {
                     let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment)
                         .call({ from: this.currentUser.address })
-                        .then((commitVals: any) => {
+                        .then((commitVals: Array<any>) => {
                             return Promise.all([commitVals, bright.methods.getUserName(commitVals[4])
                                 .call({ from: this.currentUser.address })]);
                         }).then((data) => {
@@ -824,7 +775,8 @@ export class ContractManagerService {
         });
     }
 
-    public passToNewSeasonAndSetThresholds(seasonIndex: number, commitThreshold: number, reviewThreshold: number): Promise<any> {
+    public passToNewSeasonAndSetThresholds(seasonIndex: number, commitThreshold: number, reviewThreshold: number)
+    : Promise<void | TransactionReceipt> {
         let brightContract;
         let teamManagerContract;
         return this.initProm.then(([bright, commit, root, teamManager]) => {
@@ -856,7 +808,7 @@ export class ContractManagerService {
     }
 
 
-    public setThumbReviewForComment(url: string, index: number, value: number): Promise<any> {
+    public setThumbReviewForComment(url: string, index: number, value: number): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
             return this.getCommentsOfCommit(url)
                 .then((arrayOfComments: Array<CommitComment>) => {
@@ -881,7 +833,7 @@ export class ContractManagerService {
         });
     }
 
-    public reviewChangesCommitFlag(url: string) {
+    public reviewChangesCommitFlag(url: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
             const encodeUrl = EncryptionUtils.encode(url);
             let bytecodeData = root.methods.readCommit(encodeUrl).encodeABI();
@@ -997,7 +949,7 @@ export class ContractManagerService {
         });
     }
 
-    public setFeedback(url: string) {
+    public setFeedback(url: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
             const encodeUrl = EncryptionUtils.encode(url);
             let bytecodeData = root.methods.setFeedback(encodeUrl, this.currentUser.address).encodeABI();
@@ -1038,7 +990,7 @@ export class ContractManagerService {
         });
     }
 
-    public setUserName(name: string): Promise<any> {
+    public setUserName(name: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright]) => {
             const encodeName = EncryptionUtils.encode(name);
             let bytecodeData = bright.methods.setUserName(encodeName).encodeABI();
@@ -1101,7 +1053,7 @@ export class ContractManagerService {
             let currentSeason = this.storageSrv.get(AppConfig.StorageKey.CURRENTSEASONINDEX);
             return bright.methods.getUserSeasonCommits(this.currentUser.address, currentSeason, startIndex, endIndex)
                 .call({ from: this.currentUser.address });
-        }).then((allUserCommits: Array<any>) => {
+        }).then((allUserCommits: Array<Array<string>>) => {
             let userCommits = allUserCommits[2].filter(commit => commit !== AppConfig.EMPTY_COMMIT_HASH);
             allCommits = allCommits.concat(userCommits);
             let batchLenght = allCommits.length;
@@ -1115,7 +1067,7 @@ export class ContractManagerService {
     private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
         return this.initProm.then(([bright, commit]) => {
             return commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address })
-                .then((commitVals: any) => {
+                .then((commitVals: Array<any>) => {
                     return UserCommit.fromSmartContract(commitVals, isPending);
                 });
         }).catch(err => {
@@ -1211,5 +1163,37 @@ export class ContractManagerService {
     private getRandomDelay(minDelay: number, maxDelay: number): Promise<void> {
         let delay = Math.floor(Math.random() * maxDelay) + minDelay;
         return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    private getInvitedUserInfo(invitedEmail: string, teamUid: number): Promise<InvitedUser> {
+        let invitedUserInfo: Array<string>;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return teamManager.methods.getInvitedUserInfo(invitedEmail, teamUid).call({ from: this.currentUser.address});
+        }).then((invitedUser: Array<string>) => {
+            invitedUserInfo = invitedUser;
+            return this.getValueFromContract(invitedEmail);
+        }).then((emailValue: string) => {
+            const decodeEmail = EncryptionUtils.decode(emailValue);
+            return new InvitedUser(decodeEmail, parseInt(invitedUserInfo[1]), parseInt(invitedUserInfo[2]));
+        }).catch(e => {
+            this.log.e("Error getting invited user info from team manager contract: ", e);
+            throw e;
+        });
+    }
+
+    private getTeamMemberInfo(teamUid: number, memberAddress: string): Promise<TeamMember> {
+        let userInfo: Array<string>;
+        return this.initProm.then(([bright, commit, root, teamManager]) => {
+            return teamManager.methods.getUserInfo(teamUid, memberAddress).call({ from: this.currentUser.address});
+        }).then((user: Array<string>) => {
+            userInfo = user;
+            return this.getValueFromContract(user[1]);
+        }).then((emailValue: string) => {
+            const decodeEmail = EncryptionUtils.decode(emailValue);
+            return new TeamMember(memberAddress, decodeEmail, parseInt(userInfo[0]));
+        }).catch(e => {
+            this.log.e("Error getting user info from team manager contract: ", e);
+            throw e;
+        });
     }
 }

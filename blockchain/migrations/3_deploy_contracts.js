@@ -77,7 +77,7 @@ module.exports = async function (deployer, network, accounts) {
     let contractsInfo = {};
     contractsInfo[CloudBBFactory.contract_name] = { address: cloudBBFactory.address, netId: CONFIG.network_id };
     contractsInfo[CloudTeamManager.contract_name] = { address: cloudTeamManager.address, netId: CONFIG.network_id };
-    contractsInfo[BrightDictionary.contract_name] = { address: brightDictionary.address, netId: CONFIG.network_id }
+    contractsInfo[BrightDictionary.contract_name] = { address: brightDictionary.address, netId: CONFIG.network_id };
     saveAddresesInfo(contractsInfo);
 };
 
