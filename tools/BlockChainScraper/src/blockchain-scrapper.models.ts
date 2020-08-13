@@ -14,16 +14,18 @@ export class UserStatistics {
     public userAddress: string;
     public numberOfTransactions: number;
     public firstTransactionBlockNumber: number;
+    public firstTransactionDate: Date; 
     public preferedTransactionDestination: string;
     public numberOfTransactionToPreferedDestiantion: number;
     public transactionDestiantions: Array<string>; 
 
     constructor(userAdress: string, numberOfTransactions?: number, 
-                firstTransactionBlockNumber?: number, preferedTransactionDestination?: string,
+                firstTransactionBlockNumber?: number, firstTransactionDate?: Date, preferedTransactionDestination?: string,
                 numberOfTransactionToPreferedDestiantion?: number, transactionDestiantions?: Array<string>) {
         this.userAddress = userAdress;
         this.numberOfTransactions = numberOfTransactions;
         this.firstTransactionBlockNumber = firstTransactionBlockNumber;
+        this.firstTransactionDate = firstTransactionDate;
         this.transactionDestiantions = transactionDestiantions;
         this.preferedTransactionDestination = preferedTransactionDestination;
         this.numberOfTransactionToPreferedDestiantion = numberOfTransactionToPreferedDestiantion;
@@ -45,6 +47,7 @@ export class ExtendedTransaction implements Transaction {
     public nonce: number;
     public blockHash: string;
     public blockNumber: number;
+    public transactionDate: Date;
     public transactionIndex: number;
     public from: string;
     public to: string;

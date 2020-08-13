@@ -11,9 +11,7 @@ export class UtilsService {
         let cleanHex = this.HEX_HEADER_VALIDATOR.test(hex) ? hex.substr(2, hex.length) : hex;
         for (var i = 0; i < cleanHex.length; i += 2) {
             let charCode = parseInt(cleanHex.substr(i, 2), this.HEX_RADIX);
-            if (isMaxAndMinDefined && (charCode >= minCharCode && charCode <= maxCharCode)) {
-                resultAscii += String.fromCharCode(charCode);
-            } else if (!isMaxAndMinDefined) {
+            if (!isMaxAndMinDefined || (charCode >= minCharCode && charCode <= maxCharCode)) {
                 resultAscii += String.fromCharCode(charCode);
             }
         }
@@ -25,7 +23,7 @@ export class UtilsService {
         let numberOfRepetitions = 0;
         let mostRepeatedVal: string;
         values.forEach(val => {
-            if (keys[val]) keys[val]++; else keys[val] = 1;
+            if (keys[val]) { keys[val]++; } else { keys[val] = 1; }
 
             if (numberOfRepetitions < keys[val]) {
                 mostRepeatedVal = val;
