@@ -178,6 +178,7 @@
         "defaultLength": "14 days",
         "name": "Name",
         "creatingTeamMessage": "BrightByte is creating your team. This can take a few seconds.",
+        "userSingUp": "BrightByte is signing you up for a new team",
         "teamName": "Team name",
         "teamNameLength": "Team name should be maximum {{length}} characters long",
         "minSeasonLength": "Season duration should be minimum {{length}} day long",

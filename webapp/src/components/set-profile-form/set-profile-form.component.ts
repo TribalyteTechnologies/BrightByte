@@ -36,6 +36,7 @@ export class SetProfileForm {
     public setProfileFg: FormGroup;
     public createTeamFg: FormGroup;
     public isButtonPressed: boolean;
+    public isSingingUp: boolean;
     public msg: string;
     public teamList: Array<Team>;
     public showCreateTeam = false;
@@ -138,11 +139,14 @@ export class SetProfileForm {
     }
 
     public registerToTeam(teamUid: number) {
+        this.isButtonPressed = true;
+        this.isSingingUp = true;
         this.contractManagerService.registerToTeam(this.userEmail, teamUid)
         .then((uid: number) => {
             this.setContractsAndProfile(uid, false);
         })
         .catch((e) => {
+            this.isButtonPressed = false;
             this.translateService.get("setProfile.getEmails").subscribe(
                 msg => {
                     this.msg = msg;

@@ -51,8 +51,12 @@
     <ng-container *ngIf="showTeamList; else showProfileForm">
         <h4>{{ "setProfile.selectTeamToregister" | translate }}</h4>
         <p>{{ "setProfile.availableInvitations" | translate }}</p>
-        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue" (click)="registerToTeam(team.uid)">
+        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue" (click)="registerToTeam(team.uid)" [disabled]="isButtonPressed && isSingingUp">
             {{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+        <ion-row [hidden]="isButtonPressed && !isSingingUp">
+            <ion-spinner></ion-spinner>
+            <p class="creating-team-message">{{ "setProfile.userSingUp" | translate }}</p>
+        </ion-row>
         <p>{{ "setProfile.createYourTeam" | translate }}</p>
         <button margin class="btn btn--full btn__blue" (click)="openCreateTeam()">
             {{ "setProfile.createTeam" | translate }}</button>

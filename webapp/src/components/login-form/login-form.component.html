@@ -46,5 +46,9 @@
     <h4>{{ "setProfile.header" | translate }}</h4>
     <ion-row class="mini-title">{{ "setProfile.enterName" | translate }}</ion-row>
     <input class="password-form" type="text" [placeholder]="'setProfile.name' | translate" [(ngModel)]="userName">
-    <button margin class="btn btn--full btn__blue" (click)="registerToTeam()">Register</button>
+    <button margin class="btn btn--full btn__blue" (click)="registerToTeam()" [disabled]="isButtonPressed">{{ "app.register" | translate }}</button>
+    <ion-row [hidden]="!isButtonPressed">
+        <ion-spinner></ion-spinner>
+        <p class="creating-team-message">{{ "setProfile.userSingUp" | translate }}</p>
+    </ion-row>
 </ng-template>
