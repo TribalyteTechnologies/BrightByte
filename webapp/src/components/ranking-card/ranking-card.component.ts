@@ -61,7 +61,7 @@ export class RankingCard {
         this.userPosition = val.userPosition;
         this.userHash = val.userHash;
         this.engagementIndex = val.engagementIndex;
-        this.engagementIndexString = this.globalSelected ? this.engagementIndex.toFixed(2) : Math.round(this.engagementIndex).toString();
+        this.engagementIndexString = this.engagementIndex.toFixed(2);
         this.isRanked = val.isRanked;
         this.refreshTooltips();
     }

@@ -123,7 +123,7 @@ export class RankingPage {
                 this.minNumberCommit = seasonThreshold[0];
                 this.minNumberReview = seasonThreshold[1];
                 return this.contractManagerService.getAllUserReputation(this.seasonSelected, this.globalSelected);
-        }).then((usersRep: UserReputation[]) => {
+        }).then((usersRep: Array<UserReputation>) => {
             let initNewSeason: Promise<void>;
             if (isSeasonEnded){
                 usersRep.forEach(rep => {
