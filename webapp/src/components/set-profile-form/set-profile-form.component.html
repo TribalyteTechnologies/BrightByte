@@ -37,13 +37,13 @@
                     {{ "addCommit.fieldRequire" | translate }}</div>
             </ion-row>
         </ion-row>
-        <ion-row [hidden]="!isButtonPressed && showCreateTeam">
+        <ion-row [hidden]="!isRegistering && showCreateTeam">
             <ion-spinner></ion-spinner>
             <p class="creating-team-message">{{ "setProfile.creatingTeamMessage" | translate }}</p>
         </ion-row>
         <div class="buttons">
             <button class="btn btn--full btn__blue"
-                [disabled]="createTeamFg.invalid || isButtonPressed">{{ "setProfile.createTeam" | translate }}</button>
+                [disabled]="createTeamFg.invalid || isRegistering">{{ "setProfile.createTeam" | translate }}</button>
         </div>
     </form>
 </div>
@@ -51,9 +51,9 @@
     <ng-container *ngIf="showTeamList; else showProfileForm">
         <h4>{{ "setProfile.selectTeamToregister" | translate }}</h4>
         <p>{{ "setProfile.availableInvitations" | translate }}</p>
-        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue" (click)="registerToTeam(team.uid)" [disabled]="isButtonPressed && isSingingUp">
+        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue" (click)="registerToTeam(team.uid)" [disabled]="isRegistering && isSingingUp">
             {{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
-        <ion-row [hidden]="isButtonPressed && !isSingingUp">
+        <ion-row [hidden]="isRegistering && !isSingingUp">
             <ion-spinner></ion-spinner>
             <p class="creating-team-message">{{ "setProfile.userSingUp" | translate }}</p>
         </ion-row>
@@ -94,10 +94,10 @@
                 </ion-row>
             </ion-row>
             <div class="error-message">{{ msg }}</div>
-            <ion-spinner [hidden]="!isButtonPressed && !showCreateTeam"></ion-spinner>
+            <ion-spinner [hidden]="!isRegistering && !showCreateTeam"></ion-spinner>
             <div class="buttons">
                 <button class="btn btn--full btn__blue" type="submit"
-                    [disabled]="setProfileFg.invalid || isButtonPressed">{{ "setProfile.set" | translate }}</button>
+                    [disabled]="setProfileFg.invalid || isRegistering">{{ "setProfile.set" | translate }}</button>
             </div>
         </form>
 </ng-template>

@@ -35,7 +35,7 @@ export class SetProfileForm {
     public readonly MAX_SEASON_LENGTH_DAYS = AppConfig.MAX_SEASON_LENGTH_DAYS;
     public setProfileFg: FormGroup;
     public createTeamFg: FormGroup;
-    public isButtonPressed: boolean;
+    public isRegistering: boolean;
     public isSingingUp: boolean;
     public msg: string;
     public teamList: Array<Team>;
@@ -83,7 +83,7 @@ export class SetProfileForm {
     public openCreateTeam() {
         this.showCreateTeam = true;
         this.showTeamList = false;
-        this.isButtonPressed = false;
+        this.isRegistering = false;
     }
 
     public showSetWorkspace() {
@@ -91,7 +91,7 @@ export class SetProfileForm {
     }
 
     public updateProfile(name: string, email: string) {
-        this.isButtonPressed = true;
+        this.isRegistering = true;
         this.userEmail = email;
         this.userName = name;
         let isInvited;
@@ -104,7 +104,7 @@ export class SetProfileForm {
                     promise = this.contractManagerService.getAllTeamInvitationsByEmail(email);
                 } else {
                     this.showCreateTeam = true;
-                    this.isButtonPressed = false;
+                    this.isRegistering = false;
                 }
                 return promise;
             })
@@ -139,14 +139,14 @@ export class SetProfileForm {
     }
 
     public registerToTeam(teamUid: number) {
-        this.isButtonPressed = true;
+        this.isRegistering = true;
         this.isSingingUp = true;
         this.contractManagerService.registerToTeam(this.userEmail, teamUid)
         .then((uid: number) => {
             this.setContractsAndProfile(uid, false);
         })
         .catch((e) => {
-            this.isButtonPressed = false;
+            this.isRegistering = false;
             this.translateService.get("setProfile.getEmails").subscribe(
                 msg => {
                     this.msg = msg;
@@ -166,7 +166,7 @@ export class SetProfileForm {
             return mail;
         }).filter(email => email !== "");
         let teamUid;
-        this.isButtonPressed = true;
+        this.isRegistering = true;
         if (this.areEmailsWellFormated) {
             this.contractManagerService.createTeam(this.userEmail, teamName, seasonLength)
                 .then((teamId: number) => {
@@ -178,7 +178,7 @@ export class SetProfileForm {
                     return this.setContractsAndProfile(teamUid);
                 });
         } else {
-            this.isButtonPressed = false;
+            this.isRegistering = false;
         }
     }
 
@@ -188,7 +188,7 @@ export class SetProfileForm {
                 return this.contractManagerService.setProfile(this.userName, this.userEmail);
             })
             .then(txResponse => {
-                this.isButtonPressed = false;
+                this.isRegistering = false;
                 this.log.d("Contract manager response: ", txResponse);
                 if (!txResponse) {
                     throw "Error: cannot set profile";

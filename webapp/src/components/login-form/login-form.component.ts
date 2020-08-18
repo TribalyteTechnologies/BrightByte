@@ -49,7 +49,7 @@ export class LoginForm {
     public invitationList: Array<Team>;
     public userName: string;
     public teamToRegisterIn: number;
-    public isButtonPressed: boolean;
+    public isRegistering: boolean;
 
     private readonly NEW_USER = "new-user";
     private readonly SET_PROFILE = "set-profile";
@@ -189,7 +189,7 @@ export class LoginForm {
     }
 
     public registerToTeam() {
-        this.isButtonPressed = true;
+        this.isRegistering = true;
         this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn)
         .then(() => {
             return this.contractManager.setBaseContracts(this.teamToRegisterIn);
