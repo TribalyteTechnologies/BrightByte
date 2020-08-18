@@ -13,11 +13,11 @@ export class UserReputation {
     public engagementIndex: number;
     public isRanked: boolean;
 
-    public static fromSmartContract(userVals: Array<any>): UserReputation{ 
+    public static fromSmartContract(userVals: Array<string>): UserReputation{ 
         let user = new UserReputation(); 
         user.name = EncryptionUtils.decode(userVals[0]);
         user.email = EncryptionUtils.decode(userVals[1]);
-        user.reputation = Math.round((userVals[2] / AppConfig.WEIGHT_REPUTATION_FACTOR) * 100) / 100;
+        user.reputation = Math.round((parseInt(userVals[2]) / AppConfig.WEIGHT_REPUTATION_FACTOR) * 100) / 100;
         user.numberReviewsMade = parseInt(userVals[3]);
         user.numberCommitsMade = parseInt(userVals[4]);
         user.agreedPercentage = parseInt(userVals[5]);

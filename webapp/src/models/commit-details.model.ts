@@ -10,17 +10,17 @@ export class CommitDetails {
     public numberReviews: number;
     public currentNumberReviews: number; 
     public score: number;
-    public static fromSmartContract(commitVals: Array<any>): CommitDetails{ 
+    public static fromSmartContract(commitVals: Array<string>): CommitDetails{ 
         let commit = new CommitDetails();
         commit.url = EncryptionUtils.decode(commitVals[0]); 
         commit.title = EncryptionUtils.decode(commitVals[1]);
         commit.author = commitVals[2];
-        commit.creationDate = commitVals[3];
-        commit.lastModDate = commitVals[4];
-        commit.isReadNeeded = commitVals[5];
-        commit.numberReviews = commitVals[6]; 
-        commit.currentNumberReviews = commitVals[7];
-        commit.score = Math.round(commitVals[8]);
+        commit.creationDate = parseInt(commitVals[3]);
+        commit.lastModDate = parseInt(commitVals[4]);
+        commit.isReadNeeded = commitVals[5] === "true";
+        commit.numberReviews = parseInt(commitVals[6]); 
+        commit.currentNumberReviews = parseInt(commitVals[7]);
+        commit.score = Math.round(parseInt(commitVals[8]));
         return commit; 
     } 
 } 

@@ -18,7 +18,7 @@ export class UserCommit {
     public currentNumberReviews: number;
     public reviewers: UserDetails[][];
 
-    public static fromSmartContract(commitVals: Array<any>, isPending: boolean): UserCommit{ 
+    public static fromSmartContract(commitVals: Array<string>, isPending: boolean): UserCommit{ 
         let commit = new UserCommit(); 
         if(commitVals[0]) {
             commit.url = EncryptionUtils.decode(commitVals[0]); 
@@ -27,12 +27,12 @@ export class UserCommit {
             commit.author = commitVals[2];
             commit.project = FormatUtils.getProjectFromUrl(commit.url);
             commit.isPending = isPending;
-            commit.creationDateMs = commitVals[3] * AppConfig.SECS_TO_MS;
-            commit.lastModificationDateMs = commitVals[4] * AppConfig.SECS_TO_MS;
-            commit.isReadNeeded = commitVals[5];
-            commit.numberReviews = commitVals[6];
-            commit.currentNumberReviews = commitVals[7];
-            commit.score = Math.round(commitVals[8] / AppConfig.COMMIT_SCORE_DIVISION_FACTOR);
+            commit.creationDateMs = parseInt(commitVals[3]) * AppConfig.SECS_TO_MS;
+            commit.lastModificationDateMs = parseInt(commitVals[4]) * AppConfig.SECS_TO_MS;
+            commit.isReadNeeded = commitVals[5] === "true";
+            commit.numberReviews = parseInt(commitVals[6]);
+            commit.currentNumberReviews = parseInt(commitVals[7]);
+            commit.score = Math.round(parseInt(commitVals[8]) / AppConfig.COMMIT_SCORE_DIVISION_FACTOR);
             commit.reviewers = [];
         }
         return commit;
