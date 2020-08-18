@@ -236,11 +236,7 @@ export class LoginForm {
             return this.contractManager.getAllTeamInvitationsByEmail(email);
         })
         .then((teamUids: Array<number>) => {
-            if (teamUids.length === 0 && alreadyRegisteredTeams.length === 1) {
-                this.logToTeam(alreadyRegisteredTeams[0]);
-            } else {
-                showSelector = true;
-            }
+            showSelector = (teamUids.length > 0 || alreadyRegisteredTeams.length > 0);
             allTeamUids = teamUids;
             return this.getAndSetTeamNames(allTeamUids, true);
         })
