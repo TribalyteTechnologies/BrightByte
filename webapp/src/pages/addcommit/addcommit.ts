@@ -56,7 +56,7 @@ export class AddCommitPopover {
     public isUpdatingByBatch = false;
     public updatingProgress = 0;
     public searchInput = "";
-    public randomReviewers: boolean;
+    public isRandomReviewers: boolean;
 
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
@@ -104,7 +104,7 @@ export class AddCommitPopover {
                 this.log.d("All user reputations: ", allReputations);
                 this.allEmails = allReputations.map(userRep => userRep.email).sort();
                 this.setUpList(this.searchInput);
-                if (this.randomReviewers) {
+                if (this.isRandomReviewers) {
                     this.selectRandomReviewers();
                 } else{
                     let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
@@ -128,8 +128,8 @@ export class AddCommitPopover {
     public ngOnInit() {
         this.log.d("Subscribing to event emitter");
         this.contractManagerService.getRandomReviewer()
-        .then((randomReviewers: boolean) => {
-            this.randomReviewers = randomReviewers;
+        .then((isRandomReviewers: boolean) => {
+            this.isRandomReviewers = isRandomReviewers;
             return this.contractManagerService.getUserDetails(this.userAddress);
         }).then((user: UserDetails) => {
             this.userEmail = user.email;
@@ -251,7 +251,6 @@ export class AddCommitPopover {
     }
 
     public selectRandomReviewers() {
-        let random: number;
         let indexFound = this.allEmails.indexOf(this.userEmail);
         if (indexFound > -1) {
             this.allEmails.splice(indexFound, 1);
@@ -259,10 +258,11 @@ export class AddCommitPopover {
         if (this.allEmails.length <= this.MAX_REVIEWERS) {
             this.userAdded = this.allEmails;
         } else {
+            let randomUserEmail: string;
             while (this.userAdded.length < this.MAX_REVIEWERS) {
-                random = Math.floor(Math.random() * (this.allEmails.length));
-                if(this.userAdded.indexOf(this.allEmails[random]) < 0) {
-                    this.userAdded.push(this.allEmails[random]);
+                randomUserEmail = this.allEmails[Math.floor(Math.random() * (this.allEmails.length))];
+                if(this.userAdded.indexOf(randomUserEmail) < 0) {
+                    this.userAdded.push(randomUserEmail);
                 }
             }  
         }   
