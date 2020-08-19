@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "tsc": "tsc",
-    "start": "npm run tsc; node build/main.js"
+    "start": "yarn run tsc; node build/main.js"
   },
   "dependencies": {
     "@types/bn.js": "4.11.5",

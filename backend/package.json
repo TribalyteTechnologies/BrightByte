@@ -11,11 +11,11 @@
 		"start": "ts-node -r tsconfig-paths/register src/main.ts",
 		"start:dev": "concurrently --handle-input \"wait-on dist/main.js && nodemon\" \"tsc -w -p tsconfig.build.json\" ",
 		"start:debug": "nodemon --config nodemon-debug.json",
-		"prestart:prod": "shx rm -rf dist && npm run build",
+		"prestart:prod": "shx rm -rf dist && yarn run build",
 		"start:prod": "node dist/main.js",
 		"test": "jest --detectOpenHandles --forceExit",
 		"lint": "tslint -p tsconfig.json -c tslint.json",
-		"linters-ci": "npm run lint"
+		"linters-ci": "yarn run lint"
 	},
 	"dependencies": {
 		"@nestjs-modules/mailer": "1.5.0",

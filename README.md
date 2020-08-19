@@ -17,18 +17,18 @@ This project is divided in several folders.
  Each one of them contains its own package.json with several commands and dependecies. Some of them also contains a README.md file with more information.
 
 ## Quick local starup
-Run `npm install` then `npm start` in root directory to install and start a full local version of Brightbyte.
+Run `yarn install` then `yarn start` in root directory to install and start a full local version of Brightbyte.
 
 ## Startup order
 If you want to customize the code an run it by yourself, there is a specific order to start the system:
 
-1. Start ganache locally if needed with `npm run ganache` in blockchain folder.
-2. Deploy smartcontracts with `npm run truffle:migrate`.
-3. Go to webapp folder and run `npm start` to run the frontend.
-4. Finally go to backend folder and run `npm start`.
+1. Start ganache locally if needed with `yarn run ganache` in blockchain folder.
+2. Deploy smartcontracts with `yarn run truffle:migrate`.
+3. Go to webapp folder and run `yarn start` to run the frontend.
+4. Finally go to backend folder and run `yarn start`.
 
 ## Dependencies installation
-Run `npm install` in each directory for installing all the dependencies.
+Run `yarn install` in each directory for installing all the dependencies.
 
  #### Migrations:
  
