@@ -79,7 +79,7 @@
     <ion-row padding class="form-container form-container__form-top-rounded">
         <ion-col>
             <ion-row class="text-details text-details--bold">{{ "addCommit.users" | translate }}:</ion-row>
-            <ng-container *ngIf="!randomReviewers; else randomReview">
+            <ng-container *ngIf="!isRandomReviewers; else randomReview">
                 <ion-row>
                     <input [(ngModel)]="searchInput" type="text" class="dropdown dropdown__search" (ngModelChange)="refreshSearchbar()" placeholder="email@example.com">
                 </ion-row>
@@ -94,7 +94,7 @@
     </ion-row>
     <ion-row padding></ion-row>
     <ion-col no-padding *ngFor="let item of userAdded; let j = index">
-        <button class="btn btn--label btn--margins btn__grey" [disabled]="randomReviewers" (click)="removeUser(j)">{{ item }}</button>
+        <button class="btn btn--label btn--margins btn__grey" [disabled]="isRandomReviewers" (click)="removeUser(j)">{{ item }}</button>
     </ion-col>
     <ion-row paddings></ion-row>
     <ion-row *ngIf="msg">
