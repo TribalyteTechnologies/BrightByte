@@ -3,26 +3,26 @@ This is the BrightByte webapp project.
 
  #### The following commands are available:
 
-- Install the dependencies by running npm install.
-- Run the local network npm run truffle:develop.
-- To deploy the smart contracts to the blockchain: npm run truffle:migrate.
-- To run the frontend locally npm start.
+- Install the dependencies by running yarn install.
+- Run the local network yarn run truffle:develop.
+- To deploy the smart contracts to the blockchain: yarn run truffle:migrate.
+- To run the frontend locally yarn start.
 - Create a user account with the "Register" button of BrightByte.
 - Add balance to the user accounts using Metamask or the truffle-develop command line, as follows:
 - Change the truffle-config.js and the app.configh.ts with your own blockchain network.
 - Get the address of an automatically generated truffle-develop wallet (e.g. 0x627306090abab3a6e1400e9345bc60c78a8bef57)
 - Get the address of the generated BrightByte account ("address" field in "Identity.json") (e.g. 0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a)
 - Send funds from the former to the latter with "sendTransaction", like for example: web3.eth.sendTransaction({from: "0x627306090abab3a6e1400e9345bc60c78a8bef57", to: "0xaaa1d134ad26de2636acdbb2fd6e524ea7ad551a", value: web3.toWei("5", "ether")})
-- In order to initialize the backend, it's necessary to run "npm install" in "/backend".
-- To run the backend locally, use "npm run start" in "/backend". 
-- See `package.json` for more npm scripts.
+- In order to initialize the backend, it's necessary to run "yarn install" in "/backend".
+- To run the backend locally, use "yarn run start" in "/backend". 
+- See `package.json` for more yarn scripts.
 
  #### In order to deploy the application to a server:
 
 1. Configure "app.config.custom.ts" and "truffle-config.custom.js" with your Ethereum/Quorum node information.
 2. Set `IS_CUSTOM_NET` to `true` in "app.config.ts".
-3. Run `ACCOUNT_PASSWORD=node_account_pass npm run truffle:custom-deploy`.
-4. Run `npm run build-browser-release`.
+3. Run `ACCOUNT_PASSWORD=node_account_pass yarn run truffle:custom-deploy`.
+4. Run `yarn run build-browser-release`.
 5. Upload the directory `platforms/browser/www/` to your web server.
 6. Open the URL pointing to your web server.
 

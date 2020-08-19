@@ -14,11 +14,11 @@ Set `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` in `src/backend.config.ts`
 
  #### Run the backend
 
-- Install the dependencies by running npm install.
+- Install the dependencies by running yarn install.
 - Add the bright smart contract ABI to the path: `src/assets/build/Bright.json`.
 - Set `src/backend.config.custom.ts` variable to your node IP.
 - Set `WEBAPP_URL` and `BRIGHTBYTE_DB_PORT` variables in `src/backend.config.ts` to adapt to your preferences.
-- Run `npm start` to start the backend.
+- Run `yarn start` to start the backend.
 
  #### Run the backend with docker image from docker hub
 

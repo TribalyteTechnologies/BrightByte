@@ -4,6 +4,10 @@
     "author": "Tribalyte Technologies",
     "homepage": "",
     "private": true,
+    "engines": {
+        "node": "12.18.3",
+        "yarn": "1.13.0"
+    },
     "scripts": {
         "start": "shx mkdir www; shx cp config.xml www; yarn run ionic:serve",
         "clean": "ionic-app-scripts clean",
