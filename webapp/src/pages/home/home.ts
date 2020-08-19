@@ -52,6 +52,7 @@ export class HomePage {
         })
         .then((teamRules: string) => {
             this.teamRules = teamRules;
+            this.log.d("Team review rules");
         });
     }
 

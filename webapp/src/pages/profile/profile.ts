@@ -64,7 +64,7 @@ export class Profile {
     public commitThreshold: number;
     public reviewThreshold: number;
     public teamRules: string;
-    public randomReviewers: boolean;
+    public isRandomReviewers: boolean;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly WORKSPACE = "/workspace/";
@@ -155,54 +155,54 @@ export class Profile {
         });
 
         this.contractManagerService.getUserDetails(this.userAddress)
-            .then((user: UserDetails) => {
-                this.userName = user.name;
-                this.uploadForm.get(this.USER_NAME_FIELD_NAME).setValue(user.name);
-                return this.contractManagerService.isCurrentUserAdmin();
-            })
-            .then((isAdmin: boolean) => {
-                this.isCurrentUserAdmin = isAdmin;
-                return this.contractManagerService.getCurrentTeamName();
-            })
-            .then((teamName: string) => {
-                this.teamName = teamName;
-                return this.contractManagerService.getInvitedUsersInfo();
-            })
-            .then((invitedUsers: Array<InvitedUser>) => {
-                this.invitedUsers = invitedUsers;
-                return this.contractManagerService.getTeamMembersInfo();
-            }).then((teamMembers: Array<Array<TeamMember>>) => {
-                this.teamMembers = teamMembers;
-                return this.contractManagerService.getCurrentSeason();
-            }).then((seasonState: Array<number>) => {
-                this.isSettingSeason = Number(seasonState[0]) === 1;
-                this.seasonLength = seasonState[2] / AppConfig.DAY_TO_SECS;
-                return this.contractManagerService.getCurrentSeasonThreshold();
-            }).then(seasonThreshold => {
-                this.log.d("The season thresholds are", seasonThreshold);
-                this.commitThreshold = seasonThreshold[0];
-                this.reviewThreshold = seasonThreshold[1];
-                return this.contractManagerService.getCurrentTeam();
-            }).then(userTeam => {
-                this.userTeam = userTeam;
-                return this.contractManagerService.getTextRules();
-            }).then((teamRules: string) => {
-                this.teamRules = teamRules;
-                return this.contractManagerService.getRandomReviewer();
-            }).then((randomReviewers: boolean) => {
-                this.randomReviewers = randomReviewers;
-                return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
-            }).then((result: IWorkspaceResponse) => {
-                this.isBackendAvailable = false;
-                if (result.status !== "Error") {
-                    this.teamWorkspaces = result.data;
-                    this.isBackendAvailable = true;
-                }
-                this.isLoadingInfo = false;
-            }).catch(e => {
-                this.log.e("Error: ", e);
-                this.isBackendAvailable = false;
-            });
+        .then((user: UserDetails) => {
+            this.userName = user.name;
+            this.uploadForm.get(this.USER_NAME_FIELD_NAME).setValue(user.name);
+            return this.contractManagerService.isCurrentUserAdmin();
+        })
+        .then((isAdmin: boolean) => {
+            this.isCurrentUserAdmin = isAdmin;
+            return this.contractManagerService.getCurrentTeamName();
+        })
+        .then((teamName: string) => {
+            this.teamName = teamName;
+            return this.contractManagerService.getInvitedUsersInfo();
+        })
+        .then((invitedUsers: Array<InvitedUser>) => {
+            this.invitedUsers = invitedUsers;
+            return this.contractManagerService.getTeamMembersInfo();
+        }).then((teamMembers: Array<Array<TeamMember>>) => {
+            this.teamMembers = teamMembers;
+            return this.contractManagerService.getCurrentSeason();
+        }).then((seasonState: Array<number>) => {
+            this.isSettingSeason = Number(seasonState[0]) === 1;
+            this.seasonLength = seasonState[2] / AppConfig.DAY_TO_SECS;
+            return this.contractManagerService.getCurrentSeasonThreshold();
+        }).then(seasonThreshold => {
+            this.log.d("The season thresholds are", seasonThreshold);
+            this.commitThreshold = seasonThreshold[0];
+            this.reviewThreshold = seasonThreshold[1];
+            return this.contractManagerService.getCurrentTeam();
+        }).then(userTeam => {
+            this.userTeam = userTeam;
+            return this.contractManagerService.getTextRules();
+        }).then((teamRules: string) => {
+            this.teamRules = teamRules;
+            return this.contractManagerService.getRandomReviewer();
+        }).then((isRandomReviewers: boolean) => {
+            this.isRandomReviewers = isRandomReviewers;
+            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
+        }).then((result: IWorkspaceResponse) => {
+            this.isBackendAvailable = false;
+            if (result.status !== "Error") {
+                this.teamWorkspaces = result.data;
+                this.isBackendAvailable = true;
+            }
+            this.isLoadingInfo = false;
+        }).catch(e => {
+            this.log.e("Error: ", e);
+            this.isBackendAvailable = false;
+        });
     }
 
     public showRemoveMemberConfirmation(teamMember: TeamMember) {
@@ -330,13 +330,13 @@ export class Profile {
         this.successRulesMsg = null;
         this.errorRulesMsg = null;
         this.contractManagerService.changeTextRules(rules)
-            .then(() => {
-                this.successRulesMsg = this.successMessageTeamRules;
-                this.teamRules = rules;
-            })
-            .catch(e => {
-                this.errorRulesMsg = this.changeTextRuleError;
-            });
+        .then(() => {
+            this.successRulesMsg = this.successMessageTeamRules;
+            this.teamRules = rules;
+        })
+        .catch(e => {
+            this.errorRulesMsg = this.changeTextRuleError;
+        });
     }
 
     public changeTeamName(teamName: string) {
@@ -345,14 +345,14 @@ export class Profile {
         this.successMsg = null;
         this.isSettingTeamName = true;
         this.contractManagerService.changeTeamName(teamName)
-            .then(() => {
-                this.isSettingTeamName = false;
-                this.successMsg = this.successMessageTeamName;
-            })
-            .catch(e => {
-                this.isSettingTeamName = false;
-                this.errorMsg = this.changeTeamNameError;
-            });
+        .then(() => {
+            this.isSettingTeamName = false;
+            this.successMsg = this.successMessageTeamName;
+        })
+        .catch(e => {
+            this.isSettingTeamName = false;
+            this.errorMsg = this.changeTeamNameError;
+        });
     }
 
     public changeSeasonLength(seasonLength: number) {
@@ -362,18 +362,18 @@ export class Profile {
         if (seasonLength >= AppConfig.MIN_SEASON_LENGTH_DAYS && seasonLength < AppConfig.MAX_SEASON_LENGTH_DAYS) {
             this.isSettingSeasonData = true;
             this.contractManagerService.setSeasonLength(this.seasonLength)
-                .then(() => {
-                    this.isSettingSeasonData = false;
-                    return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
-                }).then(res => {
-                    this.seasonSuccessMsg = res;
-                }).catch(e => {
-                    this.log.e("Error setting the new season duration", e);
-                    this.isSettingSeasonData = false;
-                    return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
-                }).then(res => {
-                    this.seasonErrorMsg = res;
-                });
+            .then(() => {
+                this.isSettingSeasonData = false;
+                return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
+            }).then(res => {
+                this.seasonSuccessMsg = res;
+            }).catch(e => {
+                this.log.e("Error setting the new season duration", e);
+                this.isSettingSeasonData = false;
+                return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
+            }).then(res => {
+                this.seasonErrorMsg = res;
+            });
         } else {
             this.translateSrv.get("setProfile.seasonLengthErrorMsg").subscribe(res => {
                 this.seasonErrorMsg = res;
@@ -402,28 +402,28 @@ export class Profile {
                 if (userType) {
                     this.isInvitingUser = true;
                     this.contractManagerService.inviteToCurrentTeam(emails, userType)
-                        .then(() => {
-                            this.isInvitingUser = false;
-                            let newInvitedUsers = new Array<InvitedUser>();
-                            emails.forEach(email => {
-                                let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) 
-                                + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
-                                let emailsAlreadyInvited = this.invitedUsers.filter(user => user.email === email);
-                                let newUser = new InvitedUser(email, expDateMilis, userType);
-                                if (emailsAlreadyInvited.length > 0) {
-                                    let index = this.invitedUsers.indexOf(emailsAlreadyInvited[0]);
-                                    this.invitedUsers[index] = newUser;
-                                } else {
-                                    newInvitedUsers.push(newUser);
-                                }
-                            });
-                            this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
-                            this.successInviteMsg = this.successMessageInvitation;
-                        })
-                        .catch(e => {
-                            this.isInvitingUser = false;
-                            this.errorInviteMsg = this.invitationError;
+                    .then(() => {
+                        this.isInvitingUser = false;
+                        let newInvitedUsers = new Array<InvitedUser>();
+                        emails.forEach(email => {
+                            let expDateMilis = Math.round((Date.now() / AppConfig.SECS_TO_MS) 
+                            + AppConfig.DEFAULT_INVITATION_EXP_IN_SECS);
+                            let emailsAlreadyInvited = this.invitedUsers.filter(user => user.email === email);
+                            let newUser = new InvitedUser(email, expDateMilis, userType);
+                            if (emailsAlreadyInvited.length > 0) {
+                                let index = this.invitedUsers.indexOf(emailsAlreadyInvited[0]);
+                                this.invitedUsers[index] = newUser;
+                            } else {
+                                newInvitedUsers.push(newUser);
+                            }
                         });
+                        this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
+                        this.successInviteMsg = this.successMessageInvitation;
+                    })
+                    .catch(e => {
+                        this.isInvitingUser = false;
+                        this.errorInviteMsg = this.invitationError;
+                    });
                 } else {
                     this.errorInviteMsg = this.userTypeError;
                 }
@@ -555,8 +555,8 @@ export class Profile {
         }
     }
 
-    public changeToggle() {
-        this.contractManagerService.setRandomReviewer(this.randomReviewers);
+    public pressToggleRandomReviewers() {
+        this.contractManagerService.setRandomReviewer(this.isRandomReviewers);
     }
 
     private removeTeamWorkspace(workspace: string) {
@@ -580,19 +580,19 @@ export class Profile {
 
     private removeInvitation(invitedUser: InvitedUser) {
         this.contractManagerService.removeInvitation(invitedUser.email)
-            .then(() => {
-                let invitationIndex = this.invitedUsers.indexOf(invitedUser);
-                this.invitedUsers.splice(invitationIndex, 1);
-            });
+        .then(() => {
+            let invitationIndex = this.invitedUsers.indexOf(invitedUser);
+            this.invitedUsers.splice(invitationIndex, 1);
+        });
     }
 
     private removeMember(teamMember: TeamMember) {
         this.contractManagerService.removeTeamMember(teamMember.address)
-            .then(() => {
-                let memberType = teamMember.userType - 1;
-                let memberIndex = this.teamMembers[memberType].indexOf(teamMember);
-                this.teamMembers[memberType].splice(memberIndex, 1);
-            });
+        .then(() => {
+            let memberType = teamMember.userType - 1;
+            let memberIndex = this.teamMembers[memberType].indexOf(teamMember);
+            this.teamMembers[memberType].splice(memberIndex, 1);
+        });
     }
 
     private deleteAvatar() {

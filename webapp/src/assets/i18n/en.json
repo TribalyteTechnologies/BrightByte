@@ -70,7 +70,7 @@
         "loadMoreRepositoriesButtonText": "Load more",
         "noMoreRepo": "No more repositories to load",
         "errorAddCommit": "Error adding new commit",
-        "noAvailableSelectReviewers": "You can't select reviewers because the selection is random"
+        "noAvailableSelectReviewers": "Reviewers are selected automatically"
     },
     "commits": {
         "add": "Contribute",
@@ -261,7 +261,7 @@
         "backendNotAvailable": "Bitbucket service not available. Please try again later or contact your service provider.",
         "workspacesDescription": "A workspace is how Bitbucket organizes different streams of work in an user account. BrightByte uses this workspaces when importing commits and PRs via the batch upload feature.",
         "workspacesFullDescription": "A workspace is how Bitbucket organizes different streams of work in an user account. BrightByte uses this workspaces when importing commits and PRs via the batch upload feature. Your can find the name of your workspace by looking on a the url of a bitbucket commit. For example in https://bitbucket.org/myworkspace/brightbyte/commits/4262e8721ca288325283287e22249fd1df509c9f the words after 'bitbucket.org/' and before '/commits' is the workspace name, in this case is 'myworkspace'",
-        "teamRulesDescription":"Team rules are the rules on which commits are governed and how they should be implemented.",
+        "teamRulesDescription":"The team review rules are the set of criteria that governs review process in a team. This text should be clear enough so all the members of the team understand how to perform the code review and score each commit or PR.",
         "seasonData": "Season configuration",
         "changeSeasonLength": "Change season duration",
         "setSeasonLength": "Set duration in days",
@@ -280,9 +280,9 @@
         "noAvailableInvitations": "There are no invitations available at the moment",
         "avaialableTeams": "Your teams:",
         "thresholdDescription": "Users need to exceed the season qualification thresholds configured in order to participate in the current season.",
-        "teamRules": "Team rules",
+        "teamRules": "Team review rules",
         "changeTeamRules": "Change team rules (optional)",
-        "randomReviewers": "Random reviewers"
+        "randomReviewers": "Automatic reviewer selection"
     },
     "commitDetails": {
         "author": "Author",

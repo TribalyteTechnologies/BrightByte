@@ -36,6 +36,7 @@ export class ContractManagerService {
     private readonly MINIMUM_DELAY_MILIS = 0;
     private readonly MAXIMUM_DELAY_MILIS = 2000;
     private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 10;
+    private readonly MAX_LENGTH_BYTES32 = /.{1,16}/g;
 
     private contractAddressRoot: string;
     private contractAddressBright: string;
@@ -77,64 +78,64 @@ export class ContractManagerService {
         this.log.d("Initializing service with user ", this.currentUser);
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
         let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
-            .then((jsonContractData: IContractJson) => {
-                this.contractJsonBright = jsonContractData;
-                let brightContractJson = jsonContractData;
-                this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
-                let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
-                this.log.d("TruffleContractBright function: ", contractBright);
-                this.log.d("ContractAddressBright: ", this.contractAddressBright);
-                return contractBright;
-            });
+        .then((jsonContractData: IContractJson) => {
+            this.contractJsonBright = jsonContractData;
+            let brightContractJson = jsonContractData;
+            this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
+            let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
+            this.log.d("TruffleContractBright function: ", contractBright);
+            this.log.d("ContractAddressBright: ", this.contractAddressBright);
+            return contractBright;
+        });
         contractPromises.push(promBright);
         let promCommits = this.http.get(AppConfig.COMMITS_CONTRACT_PATH).toPromise()
-            .then((jsonContractData: IContractJson) => {
-                this.contractJsonCommits = jsonContractData;
-                let commitContractJson = jsonContractData;
-                this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
-                let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
-                this.log.d("TruffleContractCommits function: ", contractCommits);
-                this.log.d("ContractAddressCommits: ", this.contractAddressCommits);
-                return contractCommits;
-            });
+        .then((jsonContractData: IContractJson) => {
+            this.contractJsonCommits = jsonContractData;
+            let commitContractJson = jsonContractData;
+            this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
+            let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
+            this.log.d("TruffleContractCommits function: ", contractCommits);
+            this.log.d("ContractAddressCommits: ", this.contractAddressCommits);
+            return contractCommits;
+        });
         contractPromises.push(promCommits);
         let promRoot = this.http.get(AppConfig.ROOT_CONTRACT_PATH).toPromise()
-            .then((jsonContractData: IContractJson) => {
-                this.contractJsonRoot = jsonContractData;
-                let rootContractJson = jsonContractData;
-                this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
-                let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
-                this.log.d("TruffleContractRoot function: ", contractRoot);
-                this.log.d("ContractAddressRoot: ", this.contractAddressRoot);
-                return contractRoot;
-            });
+        .then((jsonContractData: IContractJson) => {
+            this.contractJsonRoot = jsonContractData;
+            let rootContractJson = jsonContractData;
+            this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
+            let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
+            this.log.d("TruffleContractRoot function: ", contractRoot);
+            this.log.d("ContractAddressRoot: ", this.contractAddressRoot);
+            return contractRoot;
+        });
         contractPromises.push(promRoot);
         let promTeamManager = this.http.get(AppConfig.TEAM_MANAGER_CONTRACT_PATH).toPromise()
-            .then((jsonContractData: IContractJson) => {
-                this.contractAddressTeamManager = jsonContractData.networks[configNet.netId].address;
-                let contractTeamManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressTeamManager);
-                this.log.d("TruffleContractTeamManager function: ", contractTeamManager);
-                this.log.d("ContractAddressTeamManager: ", this.contractAddressTeamManager);
-                return contractTeamManager;
-            });
+        .then((jsonContractData: IContractJson) => {
+            this.contractAddressTeamManager = jsonContractData.networks[configNet.netId].address;
+            let contractTeamManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressTeamManager);
+            this.log.d("TruffleContractTeamManager function: ", contractTeamManager);
+            this.log.d("ContractAddressTeamManager: ", this.contractAddressTeamManager);
+            return contractTeamManager;
+        });
         contractPromises.push(promTeamManager);
         let promBBFactory = this.http.get(AppConfig.BB_FACTORY_CONTRACT_PATH).toPromise()
-            .then((jsonContractData: IContractJson) => {
-                this.contractAddressBbFactory = jsonContractData.networks[configNet.netId].address;
-                let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBbFactory);
-                this.log.d("TruffleContractBBFactory function: ", contractBBFactory);
-                this.log.d("ContractAddressBBFactory: ", this.contractAddressBbFactory);
-                return contractBBFactory;
-            });
+        .then((jsonContractData: IContractJson) => {
+            this.contractAddressBbFactory = jsonContractData.networks[configNet.netId].address;
+            let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBbFactory);
+            this.log.d("TruffleContractBBFactory function: ", contractBBFactory);
+            this.log.d("ContractAddressBBFactory: ", this.contractAddressBbFactory);
+            return contractBBFactory;
+        });
         contractPromises.push(promBBFactory);
         let promDictionary = this.http.get(AppConfig.BB_DICTIONARY_CONTRACT_PATH).toPromise()
-            .then((jsonContractData: IContractJson) => {
-                this.contractAddressBrightDictionary = jsonContractData.networks[configNet.netId].address;
-                let contractBrightDictionaty = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBrightDictionary);
-                this.log.d("TruffleContractBrightDictionaty function: ", contractBrightDictionaty);
-                this.log.d("ContractAddressBrightDictionary: ", this.contractAddressBrightDictionary);
-                return contractBrightDictionaty;
-            });
+        .then((jsonContractData: IContractJson) => {
+            this.contractAddressBrightDictionary = jsonContractData.networks[configNet.netId].address;
+            let contractBrightDictionaty = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBrightDictionary);
+            this.log.d("TruffleContractBrightDictionaty function: ", contractBrightDictionaty);
+            this.log.d("ContractAddressBrightDictionary: ", this.contractAddressBrightDictionary);
+            return contractBrightDictionaty;
+        });
         contractPromises.push(promDictionary);
         return this.initProm = Promise.all(contractPromises);
     }
@@ -557,16 +558,16 @@ export class ContractManagerService {
 
     public getCommits(): Promise<Array<UserCommit>> {
         return this.getCurrentSeasonState()
-            .then((seasonState: UserSeasonState) => {
-                let batchCommits = new Array<string>();
-                return this.getBatchCommits(seasonState.seasonCommits, 0, batchCommits);
-            }).then((allUserCommits: Array<string>) => {
-                let promisesPending = allUserCommits.map(userCommit => this.getUserCommitDetails(userCommit));
-                return Promise.all(promisesPending);
-            }).catch(err => {
-                this.log.e("Error obtaining user commits :", err);
-                throw err;
-            });
+        .then((seasonState: UserSeasonState) => {
+            let batchCommits = new Array<string>();
+            return this.getBatchCommits(seasonState.seasonCommits, 0, batchCommits);
+        }).then((allUserCommits: Array<string>) => {
+            let promisesPending = allUserCommits.map(userCommit => this.getUserCommitDetails(userCommit));
+            return Promise.all(promisesPending);
+        }).catch(err => {
+            this.log.e("Error obtaining user commits :", err);
+            throw err;
+        });
     }
 
     public getCommitsToReview(): Promise<Array<Array<UserCommit>>> {
@@ -650,37 +651,37 @@ export class ContractManagerService {
 
     public getAllUserAddresses(): Promise<Array<string>> {
         return this.initProm
-            .then(([bright]) => {
-                return bright.methods.getUsersAddress().call({ from: this.currentUser.address });
-            }).catch(err => {
-                this.log.e("Error checking commit season :", err);
-                throw err;
-            });
+        .then(([bright]) => {
+            return bright.methods.getUsersAddress().call({ from: this.currentUser.address });
+        }).catch(err => {
+            this.log.e("Error checking commit season :", err);
+            throw err;
+        });
     }
 
     public checkCommitCurrentSeason(url: string, author: string): Promise<boolean> {
         let rootContract;
         let urlKeccak;
         return this.initProm
-            .then(([root]) => {
-                rootContract = root;
-                urlKeccak = this.web3.utils.keccak256(url);
-                return rootContract.methods.checkCommitSeason(urlKeccak, author).call();
-            }).catch(err => {
-                this.log.e("Error checking commit season :", err);
-                throw err;
-            });
+        .then(([root]) => {
+            rootContract = root;
+            urlKeccak = this.web3.utils.keccak256(url);
+            return rootContract.methods.checkCommitSeason(urlKeccak, author).call();
+        }).catch(err => {
+            this.log.e("Error checking commit season :", err);
+            throw err;
+        });
     }
 
     public getCommitDetails(url: string, returnsUserCommits = true): Promise<UserCommit | CommitDetails> {
         return this.initProm.then(([bright, commit]) => {
             const encodeUrl = EncryptionUtils.encode(url);
             return commit.methods.getDetailsCommits(this.web3.utils.keccak256(encodeUrl)).call({ from: this.currentUser.address })
-                .then((commitVals: Array<any>) => {
-                    let result = returnsUserCommits ?
-                        UserCommit.fromSmartContract(commitVals, false) : CommitDetails.fromSmartContract(commitVals);
-                    return result;
-                });
+            .then((commitVals: Array<any>) => {
+                let result = returnsUserCommits ?
+                    UserCommit.fromSmartContract(commitVals, false) : CommitDetails.fromSmartContract(commitVals);
+                return result;
+            });
         }).catch(err => {
             this.log.e("Error getting commit details :", err);
             throw err;
@@ -709,17 +710,17 @@ export class ContractManagerService {
             const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
             return commit.methods.getCommentsOfCommit(urlKeccak).call({ from: this.currentUser.address })
-                .then((allComments: Array<Array<string>>) => {
-                    let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment)
-                        .call({ from: this.currentUser.address })
-                        .then((commitVals: Array<any>) => {
-                            return Promise.all([commitVals, bright.methods.getUserName(commitVals[4])
-                                .call({ from: this.currentUser.address })]);
-                        }).then((data) => {
-                            return CommitComment.fromSmartContract(data[0], data[1]);
-                        }));
-                    return Promise.all(promisesFinished);
-                });
+            .then((allComments: Array<Array<string>>) => {
+                let promisesFinished = allComments[1].map(comment => commit.methods.getCommentDetail(urlKeccak, comment)
+                    .call({ from: this.currentUser.address })
+                    .then((commitVals: Array<any>) => {
+                        return Promise.all([commitVals, bright.methods.getUserName(commitVals[4])
+                            .call({ from: this.currentUser.address })]);
+                    }).then((data) => {
+                        return CommitComment.fromSmartContract(data[0], data[1]);
+                    }));
+                return Promise.all(promisesFinished);
+            });
         }).catch(err => {
             this.log.e("Error getting comments of commit :", err);
             throw err;
@@ -903,7 +904,7 @@ export class ContractManagerService {
     }
 
     public changeTextRules(textRules: string): Promise<void | TransactionReceipt> {
-        let textRulesChopped = textRules.match(/.{1,16}/g);
+        let textRulesChopped = textRules.match(this.MAX_LENGTH_BYTES32);
         let final = textRulesChopped.map(rules => {
             let encodeText = EncryptionUtils.encode(rules);
             let bytesText = this.web3.utils.fromUtf8(encodeText);
@@ -1017,34 +1018,34 @@ export class ContractManagerService {
 
     public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
         return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
-            .then(nonceValue => {
-                let nonce = "0x" + (nonceValue).toString(16);
-                this.log.d("Value NONCE", nonce);
-                let rawtx = {
-                    nonce: nonce,
-                    // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                    gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasPrice),
-                    gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasLimit),
-                    to: contractAddress,
-                    data: bytecodeData
-                };
-                const tx = new Tx(rawtx);
-                let priv = this.currentUser.privateKey.substring(2);
-                let privateKey = new Buffer(priv, "hex");
-                tx.sign(privateKey);
+        .then(nonceValue => {
+            let nonce = "0x" + (nonceValue).toString(16);
+            this.log.d("Value NONCE", nonce);
+            let rawtx = {
+                nonce: nonce,
+                // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
+                gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasPrice),
+                gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasLimit),
+                to: contractAddress,
+                data: bytecodeData
+            };
+            const tx = new Tx(rawtx);
+            let priv = this.currentUser.privateKey.substring(2);
+            let privateKey = new Buffer(priv, "hex");
+            tx.sign(privateKey);
 
-                let raw = "0x" + tx.serialize().toString("hex");
-                this.log.d("Rawtx: ", rawtx);
-                this.log.d("Raw: ", raw);
-                this.log.d("tx unsign: ", tx);
-                return this.web3.eth.sendSignedTransaction(raw);
-            }).then(transactionHash => {
-                this.log.d("Hash transaction", transactionHash);
-                return transactionHash;
-            }).catch(e => {
-                this.log.e("Error in transaction (sendTx function): ", e);
-                throw e;
-            });
+            let raw = "0x" + tx.serialize().toString("hex");
+            this.log.d("Rawtx: ", rawtx);
+            this.log.d("Raw: ", raw);
+            this.log.d("tx unsign: ", tx);
+            return this.web3.eth.sendSignedTransaction(raw);
+        }).then(transactionHash => {
+            this.log.d("Hash transaction", transactionHash);
+            return transactionHash;
+        }).catch(e => {
+            this.log.e("Error in transaction (sendTx function): ", e);
+            throw e;
+        });
     }
 
     private getBatchCommits(totalNumberOfCommits: number, startIndex: number, allCommits: Array<string>): Promise<Array<string>> {
@@ -1067,9 +1068,9 @@ export class ContractManagerService {
     private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
         return this.initProm.then(([bright, commit]) => {
             return commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address })
-                .then((commitVals: Array<any>) => {
-                    return UserCommit.fromSmartContract(commitVals, isPending);
-                });
+            .then((commitVals: Array<any>) => {
+                return UserCommit.fromSmartContract(commitVals, isPending);
+            });
         }).catch(err => {
             this.log.e("Error getting commit details :", err);
             throw err;

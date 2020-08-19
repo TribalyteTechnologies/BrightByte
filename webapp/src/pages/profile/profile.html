@@ -230,7 +230,7 @@
                             {{ "setProfile.randomReviewers" | translate }}
                         </ion-row>
                         <ion-row>
-                            <ion-toggle [(ngModel)]="randomReviewers" (ionChange)="changeToggle()"></ion-toggle>
+                            <ion-toggle [(ngModel)]="isRandomReviewers" (ionChange)="pressToggleRandomReviewers()"></ion-toggle>
                         </ion-row>
                     </ion-list>
                 </div> 
@@ -238,7 +238,7 @@
                     <h6>{{ "setProfile.changeTeamRules" | translate }}</h6>
                     <div class="tooltip info-icon">
                         <ion-icon name="ios-information-circle-outline"></ion-icon>
-                        <div class="tooltip-text" [innerHTML]="('setProfile.teamRulesDescription') | translate"></div>
+                        <div class="tooltip-text">{{ "setProfile.teamRulesDescription" | translate }}</div>
                     </div>
                 </ion-row>
                 <div class="separator">
@@ -247,7 +247,7 @@
                             {{ "setProfile.teamRules" | translate }}
                         </ion-row>
                         <ion-item class="rules-textarea">
-                            <ion-textarea class="estilo-textarea" rows="5" auto-grow="true" type="text" [(ngModel)]="teamRules"></ion-textarea>
+                            <ion-textarea rows="5" auto-grow="true" type="text" [(ngModel)]="teamRules"></ion-textarea>
                         </ion-item> 
                         <ion-row *ngIf="successRulesMsg" class="success-body">
                             {{ successRulesMsg }}

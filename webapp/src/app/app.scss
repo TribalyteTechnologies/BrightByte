@@ -438,8 +438,9 @@
 }
 
 .home-rules {
-    width: 440px;
-    text-align: justify;
+    max-width: 440px;
+    max-height: 100px;
+    overflow-y: scroll;
 }
 
 .button-lowercase {
