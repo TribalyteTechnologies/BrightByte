@@ -77,7 +77,7 @@ export class RankingPage {
 
     public ionViewWillEnter() {
         this.contractManagerService.getCurrentSeason()
-            .then((season: number[]) => {
+            .then((season: Array<number>) => {
                 this.numberOfSeasons = Number(season[0]);
                 this.seasonSelected = this.numberOfSeasons;
                 this.seasonFinale = season[1] * AppConfig.SECS_TO_MS;
@@ -96,7 +96,7 @@ export class RankingPage {
                     },
                     AppConfig.SECS_TO_MS);
                 this.seasons.push(this.translateService.instant("ranking.global"));
-                for (let i = this.numberOfSeasons; i >= 0; i--) {
+                for (let i = this.numberOfSeasons; i > 0; i--) {
                     this.seasons.push("Season " + i);
                 }
                 return this.contractManagerService.getSeasonThreshold(this.seasonSelected);
