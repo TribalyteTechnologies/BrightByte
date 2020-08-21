@@ -7,7 +7,7 @@ import { Observable, from } from "rxjs";
 import { flatMap, map, tap, shareReplay } from "rxjs/operators";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
 
-enum ContractsIndex {
+enum ContractIndex {
     BbFactory = 0,
     EventDispatcher = 1
 }
@@ -37,11 +37,11 @@ export class ContractManagerService {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = this.web3Service.openConnection();
         this.contracts = new Array<ITrbSmartContact>();
-        this.init();
+        this.initObs = this.init();
     }
 
     public getEventDispatcherSmartContract(): Observable<ITrbSmartContact> {
-        return this.initObs.pipe(map(() => this.contracts[ContractsIndex.EventDispatcher]));
+        return this.initObs.pipe(map(() => this.contracts[ContractIndex.EventDispatcher]));
     }
 
     public getEventDispatcherAbi(): Observable<ITrbSmartContractJson> {
@@ -64,13 +64,13 @@ export class ContractManagerService {
     }
 
     private getEventDispatcherAddress(): Observable<string> {
-        return from<string>(this.contracts[ContractsIndex.BbFactory].methods.getEventDispatcherAddress()
+        return from<string>(this.contracts[ContractIndex.BbFactory].methods.getEventDispatcherAddress()
         .call({ from: this.RANDOM_ADDRESS }));
     }
 
-    private init() {
+    private init(): Observable<string> {
         this.log.d("Initializing Contract Manager Service");
-        this.initObs = this.web3Service.openConnection().pipe(
+        return this.web3Service.openConnection().pipe(
             flatMap((web3: Web3) => {
                 this.web3 = web3;
                 return this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL);

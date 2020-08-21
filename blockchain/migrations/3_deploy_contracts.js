@@ -21,12 +21,15 @@ const TruffleConfig = require("../truffle-config");
 
 const TEAM_UID = 1;
 const USER_ADMIN = "0x0000000000000000000000000000000000000000";
+const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 const SEASON_LENGTH_DAYS = 15;
 const CONTRACT_INFO_PATH = "./migrations/ContractsInfo.json";
 var currentVersion = scVersionObj.version;
 
 module.exports = async function (deployer, network, accounts) {
     const CONFIG = TruffleConfig.networks[network];
+    const OWNER_ACCOUNT = accounts[0];
+    const INITIALIZER_ACCOUNT = accounts[1];
 
     await deployer.link(BrightModels, Bright);
     await deployer.link(UtilsLib, Bright);
@@ -34,7 +37,7 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.link(UtilsLib, Commits);
     await deployer.deploy(Commits);
     await deployer.deploy(BrightByteSettings);
-    await deployer.deploy(CloudEventDispatcher, "0x0000000000000000000000000000000000000000");
+    await deployer.deploy(CloudEventDispatcher, EMPTY_ADDRESS);
     await deployer.link(Reputation, Root);
     await deployer.deploy(Root, Bright.address, Commits.address, BrightByteSettings.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     await deployer.deploy(BrightDictionary);
@@ -49,30 +52,30 @@ module.exports = async function (deployer, network, accounts) {
     await teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
 
     let cloudBBFactory = await CloudBBFactory.new();
-    let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, accounts[0], []);
+    let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, OWNER_ACCOUNT, []);
     cloudBBFactory = await CloudBBFactory.at(proxyCloudBBFactory.address);
     console.log("CloudBBFactory deployed: ", proxyCloudBBFactory.address);
 
     let cloudTeamManager = await CloudTeamManager.new();
-    let proxyCloudTeamManager = await Proxy.new(cloudTeamManager.address, accounts[0], []);
+    let proxyCloudTeamManager = await Proxy.new(cloudTeamManager.address, OWNER_ACCOUNT, []);
     cloudTeamManager = await CloudTeamManager.at(proxyCloudTeamManager.address);
     console.log("CloudTeamManager deployed: ", proxyCloudTeamManager.address);
 
-    let cloudProjectStore = await CloudProjectStore.new("0x0000000000000000000000000000000000000000");
-    let proxyCloudProjectStore = await Proxy.new(cloudProjectStore.address, accounts[0], []);
+    let cloudProjectStore = await CloudProjectStore.new(EMPTY_ADDRESS);
+    let proxyCloudProjectStore = await Proxy.new(cloudProjectStore.address, OWNER_ACCOUNT, []);
     cloudProjectStore = await CloudProjectStore.at(proxyCloudProjectStore.address);
     console.log("CloudProjectStore deployed: ", cloudProjectStore.address);
 
     let brightDictionary = await BrightDictionary.new();
-    let proxyBrightDictionary = await Proxy.new(brightDictionary.address, accounts[0], []);
+    let proxyBrightDictionary = await Proxy.new(brightDictionary.address, OWNER_ACCOUNT, []);
     brightDictionary = await BrightDictionary.at(proxyBrightDictionary.address);
     console.log("BrightDictionary deployed: ", proxyBrightDictionary.address);
 
 
-    await cloudBBFactory.initialize(currentVersion, cloudTeamManager.address, { from: accounts[1] });
-    await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: accounts[1] });
-    await cloudProjectStore.initialize(cloudTeamManager.address, { from: accounts[1] });
-    await brightDictionary.initialize(currentVersion, { from: accounts[1] });
+    await cloudBBFactory.initialize(currentVersion, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
+    await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: INITIALIZER_ACCOUNT });
+    await cloudProjectStore.initialize(cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
+    await brightDictionary.initialize(currentVersion, { from: INITIALIZER_ACCOUNT });
 
     let contractsInfo = {};
     contractsInfo[CloudBBFactory.contract_name] = { address: cloudBBFactory.address, netId: CONFIG.network_id };
