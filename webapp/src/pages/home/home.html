@@ -1,40 +1,34 @@
-<ion-content padding class="main-container home-logo_bg">
-    <ion-row justify-content-center>
-        <div>
-            <ion-row no-padding>
-                <div class="home-logo_container" text-center>
-                    <img class="home-logo" src="../../assets/imgs/bright_logo.svg">
+<ion-content padding class="home-logo_bg">
+    <div class="home-container">
+        <div justify-content-center>
+            <div class="home-logo-container" text-center>
+                <img class="home-logo" src="../../assets/imgs/bright_logo.svg">
+            </div>
+
+            <div class="home-info-container" justify-content-center text-center>
+                <h1>{{ "home.title" | translate: {userName: userName, teamName: teamName} }}</h1>
+                <div padding class="home-go-to-text" *ngIf="teamRules">{{ "setProfile.teamRules" | translate }}:</div>
+                <div class="home-rules-container" justify-content-center text-center>
+                    <div class="home-scroll-dimensions" [innerHTML]="teamRules"></div>
                 </div>
-            </ion-row>
-            <ion-row>
-                <h1 no-margin>{{ "home.title" | translate: {userName: userName, teamName: teamName} }}</h1>
-            </ion-row>
-            <ion-row class="home-text">
-                <p no-margin>{{ "home.info" | translate }}</p>
-            </ion-row>
-            <ion-row class="home-text" *ngIf="teamRules">
-                <p class="home-go_to">{{ "setProfile.teamRules" | translate }}:</p>
-            </ion-row>
-            <ion-row class="home-text">
-                <div class="home-rules scroll-dimensions" [innerHTML]="teamRules"></div>
-            </ion-row>
-            <ion-row class="home-text">
-                <p class="home-go_to">{{ "home.goTo" | translate }}</p>
-            </ion-row>
-            <ion-row>
-                <button ion-button round class="home-button button-lowercase" (click)="goPage('CommitPage')">
-                    <img class="button-logo button-logo_commits"
-                        src="../../assets/imgs/menu/commits.svg">{{ "app.commits" | translate }}
-                </button>
+            </div>
 
-                <button ion-button round class="home-button button-lowercase" (click)="goPage('ReviewPage')">
-                    <img class="button-logo" src="../../assets/imgs/menu/reviews.svg">{{ "app.reviews" | translate }}
-                </button>
-
-                <button ion-button round class="home-button button-lowercase" (click)="goPage('RankingPage')">
-                    <img class="button-logo" src="../../assets/imgs/menu/ranking.svg">{{ "app.ranking" | translate }}
-                </button>
-            </ion-row>
+            <div class="home-access-container" justify-content-center text-center>
+                <h6 class="home-text">{{ "home.info" | translate }}</h6>
+                <div class="home-go-to-text">{{ "home.goTo" | translate }}</div>
+                <div class="home-goto-buttons-container">
+                    <button ion-button round class="home-button" (click)="goPage('CommitPage')">
+                        <img class="button-logo button-logo_commits"
+                            src="../../assets/imgs/menu/commits.svg">{{ "app.commits" | translate }}
+                    </button>
+                    <button ion-button round class="home-button" (click)="goPage('ReviewPage')">
+                        <img class="button-logo" src="../../assets/imgs/menu/reviews.svg">{{ "app.reviews" | translate }}
+                    </button>
+                    <button ion-button round class="home-button" (click)="goPage('RankingPage')">
+                        <img class="button-logo" src="../../assets/imgs/menu/ranking.svg">{{ "app.ranking" | translate }}
+                    </button>
+                </div>
+            </div>
         </div>
-    </ion-row>
+    </div>
 </ion-content>

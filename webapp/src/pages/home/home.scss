@@ -1,1 +1,59 @@
-page-home {}
+page-home {
+
+    .home-container {
+        margin: 0 auto;
+        width: 80%;
+    }
+
+    .home-logo-container {
+        margin: 60px 0;
+        .home-logo {
+            width: 320px;
+        }
+    }
+
+    .home-info-container {
+        margin: 60px 0px;
+    }
+
+    .home-go-to-text {
+        color: #268CFA;
+        font-weight: bolder;
+    }
+
+    .home-goto-buttons-container {
+        margin: 15px;
+    }
+
+    .home-button {
+        margin-right: 7px;
+        text-transform: none;
+
+    }
+
+    .button-logo {
+        margin-right: 7px;
+        width: 16%;
+    }
+
+    .button-logo_commits {
+        width: 10%;
+    }
+
+    .home-text {
+        margin: 15px;
+    }
+
+    .home-rules-container {
+        margin: 0 auto;
+        width: 70%;
+        max-width: 840px;
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+
+    .home-scroll-dimensions {
+        width: 100%;
+        height: calc(100% - 120px);
+    }
+}
