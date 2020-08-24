@@ -46,7 +46,7 @@
         "addByBatch": "Upload your commits and/or PRs in batch",
         "project": "Project",
         "date": "Date",
-        "users": "Users",
+        "users": "Available users",
         "errorEmails": "Error getting emails",
         "urlDuplicated": "Error: URL already registered in BrightByte",
         "addingCommit": "Error adding new commit",
@@ -70,7 +70,8 @@
         "loadMoreRepositoriesButtonText": "Load more",
         "noMoreRepo": "No more repositories to load",
         "errorAddCommit": "Error adding new commit",
-        "noAvailableSelectReviewers": "Reviewers are selected automatically"
+        "noAvailableSelectReviewers": "Reviewers are selected automatically",
+        "selectedReviewers": "Selected reviewers"
     },
     "commits": {
         "add": "Contribute",

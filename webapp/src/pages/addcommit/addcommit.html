@@ -93,10 +93,15 @@
         </ion-col>
     </ion-row>
     <ion-row padding></ion-row>
-    <ion-col no-padding *ngFor="let item of userAdded; let j = index">
-        <button class="btn btn--label btn--margins btn__grey" [disabled]="isRandomReviewers" (click)="removeUser(j)">{{ item }}</button>
-    </ion-col>
-    <ion-row paddings></ion-row>
+    <div *ngIf="!isRandomReviewers" padding class="form-container form-container__form-top-rounded">
+        <div class="text-details text-details--bold">{{ "addCommit.selectedReviewers" | translate }}:</div>
+        <div>
+            <ion-col no-padding *ngFor="let item of userAdded; let j = index">
+                <button class="btn btn--label btn--margins btn__grey" [disabled]="isRandomReviewers" (click)="removeUser(j)">{{ item }}</button>
+            </ion-col>
+        </div>
+    </div>
+    <ion-row padding></ion-row>
     <ion-row *ngIf="msg">
         <div class="label label__error">{{ msg }}</div>
     </ion-row>
