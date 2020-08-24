@@ -32,6 +32,7 @@ export class AchievementService {
     }
 
     public getCurrentUnlockedAchievements(userHash: string, teamUid: number): Observable<Array<Achievement>> {
+        this.log.d("Request to get unlocked achievements for user", userHash);
         let achievementsObservable: Observable<Array<Achievement>>;
         let currentAchievements = new Array<Achievement>();
 
