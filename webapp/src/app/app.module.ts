@@ -15,6 +15,7 @@ import { RankingPage } from "../pages/ranking/ranking";
 import { AddCommitPopover } from "../pages/addcommit/addcommit";
 import { TermsAndConditions } from "../pages/termsandconditions/termsandconditions";
 import { AchievementPopOver } from "../pages/achievementpopover/achievementpopover";
+import { SharePopOver } from "../pages/sharepopover/sharepopover";
 
 
 // Providers
@@ -86,6 +87,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AddCommitPopover,
         TermsAndConditions,
         AchievementPopOver,
+        SharePopOver,
         DateFormatPipe,
         CommitCard,
         CommentComponent,
@@ -131,6 +133,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         AddCommitPopover,
         TermsAndConditions,
         AchievementPopOver,
+        SharePopOver,
         CommitCard,
         CommentComponent,
         AchievementComponent,

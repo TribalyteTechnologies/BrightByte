@@ -19,16 +19,9 @@
             </button>
         </div>
         <div class="logout">
-            <ion-fab *ngIf="IS_SHARING" item-right vertical="top" horizontal="end" slot="fixed" class="fab-button">
-                <button ion-fab class="share-button">
-                    <ion-icon name="share"></ion-icon>
-                </button>
-                <ion-fab-list side="right">
-                    <twitter-share [url]="'social.url' | translate" [text]="'social.twitterShareText' | translate" [hashtag]="'social.hashtags' | translate" class="tweet-in-tabs"></twitter-share>
-                    <facebook-share [url]="'social.url' | translate" [text]="'social.facebookShareText' | translate"></facebook-share>
-                    <linkedin-share [url]="'social.url' | translate"></linkedin-share>
-                </ion-fab-list>
-            </ion-fab>
+            <button *ngIf="IS_SHARING" class="tab tab-resize" no-margin (click)="showSharingOptions()">
+                <img class="button-icon tabs-icon" src="../../assets/imgs/menu/share.svg">
+            </button>
             <button class="tab tab-resize" no-margin (click)="openSetProfileDialog()">
                 <img class="button-icon tabs-icon" src="../../assets/imgs/settings.svg">
             </button>

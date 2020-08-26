@@ -1,0 +1,28 @@
+share-popover {
+    .sharepopover-options-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+        .sharepopover-share-button {
+            margin: 20px;
+        }
+    }
+
+    .sharepopover-title {
+        text-align: center;
+    }
+}
+
+.sharepopover .popover-content {
+    width: 70%;
+    max-width: 500px;
+    border-radius: 10px;
+    margin: 0 auto;
+    top: 5% !important;
+
+    .scroll-content {
+        overflow-y: hidden;
+        padding: 0;
+    }
+}

@@ -20,6 +20,7 @@ import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
 import { AfterLoginSlidePopover } from "../../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
 import { Profile } from "../profile/profile";
+import { SharePopOver } from "../sharepopover/sharepopover";
 
 @Component({
     selector: "page-tabs",
@@ -122,6 +123,11 @@ export class TabsPage {
 
     public openSetProfileDialog() {
         let popover = this.popoverCtrl.create(Profile, { }, { cssClass: "profile" });
+        popover.present();
+    }
+
+    public showSharingOptions() {
+        let popover = this.popoverCtrl.create(SharePopOver, { }, { cssClass: "sharepopover" });
         popover.present();
     }
 

@@ -5,8 +5,9 @@ page-tabs {
         display: flex;
         flex-direction: column;
         height: 100%;
-        width: 70px;
+        min-width: 70px;
         background-color: rgb(40, 47, 58);
+        overflow-y: auto;
         .logo-container {
             height: 70px;
             width: 100%;
@@ -28,11 +29,6 @@ page-tabs {
             margin-top: auto;
             display: flex;
             flex-direction: column;
-        }
-
-        .tweet-in-tabs {
-            margin: 0px 10px;
-            padding-top: 3px;
         }
 
         .share-button {
@@ -66,11 +62,6 @@ page-tabs {
             z-index: 1;
             transition-property: all;
             transition-delay: 2s;
-        }
-
-        .fab-button {
-            bottom: 145px;
-            left: 6px;
         }
 
         .tooltip:active .tooltip-text,
