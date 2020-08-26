@@ -1,8 +1,8 @@
 {
   "name": "BrightByte",
-  "type": "ionic-angular",
   "integrations": {
     "cordova": {}
   },
+  "type": "ionic-angular",
   "app_id": ""
 }
