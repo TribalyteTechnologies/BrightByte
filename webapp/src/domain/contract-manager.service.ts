@@ -4,7 +4,6 @@ import { Web3Service } from "../core/web3.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../app.config";
-import Tx from "ethereumjs-tx";
 import { TransactionReceipt } from "web3-core";
 import { Account } from "web3-eth-accounts";
 import { CommitDetails } from "../models/commit-details.model";
@@ -20,6 +19,7 @@ import { InvitedUser } from "../models/invited-user.model";
 import { EncryptionUtils } from "../core/encryption-utils";
 import { FormatUtils } from "../core/format-utils";
 import { UnsignedTransaction } from "../models/unsigned-transaction-info.model";
+import { TransactionQueueService } from "../domain/transaction-queue.service";
 
 interface IContractJson {
     abi: Array<Object>;
@@ -61,7 +61,8 @@ export class ContractManagerService {
         private web3Service: Web3Service,
         private loggerSrv: LoggerService,
         private userCacheSrv: UserCacheService,
-        private storageSrv: LocalStorageService
+        private storageSrv: LocalStorageService,
+        private transactionQueueService: TransactionQueueService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
         this.web3 = web3Service.getWeb3();
@@ -243,7 +244,7 @@ export class ContractManagerService {
     public removeTeamMember(memberAddress: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             let byteCodeData = teamManager.methods.removeFromTeam(this.currentTeamUid, memberAddress).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         });
     }
 
@@ -264,7 +265,7 @@ export class ContractManagerService {
         const keyEmail = this.getEncodedKey(email);
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             let byteCodeData = teamManager.methods.inviteToTeam(teamUid, keyEmail, userType as number, expInSecs).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).then(res => {
             return this.saveValue(email);
         });
@@ -280,7 +281,7 @@ export class ContractManagerService {
                 return prevVal.then(() => {
                     let keyEmail = this.getEncodedKey(email);
                     let byteCodeData = teamManager.methods.inviteToTeam(teamUid, keyEmail, userType as number, expInSecs).encodeABI();
-                    return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+                    return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
                 });
             },
             Promise.resolve());
@@ -308,7 +309,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             const keyEmail = this.getEncodedKey(email);
             let byteCodeData = teamManager.methods.removeInvitationToTeam(this.currentTeamUid, keyEmail).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         });
     }
 
@@ -331,7 +332,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             let keyEmail = this.getEncodedKey(email);
             let byteCodeData =  teamManager.methods.registerToTeam(this.currentUser.address, keyEmail, teamUid).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         })
         .then(() => {
             return this.getUserTeam();
@@ -349,7 +350,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             let byteCodeData =  teamManager.methods.createTeam(keyEmail, keyTeamName).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         })
         .then(() => {
             return this.saveValue(email);
@@ -377,19 +378,19 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             teamManagerContract = teamManager;
             let byteCodeData = teamManagerContract.methods.deployBright(teamUid).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         })
         .then(() => {
             let byteCodeData = teamManagerContract.methods.deployCommits(teamUid).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         })
         .then(() => {
             let byteCodeData = teamManagerContract.methods.deploySettings(teamUid).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         })
         .then(() => {
             let byteCodeData = teamManagerContract.methods.deployRoot(email, teamUid, seasonLength).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         })
         .then(() => {
             return this.getTeamContractAddresses(teamUid);
@@ -420,7 +421,8 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager]) => {
             const keyTeamName = this.getEncodedKey(teamName);
             let byteCodeData = teamManager.methods.setTeamName(this.currentTeamUid, keyTeamName).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressTeamManager);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressTeamManager, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).then(res => {
             return this.saveValue(teamName);
         });
@@ -442,9 +444,9 @@ export class ContractManagerService {
             this.log.d("Setting profile with name and mail: ", [name, mail]);
             const encodeName = EncryptionUtils.encode(name);
             const keyEmail = this.getEncodedKey(mail);
-            let bytecodeData = bright.methods.setProfile(encodeName, keyEmail).encodeABI();
-            this.log.d("Bytecode data: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressBright);
+            let byteCodeData = bright.methods.setProfile(encodeName, keyEmail).encodeABI();
+            this.log.d("Bytecode data: ", byteCodeData);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressBright, this.currentUser);
         })
         .catch(e => {
             this.log.e("Error setting profile: ", e);
@@ -472,31 +474,31 @@ export class ContractManagerService {
                     numUsers++;
                 }
             }
-            let bytecodeData = commit.methods.setNewCommit(
+            let byteCodeData = commit.methods.setNewCommit(
                 encodeTitle,
                 encodeUrl,
                 numUsers
             ).encodeABI();
-            this.log.d("DATA: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressCommits);
+            this.log.d("DATA: ", byteCodeData);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressCommits, this.currentUser);
         }).then(() => {
             isAlreadyUploaded = true;
             let emailsArray = usersMail.filter(email => !!email).map(email => {
                 return this.getEncodedKey(email);
             });
-            let bytecodeData = rootContract.methods.notifyCommit(
+            let byteCodeData = rootContract.methods.notifyCommit(
                 encodeUrl,
                 emailsArray
             ).encodeABI();
-            this.log.d("ByteCodeData of notifyCommit: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
+            this.log.d("byteCodeData of notifyCommit: ", byteCodeData);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(() => {
-            let bytecodeData = teamManagerContract.methods.addProject(
+            let byteCodeData = teamManagerContract.methods.addProject(
                 this.currentTeamUid,
                 encodedProject
             ).encodeABI();
-            this.log.d("ByteCodeData of notifyCommit: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressTeamManager);
+            this.log.d("byteCodeData of notifyCommit: ", byteCodeData);
+            return this.transactionQueueService.sendTx(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).catch(e => {
             if (isAlreadyUploaded) {
                 this.deleteCommit(encodeUrl);
@@ -537,9 +539,10 @@ export class ContractManagerService {
             this.log.d("Request to delete the commit: " + url);
             const encodeUrl = EncryptionUtils.encode(url);
             let urlKeccak = this.web3.utils.keccak256(encodeUrl);
-            let bytecodeData = bright.methods.removeUserCommit(urlKeccak).encodeABI();
-            this.log.d("Bytecode data: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressBright);
+            let byteCodeData = bright.methods.removeUserCommit(urlKeccak).encodeABI();
+            this.log.d("Bytecode data: ", byteCodeData);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressBright, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error deleting a commit: ", e);
             throw e;
@@ -678,15 +681,16 @@ export class ContractManagerService {
         });
     }
 
-    public setReview(url: string, text: string, points: Array<number>): Promise<UnsignedTransaction> {
+    public setReview(url: string, text: string, points: Array<number>): Promise<void> {
         return this.initProm.then(([bright, commit, root]) => {
             const encodeUrl = EncryptionUtils.encode(url);
             const encodeText = EncryptionUtils.encode(text);
-            let bytecodeData = commit.methods.setReview(encodeUrl, encodeText, points).encodeABI();
+            let byteCodeData = commit.methods.setReview(encodeUrl, encodeText, points).encodeABI();
             this.log.d("Introduced url: ", url);
             this.log.d("Introduced text: ", text);
             this.log.d("Introduced points: ", points);
-            return new UnsignedTransaction(bytecodeData, this.contractAddressCommits);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressCommits, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error setting a review: ", e);
             throw e;
@@ -773,24 +777,25 @@ export class ContractManagerService {
             brightContract = bright;
             teamManagerContract = teamManager;
             let tx = bright.methods.checkSeason().encodeABI();
-            return this.sendTx(tx, this.contractAddressBright);
+            return this.transactionQueueService.sendTx(tx, this.contractAddressBright, this.currentUser);
         }).then(() => {
             let tx = brightContract.methods.setSeasonThresholds(seasonIndex, commitThreshold, reviewThreshold).encodeABI();
-            return this.sendTx(tx, this.contractAddressBright);
+            return this.transactionQueueService.sendTx(tx, this.contractAddressBright, this.currentUser);
         })
         .then(() => {
             let tx = teamManagerContract.methods.clearAllProjects(this.currentTeamUid).encodeABI();
-            return this.sendTx(tx, this.contractAddressTeamManager);
+            return this.transactionQueueService.sendTx(tx, this.contractAddressTeamManager, this.currentUser);
         }).catch(e => {
             this.log.e("Error getting season threshold: ", e);
             throw e;
         });
     }
 
-    public setCurrentSeasonThreshold(commitThreshold: number, reviewThreshold: number): Promise<void | TransactionReceipt> {
+    public setCurrentSeasonThreshold(commitThreshold: number, reviewThreshold: number): Promise<void> {
         return this.initProm.then(([bright, commit, root]) => {
-            let bytecodeData = root.methods.setCurrentSeasonThresholdOwner(commitThreshold, reviewThreshold).encodeABI();
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
+            let byteCodeData = root.methods.setCurrentSeasonThresholdOwner(commitThreshold, reviewThreshold).encodeABI();
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error setting new thresold: ", e);
             throw e;
@@ -803,9 +808,10 @@ export class ContractManagerService {
             return this.getCommentsOfCommit(url)
                 .then((arrayOfComments: Array<CommitComment>) => {
                     const encodeUrl = EncryptionUtils.encode(url);
-                    let bytecodeData = root.methods.setVote(encodeUrl, arrayOfComments[index].user, value).encodeABI();
+                    let byteCodeData = root.methods.setVote(encodeUrl, arrayOfComments[index].user, value).encodeABI();
                     this.log.d("Introduced value: ", value);
-                    return this.sendTx(bytecodeData, this.contractAddressRoot);
+                    let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+                    this.transactionQueueService.enqueue(transaction);
                 });
         }).catch(e => {
             this.log.e("Error setting thumbs: ", e);
@@ -815,8 +821,9 @@ export class ContractManagerService {
 
     public setSeasonLength(seasonLength: number): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
-            let bytecodeData = root.methods.setSeasonLength(seasonLength).encodeABI();
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
+            let byteCodeData = root.methods.setSeasonLength(seasonLength).encodeABI();
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error setting the new season length: ", e);
             throw e;
@@ -826,23 +833,25 @@ export class ContractManagerService {
     public reviewChangesCommitFlag(url: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
             const encodeUrl = EncryptionUtils.encode(url);
-            let bytecodeData = root.methods.readCommit(encodeUrl).encodeABI();
+            let byteCodeData = root.methods.readCommit(encodeUrl).encodeABI();
             this.log.d("Introduced url: ", url);
-            this.log.d("DATA: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
+            this.log.d("DATA: ", byteCodeData);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error changing commit flag: ", e);
             throw e;
         });
     }
 
-    public readPendingCommit(url: string): Promise<UnsignedTransaction> {
+    public readPendingCommit(url: string): Promise<void> {
         return this.initProm.then(([bright]) => {
             const encodeUrl = EncryptionUtils.encode(url);
-            let bytecodeData = bright.methods.readPendingCommit(encodeUrl).encodeABI();
+            let byteCodeData = bright.methods.readPendingCommit(encodeUrl).encodeABI();
             this.log.d("Introduced url: ", url);
-            this.log.d("DATA: ", bytecodeData);
-            return new UnsignedTransaction(bytecodeData, this.contractAddressBright);
+            this.log.d("DATA: ", byteCodeData);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressBright, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error reading pending commit: ", e);
             throw e;
@@ -901,17 +910,19 @@ export class ContractManagerService {
         });
         return this.initProm.then(([bright, commit, root]) => {
             let byteCodeData = root.methods.setTextRules(final).encodeABI();
-            return this.sendTx(byteCodeData, this.contractAddressRoot);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(err => {
             this.log.e("Error setting rules :", err);
             throw err;
         });
     }
 
-    public setRandomReviewer(random: boolean): Promise<void | TransactionReceipt> {
+    public setRandomReviewer(random: boolean): Promise<void> {
         return this.initProm.then(([bright, commit, root]) => {
-            let bytecodeData = root.methods.setRandomReviewer(random).encodeABI();
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
+            let byteCodeData = root.methods.setRandomReviewer(random).encodeABI();
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error setting random reviewer: ", e);
             throw e;
@@ -942,9 +953,10 @@ export class ContractManagerService {
     public setFeedback(url: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright, commit, root]) => {
             const encodeUrl = EncryptionUtils.encode(url);
-            let bytecodeData = root.methods.setFeedback(encodeUrl, this.currentUser.address).encodeABI();
+            let byteCodeData = root.methods.setFeedback(encodeUrl, this.currentUser.address).encodeABI();
             this.log.d("Introduced url: ", url);
-            return this.sendTx(bytecodeData, this.contractAddressRoot);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressRoot, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(e => {
             this.log.e("Error setting feedback: ", e);
             throw e;
@@ -983,8 +995,9 @@ export class ContractManagerService {
     public setUserName(name: string): Promise<void | TransactionReceipt> {
         return this.initProm.then(([bright]) => {
             const encodeName = EncryptionUtils.encode(name);
-            let bytecodeData = bright.methods.setUserName(encodeName).encodeABI();
-            return this.sendTx(bytecodeData, this.contractAddressBright);
+            let byteCodeData = bright.methods.setUserName(encodeName).encodeABI();
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressBright, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).then(() => {
             this.userCacheSrv.setUserName(this.currentUser.address, name);
         }).catch(e => {
@@ -1003,38 +1016,6 @@ export class ContractManagerService {
 
     public getCurrentTeam(): number {
         return this.currentTeamUid;
-    }
-
-    public sendTx(bytecodeData, contractAddress): Promise<void | TransactionReceipt> { //PromiEvent<TransactionReceipt>
-        return this.web3.eth.getTransactionCount(this.currentUser.address, "pending")
-        .then(nonceValue => {
-            let nonce = "0x" + (nonceValue).toString(16);
-            this.log.d("Value NONCE", nonce);
-            let rawtx = {
-                nonce: nonce,
-                // I could use web3.eth.getGasPrice() to determine which is the gasPrise needed.
-                gasPrice: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasPrice),
-                gasLimit: this.web3.utils.toHex(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].gasLimit),
-                to: contractAddress,
-                data: bytecodeData
-            };
-            const tx = new Tx(rawtx);
-            let priv = this.currentUser.privateKey.substring(2);
-            let privateKey = new Buffer(priv, "hex");
-            tx.sign(privateKey);
-
-            let raw = "0x" + tx.serialize().toString("hex");
-            this.log.d("Rawtx: ", rawtx);
-            this.log.d("Raw: ", raw);
-            this.log.d("tx unsign: ", tx);
-            return this.web3.eth.sendSignedTransaction(raw);
-        }).then(transactionHash => {
-            this.log.d("Hash transaction", transactionHash);
-            return transactionHash;
-        }).catch(e => {
-            this.log.e("Error in transaction (sendTx function): ", e);
-            throw e;
-        });
     }
 
     private getBatchCommits(totalNumberOfCommits: number, startIndex: number, allCommits: Array<string>): Promise<Array<string>> {
@@ -1086,10 +1067,11 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary]) => {
             const value = EncryptionUtils.encode(key);
             const encodeKey = this.getEncodedKey(key);
-            let bytecodeData = brightDictionary.methods.setValue(encodeKey, value).encodeABI();
+            let byteCodeData = brightDictionary.methods.setValue(encodeKey, value).encodeABI();
             this.log.d("Setting key with value: ", encodeKey, value);
-            this.log.d("DATA: ", bytecodeData);
-            return this.sendTx(bytecodeData, this.contractAddressBrightDictionary);
+            this.log.d("DATA: ", byteCodeData);
+            let transaction = new UnsignedTransaction(byteCodeData, this.contractAddressBrightDictionary, this.currentUser);
+            this.transactionQueueService.enqueue(transaction);
         }).catch(err => {
             this.log.e("Error setting value in Bright Dictionary :", err);
             throw err;

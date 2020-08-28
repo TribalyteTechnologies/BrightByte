@@ -8,7 +8,6 @@ import { LoginService } from "../../core/login.service";
 import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
-import { TransactionQueueService } from "../../domain/transaction-queue.service";
 import { AppConfig } from "../../app.config";
 import { Observable } from "rxjs";
 import { PopupService } from "../../domain/popup.service";
@@ -80,7 +79,6 @@ export class ReviewPage {
         public storageSrv: SessionStorageService,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
-        private transactionQueueService: TransactionQueueService,
         private popupSrv: PopupService,
         loggerSrv: LoggerService
     ) {
@@ -102,7 +100,6 @@ export class ReviewPage {
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === this.TRUE_STRING;
         this.userAdress = this.loginService.getAccountAddress();
         this.initializing = true;
-        this.isSpinnerLoading = this.transactionQueueService.getProcessingStatus();
         this.refresh();
     }
 
@@ -240,7 +237,7 @@ export class ReviewPage {
                 this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
                 return commit.isReadNeeded ? 
-                    this.transactionQueueService.enqueue(this.contractManagerService.readPendingCommit(commit.url)) :
+                    this.contractManagerService.readPendingCommit(commit.url) :
                     Promise.resolve();
             }).then((val) => {
                 commit.isReadNeeded = false;
@@ -325,7 +322,7 @@ export class ReviewPage {
     }
 
     public setReview(urlCom: string, text: string, points: Array<number>) {
-        this.transactionQueueService.enqueue(this.contractManagerService.setReview(urlCom, text, points))
+        this.contractManagerService.setReview(urlCom, text, points)
         .then((response) => {
             this.log.d("Received response " + points);
             this.log.d("Received response " + response);
