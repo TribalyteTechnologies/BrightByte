@@ -4,6 +4,10 @@
   "description": "Implementation of the BrightByte Blockchain contracts. Uses Truffle.",
   "main": "",
   "private": true,
+  "engines": {
+    "node": "12",
+    "yarn": "1"
+  },
   "scripts": {
     "start": "yarn run ganache:quite & (yarn run wait:ganache && yarn run truffle:migrate)",
     "truffle:migrate": "truffle migrate --reset",
@@ -40,6 +44,7 @@
     "ethlint": "1.2.5",
     "shx": "0.3.2",
     "solidity-coverage": "^0.7.10",
-    "wait-on": "3.3.0"
+    "wait-on": "3.3.0",
+    "yarn": "1.22.5"
   }
 }

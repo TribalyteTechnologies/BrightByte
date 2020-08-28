@@ -5,8 +5,8 @@
     "homepage": "",
     "private": true,
     "engines": {
-        "node": "12.18.3",
-        "yarn": "1.13.0"
+        "node": "12",
+        "yarn": "1"
     },
     "scripts": {
         "start": "shx mkdir www; shx cp config.xml www; yarn run ionic:serve",
@@ -71,8 +71,9 @@
         "types-ethereumjs-util": "0.0.8",
         "typescript": "2.4.2",
         "utf8": "3.0.0",
+        "wait-on": "3.3.0",
         "xml2json": "0.11.2",
-        "wait-on": "3.3.0"
+        "yarn": "1.22.5"
     },
     "description": "A Blockchain project",
     "cordova": {

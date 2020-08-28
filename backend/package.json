@@ -5,6 +5,10 @@
 	"author": "Tribalyte Technologies",
 	"license": "SEE LICENSE IN LICENSE.md",
 	"private": true,
+	"engines": {
+        "node": "12",
+        "yarn": "1"
+    },
 	"scripts": {
 		"build": "shx rm -rf dist && tsc -p tsconfig.build.json && shx cp ../version.json ./dist/version.json && shx cp -r ./src/{www,templates} ./dist",
 		"format": "prettier --write \"src/**/*.ts\"",
@@ -55,7 +59,8 @@
 		"tslint": "5.16.0",
 		"tslint-eslint-rules": "5.4.0",
 		"typescript": "3.9.2",
-		"wait-on": "3.2.0"
+		"wait-on": "3.2.0",
+		"yarn": "1.22.5"
 	},
 	"jest": {
 		"moduleFileExtensions": [
