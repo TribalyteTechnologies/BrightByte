@@ -4,15 +4,20 @@
   "description": "This is the BrightByte developer reputation project.",
   "main": "",
   "scripts": {
-    "start": "npm run start:blockchain; npm run start:webapp && npm run start:backend",
-    "install": "cd blockchain && npm install && cd ../webapp && npm install && cd ../backend && npm install",
-    "start:blockchain": "cd ./blockchain; npm run start:migrate",
-    "start:webapp": "cd ./webapp; npm run wait:start",
-    "start:backend": "cd ./backend; npm run start",
-    "linters-ci": "cd webapp; npm run linters-ci",
-    "postlinters-ci": "cd backend; npm run linters-ci"
+    "start": "yarn start:blockchain; yarn start:webapp && yarn start:backend",
+    "postinstall": "cd blockchain && yarn install && cd ../webapp && yarn install && cd ../backend && yarn install",
+    "uninstall": "shx rm -fr node_modules/ backend/node_modules/ blockchain/node_modules/ tools/node_modules/ webapp/node_modules/",
+    "start:blockchain": "cd ./blockchain; yarn start:migrate",
+    "start:webapp": "cd ./webapp; yarn wait:start",
+    "start:backend": "cd ./backend; yarn start",
+    "linters-ci": "cd webapp; yarn linters-ci",
+    "postlinters-ci": "cd backend; yarn linters-ci"
   },
   "author": "Tribalyte Technologies",
   "license": "SEE LICENSE IN LICENSE.md",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "shx": "^0.3.2",
+    "yarn": "^1.22.5"
+  }
 }
