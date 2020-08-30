@@ -21,7 +21,6 @@
         "html-lint": "htmlhint src",
         "scss-lint": "sass-lint -v --max-warnings 0",
         "linters-ci": "yarn run html-lint && yarn run scss-lint && yarn run lint",
-        "preinstall": "rm -fr node_modules/*/node_modules/*/.git/",
         "postlinters-ci": "cd ../backend; yarn install; yarn run linters-ci",
         "wait:start": "yarn install; yarn run start & yarn run wait:webapp",
         "wait:webapp": "wait-on http://localhost:8100"
