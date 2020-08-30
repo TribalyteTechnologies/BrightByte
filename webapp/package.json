@@ -4,6 +4,10 @@
     "author": "Tribalyte Technologies",
     "homepage": "",
     "private": true,
+    "engines": {
+        "node": "12",
+        "yarn": "1"
+    },
     "scripts": {
         "start": "shx mkdir www; shx cp config.xml www; yarn run ionic:serve",
         "clean": "ionic-app-scripts clean",
@@ -67,7 +71,8 @@
         "typescript": "2.4.2",
         "utf8": "3.0.0",
         "wait-on": "3.3.0",
-        "xml2json": "0.11.2"
+        "xml2json": "0.11.2",
+        "yarn": "1.22.5"
     },
     "description": "A Blockchain project",
     "cordova": {

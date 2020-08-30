@@ -5,17 +5,21 @@
 	"author": "Tribalyte Technologies",
 	"license": "SEE LICENSE IN LICENSE.md",
 	"private": true,
+	"engines": {
+        "node": "12",
+        "yarn": "1"
+    },
 	"scripts": {
 		"build": "shx rm -rf dist && tsc -p tsconfig.build.json && shx cp ../version.json ./dist/version.json && shx cp -r ./src/{www,templates} ./dist",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"start": "ts-node -r tsconfig-paths/register src/main.ts",
 		"start:dev": "concurrently --handle-input \"wait-on dist/main.js && nodemon\" \"tsc -w -p tsconfig.build.json\" ",
 		"start:debug": "nodemon --config nodemon-debug.json",
-		"prestart:prod": "shx rm -rf dist && npm run build",
+		"prestart:prod": "shx rm -rf dist && yarn run build",
 		"start:prod": "node dist/main.js",
 		"test": "jest --detectOpenHandles --forceExit",
 		"lint": "tslint -p tsconfig.json -c tslint.json",
-		"linters-ci": "npm run lint"
+		"linters-ci": "yarn run lint"
 	},
 	"dependencies": {
 		"@nestjs-modules/mailer": "1.5.0",
@@ -55,7 +59,8 @@
 		"tslint": "5.16.0",
 		"tslint-eslint-rules": "5.4.0",
 		"typescript": "3.9.2",
-		"wait-on": "3.2.0"
+		"wait-on": "3.2.0",
+		"yarn": "1.22.5"
 	},
 	"jest": {
 		"moduleFileExtensions": [
