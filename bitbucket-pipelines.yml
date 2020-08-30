@@ -10,14 +10,18 @@ pipelines:
           - blockchainnode
         script:
           - cd ./webapp 
-          - yarn install --unsafe-perm
-          - yarn run build
-          - yarn run linters-ci
+          - yarn
+          - yarn build
+          - yarn linters-ci
           - cd ../blockchain
-          - yarn install --unsafe-perm
-          - yarn run linters-ci
-          - yarn run truffle:deploy:test
-          - yarn run truffle:compile
+          - yarn
+          - yarn linters-ci
+          - yarn truffle:deploy:test
+          - yarn truffle:compile
+          - cd ../backend
+          - yarn
+          - yarn linters-ci
+          - yarn build
 definitions:
   caches:
     backendnode: backend/node_modules

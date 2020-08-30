@@ -6,8 +6,8 @@
   "scripts": {
     "start": "yarn start:blockchain; yarn start:webapp && yarn start:backend",
     "postinstall": "cd blockchain && yarn install && cd ../webapp && yarn install && cd ../backend && yarn install",
-    "uninstall": "shx rm -fr node_modules/ backend/node_modules/ blockchain/node_modules/ tools/node_modules/ webapp/node_modules/",
-    "start:blockchain": "cd ./blockchain; yarn start:migrate",
+    "uninstall": "shx rm -fr node_modules/ backend/node_modules/ blockchain/node_modules/ webapp/node_modules/",
+    "start:blockchain": "cd ./blockchain; yarn truffle:deploy",
     "start:webapp": "cd ./webapp; yarn wait:start",
     "start:backend": "cd ./backend; yarn start",
     "linters-ci": "cd webapp; yarn linters-ci",

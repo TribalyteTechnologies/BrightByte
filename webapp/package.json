@@ -9,7 +9,7 @@
         "yarn": "1"
     },
     "scripts": {
-        "start": "shx mkdir www; shx cp config.xml www; yarn run ionic:serve",
+        "start": "shx mkdir -p www/ && shx cp -f config.xml www/ && yarn ionic:serve",
         "clean": "ionic-app-scripts clean",
         "build": "ionic-app-scripts build",
         "prebuild-browser-release": "node version-sync.js",
@@ -20,9 +20,9 @@
         "lint": "IONIC_TYPE_CHECK_ON_LINT=true IONIC_BAIL_ON_LINT_ERROR=true ionic-app-scripts lint",
         "html-lint": "htmlhint src",
         "scss-lint": "sass-lint -v --max-warnings 0",
-        "linters-ci": "yarn run html-lint && yarn run scss-lint && yarn run lint",
-        "postlinters-ci": "cd ../backend; yarn install; yarn run linters-ci",
-        "wait:start": "yarn install; yarn run start & yarn run wait:webapp",
+        "linters-ci": "yarn html-lint && yarn scss-lint && yarn lint",
+        "postlinters-ci": "cd ../backend; yarn install; yarn linters-ci",
+        "wait:start": "yarn install; yarn start & yarn wait:webapp",
         "wait:webapp": "wait-on http://localhost:8100"
     },
     "dependencies": {
@@ -85,7 +85,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-push": "yarn run linters-ci"
+            "pre-push": "yarn linters-ci"
         }
     }
 }
