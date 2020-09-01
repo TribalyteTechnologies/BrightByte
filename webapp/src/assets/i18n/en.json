@@ -101,7 +101,6 @@
     },
     "home": {
         "title": "Welcome, {{userName}} to {{teamName}}",
-        "info": "Choose the available tabs to see your commits, reviews or the ranking.",
         "goTo": "Go to:"
     },
     "newUser": {
