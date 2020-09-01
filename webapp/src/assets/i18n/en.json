@@ -71,7 +71,8 @@
         "noMoreRepo": "No more repositories to load",
         "errorAddCommit": "Error adding new commit",
         "noAvailableSelectReviewers": "Reviewers are selected automatically",
-        "selectedReviewers": "Selected reviewers"
+        "selectedReviewers": "Selected reviewers",
+        "randomReviewersDescription": "Up to four users are picked among the available team members"
     },
     "commits": {
         "add": "Contribute",
@@ -283,7 +284,8 @@
         "thresholdDescription": "Users need to exceed the season qualification thresholds configured in order to participate in the current season.",
         "teamRules": "Team review rules",
         "changeTeamRules": "Change team rules (optional)",
-        "randomReviewers": "Automatic reviewer selection"
+        "randomReviewers": "Automatic reviewer selection",
+        "randomReviewersDescription": "Up to four users are picked among the available team members"
     },
     "commitDetails": {
         "author": "Author",

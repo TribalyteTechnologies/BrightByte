@@ -88,7 +88,14 @@
                 </ion-row>
             </ng-container>
             <ng-template #randomReview>
-                <ion-row class="text-details text-details--bold">{{ "addCommit.noAvailableSelectReviewers" | translate }}</ion-row>
+                <ion-row>
+                    <div class="text-details text-details--bold">{{ "addCommit.noAvailableSelectReviewers" | translate }}</div>
+                    <div class="tooltip info-icon">
+                        <ion-icon name="ios-information-circle-outline"></ion-icon>
+                        <div class="tooltip-text">{{ "addCommit.randomReviewersDescription" | translate }}</div>
+                    </div>
+                </ion-row>
+                
             </ng-template>
         </ion-col>
     </ion-row>
