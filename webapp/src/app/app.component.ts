@@ -1,11 +1,10 @@
 import { Component } from "@angular/core";
 import { Platform } from "ionic-angular";
-
 import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
 import { LoginPage } from "../pages/login/login";
-import { Observable } from "rxjs";
+
 import { TransactionQueueService } from "../domain/transaction-queue.service";
 
 @Component({
@@ -15,7 +14,7 @@ export class BrightByteApp {
 
     public rootPage = LoginPage; //TabsPage;
     private log: ILogger;
-    private isProcessing: Observable<any>;
+    private isProcessing: boolean;
 
     constructor(
         private translateService: TranslateService,
@@ -32,12 +31,17 @@ export class BrightByteApp {
         });
     }
 
-    public ngOnInit() {
-        this.isProcessing = this.transactionQueueSrv.getProcessingStatus();
-      }
-
     public doBeforeUnload() {
-        return !this.isProcessing;
+        return !this.isProcessingTransaction();
+    }
+
+    private isProcessingTransaction(): boolean {
+        this.transactionQueueSrv.getProcessingStatus().subscribe(
+            isProcessing => {
+                this.isProcessing = isProcessing;
+            }
+        );
+        return this.isProcessing;
     }
 
     private initTranslate() {
