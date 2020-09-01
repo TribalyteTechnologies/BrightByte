@@ -59,6 +59,8 @@ export class LoginForm {
     private password = "";
     private lastPassword = "";
     private userEmail: string;
+    private autoLogin: boolean;
+    private teamUid: number;
     
 
     constructor(
@@ -85,6 +87,11 @@ export class LoginForm {
         let password = retrievedUser.password;
         if (password){
             this.log.d("User retrieved from localStorage: " + this.text);
+            let url = new URLSearchParams(document.location.search);
+            if (url.has(AppConfig.UrlKey.TEAMID)) {
+                this.autoLogin = true;
+                this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+            }
             this.login(password);
         }
     }
@@ -183,6 +190,7 @@ export class LoginForm {
     public logToTeam(teamUid: number): Promise<void> {
         return this.contractManager.setBaseContracts(teamUid)
         .then(() => {
+            this.loginService.setTeamUid(teamUid);
             this.backendApiSrv.initBackendConnection(teamUid);
             return this.initAvatarSrvAndContinue();          
         });
@@ -274,7 +282,9 @@ export class LoginForm {
                 let promise;
                 isAlreadyRegisteredToTeam = teamUIds.length !== 0;
                 if (isAlreadyRegisteredToTeam) {
-                    promise = this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
+                    let autoLogin = this.autoLogin && teamUIds.indexOf(this.teamUid) > -1;
+                    promise = autoLogin ? 
+                    this.logToTeam(this.teamUid) : this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
                 } else {
                     this.goToSetProfile.next(this.SET_PROFILE);
                 }

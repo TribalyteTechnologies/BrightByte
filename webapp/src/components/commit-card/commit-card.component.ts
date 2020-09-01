@@ -37,6 +37,9 @@ export class CommitCard {
     
     @Input()
     public reviewerAddress: string;
+
+    @Input()
+    public teamUid: number;
     
     @Input()
     public set commit(val: UserCommit){
@@ -74,8 +77,9 @@ export class CommitCard {
         return this._commit;
     }
 
-    private readonly REVIEW_QUERY = "?" + AppConfig.UrlKey.REVIEWID + "=";
-    private readonly COMMIT_QUERY = "?" + AppConfig.UrlKey.COMMITID + "=";
+    private readonly REVIEW_QUERY = "&" + AppConfig.UrlKey.REVIEWID + "=";
+    private readonly COMMIT_QUERY = "&" + AppConfig.UrlKey.COMMITID + "=";
+    private readonly TEAM_QUERY = "?" + AppConfig.UrlKey.TEAMID + "=";
     private _commit: UserCommit;
     private init: boolean;
 
@@ -94,12 +98,14 @@ export class CommitCard {
         this.commit = this._commit;
     }
   
-    public openUrl(url: string, isCommitParam: boolean, e?: Event){
+    public openUrl(url: string, isCommitParam: boolean, e?: Event) {
+        let queryParams = this.TEAM_QUERY + this.teamUid;
         let currentPage = this.isReviewPage ? this.REVIEW_QUERY : this.COMMIT_QUERY;
+        queryParams += currentPage;
         let urlToOpen = url;
         if(isCommitParam){
             this.popupSrv.openUrlNewTab(urlToOpen);
-            urlToOpen = currentPage + encodeURIComponent(url);
+            urlToOpen = queryParams + encodeURIComponent(url);
         }
         this.popupSrv.openUrlNewTab(urlToOpen);
         if(e){

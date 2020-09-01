@@ -95,7 +95,8 @@ export class AppConfig {
 
     public static readonly UrlKey = {
         REVIEWID: "reviewId",
-        COMMITID: "commitId"
+        COMMITID: "commitId",
+        TEAMID: "teamId"
     };
 
     private static shuffle(array: Array<any>): Array<any> {

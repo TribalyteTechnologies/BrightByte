@@ -27,6 +27,7 @@ export class ReviewPage {
 
 
     public userAdress: string;
+    public teamUid: number;
     public displayCommitsToReview: Array<UserCommit>;
     public arrayCommits: Array<UserCommit>;
     public msg: string;
@@ -99,6 +100,7 @@ export class ReviewPage {
         }
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === this.TRUE_STRING;
         this.userAdress = this.loginService.getAccountAddress();
+        this.teamUid = this.loginService.getTeamUid();
         this.initializing = true;
         this.refresh();
     }

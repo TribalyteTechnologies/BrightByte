@@ -5,9 +5,14 @@ import { Account } from "web3-eth-accounts";
 export class LoginService {
 
     private account: Account;
+    private teamUid: number;
 
     public setAccount(acc: Account) {
         this.account = acc;
+    }
+
+    public setTeamUid(teamUid: number) {
+        this.teamUid = teamUid;
     }
 
     public getAccount(): Account {
@@ -18,4 +23,7 @@ export class LoginService {
         return this.account.address;
     }
 
+    public getTeamUid() {
+        return this.teamUid;
+    }
 }

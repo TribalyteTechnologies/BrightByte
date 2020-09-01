@@ -12,6 +12,7 @@ import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
 import { AlertController } from "ionic-angular";
 import { PopupService } from "../../domain/popup.service";
+import { LoginService } from "../../core/login.service";
 
 @Component({
     selector: "page-commits",
@@ -23,6 +24,7 @@ export class CommitPage {
     public readonly ALL = "all";
     public readonly INCOMPLETE = "incomplete";
     public readonly COMPLETE = "complete";
+    public teamUid: number;
     public arrayCommits = new Array<UserCommit>();
     public filterArrayCommits = new Array<UserCommit>();
     public currentCommit: UserCommit;
@@ -48,11 +50,13 @@ export class CommitPage {
         private contractManagerService: ContractManagerService,
         private alertCtrl: AlertController,
         private popupSrv: PopupService,
+        private loginService: LoginService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
         this.filterValue = this.storageSrv.get(AppConfig.StorageKey.COMMITFILTER);
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true";
+        this.teamUid = this.loginService.getTeamUid();
     }
 
     public ionViewWillEnter() {

@@ -24,7 +24,7 @@
                     <ion-item no-padding
                         [ngClass]="commit === currentCommit ? 'item-height card card__selected' : 'item-height card'"
                         *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
-                        <commit-card [isReviewPage]="true" [reviewerAddress]="userAdress" [commit]="commit">
+                        <commit-card [isReviewPage]="true" [reviewerAddress]="userAdress" [commit]="commit" [teamUid]="teamUid">
                         </commit-card>
                     </ion-item>
                 </ion-list>
