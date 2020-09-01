@@ -5,6 +5,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
 import { LoginPage } from "../pages/login/login";
+import { Observable } from "rxjs";
+import { TransactionQueueService } from "../domain/transaction-queue.service";
 
 @Component({
     templateUrl: "app.html"
@@ -13,10 +15,12 @@ export class BrightByteApp {
 
     public rootPage = LoginPage; //TabsPage;
     private log: ILogger;
+    private isProcessing: Observable<any>;
 
     constructor(
         private translateService: TranslateService,
         private loggerSrv: LoggerService,
+        private transactionQueueSrv: TransactionQueueService,
         platform: Platform) {
 
         this.log = this.loggerSrv.get("AppComponent");
@@ -26,6 +30,14 @@ export class BrightByteApp {
         platform.ready().then(() => {
             this.log.d("Platform Ready");
         });
+    }
+
+    public ngOnInit() {
+        this.isProcessing = this.transactionQueueSrv.getProcessingStatus();
+      }
+
+    public doBeforeUnload() {
+        return !this.isProcessing;
     }
 
     private initTranslate() {
