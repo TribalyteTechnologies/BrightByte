@@ -20,6 +20,7 @@ export class UserNameService {
         private contractManager: ContractManagerService
     ) {
         this.log = loggerSrv.get("UserNameService");
+        this.nameSubj = new Subject<string>();
     }
 
     public setUserObs(hash: string): Observable<string> {

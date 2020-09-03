@@ -47,6 +47,8 @@ build/
 
 public/
 
+secrets/
+
 tools/ReputationAlgorithmTest/contracts
 blockchain/database
 bin/
