@@ -20,8 +20,8 @@ pipelines:
           - yarn truffle:compile
           - cd ../backend
           - yarn
-          - yarn linters-ci
           - yarn build
+          - yarn linters-ci
 definitions:
   caches:
     backendnode: backend/node_modules

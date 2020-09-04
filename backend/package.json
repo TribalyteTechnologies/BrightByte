@@ -19,7 +19,7 @@
 		"start:prod": "node dist/main.js",
 		"test": "jest --detectOpenHandles --forceExit",
 		"lint": "tslint -p tsconfig.json -c tslint.json",
-		"linters-ci": "yarn run lint"
+		"linters-ci": "yarn lint"
 	},
 	"dependencies": {
 		"@nestjs-modules/mailer": "1.5.0",
