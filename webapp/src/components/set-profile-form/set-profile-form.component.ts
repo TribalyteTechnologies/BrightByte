@@ -190,9 +190,6 @@ export class SetProfileForm {
             .then(txResponse => {
                 this.isRegistering = false;
                 this.log.d("Contract manager response: ", txResponse);
-                if (!txResponse) {
-                    throw "Error: cannot set profile";
-                }
                 return this.contractManagerService.getAllUserAddresses();
             })
             .then((addresses: Array<string>) => {

@@ -270,7 +270,6 @@ export class LoginForm {
     private checkNodesAndOpenHomePage (account: Account, currentNodeIndex: number): Promise<boolean> {
         let prom = Promise.resolve(false);
         let isAlreadyRegisteredToTeam;
-        let allTeamUids;
         if(currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
@@ -278,7 +277,6 @@ export class LoginForm {
                 return this.contractManager.getUserTeam();              
             })
             .then((teamUIds: Array<number>) => {
-                allTeamUids = teamUIds;
                 let promise;
                 isAlreadyRegisteredToTeam = teamUIds.length !== 0;
                 if (isAlreadyRegisteredToTeam) {

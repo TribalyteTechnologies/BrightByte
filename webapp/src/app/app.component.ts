@@ -4,8 +4,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
 import { LoginPage } from "../pages/login/login";
-
-import { TransactionQueueService } from "../domain/transaction-queue.service";
+import { TransactionExecutorService } from "../domain/transaction-queue.service";
 
 @Component({
     templateUrl: "app.html"
@@ -14,12 +13,11 @@ export class BrightByteApp {
 
     public rootPage = LoginPage; //TabsPage;
     private log: ILogger;
-    private isProcessing: boolean;
 
     constructor(
         private translateService: TranslateService,
         private loggerSrv: LoggerService,
-        private transactionQueueSrv: TransactionQueueService,
+        private transactionQueueSrv: TransactionExecutorService,
         platform: Platform) {
 
         this.log = this.loggerSrv.get("AppComponent");
@@ -31,17 +29,9 @@ export class BrightByteApp {
         });
     }
 
-    public doBeforeUnload() {
-        return !this.isProcessingTransaction();
-    }
-
-    private isProcessingTransaction(): boolean {
-        this.transactionQueueSrv.getProcessingStatus().subscribe(
-            isProcessing => {
-                this.isProcessing = isProcessing;
-            }
-        );
-        return this.isProcessing;
+    public doBeforeUnload () {
+        let ret = !this.transactionQueueSrv.checkProcessPending();
+        return ret;
     }
 
     private initTranslate() {

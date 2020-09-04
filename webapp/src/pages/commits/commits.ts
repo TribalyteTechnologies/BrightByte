@@ -121,12 +121,8 @@ export class CommitPage {
         this.spinnerService.showLoader();
         this.contractManagerService.setThumbReviewForComment(url, index, value)
             .then(txResponse => {
-                if (txResponse) {
-                    this.log.d("Contract manager response: ", txResponse);
-                    this.commitComments[index].vote = value;
-                } else {
-                    throw "Error: commitdetails response is undefine";
-                }
+                this.log.d("Contract manager response: ", txResponse);
+                this.commitComments[index].vote = value;
                 this.spinnerService.hideLoader();
             }).catch(e => {
                 this.log.e("Cant set the vote", e);

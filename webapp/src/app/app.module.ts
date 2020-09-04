@@ -62,7 +62,7 @@ import { WebSocketService } from "../core/websocket.service";
 import { AvatarComponent } from "../components/avatar/avatar.component";
 import { Profile } from "../pages/profile/profile";
 import { AvatarService } from "../domain/avatar.service";
-import { TransactionQueueService } from "../domain/transaction-queue.service";
+import { TransactionExecutorService } from "../domain/transaction-queue.service";
 import { ProgressBarComponent } from "../components/progress-bar/progress-bar.component";
 import { TwitterComponent } from "../components/twitter/twitter.component";
 import { FacebookComponent } from "../components/facebook/facebook.component";
@@ -175,7 +175,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         ContractManagerService,
         AppVersionService,
         UpdateCheckService,
-        TransactionQueueService
+        TransactionExecutorService
     ]
 })
 
