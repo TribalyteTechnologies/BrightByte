@@ -4,7 +4,7 @@ import { FormatUtils } from "../core/format-utils";
 import { EncryptionUtils } from "../core/encryption-utils";
 
 export class UserCommit { 
-    public url = ""; 
+    public url: string; 
     public urlHash: string;
     public title: string;
     public author: string;
@@ -29,7 +29,7 @@ export class UserCommit {
             commit.isPending = isPending;
             commit.creationDateMs = parseInt(commitVals[3]) * AppConfig.SECS_TO_MS;
             commit.lastModificationDateMs = parseInt(commitVals[4]) * AppConfig.SECS_TO_MS;
-            commit.isReadNeeded = commitVals[5] === "true";
+            commit.isReadNeeded = commitVals[5].toString() === "true";
             commit.numberReviews = parseInt(commitVals[6]);
             commit.currentNumberReviews = parseInt(commitVals[7]);
             commit.score = Math.round(parseInt(commitVals[8]) / AppConfig.COMMIT_SCORE_DIVISION_FACTOR);

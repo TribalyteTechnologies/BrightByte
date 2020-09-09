@@ -138,7 +138,7 @@ export class CommitPage {
     }
 
 
-    public applyFilters(usercommits: UserCommit[]) {
+    public applyFilters(usercommits: Array<UserCommit>) {
         let projectFilter = this.setProjectFilter(usercommits);
         let statusFilter = this.setStatusFilter(projectFilter);
         let pendingFilter = this.setPendingFilter(statusFilter);
@@ -179,7 +179,6 @@ export class CommitPage {
 
         this.spinnerService.showLoader();
         this.log.d("Opening commit: " + commit.url);
-        commit.isReadNeeded = false;
         this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: Array<CommitComment>) => {
                 this.log.d("We received " + comments.length + " comments");
@@ -192,11 +191,14 @@ export class CommitPage {
             }).then((name) => {
                 this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
-                return this.contractManagerService.reviewChangesCommitFlag(commit.url);
+                const isReadNeeded = commit.isReadNeeded;
+                commit.isReadNeeded = false;
+                return isReadNeeded ? 
+                    this.contractManagerService.reviewChangesCommitFlag(commit.url) :
+                    Promise.resolve();
             }).then((response) => {
                 this.log.d("Received response: " + response);
                 let idx = this.filterArrayCommits.indexOf(commit);
-                commit.isReadNeeded = false;
                 this.filterArrayCommits[idx] = commit;
             }).catch((err) => {
                 this.log.e(err);
@@ -258,7 +260,7 @@ export class CommitPage {
             });
     }
 
-    private setProjectFilter(usercommits: UserCommit[]): UserCommit[] {
+    private setProjectFilter(usercommits: Array<UserCommit>): Array<UserCommit> {
         if (this.projectSelected !== this.ALL) {
             return usercommits.filter(commit => {
                 return (commit.project === this.projectSelected);
@@ -267,7 +269,7 @@ export class CommitPage {
             return usercommits;
         }
     }
-    private setStatusFilter(usercommits: UserCommit[]): UserCommit[] {
+    private setStatusFilter(usercommits: Array<UserCommit>): Array<UserCommit> {
         switch (this.filterValue) {
             case this.INCOMPLETE:
                 return usercommits.filter(commit => {
@@ -281,14 +283,8 @@ export class CommitPage {
                 return usercommits;
         }
     }
-    private setPendingFilter(usercommits: UserCommit[]): UserCommit[] {
-        if (this.filterIsPending) {
-            return usercommits.filter(commit => {
-                return commit.isReadNeeded;
-            });
-        } else {
-            return usercommits;
-        }
+    private setPendingFilter(usercommits: Array<UserCommit>): Array<UserCommit> {
+        return this.filterIsPending ? usercommits.filter(commit => commit.isReadNeeded) : usercommits;
     }
 
 }

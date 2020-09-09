@@ -17,7 +17,7 @@ export class CommitDetails {
         commit.author = commitVals[2];
         commit.creationDate = parseInt(commitVals[3]);
         commit.lastModDate = parseInt(commitVals[4]);
-        commit.isReadNeeded = commitVals[5] === "true";
+        commit.isReadNeeded = commitVals[5].toString() === "true";
         commit.numberReviews = parseInt(commitVals[6]); 
         commit.currentNumberReviews = parseInt(commitVals[7]);
         commit.score = Math.round(parseInt(commitVals[8]));

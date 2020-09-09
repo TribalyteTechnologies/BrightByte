@@ -1071,7 +1071,7 @@ export class ContractManagerService {
     private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
         return this.initProm.then(([bright, commit]) => {
             return commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address })
-            .then((commitVals: Array<any>) => {
+            .then((commitVals: Array<string>) => {
                 return UserCommit.fromSmartContract(commitVals, isPending);
             });
         }).catch(err => {
