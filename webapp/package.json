@@ -21,7 +21,6 @@
         "html-lint": "htmlhint src",
         "scss-lint": "sass-lint -v --max-warnings 0",
         "linters-ci": "yarn html-lint && yarn scss-lint && yarn lint",
-        "postlinters-ci": "cd ../backend; yarn install; yarn linters-ci",
         "wait:start": "yarn install; yarn start & yarn wait:webapp",
         "wait:webapp": "wait-on http://localhost:8100"
     },
