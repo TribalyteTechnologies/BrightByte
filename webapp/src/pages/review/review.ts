@@ -238,11 +238,12 @@ export class ReviewPage {
             }).then((name) => {
                 this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
-                return commit.isReadNeeded ? 
+                const isReadNeeded = commit.isReadNeeded;
+                commit.isReadNeeded = false;
+                return isReadNeeded ? 
                     this.contractManagerService.readPendingCommit(commit.url) :
                     Promise.resolve();
             }).then((val) => {
-                commit.isReadNeeded = false;
                 this.log.d("Feedback response: " + val);
                 if (this.filterArrayCommits){
                     let idx = this.filterArrayCommits.indexOf(commit);
