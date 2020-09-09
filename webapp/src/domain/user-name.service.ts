@@ -13,14 +13,13 @@ export class UserNameService {
 
     private log: ILogger;
     private nameObs: Observable<string>;
-    private nameSubj: Subject<string>;
+    private nameSubj = new Subject<string>();
 
     constructor(
         loggerSrv: LoggerService,
         private contractManager: ContractManagerService
     ) {
         this.log = loggerSrv.get("UserNameService");
-        this.nameSubj = new Subject<string>();
     }
 
     public setUserObs(hash: string): Observable<string> {

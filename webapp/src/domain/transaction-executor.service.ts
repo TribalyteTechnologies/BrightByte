@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { UnsignedTransaction, Task } from "../models/unsigned-transaction-info.model";
+import { UnsignedTransaction, TransactionTask } from "../models/transaction-task.model";
 import { TransactionReceipt } from "web3-core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
@@ -11,7 +11,7 @@ import { Account } from "web3-eth-accounts";
 @Injectable()
 export class TransactionExecutorService {
 
-    private queue: Array<Task>;
+    private queue: Array<TransactionTask>;
     private log: ILogger;
     private web3: Web3;
     private pendingPromise: boolean;
@@ -22,14 +22,14 @@ export class TransactionExecutorService {
     ) {
         this.log = this.loggerSrv.get("TransactionExecutorService");
         this.web3 = this.web3Service.getWeb3();
-        this.queue = new Array<Task>();
+        this.queue = new Array<TransactionTask>();
     }
 
-    public enqueue(bytecodeData: string, contractAddress: string, user: Account): Promise<any> {
+    public enqueue(bytecodeData: string, contractAddress: string, user: Account): Promise<void> {
         const transaction = new UnsignedTransaction(bytecodeData, contractAddress, user);
         return new Promise((resolve, reject) => {
-            this.queue.push(new Task(resolve, reject, transaction));
-            this.dequeue();
+            this.queue.push(new TransactionTask(resolve, reject, transaction));
+            this.executeAsync();
         });
     }
 
@@ -37,35 +37,20 @@ export class TransactionExecutorService {
         return this.pendingPromise || this.queue.length > 0;
     }
 
-    private dequeue(): any {
-        if (this.pendingPromise) {
-            return false;
-        }
-        const item = this.queue.shift();
-        if (!item) {
-            return false;
-        }
-        try {
-            this.pendingPromise = true;
-            this.sendTx(item.transaction)
-            .then((value) => {
+    private async executeAsync(): Promise<void> {
+        for(let item = this.queue.shift(); !!item; item = this.queue.shift()) {
+            try {
+                this.pendingPromise = true;
+                let value = await this.sendTx(item.transaction);
                 this.pendingPromise = false;
                 this.log.d("The transaction is completed");
                 item.resolve(value);
-            }).catch(err => {
-                this.log.e("Error executing the transaction: ", err); 
+            } catch (err) {
                 this.pendingPromise = false;
+                this.log.e("Error executing the transaction: ", err); 
                 item.reject(err);
-            });
-        } catch (err) {
-            this.log.e("Error executing the transaction: ", err);
-            this.pendingPromise = false;
-            item.reject(err);
-        } finally {
-            this.pendingPromise = false;
-            this.dequeue();
+            }
         }
-        return true;
     }
 
     private sendTx(transaction: UnsignedTransaction): Promise<void | TransactionReceipt> {

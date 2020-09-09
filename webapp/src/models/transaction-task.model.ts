@@ -12,12 +12,12 @@ export class UnsignedTransaction {
     }
 }
 
-export class Task { 
-    public resolve: any;
-    public reject: any;
+export class TransactionTask { 
+    public resolve: Function;
+    public reject: Function;
     public transaction: UnsignedTransaction;
 
-    constructor(resolve: any, reject: any, transaction: UnsignedTransaction) {
+    constructor(resolve: Function, reject: Function, transaction: UnsignedTransaction) {
         this.resolve = resolve;
         this.reject = reject;
         this.transaction = transaction;

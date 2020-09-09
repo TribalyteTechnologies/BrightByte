@@ -4,7 +4,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { AppConfig } from "../app.config";
 import { LoginPage } from "../pages/login/login";
-import { TransactionExecutorService } from "../domain/transaction-queue.service";
+import { TransactionExecutorService } from "../domain/transaction-executor.service";
 
 @Component({
     templateUrl: "app.html"
