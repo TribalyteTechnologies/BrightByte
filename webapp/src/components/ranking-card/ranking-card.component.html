@@ -47,10 +47,10 @@
                 <ion-col col-1 class="remove-vertical-padding margin-right">
                     <ion-row justify-content-center>
                         <div class="engagement-index" *ngIf="isRanked; else isNotRanked">
-                            <span class="text-title ranking-score">{{ engagementIndexString }}</span>
+                            <span class="text-title ranking-score engagement-index">{{ engagementIndexString }}</span>
                         </div>
                         <ng-template #isNotRanked>
-                            <span class="text-title text-title--grey ranking-score no-reputation">{{ "ranking.noReputation" | translate }}</span>
+                            <span class="text-title text-title--grey ranking-score no-reputation engagement-index">{{ "ranking.noReputation" | translate }}</span>
                         </ng-template>
                     </ion-row>
                 </ion-col>

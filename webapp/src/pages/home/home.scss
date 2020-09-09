@@ -1,10 +1,4 @@
 page-home {
-
-    .home-container {
-        margin: 0 auto;
-        width: 80%;
-    }
-
     .home-logo-container {
         margin: 60px 0;
         .home-logo {
@@ -28,7 +22,6 @@ page-home {
     .home-button {
         margin-right: 7px;
         text-transform: none;
-
     }
 
     .button-logo {
@@ -40,20 +33,11 @@ page-home {
         width: 10%;
     }
 
-    .home-text {
-        margin: 15px;
-    }
-
     .home-rules-container {
         margin: 0 auto;
         width: 70%;
         max-width: 840px;
         max-height: 200px;
         overflow-y: auto;
-    }
-
-    .home-scroll-dimensions {
-        width: 100%;
-        height: calc(100% - 120px);
     }
 }

@@ -142,12 +142,7 @@ page-login {
             }
         }
     }
-    .card {
-        border-radius: 10px;
-    }
-    .top-margin {
-        top: 150px;
-    }
+
     .error-body {
         background-color: color($colors, dangerLight);
         padding: 10px;
@@ -157,35 +152,22 @@ page-login {
         color: white;
         margin: 5px;
     }
+
     .page-body {
         background-color: color($colors, backgroundLight);
     }
-    .card-body {
-        padding: 20px;
-        margin: auto;
-        width: 50%;
-        min-width: 150px;
-        max-width: 550px;
-    }
+
     .logo-icon {
         width: 80px;
         margin: auto;
         margin-bottom: -50px;
     }
+
     .logo-text {
         margin: auto;
         width: 200px;
         margin-bottom: 50px;
         margin-top: 50px;
-    }
-    .form-input {
-        border: none;
-        border-bottom: 2px solid;
-        border-color: color($colors, primary);
-        width: 100%;
-        height: 40px;
-        margin-top: 10px;
-        margin-bottom: 20px;
     }
 
     .error-body-no-v-padding {
@@ -197,18 +179,16 @@ page-login {
         margin-left: 15px;
         margin-top: 10px;
     }
+    
     .page-bottom-tag {
         font-size: 12px;
         color: #818181;
         cursor: pointer;
     }
+
     .project-version {
         text-align: left;
         font-size: 12px;
         color: rgb(209, 210, 212);
-    }
-    .legal-terms {
-        display: flex;
-        align-self: flex-end;
     }
 }
