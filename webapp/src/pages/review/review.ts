@@ -9,7 +9,6 @@ import { UserCommit } from "../../models/user-commit.model";
 import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
-import { Observable } from "rxjs";
 import { PopupService } from "../../domain/popup.service";
 
 @Component({
@@ -42,7 +41,7 @@ export class ReviewPage {
     public filterIsReviewed = false;
     public openedComments = false;
     public needReview = false;
-    public isSpinnerLoading: Observable<boolean>;
+    public isSpinnerLoading: boolean;
     public numCriteria = 3;
     public stars = [["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
         , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
@@ -325,8 +324,10 @@ export class ReviewPage {
     }
 
     public setReview(urlCom: string, text: string, points: Array<number>) {
+        this.isSpinnerLoading = true;
         this.contractManagerService.setReview(urlCom, text, points)
         .then((response) => {
+            this.isSpinnerLoading = false;
             this.log.d("Received response " + points);
             this.log.d("Received response " + response);
             this.needReview = false;

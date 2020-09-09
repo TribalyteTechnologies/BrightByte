@@ -46,7 +46,7 @@
                 </ion-row>
             </ion-col>
             <ion-col col-3 class="criterial-border center-button">
-                <button class="btn btn--full btn__blue" (click)="validateAndSetReview(textComment)">
+                <button class="btn btn--full btn__blue" (click)="validateAndSetReview(textComment)" [disabled]="isSettingReview">
                     {{ "commitReview.review" | translate }}
                 </button>
             </ion-col>

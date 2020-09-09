@@ -47,6 +47,7 @@ export class CommentComponent {
     public alertAccept: string;
     public points = [0, 0, 0];
     public textComment: string;
+    public isSettingReview: boolean;
 
     private _review: CommitComment;
     private _isReviewPage: boolean = true;
@@ -120,7 +121,8 @@ export class CommentComponent {
             this.submitError = this.emptyRatingError;
         } else {
             let obj = {txt: text, points: this.points};
-            this.submitReview.next(obj);    
+            this.isSettingReview = true;
+            this.submitReview.next(obj);
         }
     }
 
