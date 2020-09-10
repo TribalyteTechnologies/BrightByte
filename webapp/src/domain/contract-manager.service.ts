@@ -245,7 +245,8 @@ export class ContractManagerService {
             let byteCodeData = teamManager.methods.removeFromTeam(this.currentTeamUid, memberAddress).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         });
     }
 
@@ -268,7 +269,7 @@ export class ContractManagerService {
             let byteCodeData = teamManager.methods.inviteToTeam(teamUid, keyEmail, userType as number, expInSecs).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
             return this.saveValue(email);
         });
     }
@@ -314,7 +315,8 @@ export class ContractManagerService {
             let byteCodeData = teamManager.methods.removeInvitationToTeam(this.currentTeamUid, keyEmail).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         });
     }
 
@@ -438,7 +440,7 @@ export class ContractManagerService {
             let byteCodeData = teamManager.methods.setTeamName(this.currentTeamUid, keyTeamName).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
             return this.saveValue(teamName);
         });
     }
@@ -463,8 +465,8 @@ export class ContractManagerService {
             this.log.d("Bytecode data: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressBright, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
-            return true;
+            this.log.d("Transaction processed");
+            return res;
         })
         .catch(e => {
             this.log.e("Error setting profile: ", e);
@@ -500,6 +502,7 @@ export class ContractManagerService {
             this.log.d("DATA: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressCommits, this.currentUser);
         }).then(() => {
+            this.log.d("Added commit, ", title);
             isAlreadyUploaded = true;
             let emailsArray = usersMail.filter(email => !!email).map(email => {
                 return this.getEncodedKey(email);
@@ -511,6 +514,7 @@ export class ContractManagerService {
             this.log.d("byteCodeData of notifyCommit: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(() => {
+            this.log.d("Notified commit to the reviewers", title);
             let byteCodeData = teamManagerContract.methods.addProject(
                 this.currentTeamUid,
                 encodedProject
@@ -518,7 +522,9 @@ export class ContractManagerService {
             this.log.d("byteCodeData of notifyCommit: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressTeamManager, this.currentUser);
         }).then(res => {
-            this.log.d("The commit add Transaciton is processed");
+            this.log.d("Added project user projects", project);
+            this.log.d("The commit add Transaction is processed");
+            return res;
         }).catch(e => {
             if (isAlreadyUploaded) {
                 this.deleteCommit(encodeUrl);
@@ -563,7 +569,8 @@ export class ContractManagerService {
             this.log.d("Bytecode data: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressBright, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error deleting a commit: ", e);
             throw e;
@@ -712,7 +719,8 @@ export class ContractManagerService {
             this.log.d("Introduced points: ", points);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressCommits, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error setting a review: ", e);
             throw e;
@@ -807,8 +815,9 @@ export class ContractManagerService {
         .then(() => {
             let tx = teamManagerContract.methods.clearAllProjects(this.currentTeamUid).encodeABI();
             return this.transactionQueueSrv.enqueue(tx, this.contractAddressTeamManager, this.currentUser);
-        }).then(() => {
-            this.log.d("Transaciton processed");
+        }).then(res => {
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error getting season threshold: ", e);
             throw e;
@@ -820,7 +829,8 @@ export class ContractManagerService {
             let byteCodeData = root.methods.setCurrentSeasonThresholdOwner(commitThreshold, reviewThreshold).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error setting new thresold: ", e);
             throw e;
@@ -837,7 +847,8 @@ export class ContractManagerService {
                     this.log.d("Introduced value: ", value);
                     return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
                 }).then(res => {
-                this.log.d("Transaciton processed");
+                    this.log.d("Transaction processed");
+                    return res;
                 });
         }).catch(e => {
             this.log.e("Error setting thumbs: ", e);
@@ -850,7 +861,8 @@ export class ContractManagerService {
             let byteCodeData = root.methods.setSeasonLength(seasonLength).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error setting the new season length: ", e);
             throw e;
@@ -865,7 +877,8 @@ export class ContractManagerService {
             this.log.d("DATA: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error changing commit flag: ", e);
             throw e;
@@ -880,7 +893,8 @@ export class ContractManagerService {
             this.log.d("DATA: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressBright, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error reading pending commit: ", e);
             throw e;
@@ -941,7 +955,8 @@ export class ContractManagerService {
             let byteCodeData = root.methods.setTextRules(final).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(err => {
             this.log.e("Error setting rules :", err);
             throw err;
@@ -953,7 +968,7 @@ export class ContractManagerService {
             let byteCodeData = root.methods.setRandomReviewer(random).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
             }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
         }).catch(e => {
             this.log.e("Error setting random reviewer: ", e);
             throw e;
@@ -988,7 +1003,8 @@ export class ContractManagerService {
             this.log.d("Introduced url: ", url);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error setting feedback: ", e);
             throw e;
@@ -1030,9 +1046,9 @@ export class ContractManagerService {
             let byteCodeData = bright.methods.setUserName(encodeName).encodeABI();
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressBright, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
-        }).then(() => {
+            this.log.d("Transaction processed");
             this.userCacheSrv.setUserName(this.currentUser.address, name);
+            return res;
         }).catch(e => {
             this.log.e("Error setting new user name: ", e);
             throw e;
@@ -1105,7 +1121,8 @@ export class ContractManagerService {
             this.log.d("DATA: ", byteCodeData);
             return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressBrightDictionary, this.currentUser);
         }).then(res => {
-            this.log.d("Transaciton processed");
+            this.log.d("Transaction processed");
+            return res;
         }).catch(err => {
             this.log.e("Error setting value in Bright Dictionary :", err);
             throw err;

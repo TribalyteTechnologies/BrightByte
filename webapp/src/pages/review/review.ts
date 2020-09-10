@@ -131,9 +131,7 @@ export class ReviewPage {
                 }
                 this.numberOfReviews = commitConcat[1].length;
             }
-            commits = commits.filter(commit => {
-                return commit.url !== "";
-            });
+            commits = commits.filter(commit => commit.url);
             let reviewers = commits.map((commit) => {
                 return this.contractManagerService.getReviewersName(commit.url);
             });
@@ -238,23 +236,26 @@ export class ReviewPage {
                 this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
                 const isReadNeeded = commit.isReadNeeded;
+                this.currentCommit.isReadNeeded = false;
                 commit.isReadNeeded = false;
-                return isReadNeeded ? 
-                    this.contractManagerService.readPendingCommit(commit.url) :
-                    Promise.resolve();
-            }).then((val) => {
-                this.log.d("Feedback response: " + val);
                 if (this.filterArrayCommits){
                     let idx = this.filterArrayCommits.indexOf(commit);
                     if (this.filterArrayCommits[idx]) {
                         this.filterArrayCommits[idx].isReadNeeded = false;
                     }
                 }
+                return isReadNeeded ? 
+                    this.contractManagerService.readPendingCommit(commit.url) :
+                    Promise.resolve();
+            }).then((val) => {
+                this.log.d("Feedback response: " + val);
             }).catch(err => {
                 this.spinnerService.hideLoader();
                 this.log.e(err);
                 throw err;
             });
+        } else {
+            this.log.d("The user is trying to open the same commit");
         }
     }
 
