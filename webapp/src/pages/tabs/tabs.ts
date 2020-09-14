@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-
 import { CommitPage } from "../commits/commits";
 import { ReviewPage } from "../review/review";
 import { HomePage } from "../home/home";
@@ -9,18 +8,15 @@ import { MenuItem } from "../../models/menu-items.model";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { LoginPage } from "../login/login";
-import { NavController, PopoverController } from "ionic-angular";
+import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { AppConfig } from "../../app.config";
 import { WebSocketService } from "../../core/websocket.service";
-import { AddCommitPopover } from "../addcommit/addcommit";
 import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
-import { AfterLoginSlidePopover } from "../../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
-import { Profile } from "../profile/profile";
-import { SharePopOver } from "../sharepopover/sharepopover";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "page-tabs",
@@ -51,12 +47,12 @@ export class TabsPage {
     constructor(
         loggerSrv: LoggerService,
         private userLoggerService: UserLoggerService,
+        private popUpService: PopupService,
         private navCtrl: NavController,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         private storageSrv: LocalStorageService,
         private websocketSrv: WebSocketService,
-        private popoverCtrl: PopoverController,
         private translateSrv: TranslateService,
         private avatarSrv: AvatarService
     ) {
@@ -112,23 +108,19 @@ export class TabsPage {
     }
 
     public openAddCommitDialog() {
-        let popover = this.popoverCtrl.create(AddCommitPopover, {}, { cssClass: "add-commit-popover" });
-        popover.present();
+        this.popUpService.openAddCommitDialog();
     }
 
     public openAfterLoginTutorialDialog() {
-        let popover = this.popoverCtrl.create(AfterLoginSlidePopover, {}, { cssClass: "tutorial-slide" });
-        popover.present();
+        this.popUpService.openAfterLoginTutorialDialog();
     }
 
     public openSetProfileDialog() {
-        let popover = this.popoverCtrl.create(Profile, { }, { cssClass: "profile" });
-        popover.present();
+        this.popUpService.openSetProfileDialog();
     }
 
-    public showSharingOptions() {
-        let popover = this.popoverCtrl.create(SharePopOver, { }, { cssClass: "sharepopover" });
-        popover.present();
+    public showSharingDialog() {
+        this.popUpService.showSharingDialog();
     }
 
     private setUserInfo() {

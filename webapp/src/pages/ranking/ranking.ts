@@ -95,9 +95,11 @@ export class RankingPage {
                             / AppConfig.SECS_TO_MS);
                     },
                     AppConfig.SECS_TO_MS);
-                this.seasons.push(this.translateService.instant("ranking.global"));
+                return this.translateService.get(["ranking.global", "ranking.season"]).toPromise();
+            }).then(translations => {
+                this.seasons.push(translations["ranking.global"]);
                 for (let i = this.numberOfSeasons; i > 0; i--) {
-                    this.seasons.push("Season " + i);
+                    this.seasons.push(translations["ranking.season"] + " " + i);
                 }
                 return this.contractManagerService.getSeasonThreshold(this.seasonSelected);
             }).then(seasonThreshold => {

@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { NavController, ViewController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 
 @Component({
@@ -11,10 +10,8 @@ export class SharePopOver {
     private log: ILogger;
 
     constructor(
-        private loggerSrv: LoggerService,
-        public navCtrl: NavController,
-        public viewCtrl: ViewController
+        loggerSrv: LoggerService
     ) {
-        this.log = this.loggerSrv.get("SharePopOver");
+        this.log = loggerSrv.get("SharePopOver");
     }
 }

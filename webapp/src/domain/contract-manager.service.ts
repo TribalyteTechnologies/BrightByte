@@ -919,7 +919,7 @@ export class ContractManagerService {
     public getCurrentSeason(): Promise<Array<number>> {
         return this.initProm.then(([bright]) => {
             return bright.methods.getCurrentSeason().call({ from: this.currentUser.address });
-        }).then(seasonState => {
+        }).then((seasonState: Array<number>) => {
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, seasonState[0]);
             return seasonState;
         }).catch(err => {

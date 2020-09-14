@@ -17,11 +17,11 @@ export class TransactionExecutorService {
     private pendingPromise: boolean;
 
     constructor(
-        private loggerSrv: LoggerService,
-        private web3Service: Web3Service
+        loggerSrv: LoggerService,
+        web3Service: Web3Service
     ) {
-        this.log = this.loggerSrv.get("TransactionExecutorService");
-        this.web3 = this.web3Service.getWeb3();
+        this.log = loggerSrv.get("TransactionExecutorService");
+        this.web3 = web3Service.getWeb3();
         this.queue = new Array<TransactionTask>();
     }
 

@@ -21,9 +21,10 @@ export class CommitComment {
         comment.lastModificationDateMs = parseInt(commentVals[3]) * AppConfig.SECS_TO_MS;
         comment.user = commentVals[4];
         comment.name = EncryptionUtils.decode(userName);
-        comment.quality = parseInt(commentVals[5][0]) / AppConfig.SCORE_DIVISION_FACTOR;
-        comment.difficulty = parseInt(commentVals[5][1]) / AppConfig.SCORE_DIVISION_FACTOR;
-        comment.confidence = parseInt(commentVals[5][2]) / AppConfig.SCORE_DIVISION_FACTOR;
+        const commentScore = commentVals[5];
+        comment.quality = parseInt(commentScore[0]) / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.difficulty = parseInt(commentScore[1]) / AppConfig.SCORE_DIVISION_FACTOR;
+        comment.confidence = parseInt(commentScore[2]) / AppConfig.SCORE_DIVISION_FACTOR;
         return comment;
     } 
 }

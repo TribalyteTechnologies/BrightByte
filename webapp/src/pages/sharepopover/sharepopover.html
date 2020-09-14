@@ -1,11 +1,12 @@
 <ion-content padding>
-  <div class="sharepopover-container">
-    <h4 class="sharepopover-title">{{ "social.availableOptions" | translate }}</h4>
-    <div class="sharepopover-options-container">
-      <twitter-share [url]="'social.url' | translate" [text]="'social.twitterShareText' | translate"
-        [hashtag]="'social.hashtags' | translate" class="sharepopover-share-button"></twitter-share>
-      <facebook-share [url]="'social.url' | translate" [text]="'social.facebookShareText' | translate" class="sharepopover-share-button"></facebook-share>
-      <linkedin-share [url]="'social.url' | translate" class="sharepopover-share-button"></linkedin-share>
+    <div class="sharepopover-container">
+        <h4 class="sharepopover-title">{{ "social.availableOptions" | translate }}</h4>
+        <div class="sharepopover-options-container">
+            <twitter-share [url]="'social.url' | translate" [text]="'social.twitterShareText' | translate"
+                [hashtag]="'social.hashtags' | translate" class="sharepopover-share-button"></twitter-share>
+            <facebook-share [url]="'social.url' | translate" [text]="'social.facebookShareText' | translate"
+                class="sharepopover-share-button"></facebook-share>
+            <linkedin-share [url]="'social.url' | translate" class="sharepopover-share-button"></linkedin-share>
+        </div>
     </div>
-  </div>
 </ion-content>
