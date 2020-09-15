@@ -17,6 +17,12 @@ export class AuthenticationController {
     private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
     private readonly GET_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
     private readonly GRANT_TYPE = "authorization_code";
+    private readonly GITHUB_URL = "https://github.com/login/oauth/";
+    private readonly GITHUB_AUTHORIZE_CALLBACK = this.GITHUB_URL + "authorize?client_id=" + BackendConfig.GITHUB_KEY + "&state=";
+    private readonly GET_GITHUB_TOKEN_URL_AUX = this.GITHUB_URL + "access_token?client_id=" + BackendConfig.GITHUB_KEY;
+    private readonly GET_GITHUB_TOKEN_URL = this.GET_GITHUB_TOKEN_URL_AUX + "&client_secret=" + BackendConfig.GITHUB_SECRET;
+    private readonly BITBUCKET_PROVIDER = "bitbucket";
+    private readonly GITHUB_PROVIDER = "github";
 
     private log: ILogger;
     public constructor(
@@ -27,18 +33,42 @@ export class AuthenticationController {
         this.log = loggerSrv.get("AuthenticationController");
     }
 
-
-    @Get("authorize/:user/:teamUid")
-    public getAuthCallback(@Param("user") user: string, @Param("teamUid") teamUid: string): ResponseDto {
+    @Get("authorize/:provider/:user/:teamUid")
+    public getProviderAuthCallback
+    (@Param("user") user: string, @Param("teamUid") teamUid: string, @Param("provider") provider: string, @Req() req): ResponseDto {
         let ret: ResponseDto;
-        if(BackendConfig.BITBUCKET_KEY) {
-            const code = user + "-" + teamUid;
-            this.log.d("The user requesting authentication is: " + code);
-            ret = new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code);
-        } else {
-            ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Bitbucket provider not defined. Provider service not available");
+        const code = user + "-" + teamUid;
+        this.log.d("The user requesting authentication is: " + code);
+        switch (provider) {
+            case this.BITBUCKET_PROVIDER:
+                ret = BackendConfig.BITBUCKET_KEY ? new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code) :
+                new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined. Provider service not available");
+                break;
+            case this.GITHUB_PROVIDER:
+                ret = BackendConfig.GITHUB_KEY ? new SuccessResponseDto(this.GITHUB_AUTHORIZE_CALLBACK + code) :
+                new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined. Provider service not available");
+                break;
+            default:
+                ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined.");
         }
         return ret;
+    }
+
+    @Get("oauth-callback/github")
+    public getProvider(@Req() req, @Res() response) {
+        let code = req.query.code;
+        let userIdentifier = req.query.state;
+        let getTokenUrl = this.GET_GITHUB_TOKEN_URL + "&code=" + code + "&state=" + userIdentifier;
+        this.httpSrv.post(getTokenUrl, null, { headers: { "Accept": "application/json" } }).pipe(
+            map(res => {
+                this.log.d("Response: ", res.data);
+                let userToken = res.data.access_token;
+                this.clientNotificationService.sendToken(userIdentifier, userToken, this.GITHUB_PROVIDER);
+                return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+            })
+        ).subscribe(() => {
+            this.log.d("The user has completed the Github authentication process");
+        });
     }
 
     @Get("oauth-callback")
@@ -59,7 +89,7 @@ export class AuthenticationController {
             map(res => {
                 let userToken = res.data.access_token;
                 this.log.d("Response: ", res.data);
-                this.clientNotificationService.sendToken(userIdentifier, userToken);
+                this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
                 return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
             })
         ).subscribe(() => {

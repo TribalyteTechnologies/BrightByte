@@ -27,6 +27,7 @@ export class BitbucketApiConstants {
     public static readonly TAG_SORT = "sort";
     public static readonly TAG_STATE = "state";
     public static readonly TAG_SORT_BY_UPDATE_DATE = "q=updated_on>";
+    public static readonly PROVIDER_NAME = "bitbucket";
 }
 
 @Injectable()
@@ -167,7 +168,8 @@ export class BitbucketService {
     private loginToBitbucket(userAddress: string, teamUid: number): Promise<string> {
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
-        return this.http.get(BitbucketApiConstants.SERVER_AUTHENTICATION_URL + userAddress + "/" + teamUid).toPromise()
+        const provider = BitbucketApiConstants;
+        return this.http.get(provider.SERVER_AUTHENTICATION_URL + provider.PROVIDER_NAME + "/" + userAddress + "/" + teamUid).toPromise()
         .then((response: IResponse) => {
             if (response.status === AppConfig.STATUS_OK) {
                 let url = response.data;

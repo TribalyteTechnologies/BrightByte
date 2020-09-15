@@ -44,12 +44,14 @@ export class ClientNotificationService {
         this.send(userSession, this.NEW_ACHIEVEMENT, achievements);
     }
 
-    public sendToken(userAddress: string, token: string) {
+    public sendToken(userAddress: string, token: string, provider: string) {
         this.log.d("Sending token to user: ", userAddress);
-        this.send(userAddress, this.NEW_TOKEN, token);
+        this.log.d("Sending the token to user: ", token);
+        let content = [provider, token];
+        this.send(userAddress, this.NEW_TOKEN, content);
     }
 
-    private send(userAddress: string, event: string, content: string | Array<AchievementDto>) {
+    private send(userAddress: string, event: string, content: Array<string> | Array<AchievementDto>) {
         let isDbInitOngoing = this.sessions.size <= 0;
         if (!isDbInitOngoing) {
             let userSessions = this.findKey(userAddress);

@@ -14,6 +14,8 @@ export class BackendApiService {
     private readonly NEW_ACHIEVEMENT = "newAchievement";
     private readonly NEW_TOKEN = "newToken";
     private readonly CONNECTION = "connect";
+    private readonly BITBUCKET_PROVIDER = "bitbucket";
+    private readonly GITHUB_PROVIDER = "github";
 
     private socket: Socket;
     private log: ILogger;
@@ -54,8 +56,20 @@ export class BackendApiService {
     }
 
     private registerTokenListener() {
-        this.socket.on(this.NEW_TOKEN, (token) => {
-            this.bitbucketService.setUserToken(token);
+        this.socket.on(this.NEW_TOKEN, (content) => {
+            const provider = content[0];
+            const token = content[1];
+            switch (provider) {
+                case this.BITBUCKET_PROVIDER:
+                    this.log.d("New bitbucket token");
+                    this.bitbucketService.setUserToken(token);
+                    break;
+                case this.GITHUB_PROVIDER:
+                    this.log.d("New github token");
+                    break;
+                default:
+                    this.log.d("Provider not defined.");
+            }
         });
     }
 

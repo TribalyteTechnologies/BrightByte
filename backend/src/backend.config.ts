@@ -33,6 +33,8 @@ export class BackendConfig {
     public static readonly CONFIRM_AUTHENTICATION_PAGE = "confirm.html";
     public static readonly BITBUCKET_KEY = process.env.BITBUCKET_KEY;
     public static readonly BITBUCKET_SECRET = process.env.BITBUCKET_SECRET;
+    public static readonly GITHUB_KEY = process.env.GITHUB_KEY;
+    public static readonly GITHUB_SECRET = process.env.GITHUB_SECRET;
     public static readonly BUFFER_SIZE = 1;
 
     public static readonly EMAIL_TRANSPORT = {
