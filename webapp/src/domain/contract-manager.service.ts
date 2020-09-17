@@ -43,6 +43,7 @@ export class ContractManagerService {
     private contractAddressTeamManager: string;
     private contractAddressBbFactory: string;
     private contractAddressBrightDictionary: string;
+    private contractAddressProxyManager: string;
 
     private contractJsonRoot: IContractJson;
     private contractJsonBright: IContractJson;
@@ -137,6 +138,15 @@ export class ContractManagerService {
             return contractBrightDictionaty;
         });
         contractPromises.push(promDictionary);
+        let promProxyManager = this.http.get(AppConfig.BB_PROXY_CONTRACT_PATH).toPromise()
+        .then((jsonContractData: IContractJson) => {
+            this.contractAddressProxyManager = jsonContractData.networks[configNet.netId].address;
+            let contractProxyManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressProxyManager);
+            this.log.d("TruffleContractProxyManager function: ", contractProxyManager);
+            this.log.d("ContractAddressProxyManager: ", this.contractAddressProxyManager);
+            return contractProxyManager;
+        });
+        contractPromises.push(promProxyManager);
         return this.initProm = Promise.all(contractPromises);
     }
 
@@ -144,10 +154,12 @@ export class ContractManagerService {
         let teamManagerContract: ITrbSmartContact;
         let bbFactoryContract;
         let brightDictionaryContract;
-        return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary]) => {
+        let managerContract;
+        return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             teamManagerContract = teamManager;
             bbFactoryContract = bbFactory;
             brightDictionaryContract = brightDictionary;
+            managerContract = proxyManager;
             return this.getTeamContractAddresses(teamUid);
         })
         .then((contractAddresses: Array<string>) => {
@@ -159,7 +171,8 @@ export class ContractManagerService {
             let contractRoot = new this.web3.eth.Contract(this.contractJsonRoot.abi, contractAddresses[3]);
             this.contractAddressRoot = contractAddresses[3];
             this.initProm = Promise.all(
-                [contractBright, contractCommits, contractRoot, teamManagerContract, bbFactoryContract, brightDictionaryContract]
+                [contractBright, contractCommits, contractRoot, 
+                teamManagerContract, bbFactoryContract, brightDictionaryContract, managerContract]
             );
             return this.initProm;
         });
@@ -333,6 +346,17 @@ export class ContractManagerService {
             });
         }
         return promise;
+    }
+
+    public getUserAvailableTeams(): Promise<Array<number>> {
+        let proxyContract;
+        return this.initProm.then(([bright, commit, root, teamManager, a, as, proxyManagerContract]) => {
+            proxyContract = proxyManagerContract;
+            return proxyContract.methods.getUserTeamVersions().call({ from: this.currentUser.address });
+        }).then((versions: Array<string>) => {
+            let promises = versions.map(version => proxyContract.methods.getUserTeam(version).call({ from: this.currentUser.address }));
+            return Promise.all(promises);
+        });
     }
 
     public registerToTeam(email: string, teamUid: number): Promise<number> {
@@ -921,7 +945,9 @@ export class ContractManagerService {
             return bright.methods.getCurrentSeason().call({ from: this.currentUser.address });
         }).then((seasonState: Array<number>) => {
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, seasonState[0]);
-            return seasonState;
+            let arrayState =  Object.keys(seasonState)
+            .map(key => parseInt(seasonState[key]));
+            return arrayState;
         }).catch(err => {
             this.log.e("Error getting current season :", err);
             throw err;

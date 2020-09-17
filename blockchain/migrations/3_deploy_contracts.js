@@ -9,6 +9,7 @@ var BrightModels = artifacts.require("./BrightModels.sol");
 var UtilsLib = artifacts.require("./UtilsLib.sol");
 var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
+var ProxyManager = artifacts.require("./ProxyManager.sol");
 var CloudProjectStore = artifacts.require("./CloudProjectStore.sol");
 var BrightDeployerLib = artifacts.require("./BrightDeployerLib.sol");
 var CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
@@ -20,8 +21,8 @@ var scVersionObj = require("../../version.json");
 const TruffleConfig = require("../truffle-config");
 
 const TEAM_UID = 1;
-const USER_ADMIN = "0x0000000000000000000000000000000000000000";
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
+const USER_ADMIN = EMPTY_ADDRESS;
 const SEASON_LENGTH_DAYS = 15;
 const CONTRACT_INFO_PATH = "./migrations/ContractsInfo.json";
 var currentVersion = scVersionObj.version;
@@ -76,6 +77,10 @@ module.exports = async function (deployer, network, accounts) {
     await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: INITIALIZER_ACCOUNT });
     await cloudProjectStore.initialize(cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
     await brightDictionary.initialize(currentVersion, { from: INITIALIZER_ACCOUNT });
+
+
+    let proxyManager = await deployer.deploy(ProxyManager);
+    await proxyManager.initialize(currentVersion, cloudTeamManager.address, { from: OWNER_ACCOUNT });
 
     let contractsInfo = {};
     contractsInfo[CloudBBFactory.contract_name] = { address: cloudBBFactory.address, netId: CONFIG.network_id };
