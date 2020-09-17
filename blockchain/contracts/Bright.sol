@@ -298,8 +298,8 @@ contract Bright is IBright, Initializable {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
 
-    function setSeasonThresholds(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyAllowed {
-        root.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
+    function setSeasonThresholds(uint256 seasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews) public onlyAllowed {
+        root.setNewSeasonThreshold(seasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 
     function checkSeason() public onlyAllowed {
