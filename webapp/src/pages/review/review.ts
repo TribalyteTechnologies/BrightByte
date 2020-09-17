@@ -325,40 +325,38 @@ export class ReviewPage {
     }
 
     public setReview(urlCom: string, text: string, points: Array<number>) {
-        this.isSpinnerLoading = true;
+        this.log.d("Setting the review points " + points);
+        this.needReview = false;
+        let commitComment = new CommitComment();
+        commitComment.name = this.name;
+        commitComment.creationDateMs = Date.now();
+        commitComment.text = text;
+        commitComment.quality = points[0] / AppConfig.SCORE_DIVISION_FACTOR;
+        commitComment.difficulty = points[1] / AppConfig.SCORE_DIVISION_FACTOR;
+        commitComment.confidence = points[2] / AppConfig.SCORE_DIVISION_FACTOR;
+        commitComment.vote = 0;
+        commitComment.lastModificationDateMs = Date.now();
+        commitComment.user = this.userAdress;
+        this.userCommitComment[0] = commitComment;
+        for (let i = 0; i < this.numCriteria; i++) {
+            this.setReputation(-1, i);
+        }
+        this.textComment = "";
+
+        let commitSearch = this.displayCommitsToReview.filter(comm => comm.url === urlCom);
+        let commit = commitSearch[0];
+        commit.score = points[0] * AppConfig.OPTIMISTIC_SCORE_MULTIPLY_FACTOR;
+        commit.lastModificationDateMs = Date.now();
+        commit.isReadNeeded = false;
+        commit.isPending = false;
+        let userDetailsSearch = commit.reviewers[0].filter(user => user.userHash === this.userAdress);
+        let userDetails = userDetailsSearch[0];
+        commit.reviewers[0].splice
+            (commit.reviewers[0].indexOf(userDetails), 1);
+        commit.reviewers[1].push(userDetails);
         this.contractManagerService.setReview(urlCom, text, points)
         .then((response) => {
-            this.isSpinnerLoading = false;
-            this.log.d("Received response " + points);
             this.log.d("Received response " + response);
-            this.needReview = false;
-            let commitComment = new CommitComment();
-            commitComment.name = this.name;
-            commitComment.creationDateMs = Date.now();
-            commitComment.text = text;
-            commitComment.quality = points[0] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.difficulty = points[1] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.confidence = points[2] / AppConfig.SCORE_DIVISION_FACTOR;
-            commitComment.vote = 0;
-            commitComment.lastModificationDateMs = Date.now();
-            commitComment.user = this.userAdress;
-            this.userCommitComment[0] = commitComment;
-            for (let i = 0; i < this.numCriteria; i++) {
-                this.setReputation(-1, i);
-            }
-            this.textComment = "";
-
-            let commitSearch = this.displayCommitsToReview.filter(comm => comm.url === urlCom);
-            let commit = commitSearch[0];
-            commit.score = points[0] * AppConfig.OPTIMISTIC_SCORE_MULTIPLY_FACTOR;
-            commit.lastModificationDateMs = Date.now();
-            commit.isReadNeeded = false;
-            commit.isPending = false;
-            let userDetailsSearch = commit.reviewers[0].filter(user => user.userHash === this.userAdress);
-            let userDetails = userDetailsSearch[0];
-            commit.reviewers[0].splice
-                (commit.reviewers[0].indexOf(userDetails), 1);
-            commit.reviewers[1].push(userDetails);
             if (this.filterValue === this.INCOMPLETE) {
                 if (this.filterArrayCommits.length === 1){
                     this.isShowSpinner = true;
