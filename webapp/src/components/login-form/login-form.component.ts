@@ -282,7 +282,7 @@ export class LoginForm {
         if(currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
-                this.log.d("Account set. Checking the node number: " + currentNodeIndex;
+                this.log.d("Account set. Checking the node number: " + currentNodeIndex);
                 return this.contractManager.getUserParticipatingTeams();              
             })
             .then((versions: Array<MemberVersion>) => {
