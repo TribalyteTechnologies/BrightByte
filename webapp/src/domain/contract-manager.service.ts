@@ -32,9 +32,9 @@ interface ITrbSmartContact { //Web3.Eth.Contract
 @Injectable()
 export class ContractManagerService {
 
-    private readonly MINIMUM_DELAY_MILIS = 0;
+    private readonly MINIMUM_DELAY_MILIS = 100;
     private readonly MAXIMUM_DELAY_MILIS = 2000;
-    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 10;
+    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 20;
     private readonly MAX_LENGTH_BYTES32 = /.{1,16}/g;
 
     private contractAddressRoot: string;
