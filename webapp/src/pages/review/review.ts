@@ -211,9 +211,16 @@ export class ReviewPage {
             if (this.loadedCommits === this.maxReviews) {
                 this.spinnerService.showLoader();
             }
+            const isReadNeeded = commit.isReadNeeded;
+            commit.isReadNeeded = false;
+            if (this.filterArrayCommits){
+                let idx = this.filterArrayCommits.indexOf(commit);
+                if (this.filterArrayCommits[idx]) {
+                    this.filterArrayCommits[idx].isReadNeeded = false;
+                }
+            }
             this.contractManagerService.getCommentsOfCommit(commit.url)
             .then((comments: Array<CommitComment>) => {
-                this.openedComments = true;
                 this.commitComments = comments;
                 let allComments = comments;
                 this.userCommitComment = allComments.filter((commitUR) => {
@@ -229,21 +236,13 @@ export class ReviewPage {
                     this.needReview = true;
                 }
                 this.currentCommit = commit;
+                this.currentCommit.isReadNeeded = false;
                 this.openedComments = true;
                 this.spinnerService.hideLoader();
                 return this.getReviewerName(commit);
             }).then((name) => {
                 this.currentCommitName = name[0];
                 this.currentCommitEmail = name[1];
-                const isReadNeeded = commit.isReadNeeded;
-                this.currentCommit.isReadNeeded = false;
-                commit.isReadNeeded = false;
-                if (this.filterArrayCommits){
-                    let idx = this.filterArrayCommits.indexOf(commit);
-                    if (this.filterArrayCommits[idx]) {
-                        this.filterArrayCommits[idx].isReadNeeded = false;
-                    }
-                }
                 return isReadNeeded ? 
                     this.contractManagerService.readPendingCommit(commit.url) :
                     Promise.resolve();
