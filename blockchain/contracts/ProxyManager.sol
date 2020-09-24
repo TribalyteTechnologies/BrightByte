@@ -22,11 +22,13 @@ contract ProxyManager is Initializable {
     function initialize(string memory version, address versionAddress) public initializer {
         currentVersion = keccak256(abi.encodePacked(version));
         versionAddresses[currentVersion] = versionAddress;
+        availableVersions.push(currentVersion);
     }
 
-    function setNewVersion(string memory, address versionAddress) public onlyOwner {
+    function setNewVersion(string memory version, address versionAddress) public onlyOwner {
         currentVersion = keccak256(abi.encodePacked(version));
         versionAddresses[currentVersion] = versionAddress;
+        availableVersions.push(currentVersion);
     }
 
     function getAvailableVersions() public view returns (bytes32[] memory) {
@@ -79,7 +81,8 @@ contract ProxyManager is Initializable {
         return versions;
     }
 
-    function getInvitedUserInfo(bytes32 version, bytes32 emailId, uint256 teamUid) public view returns (uint256, uint256, CloudTeamManager.UserType) {
+    function getInvitedUserInfo(bytes32 version, bytes32 emailId, uint256 teamUid) public view
+    returns (uint256, uint256, CloudTeamManager.UserType) {
         CloudTeamManager remoteManager = CloudTeamManager(versionAddresses[version]);
         return remoteManager.getInvitedUserInfo(emailId, teamUid);
     }
