@@ -14,6 +14,7 @@ import { AppConfig } from "../../app.config";
 import { BackendApiService } from "../../domain/backend-api.service";
 import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
+import { MemberVersion } from "../../models/member-version.model";
 
 @Component({
     selector: "login-form",
@@ -49,6 +50,7 @@ export class LoginForm {
     public invitationList: Array<Team>;
     public userName: string;
     public teamToRegisterIn: number;
+    public versionToRegisterIn: string;
     public isRegistering: boolean;
 
     private readonly NEW_USER = "new-user";
@@ -91,6 +93,7 @@ export class LoginForm {
             if (url.has(AppConfig.UrlKey.TEAMID)) {
                 this.autoLogin = true;
                 this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+                //this.versionAutoLogin = parseInt(url.get(AppConfig.UrlKey.VersionId))
             }
             this.login(password);
         }
@@ -187,8 +190,8 @@ export class LoginForm {
         this.goToRegister.next(this.NEW_USER);
     }
 
-    public logToTeam(teamUid: number): Promise<void> {
-        return this.contractManager.setBaseContracts(teamUid)
+    public logToTeam(teamUid: number, version: string): Promise<void> {
+        return this.contractManager.setBaseContracts(teamUid, version)
         .then(() => {
             this.loginService.setTeamUid(teamUid);
             this.backendApiSrv.initBackendConnection(teamUid);
@@ -198,9 +201,9 @@ export class LoginForm {
 
     public registerToTeam() {
         this.isRegistering = true;
-        this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn)
+        this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn, this.versionToRegisterIn)
         .then(() => {
-            return this.contractManager.setBaseContracts(this.teamToRegisterIn);
+            return this.contractManager.setBaseContracts(this.teamToRegisterIn, this.versionToRegisterIn);
         })
         .then(() => {
             return this.contractManager.setProfile(this.userName, this.userEmail);
@@ -211,8 +214,9 @@ export class LoginForm {
         });
     }
 
-    public showNameBox(teamUid: number) {
+    public showNameBox(teamUid: number, version: string) {
         this.teamToRegisterIn = teamUid;
+        this.versionToRegisterIn = version;
         this.showNameInput = true;
     }
 
@@ -234,36 +238,41 @@ export class LoginForm {
         });
     }
 
-    private getUserTeamAndInvitations(teamUid: number, address: string, alreadyRegisteredTeams: Array<number>) {
-        let allTeamUids;
-        let showSelector = false;
-        this.contractManager.getUserEmail(teamUid, address)
+    private setUserTeams(userTeams: Array<MemberVersion>, address: string) {
+        let userVersion = userTeams[0];
+        this.contractManager.getVersionUserEmail(userVersion.teamUids[0], address, userVersion.version)
         .then((email: string) => {
             this.userEmail = email;
             this.setUserEmail.next(email);
-            return this.contractManager.getAllTeamInvitationsByEmail(email);
+            return this.contractManager.getUserInvitedTeams(email);
         })
-        .then((teamUids: Array<number>) => {
-            showSelector = (teamUids.length > 0 || alreadyRegisteredTeams.length > 0);
-            allTeamUids = teamUids;
-            return this.getAndSetTeamNames(allTeamUids, true);
+        .then((invitedTeams: Array<MemberVersion>) => {
+            this.showTeamSelector = (invitedTeams.length > 0 || userTeams.length > 0);
+            return this.getTeams(invitedTeams);
         })
-        .then(() => {
-            this.showTeamSelector = showSelector;
-            return this.getAndSetTeamNames(alreadyRegisteredTeams, false);
+        .then((invitedTeams: Array<Team>) => {
+            this.invitationList = invitedTeams;
+            return this.getTeams(userTeams);
+        })
+        .then((participantTeams: Array<Team>) => {
+            this.teamList = participantTeams;
         });
     }
 
-    private getAndSetTeamNames(teamUids: Array<number>, isInvitation: boolean): Promise<void> {
-        return Promise.all(teamUids.map(uid => this.contractManager.getTeamName(uid)))
-        .then((teamNames: Array<string>) => {
-            let teams;
+    private getTeams(userTeams: Array<MemberVersion>): Promise<Array<Team>> {
+        let promises = userTeams.map(version => {
+            let ret = version.teamUids.map(uid => this.contractManager.getVersionTeamName(uid, version.version));
+            return ret;
+        });
+        return Promise.all(promises.map(innerPromises => Promise.all(innerPromises)))
+        .then((teamNames: Array<Array<string>>) => {
+            let teams = new Array<Team>();
             if (teamNames) {
-                teams = teamUids.map((teamUid, i) => {
-                    return new Team(teamUid, teamNames[i]);
+                userTeams.forEach((version, i) => {
+                    version.teamUids.forEach((uid, j) => teams.push(new Team(uid, teamNames[i][j], version.version)));
                 });
             }
-            isInvitation ? this.invitationList = teams : this.teamList = teams;
+            return teams;
         });
     }
 
@@ -273,16 +282,14 @@ export class LoginForm {
         if(currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
-                this.log.d("Account set. Checking the node number: " + currentNodeIndex);
-                return this.contractManager.getUserTeam();              
+                this.log.d("Account set. Checking the node number: " + currentNodeIndex;
+                return this.contractManager.getUserParticipatingTeams();              
             })
-            .then((teamUIds: Array<number>) => {
-                let promise;
-                isAlreadyRegisteredToTeam = teamUIds.length !== 0;
+            .then((versions: Array<MemberVersion>) => {
+                this.log.d("The user is registered in the following teams: " + versions);
+                isAlreadyRegisteredToTeam = versions.length !== 0;
                 if (isAlreadyRegisteredToTeam) {
-                    let autoLogin = this.autoLogin && teamUIds.indexOf(this.teamUid) > -1;
-                    promise = autoLogin ? 
-                    this.logToTeam(this.teamUid) : this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
+                    this.setUserTeams(versions, account.address);
                 } else {
                     this.goToSetProfile.next(this.SET_PROFILE);
                 }

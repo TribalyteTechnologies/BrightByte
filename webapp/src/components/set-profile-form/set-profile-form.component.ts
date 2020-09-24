@@ -138,10 +138,10 @@ export class SetProfileForm {
             });
     }
 
-    public registerToTeam(teamUid: number) {
+    public registerToTeam(teamUid: number, version: string) {
         this.isRegistering = true;
         this.isSingingUp = true;
-        this.contractManagerService.registerToTeam(this.userEmail, teamUid)
+        this.contractManagerService.registerToTeam(this.userEmail, teamUid, version)
         .then((uid: number) => {
             this.setContractsAndProfile(uid, false);
         })
