@@ -75,8 +75,8 @@ export class TabsPage {
         let item = this.storageSrv.get(AppConfig.StorageKey.LASTPAGE);
         let lastPageNumber = Number(item);
         if (item === null) {
-            this.tabContent = this.ranking.url;
-            this.goTo(this.ranking.url);
+            this.tabContent = this.home.url;
+            this.goTo(this.home.url);
         } else if (url.has("reviewId")) {
             this.goTo(ReviewPage);
         } else if (url.has("commitId")) {
