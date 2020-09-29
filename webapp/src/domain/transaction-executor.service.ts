@@ -1,4 +1,5 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
 import { UnsignedTransaction, TransactionTask } from "../models/transaction-task.model";
 import { TransactionReceipt } from "web3-core";
 import { ILogger, LoggerService } from "../core/logger.service";
@@ -9,8 +10,9 @@ import { Web3Service } from "../core/web3.service";
 import { Account } from "web3-eth-accounts";
 
 @Injectable()
-export class TransactionExecutorService {
+export class TransactionExecutorService implements OnDestroy{
 
+    private isProcessing = new BehaviorSubject<boolean>(false);
     private queue: Array<TransactionTask>;
     private log: ILogger;
     private web3: Web3;
@@ -37,16 +39,27 @@ export class TransactionExecutorService {
         return this.pendingPromise || this.queue.length > 0;
     }
 
+    public getProcessingStatus(): Observable<boolean> {
+        return this.isProcessing.asObservable();
+    }
+
+    public ngOnDestroy() {
+        this.isProcessing.unsubscribe();
+    }
+
     private async executeAsync(): Promise<void> {
         for(let item = this.queue.shift(); !!item; item = this.queue.shift()) {
             try {
+                this.isProcessing.next(true);
                 this.pendingPromise = true;
                 let value = await this.sendTx(item.transaction);
                 this.pendingPromise = false;
+                this.isProcessing.next(false);
                 this.log.d("The transaction is completed");
                 item.resolve(value);
             } catch (err) {
                 this.pendingPromise = false;
+                this.isProcessing.next(false);
                 this.log.e("Error executing the transaction: ", err); 
                 item.reject(err);
             }

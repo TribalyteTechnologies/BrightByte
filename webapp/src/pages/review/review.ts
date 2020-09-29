@@ -10,6 +10,8 @@ import { SpinnerService } from "../../core/spinner.service";
 import { SessionStorageService } from "../../core/session-storage.service";
 import { AppConfig } from "../../app.config";
 import { PopupService } from "../../domain/popup.service";
+import { TransactionExecutorService } from "../../domain/transaction-executor.service";
+import { Observable } from "rxjs";
 
 @Component({
     selector: "page-review",
@@ -41,7 +43,7 @@ export class ReviewPage {
     public filterIsReviewed = false;
     public openedComments = false;
     public needReview = false;
-    public isSpinnerLoading: boolean;
+    public isSpinnerLoading: Observable<boolean>;
     public numCriteria = 3;
     public stars = [["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
         , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
@@ -80,6 +82,7 @@ export class ReviewPage {
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         private popupSrv: PopupService,
+        private transactionSrv: TransactionExecutorService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
@@ -101,6 +104,7 @@ export class ReviewPage {
         this.userAdress = this.loginService.getAccountAddress();
         this.teamUid = this.loginService.getTeamUid();
         this.initializing = true;
+        this.isSpinnerLoading = this.transactionSrv.getProcessingStatus();
         this.refresh();
     }
 
