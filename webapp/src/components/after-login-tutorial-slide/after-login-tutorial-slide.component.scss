@@ -8,6 +8,10 @@ after-login-slide-popover {
         padding-top: 15%;
     }
 
+    .arrow-pointer:hover {
+        cursor: pointer;
+    }
+
     .arrow-next {
         transform: rotate(180deg);
     }

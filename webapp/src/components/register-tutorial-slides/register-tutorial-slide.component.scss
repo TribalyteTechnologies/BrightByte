@@ -12,6 +12,10 @@ slide-popover {
         transform: rotate(180deg);
     }
 
+    .arrow-pointer:hover {
+        cursor: pointer;
+    }
+
     .slide-logo {
         display: block;
         margin-left: auto;

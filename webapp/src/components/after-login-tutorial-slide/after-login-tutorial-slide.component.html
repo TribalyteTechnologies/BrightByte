@@ -9,7 +9,7 @@
         <ion-slide *ngFor="let contentId of SLIDES_CONTENT_IDS">
                 <ion-row>
                     <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[0]">
-                        <img (click)="goPrev()" src="../../assets/imgs/Flecha-anterior.svg">
+                        <img (click)="goPrev()"  class="arrow-pointer" src="../../assets/imgs/Flecha-anterior.svg">
                     </ion-col>
                     <ion-col [ngSwitch]="contentId" class="slide-container-outside-padding">
                         <div *ngSwitchDefault class="slide-first">
@@ -75,7 +75,7 @@
                         </div>
                     </ion-col>
                     <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]">
-                        <img (click)="goNext()" class="arrow-next" src="../../assets/imgs/Flecha-anterior.svg">    
+                        <img (click)="goNext()" class="arrow-next arrow-pointer" src="../../assets/imgs/Flecha-anterior.svg">    
                     </ion-col>
                 </ion-row>
         </ion-slide>
