@@ -12,6 +12,7 @@ import { AppConfig } from "../../app.config";
 import { PopupService } from "../../domain/popup.service";
 import { TransactionExecutorService } from "../../domain/transaction-executor.service";
 import { Observable } from "rxjs";
+import { ErrorHandlerService } from "../../domain/error-handler.service";
 
 @Component({
     selector: "page-review",
@@ -83,6 +84,7 @@ export class ReviewPage {
         private contractManagerService: ContractManagerService,
         private popupSrv: PopupService,
         private transactionSrv: TransactionExecutorService,
+        private errorHndlr: ErrorHandlerService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ReviewPage");
@@ -196,13 +198,13 @@ export class ReviewPage {
                 this.spinnerService.hideLoader();
             }
         }).catch((e) => {
-            this.translateService.get("commits.getCommits").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                });
+            let error =  e.message + ". ";
+            this.translateService.get(["commits.getCommits", "errors.tryAgain"])
+            .subscribe(msg => {
+                error += msg["errors.tryAgain"];
+                this.errorHndlr.showUserAlert(error, msg["commits.getCommits"]);
+            });
             this.spinnerService.hideLoader();
-            throw e;
         });
     }
 

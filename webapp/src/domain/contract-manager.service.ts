@@ -34,7 +34,7 @@ export class ContractManagerService {
 
     private readonly MINIMUM_DELAY_MILIS = 100;
     private readonly MAXIMUM_DELAY_MILIS = 2000;
-    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 20;
+    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 100;
     private readonly MAX_LENGTH_BYTES32 = /.{1,16}/g;
 
     private contractAddressRoot: string;
@@ -1156,10 +1156,11 @@ export class ContractManagerService {
             .then((vals: Array<string>) => vals)
             .catch(error => {
                 let ret: Promise<Array<string>>;
+                this.log.d("Failed to get method with the iteration: ", iterationIndex);
                 if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
                     ret = this.getRecursiveViewMethod(getPromise, iterationIndex + 1);
                 } else {
-                    this.log.e("Error getting reputation:", error);
+                    this.log.e("Error getting values from view method:", error);
                     throw error;
                 }
                 return ret;

@@ -23,7 +23,6 @@ export class RankingPage {
 
     public minNumberReview: number;
     public minNumberCommit: number;
-    public msg: string;
     public usersRep = new Array<UserReputation>();
     public numberUserList = AppConfig.N_USER_RANKING_LIST;
     public userRankDetails = new UserReputation();
@@ -171,13 +170,13 @@ export class RankingPage {
             this.spinnerService.hideLoader();
             return initNewSeason;
         }).catch((e) => {
-            this.translateService.get("ranking.getReputation").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                });
+            let error =  e.message + ". ";
+            this.translateService.get(["ranking.getReputation", "errors.tryAgain"])
+            .subscribe(msg => {
+                error += msg["errors.tryAgain"];
+                this.errorHndlr.showUserAlert(error, msg["ranking.getReputation"]);
+            });
             this.spinnerService.hideLoader();
-            throw e;
         });        
     }
 
@@ -237,7 +236,6 @@ export class RankingPage {
             }).catch((e) => {
                 this.translateService.get("ranking.getSeasonNumbers").subscribe(
                     msg => {
-                        this.msg = msg;
                         this.log.e(msg, e);
                     });
             });
