@@ -57,7 +57,7 @@
                 </div>
                 <div *ngIf="hasNewCommits && showNextReposOption" class="custom-container-next-repos">
                     <ion-label item-center class="text-details text-details--bold"> {{ "addCommit.loadMoreRepositoriesMessage" | translate }} </ion-label>
-                    <button ion-button class="btn btn__blue" [disabled]="showSpinner" (click)="loadNextRepos()">
+                    <button ion-button class="btn btn__blue" [disabled]="showSpinner || isUpdatingByBatch" (click)="loadNextRepos()">
                         <span class="custom-text-next-repos"> {{ "addCommit.loadMoreRepositoriesButtonText" | translate }} </span>
                         <ion-icon name="refresh"></ion-icon>
                     </button>
