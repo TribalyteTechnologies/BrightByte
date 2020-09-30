@@ -32,8 +32,8 @@ interface ITrbSmartContact { //Web3.Eth.Contract
 @Injectable()
 export class ContractManagerService {
 
-    private readonly MINIMUM_DELAY_MILIS = 100;
-    private readonly MAXIMUM_DELAY_MILIS = 2000;
+    private readonly MINIMUM_DELAY_MILIS = 500;
+    private readonly MAXIMUM_DELAY_MILIS = 3000;
     private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 100;
     private readonly MAX_LENGTH_BYTES32 = /.{1,16}/g;
 
@@ -615,18 +615,17 @@ export class ContractManagerService {
 
     public getCurrentSeasonState(): Promise<UserSeasonState> {
         let brightContract;
-        let promise;
         return this.initProm
         .then(([bright, commit, root, teamManager]) => {
             brightContract = bright;
-            promise = bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
-            return this.getRecursiveViewMethod(promise, 0);
+            let promise = bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
+            return this.getRecursiveViewMethod(promise);
         }).then(seasonData => {
             let currentSeason = seasonData[0];
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
-            promise = brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
+            let promise = brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
                 .call({ from: this.currentUser.address});
-            return this.getRecursiveViewMethod(promise, 0);
+            return this.getRecursiveViewMethod(promise);
         }).then(seasonState => {
             let arrayState =  Object.keys(seasonState)
             .map(key => parseInt(seasonState[key]));
@@ -648,13 +647,13 @@ export class ContractManagerService {
         return this.initProm
         .then(([bright]) => {
             brightContract = bright;
-            return this.getRecursiveViewMethod(brightContract.methods.getCurrentSeason().call({ from: this.currentUser.address }), 0);
+            return this.getRecursiveViewMethod(brightContract.methods.getCurrentSeason().call({ from: this.currentUser.address }));
         }).then(seasonData => {
             let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
             startIndex = Math.max(startIndex, 0);
             let promise = brightContract.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
                 .call({ from: this.currentUser.address });
-            return this.getRecursiveViewMethod(promise, 0);
+            return this.getRecursiveViewMethod(promise);
         }).then((allUserCommits: Array<Array<string>>) => {
             let promisesAllReviews = allUserCommits[4].map(userCommit => this.getUserCommitDetails(userCommit));
             let promisesPending = allUserCommits[0].map(userCommit => this.getUserCommitDetails(userCommit));
@@ -915,7 +914,7 @@ export class ContractManagerService {
             let promises = usersAddress.map(userAddress => {
                 let promise = global ? contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address }) :
                 contractArtifact.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
-                return this.getRecursiveViewMethod(promise, 0);
+                return this.getRecursiveViewMethod(promise);
             });
             return Promise.all(promises);
         }).then(users => {
@@ -1102,7 +1101,7 @@ export class ContractManagerService {
     private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
         return this.initProm.then(([bright, commit]) => {
             let promise = commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address });
-            return this.getRecursiveViewMethod(promise, 0)
+            return this.getRecursiveViewMethod(promise)
             .then((commitVals: Array<string>) => {
                 return UserCommit.fromSmartContract(commitVals, isPending);
             });
@@ -1149,22 +1148,19 @@ export class ContractManagerService {
         this.currentTeamUid = teamUid;
     }
 
-    private getRecursiveViewMethod(getPromise: Promise<any>, iterationIndex = 0): Promise<any> {
-        let promise = this.getMaxIterationsAndTimeout(iterationIndex, "Error getting data from the smart contracts, maximimum number of retries reached");
-        promise = promise.then(() => getPromise);
-        return promise
-            .then((vals: Array<string>) => vals)
-            .catch(error => {
-                let ret: Promise<Array<string>>;
-                this.log.d("Failed to get method with the iteration: ", iterationIndex);
-                if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
-                    ret = this.getRecursiveViewMethod(getPromise, iterationIndex + 1);
-                } else {
-                    this.log.e("Error getting values from view method:", error);
-                    throw error;
-                }
-                return ret;
-            });
+    private getRecursiveViewMethod(recursivePromise: Promise<any>, iterationIndex = 0): Promise<any> {
+        return this.getMaxIterationsAndTimeout(iterationIndex, "Error getting data from the smart contracts, maximum number of retries reached")
+        .then(() => recursivePromise)
+        .catch(error => {
+            let ret: Promise<Array<string>>;
+            if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
+                ret = this.getRecursiveViewMethod(recursivePromise, iterationIndex + 1);
+            } else {
+                this.log.e("Error getting reputation:", error);
+                throw error;
+            }
+            return ret;
+        });
     }
 
     private getMaxIterationsAndTimeout(iterationIndex: number, errorMsg: string): Promise<any> {
