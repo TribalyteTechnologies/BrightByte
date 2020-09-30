@@ -12,7 +12,7 @@ import { Account } from "web3-eth-accounts";
 @Injectable()
 export class TransactionExecutorService implements OnDestroy{
 
-    private isProcessing = new BehaviorSubject<boolean>(false);
+    private isProcessingSubj = new BehaviorSubject<boolean>(false);
     private queue: Array<TransactionTask>;
     private log: ILogger;
     private web3: Web3;
@@ -40,30 +40,29 @@ export class TransactionExecutorService implements OnDestroy{
     }
 
     public getProcessingStatus(): Observable<boolean> {
-        return this.isProcessing.asObservable();
+        return this.isProcessingSubj.asObservable();
     }
 
     public ngOnDestroy() {
-        this.isProcessing.unsubscribe();
+        this.isProcessingSubj.unsubscribe();
     }
 
     private async executeAsync(): Promise<void> {
+        this.isProcessingSubj.next(true);
         for(let item = this.queue.shift(); !!item; item = this.queue.shift()) {
             try {
-                this.isProcessing.next(true);
                 this.pendingPromise = true;
                 let value = await this.sendTx(item.transaction);
                 this.pendingPromise = false;
-                this.isProcessing.next(false);
                 this.log.d("The transaction is completed");
                 item.resolve(value);
             } catch (err) {
                 this.pendingPromise = false;
-                this.isProcessing.next(false);
                 this.log.e("Error executing the transaction: ", err); 
                 item.reject(err);
             }
         }
+        this.isProcessingSubj.next(false);
     }
 
     private sendTx(transaction: UnsignedTransaction): Promise<void | TransactionReceipt> {

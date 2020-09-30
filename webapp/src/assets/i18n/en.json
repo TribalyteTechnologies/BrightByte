@@ -331,7 +331,7 @@
     "errors": {
         "degradedService": "Degraded service",
         "backendOffline": "The BrightByte server seems to be down. Please try again later or contact your service provider. The service will keep working but some features (batch commit upload, achievements, profile image) may not work temporarily.",
-        "tryAgain": "Try again later or contact the system administrator if the problem persist."
+        "tryAgain": "Please try again later or contact the system administrator if the problem persists."
     },
     "social": {
         "facebookShareText": "I'm using BrightByte, a reputation network for code developers. Check it out at http://brightbyteapp.com",

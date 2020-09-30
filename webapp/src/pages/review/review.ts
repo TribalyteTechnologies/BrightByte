@@ -44,7 +44,7 @@ export class ReviewPage {
     public filterIsReviewed = false;
     public openedComments = false;
     public needReview = false;
-    public isSpinnerLoading: Observable<boolean>;
+    public isSpinnerLoadingObs: Observable<boolean>;
     public numCriteria = 3;
     public stars = [["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
         , ["star-outline", "star-outline", "star-outline", "star-outline", "star-outline"]
@@ -106,7 +106,7 @@ export class ReviewPage {
         this.userAdress = this.loginService.getAccountAddress();
         this.teamUid = this.loginService.getTeamUid();
         this.initializing = true;
-        this.isSpinnerLoading = this.transactionSrv.getProcessingStatus();
+        this.isSpinnerLoadingObs = this.transactionSrv.getProcessingStatus();
         this.refresh();
     }
 

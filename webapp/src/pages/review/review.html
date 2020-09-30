@@ -53,7 +53,7 @@
                                 #{{ currentCommit.urlHash }}</div>
                         </ion-row>
                     </ion-col>
-                    <ion-col col-1 *ngIf="(isSpinnerLoading | async)">
+                    <ion-col col-1 *ngIf="(isSpinnerLoadingObs | async)">
                         <ion-spinner name="bubbles"></ion-spinner>
                     </ion-col>
                 </ion-row>
