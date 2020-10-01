@@ -6,6 +6,7 @@ import { AchievementService } from "./achievement.service";
 import { ILogger, LoggerService } from "../core/logger.service";
 import { BitbucketService } from "./bitbucket.service";
 import { LoginService } from "../core/login.service";
+import { GithubService } from "./github.service";
 
 @Injectable()
 export class BackendApiService {
@@ -24,6 +25,7 @@ export class BackendApiService {
         private websocketSrv: WebSocketService,
         private achievementSrv: AchievementService,
         private bitbucketService: BitbucketService,
+        private githubService: GithubService,
         private loginSrv: LoginService,
         loggerSrv: LoggerService
     ) {
@@ -66,6 +68,7 @@ export class BackendApiService {
                     break;
                 case this.GITHUB_PROVIDER:
                     this.log.d("New github token");
+                    this.githubService.setUserToken(token);
                     break;
                 default:
                     this.log.d("Provider not defined.");

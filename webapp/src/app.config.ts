@@ -79,6 +79,7 @@ export class AppConfig {
         USERNAME: "brightUser",
         PASSWORD: "brightPassword",
         BITBUCKETUSERTOKEN: "brightBitbucketUserToken",
+        GITHUBUSERTOKEN: "brightGithubUserToken",
         USERMAILS: "brightEmails",
         LASTPAGE: "brightPage",
         MIGRATION: "brightMigration",

@@ -16,6 +16,7 @@ export class AuthenticationController {
     private readonly AUTHORIZE_AUX = this.BITBUCKET_OAUTH_URL + BackendConfig.BITBUCKET_KEY + "&response_type=" + this.RESPONSE_TYPE;
     private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
     private readonly GET_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
+    private readonly GET_TOKEN_URL_GITHUB = "https://github.com/login/oauth/access_token";
     private readonly GRANT_TYPE = "authorization_code";
     private readonly GITHUB_URL = "https://github.com/login/oauth/";
     private readonly GITHUB_AUTHORIZE_CALLBACK = this.GITHUB_URL + "authorize?client_id=" + BackendConfig.GITHUB_KEY + "&state=";
@@ -75,7 +76,7 @@ export class AuthenticationController {
     public getProviderToken(@Req() req, @Res() response) {
         let code = req.query.code;
         let userIdentifier = req.query.state;
-        let digested = new Buffer(BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET).toString("base64");
+        let digested = new Buffer(BackendConfig.GITHUB_KEY + ":" + BackendConfig.GITHUB_SECRET).toString("base64");
         let accessTokenOptions = { grant_type: this.GRANT_TYPE, code: code };
         let accessTokenConfig = {
             headers:
@@ -85,11 +86,11 @@ export class AuthenticationController {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         };
-        this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
+        this.httpSrv.post(this.GET_TOKEN_URL_GITHUB, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
             map(res => {
                 let userToken = res.data.access_token;
                 this.log.d("Response: ", res.data);
-                this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
+                this.clientNotificationService.sendToken(userIdentifier, userToken, this.GITHUB_PROVIDER);
                 return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
             })
         ).subscribe(() => {

@@ -18,6 +18,7 @@ import { CommitInfo, BitbucketCommitInfo } from "../../models/bitbucket/commit-i
 import { BitbucketRepository } from "../../models/bitbucket/repository.model";
 import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket/pull-request.model";
 import { BackendConfig } from "../../models/backend-config.model";
+import { GithubService } from "../../domain/github.service";
 
 @Component({
     selector: "popover-addcommit",
@@ -82,7 +83,8 @@ export class AddCommitPopover {
         private contractManagerService: ContractManagerService,
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
-        private bitbucketSrv: BitbucketService
+        private bitbucketSrv: BitbucketService,
+        private githubSrv: GithubService
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -134,13 +136,13 @@ export class AddCommitPopover {
         }).then((user: UserDetails) => {
             this.userEmail = user.email;
         });
-        this.loginSubscription = this.bitbucketSrv.getLoginEmitter()
+        this.loginSubscription = this.githubSrv.getLoginEmitter()
         .subscribe(res => {
             this.log.d("Provider authentication completed", res);
             this.commitMethod = this.BATCH_METHOD;
-            this.bitbucketSrv.getUsername().then((user) => {
+            this.githubSrv.getUsername().then((user) => {
                 this.isServiceAvailable = true;
-                this.bitbucketUser = user;
+                this.bitbucketUser = user.login;
                 this.isBatchLogged = true;
                 this.loadUserPendingCommitsAndPr();
             });
@@ -302,7 +304,7 @@ export class AddCommitPopover {
         this.commitMethod = method;
         this.clearGuiMessage();
         if (this.commitMethod === this.BATCH_METHOD) {
-            this.loginToBitbucket();
+            this.loginToGithub();
         }
     }
 
@@ -463,10 +465,10 @@ export class AddCommitPopover {
         this.msg = "";
     }
 
-    private loginToBitbucket() {
+    private loginToGithub() {
         this.userAddress = this.loginService.getAccountAddress();
         this.commitMethod = this.BATCH_METHOD;
-        this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam).then(user => {
+        this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam).then(user => {
             this.log.d("Waiting for the user to introduce their credentials");
             this.isServiceAvailable = true;
         }).catch(e => {

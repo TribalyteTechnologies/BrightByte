@@ -1,10 +1,1 @@
-{
-    "CloudBrightByteFactory": {
-        "address": "0xd3478f67265428948C0F41112384febD48640Da8",
-        "netId": 5777
-    },
-    "CloudTeamManager": {
-        "address": "0xDBa98C27Dda0C5D54551c71e3bcB274aAFc5A712",
-        "netId": 5777
-    }
-}
+{"CloudBrightByteFactory":{"address":"0x57E652A79a04F8F3348FA4B7E56421D79beA214B","netId":5777},"CloudTeamManager":{"address":"0xcC69e057D8155960D3790Cd32a5a4679FBd3D70f","netId":5777},"BrightDictionary":{"address":"0xF5d1112b1d2Ed9FE591DE6bb91B3fC237C7A201b","netId":5777}}

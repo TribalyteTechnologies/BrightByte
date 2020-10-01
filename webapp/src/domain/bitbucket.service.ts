@@ -151,7 +151,7 @@ export class BitbucketService {
 
     public setUserToken(userToken: string) {
         this.userToken = userToken;
-        this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
+        this.storageSrv.set(AppConfig.StorageKey.GITHUBUSERTOKEN, userToken);
         if(this.authWindow) {
             this.authWindow.close();
             this.authWindow = null;
@@ -187,7 +187,7 @@ export class BitbucketService {
     }
 
     private getToken(): string {
-        return  this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
+        return  this.storageSrv.get(AppConfig.StorageKey.GITHUBUSERTOKEN);
     }
 
     private refreshToken(): Promise<string> {
