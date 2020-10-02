@@ -201,6 +201,7 @@ export class LoginForm {
 
     public registerToTeam() {
         this.isRegistering = true;
+        this.log.d("The user request to register to team:",  this.teamToRegisterIn, " in the version: ", this.versionToRegisterIn);
         this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn, this.versionToRegisterIn)
         .then(() => {
             return this.contractManager.setBaseContracts(this.teamToRegisterIn, this.versionToRegisterIn);
@@ -247,15 +248,21 @@ export class LoginForm {
             return this.contractManager.getUserInvitedTeams(email);
         })
         .then((invitedTeams: Array<MemberVersion>) => {
-            this.showTeamSelector = (invitedTeams.length > 0 || userTeams.length > 0);
+            this.log.d("The user is invited to the following teams teams", invitedTeams);
             return this.getTeams(invitedTeams);
         })
         .then((invitedTeams: Array<Team>) => {
             this.invitationList = invitedTeams;
+            this.log.d("The user is invited to the next teams", invitedTeams);
+            this.showTeamSelector = (this.invitationList.length > 0 || userTeams.length > 0);
             return this.getTeams(userTeams);
         })
         .then((participantTeams: Array<Team>) => {
+            this.log.d("The user is participating in the next teams", participantTeams);
             this.teamList = participantTeams;
+        })
+        .catch(e => {
+            this.log.e("Error setting user teams", e);
         });
     }
 
@@ -273,6 +280,9 @@ export class LoginForm {
                 });
             }
             return teams;
+        }).catch(e => {
+            this.log.e("Error getting teams info", e);
+            return e;
         });
     }
 
