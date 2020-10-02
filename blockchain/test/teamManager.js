@@ -1,4 +1,5 @@
 const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
+const ProxyManager = artifacts.require("./ProxyManager.sol");
 const Web3 = require("web3");
 
 const NODE_URL = "http://127.0.0.1:7545";
@@ -338,6 +339,31 @@ contract("CloudTeamManager", accounts => {
             })
         }
     );
+
+    it("should check that ProxyManager is working with the current version", async () => {
+        let proxyManager = await ProxyManager.deployed();
+        let teamManagerInstance = await CloudTeamManager.deployed();
+        let currentVersion = await proxyManager.getCurrentVersion();
+        let currentVersionAddress = await proxyManager.getVersionContracts(currentVersion);
+        assert(currentVersionAddress, teamManagerInstance.address);
+    });
+
+    it("should check that the user teams are the same in the Proxy Manager", async () => {
+        let proxyManager = await ProxyManager.deployed();
+        let teamManagerInstance = await CloudTeamManager.deployed();
+        let currentVersion = await proxyManager.getCurrentVersion();
+        let teamsProxy = await proxyManager.getUserTeam(currentVersion, adminOwnerAccount, { from: adminOwnerAccount });
+        let teamsManager = await teamManagerInstance.getUserTeam(adminOwnerAccount);
+        assert(teamsProxy.length, teamsManager.length);
+    });
+
+    it("should check that the user is participating in the current version in the Proxy Manager", async () => {
+        let proxyManager = await ProxyManager.deployed();
+        let currentVersion = await proxyManager.getCurrentVersion();
+        let versions = await proxyManager.getUserTeamVersions(adminOwnerAccount, { from: adminOwnerAccount });
+        assert(currentVersion, versions[versions.length - 1]);
+    });
+
 });
 
 function timeout(ms) {
