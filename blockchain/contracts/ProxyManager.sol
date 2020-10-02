@@ -1,6 +1,7 @@
 pragma solidity 0.5.17;
 
 import "./CloudTeamManager.sol";
+import "./openzeppelin/Initializable.sol";
 
 contract ProxyManager is Initializable {
 
@@ -23,6 +24,7 @@ contract ProxyManager is Initializable {
         currentVersion = keccak256(abi.encodePacked(version));
         versionAddresses[currentVersion] = versionAddress;
         availableVersions.push(currentVersion);
+        owner = msg.sender;
     }
 
     function setNewVersion(string memory version, address versionAddress) public onlyOwner {

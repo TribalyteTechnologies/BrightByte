@@ -51,6 +51,8 @@ module.exports = async function (deployer, network, accounts) {
     let bbFactory = await deployer.deploy(CloudBBFactory);
     await bbFactory.initialize(currentVersion, CloudTeamManager.address);
     await teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
+    let proxyManager = await deployer.deploy(ProxyManager);
+    await proxyManager.initialize(currentVersion, teamManager.address, { from: OWNER_ACCOUNT });
 
     let cloudBBFactory = await CloudBBFactory.new();
     let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, OWNER_ACCOUNT, []);
@@ -72,20 +74,23 @@ module.exports = async function (deployer, network, accounts) {
     brightDictionary = await BrightDictionary.at(proxyBrightDictionary.address);
     console.log("BrightDictionary deployed: ", proxyBrightDictionary.address);
 
+    let cloudProxyManager = await ProxyManager.new();
+    let proxyCloudProxyManager = await Proxy.new(cloudProxyManager.address, OWNER_ACCOUNT, []);
+    cloudProxyManager = await ProxyManager.at(proxyCloudProxyManager.address);
+    console.log("ProxyManager deployed: ", proxyCloudProxyManager.address);
+
 
     await cloudBBFactory.initialize(currentVersion, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
     await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: INITIALIZER_ACCOUNT });
     await cloudProjectStore.initialize(cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
     await brightDictionary.initialize(currentVersion, { from: INITIALIZER_ACCOUNT });
-
-
-    let proxyManager = await deployer.deploy(ProxyManager);
-    await proxyManager.initialize(currentVersion, cloudTeamManager.address, { from: OWNER_ACCOUNT });
+    await cloudProxyManager.initialize(currentVersion, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
 
     let contractsInfo = {};
     contractsInfo[CloudBBFactory.contract_name] = { address: cloudBBFactory.address, netId: CONFIG.network_id };
     contractsInfo[CloudTeamManager.contract_name] = { address: cloudTeamManager.address, netId: CONFIG.network_id };
     contractsInfo[BrightDictionary.contract_name] = { address: brightDictionary.address, netId: CONFIG.network_id };
+    contractsInfo[ProxyManager.contract_name] = { address: cloudProxyManager.address, netId: CONFIG.network_id };
     saveAddresesInfo(contractsInfo);
 };
 
