@@ -100,17 +100,17 @@ contract("EventDispatcher", accounts => {
 
     it("Check the event emmited for the new Users", async () => {
         const eventResults = await instanceContractEvent(cloudEventDispatcher, "NewUserEvent");
-        assert.equal(eventResults.length, NUMBER_OF_USERS);
+        assert.equal(eventResults.length, NUMBER_OF_USERS, "The number of events for new users is incorrect");
     });
 
     it("Check the event emmited for the new commit", async () => {
         const eventResults = await instanceContractEvent(cloudEventDispatcher, "UserNewCommit");
-        assert.equal(eventResults.length, NUMBER_OF_COMMITS);
+        assert.equal(eventResults.length, NUMBER_OF_COMMITS, "The number for events for new user commits is incorrect");
     });
 
     it("Check the event emmited for the new review", async () => {
         const eventResults = await instanceContractEvent(cloudEventDispatcher, "UserNewReview");
-        assert.equal(eventResults.length, NUMBER_OF_REVIEWS);
+        assert.equal(eventResults.length, NUMBER_OF_REVIEWS, "The number for events for new user reviews is incorrect");
     });
 
     it("Should Create a new commit and then delete it", async () => {
@@ -137,7 +137,7 @@ contract("EventDispatcher", accounts => {
 
     it("Check the event emmited for the new review", async () => {
         const eventResults = await instanceContractEvent(cloudEventDispatcher, "DeletedCommit");
-        assert.equal(eventResults.length, DELETED_COMMITS);
+        assert.equal(eventResults.length, DELETED_COMMITS, "The number for events for deleted commits is incorrect");
     });
 });
 
@@ -185,7 +185,7 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
     let isUserInvited = await teamManagerInstance.isUserEmailInvitedToTeam(email, team1Uid);
     assert(isUserInvited, "User is not invited to team");
     let invitedUserInfo = await teamManagerInstance.getInvitedUserInfo(email, team1Uid);
-    assert(invitedUserInfo[2] == usertype, "User invitation is not member");
+    assert(parseBnToInt(invitedUserInfo[2]) == usertype, "User invitation is not member");
     await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
 }
 
