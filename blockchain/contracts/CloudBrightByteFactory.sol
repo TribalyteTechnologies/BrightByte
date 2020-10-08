@@ -99,9 +99,4 @@ contract CloudBrightByteFactory is Initializable {
         eventDispatcherAddress = address(new CloudEventDispatcher(address(this)));
         remoteEventDispatcher = CloudEventDispatcher(eventDispatcherAddress);
     }
-
-    function setEventDispatcher(address eventAddress) public onlyTeamManager {
-        eventDispatcherAddress = eventAddress;
-        remoteEventDispatcher = CloudEventDispatcher(eventDispatcherAddress);
-    }
 }

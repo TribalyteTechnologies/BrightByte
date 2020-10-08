@@ -274,10 +274,6 @@ contract CloudTeamManager is Initializable {
         return remoteProjStore.doesTeamExists(teamUid);
     }
 
-    function setEventDispatcher(address eventAddress) public onlyOwner {
-        remoteBbFactory.setEventDispatcher(eventAddress);
-    }
-
     function removeInvitation(uint256 teamUid, bytes32 emailId) private {
         UserData storage user = usersRegister[emailId];
         UtilsLib.removeUintFromArray(user.invitedTeams, teamUid);

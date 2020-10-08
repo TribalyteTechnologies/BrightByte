@@ -32,6 +32,9 @@ module.exports = async function (deployer, network, accounts) {
     const OWNER_ACCOUNT = accounts[0];
     const INITIALIZER_ACCOUNT = accounts[1];
 
+    console.log("The owner accoutn is:", OWNER_ACCOUNT);
+    console.log("The initializer account is:", INITIALIZER_ACCOUNT);
+
     await deployer.link(BrightModels, Bright);
     await deployer.link(UtilsLib, Bright);
     await deployer.deploy(Bright);
