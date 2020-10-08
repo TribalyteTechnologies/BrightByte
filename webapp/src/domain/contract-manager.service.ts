@@ -32,9 +32,9 @@ interface ITrbSmartContact { //Web3.Eth.Contract
 @Injectable()
 export class ContractManagerService {
 
-    private readonly MINIMUM_DELAY_MILIS = 500;
-    private readonly MAXIMUM_DELAY_MILIS = 3000;
-    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 100;
+    private readonly MINIMUM_DELAY_MILIS = 10;
+    private readonly MAXIMUM_DELAY_MILIS = 1250;
+    private readonly RECURSIVE_METHODS_MAX_ITERATIONS = 30;
     private readonly MAX_LENGTH_BYTES32 = /.{1,16}/g;
 
     private contractAddressRoot: string;
@@ -618,8 +618,7 @@ export class ContractManagerService {
         return this.initProm
         .then(([bright, commit, root, teamManager]) => {
             brightContract = bright;
-            let promise = bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
-            return this.getRecursiveViewMethod(promise);
+            return bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
         }).then(seasonData => {
             let currentSeason = seasonData[0];
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
@@ -647,7 +646,7 @@ export class ContractManagerService {
         return this.initProm
         .then(([bright]) => {
             brightContract = bright;
-            return this.getRecursiveViewMethod(brightContract.methods.getCurrentSeason().call({ from: this.currentUser.address }));
+            return brightContract.methods.getCurrentSeason().call({ from: this.currentUser.address });
         }).then(seasonData => {
             let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
             startIndex = Math.max(startIndex, 0);
@@ -1100,11 +1099,9 @@ export class ContractManagerService {
 
     private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
         return this.initProm.then(([bright, commit]) => {
-            let promise = commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address });
-            return this.getRecursiveViewMethod(promise)
-            .then((commitVals: Array<string>) => {
+            return this.getRecursiveViewMethod(commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address }));
+        }).then((commitVals: Array<string>) => {
                 return UserCommit.fromSmartContract(commitVals, isPending);
-            });
         }).catch(err => {
             this.log.e("Error getting commit details :", err);
             throw err;
@@ -1149,14 +1146,15 @@ export class ContractManagerService {
     }
 
     private getRecursiveViewMethod(recursivePromise: Promise<any>, iterationIndex = 0): Promise<any> {
-        return this.getMaxIterationsAndTimeout(iterationIndex, "Error getting data from the smart contracts, maximum number of retries reached")
+        return this.getMaxIterationsAndTimeout(iterationIndex, "Error getting data from the smart contracts, maximum number of retries reached: " + this.RECURSIVE_METHODS_MAX_ITERATIONS)
         .then(() => recursivePromise)
         .catch(error => {
             let ret: Promise<Array<string>>;
+            this.log.d("The current number of retries is: ", iterationIndex);
             if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
                 ret = this.getRecursiveViewMethod(recursivePromise, iterationIndex + 1);
             } else {
-                this.log.e("Error getting reputation:", error);
+                this.log.e("Error getting recursive view method:", error);
                 throw error;
             }
             return ret;
