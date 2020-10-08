@@ -7,12 +7,16 @@ import { LoggerService, ILogger } from "../core/logger.service";
 import { GithubCommitResponse } from "../models/github/commit.model";
 import { GithubUserResponse } from "../models/github/user.model";
 import { PopupService } from "./popup.service";
-import { GithubRepositoryResponse } from "../models/github/repository.model";
+import { GithubEvent, CommitInfo } from "../models/github/repository.model";
 
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
     public static readonly BASE_URL = "https://api.github.com/";
-    public static readonly USER_BASE_URL = "https://api.github.com/user";
+    public static readonly GET_USER_URL = "https://api.github.com/user";
+    public static readonly USER_BASE_URL = "https://api.github.com/users/";
+    public static readonly EVENTS_URL = "/events";
+    public static readonly PUSH_EVENT_TYPE = "PushEvent";
+    public static readonly PR_EVENT_TYPE = "PullRequestEvent";
     public static readonly SORT_BY_DATE_QUERY = "-updated_on";
     public static readonly FIELDS_USER = "uuid";
     public static readonly FIELDS_REPO = "values.name,values.slug,next";
@@ -69,15 +73,13 @@ export class GithubService {
         });
     }
 
-    public getRepositories(): Promise<GithubRepositoryResponse> {
-        const params = new HttpParams().set("visibility", "all");
-        this.log.d("The user token is", this.userToken);
-        this.log.d("params", params);
-        return this.http.get<GithubRepositoryResponse>(
-            "https://api.github.com/user/repos", {params: params, headers: this.headers }).toPromise()
-        .then(result => {
-            this.log.d("The repositories are", result);
-            return result;
+    public getRepositories(userName: string, seasonStartDate: Date): Promise<any> {
+        return this.getPushEvents(userName, GithubApiConstants.PUSH_EVENT_TYPE, seasonStartDate)
+        .then((result: Array<GithubEvent>) => {
+            let promises = result.map(event => this.managePushEvents(event));
+            return Promise.all(promises);
+        }).catch(e => {
+            this.log.e("Error en el get repos", e);
         });
     }
 
@@ -95,7 +97,7 @@ export class GithubService {
 
     public getUsername(): Promise<GithubUserResponse> {
         this.log.d("The user token is", this.userToken);
-        return this.http.get<GithubUserResponse>(GithubApiConstants.USER_BASE_URL, {headers: this.headers }).toPromise()
+        return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, {headers: this.headers }).toPromise()
         .then(result => {
             this.log.d("The GetUserName response is", result);
             return result;
@@ -104,7 +106,6 @@ export class GithubService {
 
     public setUserToken(userToken: string) {
         this.userToken = userToken;
-        this.log.w("Setting token", userToken);
         this.storageSrv.set(AppConfig.StorageKey.GITHUBUSERTOKEN, userToken);
         if(this.authWindow) {
             this.authWindow.close();
@@ -112,6 +113,32 @@ export class GithubService {
         }
         this.setNewTokenHeader(this.userToken);
         this.eventEmitter.emit(true);
+    }
+
+    private managePushEvents(event: GithubEvent): Promise<Array<CommitInfo>> {
+        const userLogin = event.actor.login;
+        const getRepoUrl = event.repo.url;
+        const eventCommits = event.payload.commits;
+        let userCommits = eventCommits.filter(commit => userLogin === commit.author.name);
+
+        return this.http.get<any>(getRepoUrl).toPromise()
+        .then((result: any) => {
+            const repoUrl = result.html_url;
+            let commits = userCommits.map(commit => new CommitInfo(commit.sha, commit.message, repoUrl));
+            return commits;
+        });
+    }
+
+    private getPushEvents(userName: string, eventType: string, seasonStartDate: Date): Promise<Array<GithubEvent>> {
+        const getEventeUrl = GithubApiConstants.USER_BASE_URL + userName + GithubApiConstants.EVENTS_URL;
+        return this.http.get<Array<GithubEvent>>(getEventeUrl).toPromise()
+        .then((result: Array<GithubEvent>) => {
+            const ret = result.filter((event: GithubEvent) => {
+                let dateEvent = new Date(event.created_at);
+                return  event.type === eventType && dateEvent > seasonStartDate;
+            });
+            return ret;
+        });
     }
 
     private loginToGithub(userAddress: string, teamUid: number): Promise<string> {
@@ -155,6 +182,6 @@ export class GithubService {
         this.headers = new HttpHeaders({
             "Authorization": "Bearer " + userToken
         });
-        this.log.w("Github header", this.headers);
+        this.log.d("Github header", this.headers);
     }
 }
