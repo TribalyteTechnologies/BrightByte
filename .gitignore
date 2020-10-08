@@ -54,3 +54,4 @@ blockchain/database
 bin/
 
 blockchain/coverage.json
+blockchain/migrations/ContractsInfo.json

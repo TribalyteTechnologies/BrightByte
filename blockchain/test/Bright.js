@@ -64,11 +64,11 @@ contract("Bright", accounts => {
 
     it("Should change season length", async () => {
         let currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
-        parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), INITIAL_SEASON_DAY_LENGTH_SECS, "The initial season length is not correct");
+        parseBnAndAssertEqual(currentSeason[2], INITIAL_SEASON_DAY_LENGTH_SECS, "The initial season length is not correct");
 
         await rootInstance.setSeasonLength(NEW_SEASON_LENGTH_DAYS, { from: adminUserAddress });
         currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
-        parseBnAndAssertEqual(parseBnToInt(currentSeason[2]), NEW_SEASON_LENGTH_DAYS * DAY_TO_SECS, "The season length change was not done correctly");
+        parseBnAndAssertEqual(currentSeason[2], NEW_SEASON_LENGTH_DAYS * DAY_TO_SECS, "The season length change was not done correctly");
     });
 
     it("Should give error changing the season length with an invalid address", async () => {
@@ -92,12 +92,12 @@ contract("Bright", accounts => {
         let usersAddress = await brightInstance.getUsersAddress({ from: adminUserAddress });
         assert(usersAddress.indexOf(accountOne) !== -1, "The user one is not registered");
         assert(usersAddress.indexOf(accountTwo) !== -1, "The user two is not registered");
-        assert.equal(usersAddress.length, NUMBER_OF_USERS);
+        assert.equal(usersAddress.length, NUMBER_OF_USERS), "The number of users registered is not the expected";
 
         let userDetails = await brightInstance.getUser(accountOne,  { from: accountOne });
-        assert.equal(userDetails[0], USER_ONE);
+        assert.equal(userDetails[0], USER_ONE, "The user name is incorrect");
         let userEmail = await brightDictionary.getValue(userDetails[1]);
-        assert.equal(userEmail, EMAIL_USER_ONE);
+        assert.equal(userEmail, EMAIL_USER_ONE, "The user email is incorrect");
     });
 
     it("Should give error creating an already created account", async () => {
@@ -209,7 +209,7 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
     let isUserInvited = await teamManagerInstance.isUserEmailInvitedToTeam(email, team1Uid);
     assert(isUserInvited, "User is not invited to team");
     let invitedUserInfo = await teamManagerInstance.getInvitedUserInfo(email, team1Uid);
-    assert(invitedUserInfo[2] == usertype, "User invitation is not member");
+    parseBnAndAssertEqual(invitedUserInfo[2], usertype, "User invitation is not member");
     await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
 }
 

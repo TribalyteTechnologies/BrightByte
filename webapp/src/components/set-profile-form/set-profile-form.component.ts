@@ -11,6 +11,7 @@ import { AppConfig } from "../../app.config";
 import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
 import { BackendApiService } from "../../domain/backend-api.service";
+import { MemberVersion } from "../../models/member-version.model";
 
 @Component({
     selector: "set-profile-form",
@@ -95,38 +96,19 @@ export class SetProfileForm {
         this.userEmail = email;
         this.userName = name;
         let isInvited;
-        let allTeamUids;
-        this.contractManagerService.isInvitedToTeam(email)
-            .then((isInvitedToTeam: boolean) => {
-                let promise;
-                isInvited = isInvitedToTeam;
-                if (isInvitedToTeam) {
-                    promise = this.contractManagerService.getAllTeamInvitationsByEmail(email);
+        this.contractManagerService.getUserInvitedTeams(email)
+            .then((invitedTeams: Array<MemberVersion>) => {
+                isInvited = invitedTeams.length > 0;
+                if (isInvited) {
+                    this.showTeamList = true;
                 } else {
                     this.showCreateTeam = true;
                     this.isRegistering = false;
                 }
-                return promise;
+                return this.getTeams(invitedTeams);
             })
-            .then((teamUids: Array<number>) => {
-                allTeamUids = teamUids;
-                let promises: Array<Promise<string>>;
-                let promise;
-                if (isInvited) {
-                    this.showTeamList = true;
-                    promises = teamUids.map(teamUid => this.contractManagerService.getTeamName(teamUid));
-                    promise = Promise.all(promises);
-                } else {
-                    promise =  Promise.resolve();
-                }
-                return promise;
-            })
-            .then((teamNames: Array<string>) => {
-                if (teamNames) {
-                    this.teamList = allTeamUids.map((teamUid, i) => {
-                        return new Team(teamUid, teamNames[i]);
-                    });
-                }
+            .then((teamNames: Array<Team>) => {
+                this.teamList = teamNames;
             })
             .catch((e) => {
                 this.translateService.get("setProfile.getEmails").subscribe(
@@ -138,10 +120,10 @@ export class SetProfileForm {
             });
     }
 
-    public registerToTeam(teamUid: number) {
+    public registerToTeam(teamUid: number, version: string) {
         this.isRegistering = true;
         this.isSingingUp = true;
-        this.contractManagerService.registerToTeam(this.userEmail, teamUid)
+        this.contractManagerService.registerToTeam(this.userEmail, teamUid, version)
         .then((uid: number) => {
             this.setContractsAndProfile(uid, false);
         })
@@ -209,6 +191,26 @@ export class SetProfileForm {
                         this.log.e(msg, e);
                     });
             });
+    }
+
+    private getTeams(userTeams: Array<MemberVersion>): Promise<Array<Team>> {
+        let promises = userTeams.map(version => {
+            let ret = version.teamUids.map(uid => this.contractManagerService.getVersionTeamName(uid, version.version));
+            return ret;
+        });
+        return Promise.all(promises.map(innerPromises => Promise.all(innerPromises)))
+        .then((teamNames: Array<Array<string>>) => {
+            let teams = new Array<Team>();
+            if (teamNames) {
+                userTeams.forEach((version, i) => {
+                    version.teamUids.forEach((uid, j) => teams.push(new Team(uid, teamNames[i][j], version.version)));
+                });
+            }
+            return teams;
+        }).catch(e => {
+            this.log.e("Error getting teams info", e);
+            return e;
+        });
     }
 }
 
