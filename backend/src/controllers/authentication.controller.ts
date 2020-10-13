@@ -1,12 +1,18 @@
-import { Controller, Get, Param, Req, HttpService, Res } from "@nestjs/common";
+import { Response, Request } from "express";
+import { Controller, Get, Param, Request as Req, HttpService, Response as Res } from "@nestjs/common";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { BackendConfig } from "../backend.config";
-import { map, flatMap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import * as querystring from "querystring";
 import { ClientNotificationService } from "../services/client-notfication.service";
 import { FailureResponseDto } from "../dto/response/failure-response.dto";
+
+interface IFooParams extends querystring.ParsedUrlQueryInput {
+    readonly grant_type: string;
+    readonly code: string;
+}
 
 @Controller("authentication")
 export class AuthenticationController {
@@ -35,18 +41,18 @@ export class AuthenticationController {
 
     @Get("authorize/:provider/:user/:teamUid")
     public getProviderAuthCallback
-    (@Param("user") user: string, @Param("teamUid") teamUid: string, @Param("provider") provider: string, @Req() req): ResponseDto {
+        (@Param("user") user: string, @Param("teamUid") teamUid: string, @Param("provider") provider: string): ResponseDto {
         let ret: ResponseDto;
         const code = user + "-" + teamUid;
         this.log.d("The user requesting authentication is: " + code);
         switch (provider) {
             case this.BITBUCKET_PROVIDER:
                 ret = BackendConfig.BITBUCKET_KEY ? new SuccessResponseDto(this.AUTHORIZE_CALLBACK + code) :
-                new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined. Provider service not available");
+                    new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined. Provider service not available");
                 break;
             case this.GITHUB_PROVIDER:
                 ret = BackendConfig.GITHUB_KEY ? new SuccessResponseDto(this.GITHUB_AUTHORIZE_CALLBACK + code) :
-                new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined. Provider service not available");
+                    new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined. Provider service not available");
                 break;
             default:
                 ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined.");
@@ -55,11 +61,11 @@ export class AuthenticationController {
     }
 
     @Get("oauth-callback/github")
-    public getProvider(@Req() req, @Res() response) {
+    public getProvider(@Req() req: Request, @Res() response: Response) {
         let code = req.query.code;
-        let userIdentifier = req.query.state;
-        let getTokenUrl = this.GET_GITHUB_TOKEN_URL + "&code=" + code + "&state=" + userIdentifier;
-        this.httpSrv.post(getTokenUrl, null, { headers: { "Accept": "application/json" } }).pipe(
+        let userIdentifier = req.query.state.toString();
+        let tokenUrlPath = this.GET_GITHUB_TOKEN_URL + "&code=" + code + "&state=" + userIdentifier;
+        this.httpSrv.post(tokenUrlPath, null, { headers: { "Accept": "application/json" } }).pipe(
             map(res => {
                 this.log.d("Response: ", res.data);
                 let userToken = res.data.access_token;
@@ -71,12 +77,12 @@ export class AuthenticationController {
         });
     }
 
-    @Get("oauth-callback")
-    public getProviderToken(@Req() req, @Res() response) {
-        let code = req.query.code;
-        let userIdentifier = req.query.state;
-        let digested = new Buffer(BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET).toString("base64");
-        let accessTokenOptions = { grant_type: this.GRANT_TYPE, code: code };
+    @Get("oauth-callback/bitbucket")
+    public getProviderToken(@Req() req: Request, @Res() response: Response) {
+        let code = req.query.code.toString();
+        let userIdentifier = req.query.state.toString();
+        let digested = Buffer.from((BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET)).toString("base64");
+        let accessTokenOptions: IFooParams = { grant_type: this.GRANT_TYPE, code: code };
         let accessTokenConfig = {
             headers:
             {
@@ -85,15 +91,13 @@ export class AuthenticationController {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         };
-        this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig).pipe(
-            map(res => {
+        this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig)
+            .subscribe(res => {
                 let userToken = res.data.access_token;
                 this.log.d("Response: ", res.data);
                 this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
+                this.log.d("The user has completed the authentication process");
                 return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
-            })
-        ).subscribe(() => {
-            this.log.d("The user has completed the authentication process");
-        });
+            });
     }
 }
