@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Post, UseInterceptors, Bind, UploadedFile, Res, Delete } from "@nestjs/common";
+import { Response } from "express";
+import { Controller, Get, Param, Post, UseInterceptors, Bind, UploadedFile, Response as Res, Delete } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ILogger, LoggerService } from "../logger/logger.service";
 import { editFileName } from "../utils/image-upload.utils";
@@ -46,7 +47,7 @@ export class ProfileImageController {
     }
 
     @Get("/:userAddress/status")
-    public checkStatus(@Param("userAddress") hash): ResponseDto {
+    public checkStatus(@Param("userAddress") hash: string): ResponseDto {
         this.log.d("Request to get avatar: " + hash);
         let ret: ResponseDto;
         if(fs.existsSync(BackendConfig.IMAGE_STORAGE_PATH + hash)) {
@@ -60,13 +61,13 @@ export class ProfileImageController {
     }
     
     @Get(":userAddress")
-    public getUploadedFile(@Param("userAddress") hash, @Res() res) {
+    public getUploadedFile(@Param("userAddress") hash: string, @Res() res: Response) {
         this.log.d("Getting avatar: " + hash);
         res.sendFile(hash, { root: BackendConfig.IMAGE_STORAGE_PATH });
     }
 
     @Delete(":userAddress")
-    public deleteAvatar(@Param("userAddress") hash): ResponseDto {
+    public deleteAvatar(@Param("userAddress") hash: string): ResponseDto {
         this.log.d("Erasing avatar: " + hash);
         fs.unlinkSync(BackendConfig.IMAGE_STORAGE_PATH + hash);
         return new SuccessResponseDto("Image deleted");

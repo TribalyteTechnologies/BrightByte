@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Delete, Req } from "@nestjs/common";
+import { Controller, Get, Param, Post, Delete} from "@nestjs/common";
 import { Observable } from "rxjs";
 import { TeamDatabaseService } from "../services/team-database.service";
 import { ResponseDto } from "../dto/response/response.dto";
