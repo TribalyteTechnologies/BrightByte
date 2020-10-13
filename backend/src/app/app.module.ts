@@ -18,7 +18,6 @@ import { CoreDatabaseService } from "../services/core-database.service";
 import { ContractManagerService } from "../services/contract-manager.service";
 import { EmailService } from "../services/email.service";
 import { MulterModule } from "@nestjs/platform-express";
-import { ServeStaticModule } from "@nestjs/serve-static";
 import { MailerModule } from "@nestjs-modules/mailer";
 
 
@@ -28,9 +27,6 @@ import { MailerModule } from "@nestjs-modules/mailer";
         HttpModule,
         MulterModule.register({
             dest: BackendConfig.IMAGE_STORAGE_PATH
-        }),
-        ServeStaticModule.forRoot({
-            rootPath: BackendConfig.STATIC_FILES_PATH
         }),
         MailerModule.forRoot({
             transport: BackendConfig.EMAIL_TRANSPORT,

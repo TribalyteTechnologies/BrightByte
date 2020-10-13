@@ -27,7 +27,6 @@
 		"@nestjs/core": "6.0.0",
 		"@nestjs/platform-express": "6.0.0",
 		"@nestjs/platform-socket.io": "6.5.3",
-		"@nestjs/serve-static": "1.0.2",
 		"@nestjs/websockets": "6.5.3",
 		"@types/jest": "24.0.18",
 		"@types/lokijs": "1.5.2",
