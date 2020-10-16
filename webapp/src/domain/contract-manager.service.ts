@@ -625,7 +625,7 @@ export class ContractManagerService {
             let promise = brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
                 .call({ from: this.currentUser.address});
             return this.getRecursiveViewMethod(promise);
-        }).then(seasonState => {
+        }).then((seasonState: Array<string>) => {
             let arrayState =  Object.keys(seasonState)
             .map(key => parseInt(seasonState[key]));
             return UserSeasonState.fromSmartContract(arrayState);
@@ -911,9 +911,11 @@ export class ContractManagerService {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
-                let promise = global ? contractArtifact.methods.getUser(userAddress).call({ from: this.currentUser.address }) :
-                contractArtifact.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
-                return this.getRecursiveViewMethod(promise);
+                let prom = global ? this.getUserData(userAddress) : this.getUserSeasonData(userAddress, season);
+                return prom.then(res => {
+                    this.log.d("User data obtained");
+                    return res;
+                });
             });
             return Promise.all(promises);
         }).then(users => {
@@ -1080,6 +1082,25 @@ export class ContractManagerService {
         return this.currentTeamUid;
     }
 
+    private getUserData(userAddress: string): Promise<Array<string>> {
+        return this.initProm.then(([bright]) => {
+            return this.getRecursiveViewMethod(bright.methods.getUser(userAddress).call({ from: this.currentUser.address }));
+        }).then((res: Array<string>) => {
+            this.log.d("The user data is: ", res);
+            return res;
+        });
+    }
+
+    private getUserSeasonData(userAddress: string, season: number): Promise<Array<string>> {
+        return this.initProm.then(([bright]) => {
+            const promise = bright.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
+            return this.getRecursiveViewMethod(promise);
+        }).then((res: Array<string>) => {
+            this.log.d("The user data is: ", res);
+            return res;
+        });
+    }
+
     private getBatchCommits(totalNumberOfCommits: number, startIndex: number, allCommits: Array<string>): Promise<Array<string>> {
         let endIndex = startIndex + AppConfig.COMMITS_BLOCK_SIZE;
         return this.initProm.then(([bright]) => {
@@ -1101,7 +1122,7 @@ export class ContractManagerService {
         return this.initProm.then(([bright, commit]) => {
             return this.getRecursiveViewMethod(commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address }));
         }).then((commitVals: Array<string>) => {
-                return UserCommit.fromSmartContract(commitVals, isPending);
+            return UserCommit.fromSmartContract(commitVals, isPending);
         }).catch(err => {
             this.log.e("Error getting commit details :", err);
             throw err;
@@ -1145,11 +1166,12 @@ export class ContractManagerService {
         this.currentTeamUid = teamUid;
     }
 
-    private getRecursiveViewMethod(recursivePromise: Promise<any>, iterationIndex = 0): Promise<any> {
+    private getRecursiveViewMethod(recursivePromise: Promise<any>, iterationIndex = 0): Promise<Array<any>> {
         return this.getMaxIterationsAndTimeout(iterationIndex, "Error getting data from the smart contracts, maximum number of retries reached: " + this.RECURSIVE_METHODS_MAX_ITERATIONS)
         .then(() => recursivePromise)
+        .then((res: Array<any>) => res)
         .catch(error => {
-            let ret: Promise<Array<string>>;
+            let ret: Promise<Array<any>>;
             this.log.d("The current number of retries is: ", iterationIndex);
             if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
                 ret = this.getRecursiveViewMethod(recursivePromise, iterationIndex + 1);
@@ -1161,19 +1183,15 @@ export class ContractManagerService {
         });
     }
 
-    private getMaxIterationsAndTimeout(iterationIndex: number, errorMsg: string): Promise<any> {
-        let promise: Promise<any>;
+    private getMaxIterationsAndTimeout(iterationIndex: number, errorMsg: string): Promise<void> {
+        let promise: Promise<void>;
         let maxIterations = this.RECURSIVE_METHODS_MAX_ITERATIONS;
         if (iterationIndex >= maxIterations) {
             let error = new Error(errorMsg);
             this.log.e(error);
             throw error;
         } else {
-            if (iterationIndex > 0) {
-                promise = this.getRandomDelay(this.MINIMUM_DELAY_MILIS, this.MAXIMUM_DELAY_MILIS);
-            } else {
-                promise = Promise.resolve();
-            }
+            promise = iterationIndex > 0 ? this.getRandomDelay(this.MINIMUM_DELAY_MILIS, this.MAXIMUM_DELAY_MILIS) : Promise.resolve();
         }
         return promise;
     }
