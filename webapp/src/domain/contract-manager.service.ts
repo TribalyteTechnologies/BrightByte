@@ -616,15 +616,17 @@ export class ContractManagerService {
     public getCurrentSeasonState(): Promise<UserSeasonState> {
         let brightContract;
         return this.initProm
-        .then(([bright, commit, root, teamManager]) => {
+        .then(([bright]) => {
             brightContract = bright;
             return bright.methods.getCurrentSeason().call({ from: this.currentUser.address});
         }).then(seasonData => {
             let currentSeason = seasonData[0];
             this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
-            let promise = brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
+            let blockchainPetition = () => {
+                return brightContract.methods.getUserSeasonState(this.currentUser.address, currentSeason)
                 .call({ from: this.currentUser.address});
-            return this.getRecursiveViewMethod(promise);
+            };
+            return this.getRecursiveViewMethod(blockchainPetition);
         }).then((seasonState: Array<string>) => {
             let arrayState =  Object.keys(seasonState)
             .map(key => parseInt(seasonState[key]));
@@ -650,9 +652,11 @@ export class ContractManagerService {
         }).then(seasonData => {
             let startIndex = endIndex - AppConfig.COMMITS_BLOCK_SIZE;
             startIndex = Math.max(startIndex, 0);
-            let promise = brightContract.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
+            let blockchainPetition = () => {
+                return brightContract.methods.getUserSeasonCommits(this.currentUser.address, seasonData[0], startIndex, endIndex)
                 .call({ from: this.currentUser.address });
-            return this.getRecursiveViewMethod(promise);
+            };
+            return this.getRecursiveViewMethod(blockchainPetition);
         }).then((allUserCommits: Array<Array<string>>) => {
             let promisesAllReviews = allUserCommits[4].map(userCommit => this.getUserCommitDetails(userCommit));
             let promisesPending = allUserCommits[0].map(userCommit => this.getUserCommitDetails(userCommit));
@@ -911,11 +915,7 @@ export class ContractManagerService {
             let numberUsers = usersAddress.length;
             this.log.d("Number of users: ", numberUsers);
             let promises = usersAddress.map(userAddress => {
-                let prom = global ? this.getUserData(userAddress) : this.getUserSeasonData(userAddress, season);
-                return prom.then(res => {
-                    this.log.d("User data obtained");
-                    return res;
-                });
+                return global ? this.getUserData(userAddress) : this.getUserSeasonData(userAddress, season);
             });
             return Promise.all(promises);
         }).then(users => {
@@ -1084,7 +1084,10 @@ export class ContractManagerService {
 
     private getUserData(userAddress: string): Promise<Array<string>> {
         return this.initProm.then(([bright]) => {
-            return this.getRecursiveViewMethod(bright.methods.getUser(userAddress).call({ from: this.currentUser.address }));
+            let blockchainPetition = () => {
+                return bright.methods.getUser(userAddress).call({ from: this.currentUser.address });
+            };
+            return this.getRecursiveViewMethod(blockchainPetition);
         }).then((res: Array<string>) => {
             this.log.d("The user data is: ", res);
             return res;
@@ -1092,9 +1095,12 @@ export class ContractManagerService {
     }
 
     private getUserSeasonData(userAddress: string, season: number): Promise<Array<string>> {
+        this.log.d("The user data is: ", userAddress);
         return this.initProm.then(([bright]) => {
-            const promise = bright.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
-            return this.getRecursiveViewMethod(promise);
+            let blockchainPetition = () => {
+                return bright.methods.getUserSeasonReputation(userAddress, season).call({ from: this.currentUser.address });
+            };
+            return this.getRecursiveViewMethod(blockchainPetition);
         }).then((res: Array<string>) => {
             this.log.d("The user data is: ", res);
             return res;
@@ -1120,7 +1126,10 @@ export class ContractManagerService {
 
     private getUserCommitDetails(url: string, isPending = true): Promise<UserCommit> {
         return this.initProm.then(([bright, commit]) => {
-            return this.getRecursiveViewMethod(commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address }));
+            let blockchainPetition = () => {
+                return commit.methods.getDetailsCommits(url).call({ from: this.currentUser.address });
+            };
+            return this.getRecursiveViewMethod(blockchainPetition);
         }).then((commitVals: Array<string>) => {
             return UserCommit.fromSmartContract(commitVals, isPending);
         }).catch(err => {
@@ -1166,9 +1175,9 @@ export class ContractManagerService {
         this.currentTeamUid = teamUid;
     }
 
-    private getRecursiveViewMethod(recursivePromise: Promise<any>, iterationIndex = 0): Promise<Array<any>> {
+    private getRecursiveViewMethod(recursivePromise: Function, iterationIndex = 0): Promise<Array<any>> {
         return this.getMaxIterationsAndTimeout(iterationIndex, "Error getting data from the smart contracts, maximum number of retries reached: " + this.RECURSIVE_METHODS_MAX_ITERATIONS)
-        .then(() => recursivePromise)
+        .then(() => recursivePromise())
         .then((res: Array<any>) => res)
         .catch(error => {
             let ret: Promise<Array<any>>;
