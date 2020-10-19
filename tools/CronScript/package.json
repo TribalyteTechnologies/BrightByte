@@ -1,0 +1,16 @@
+{
+  "name": "brightbyte-cron-script",
+  "version": "1.0.0",
+  "author": "Tribalyte Technologies",
+  "description": "Tool that runs a script that calls view methods",
+  "main": "cron.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node cron.js"
+  },
+  "dependencies": {
+    "axios": "0.20.0",
+    "web3": "1.3.0"
+  }
+}
