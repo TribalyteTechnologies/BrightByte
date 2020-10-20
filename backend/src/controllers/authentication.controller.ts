@@ -63,14 +63,14 @@ export class AuthenticationController {
     @Get("oauth-callback/github")
     public getProvider(@Req() req: Request, @Res() response: Response) {
         let code = req.query.code;
-        let userIdentifier = req.query.state.toString();
+        let userIdentifier = req.query.state ? req.query.state .toString() : "";
         let tokenUrlPath = this.GET_GITHUB_TOKEN_URL + "&code=" + code + "&state=" + userIdentifier;
         this.httpSrv.post(tokenUrlPath, null, { headers: { "Accept": "application/json" } }).pipe(
             map(res => {
                 this.log.d("Response: ", res.data);
                 let userToken = res.data.access_token;
                 this.clientNotificationService.sendToken(userIdentifier, userToken, this.GITHUB_PROVIDER);
-                return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+                return response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
             })
         ).subscribe(() => {
             this.log.d("The user has completed the Github authentication process");
@@ -78,7 +78,7 @@ export class AuthenticationController {
     }
 
     @Get("oauth-callback/bitbucket")
-    public getProviderToken(@Req() req: Request, @Res() response: Response) {
+    public getBitbucketToken(@Req() req: Request, @Res() response: Response) {
         let code = req.query.code.toString();
         let userIdentifier = req.query.state.toString();
         let digested = Buffer.from((BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET)).toString("base64");
@@ -97,7 +97,7 @@ export class AuthenticationController {
                 this.log.d("Response: ", res.data);
                 this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
                 this.log.d("The user has completed the authentication process");
-                return response.sendFile(BackendConfig.STATIC_FILES_PATH + BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+                return response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
             });
     }
 }
