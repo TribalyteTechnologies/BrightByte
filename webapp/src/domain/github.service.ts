@@ -4,10 +4,12 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
 import { IResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
-import { GithubCommitResponse } from "../models/github/commit.model";
-import { GithubUserResponse } from "../models/github/user.model";
+import { GithubCommitResponse } from "../models/bitbucket-github/github-commit.model";
+import { GithubUserResponse } from "../models/bitbucket-github/github-user.model";
 import { PopupService } from "./popup.service";
-import { GithubEvent, CommitInfo } from "../models/github/repository.model";
+import { GithubRepositoryResponse} from "../models/bitbucket-github/github-repository-response.model";
+import { Repository } from "../models/bitbucket-github/repository.model";
+import { CommitInfo } from "../models/bitbucket-github/commit-info.model";
 
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
@@ -30,6 +32,7 @@ export class GithubApiConstants {
     public static readonly TAG_SORT_BY_UPDATE_DATE = "q=updated_on>";
     public static readonly PROVIDER_NAME = "github";
     public static readonly REPOSITORIES_BASE_URL = "https://api.github.com/user/repos";
+    public static readonly REPOSITORIES_ORGS_URL = "https://api.github.com/orgs/";
 }
 
 @Injectable()
@@ -41,6 +44,8 @@ export class GithubService {
     private log: ILogger;
     private authWindow: Window;
     private eventEmitter = new EventEmitter<boolean>();
+    private repo: Repository;
+    private githubUser: string;
 
     constructor(
         private http: HttpClient,
@@ -62,7 +67,8 @@ export class GithubService {
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
         return this.getUsername().then(name => {
-            this.log.d("The api provider works, the user nickname is:", name.login);
+            this.githubUser = name.login;
+            this.log.d("The api provider works, the user nickname is:", this.githubUser);
             this.eventEmitter.emit(true);
             return true;
         }).catch(async err => {
@@ -73,25 +79,41 @@ export class GithubService {
         });
     }
 
-    public getRepositories(userName: string, seasonStartDate: Date): Promise<any> {
-        return this.getPushEvents(userName, GithubApiConstants.PUSH_EVENT_TYPE, seasonStartDate)
-        .then((result: Array<GithubEvent>) => {
-            let promises = result.map(event => this.managePushEvents(event));
-            return Promise.all(promises);
-        }).catch(e => {
-            this.log.e("Error en el get repos", e);
+    public getRepositories(): Promise<Array<GithubRepositoryResponse>> {
+        const params = new HttpParams().set("visibility", "all");
+        this.log.d("The user token is", this.userToken);
+        this.log.d("params", params);
+        return this.http.get<Array<GithubRepositoryResponse>>(
+            GithubApiConstants.REPOSITORIES_BASE_URL, {params: params, headers: this.headers}).toPromise()
+        .then(result => {
+            this.log.d("The repositories are", result);
+            return result;
         });
     }
 
-    public getPrCommits(workspace: string, seasonStartDate: Date): Promise<Array<GithubCommitResponse>> {
-        const params = new HttpParams().set("author", "Pcamachoc").set("since", "2020-09-05T00:00:00Z");
-        this.log.d("The user token is", this.userToken);
-        this.log.d("params", params);
-        return this.http.get<Array<GithubCommitResponse>>(
-            "https://api.github.com/repos/TribalyteTechnologies/BrightByte/commits", {params: params, headers: this.headers }).toPromise()
+    public getRepositoriesOrg(seasonStartDate: Date): Promise<any> {
+        return this.http.get<Array<GithubRepositoryResponse>>(
+            GithubApiConstants.REPOSITORIES_ORGS_URL + "TribalyteTechnologies" + "/repos", {headers: this.headers}).toPromise()
         .then(result => {
-            this.log.d("The getPrCommits response is", result);
+            this.log.d("The repositories are", result);
+            const commits = result.map((repo) => this.getCommits(repo, seasonStartDate));
+            return Promise.all(commits);
+        }).then(result => {
             return result;
+        });
+            
+    }
+
+    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date): Promise<any> {
+        const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
+        return this.http.get<Array<GithubCommitResponse>>(
+            GithubApiConstants.BASE_URL + "repos/TribalyteTechnologies/" + repository.name + "/commits", 
+            {params: params, headers: this.headers }).toPromise()
+        .then(result => {     
+            this.log.d("The getCommits response is", result);
+            this.repo = new Repository(repository.html_url, repository.name);
+            this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
+            return this.repo;
         });
     }
 
@@ -99,7 +121,7 @@ export class GithubService {
         this.log.d("The user token is", this.userToken);
         return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, {headers: this.headers }).toPromise()
         .then(result => {
-            this.log.d("The GetUserName response is", result);
+            this.log.d("The GetUserName response is", result.login);
             return result;
         });
     }
@@ -113,32 +135,6 @@ export class GithubService {
         }
         this.setNewTokenHeader(this.userToken);
         this.eventEmitter.emit(true);
-    }
-
-    private managePushEvents(event: GithubEvent): Promise<Array<CommitInfo>> {
-        const userLogin = event.actor.login;
-        const getRepoUrl = event.repo.url;
-        const eventCommits = event.payload.commits;
-        let userCommits = eventCommits.filter(commit => userLogin === commit.author.name);
-
-        return this.http.get<any>(getRepoUrl).toPromise()
-        .then((result: any) => {
-            const repoUrl = result.html_url;
-            let commits = userCommits.map(commit => new CommitInfo(commit.sha, commit.message, repoUrl));
-            return commits;
-        });
-    }
-
-    private getPushEvents(userName: string, eventType: string, seasonStartDate: Date): Promise<Array<GithubEvent>> {
-        const getEventeUrl = GithubApiConstants.USER_BASE_URL + userName + GithubApiConstants.EVENTS_URL;
-        return this.http.get<Array<GithubEvent>>(getEventeUrl).toPromise()
-        .then((result: Array<GithubEvent>) => {
-            const ret = result.filter((event: GithubEvent) => {
-                let dateEvent = new Date(event.created_at);
-                return  event.type === eventType && dateEvent > seasonStartDate;
-            });
-            return ret;
-        });
     }
 
     private loginToGithub(userAddress: string, teamUid: number): Promise<string> {

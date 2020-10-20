@@ -22,15 +22,3 @@ export class BitbucketUserInfo {
 export class ParentInfo {
     public hash: string;
 }
-
-export class CommitInfo {
-    public hash: string;
-    public name: string;
-    public date: Date;
-
-    constructor(hash: string, name: string, date: Date){
-        this.hash = hash;
-        this.name = name;
-        this.date = date;
-    }
-}

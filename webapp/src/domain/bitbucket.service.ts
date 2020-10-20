@@ -4,9 +4,9 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
 import { IResponse, IWorkspaceResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
-import { BitbucketRepositoryResponse } from "../models/bitbucket/repository.model";
-import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket/commit-info.model";
-import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../models/bitbucket/pull-request.model";
+import { BitbucketRepositoryResponse } from "../models/bitbucket-github/bitbucket-repository-response.model";
+import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket-github/bitbucket-commit.model";
+import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../models/bitbucket-github/pull-request.model";
 import { BackendConfig } from "../models/backend-config.model";
 import { PopupService } from "./popup.service";
 

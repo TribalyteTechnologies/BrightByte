@@ -13,12 +13,12 @@ import { LocalStorageService } from "../../core/local-storage.service";
 import { BitbucketService, BitbucketApiConstants } from "../../domain/bitbucket.service";
 import { FormatUtils } from "../../core/format-utils";
 import { UserCommit } from "../../models/user-commit.model";
-import { Repository } from "../../models/bitbucket/repository.model";
-import { CommitInfo, BitbucketCommitInfo } from "../../models/bitbucket/commit-info.model";
-import { BitbucketRepository } from "../../models/bitbucket/repository.model";
-import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket/pull-request.model";
+import { Repository } from "../../models/bitbucket-github/repository.model";
+import { BitbucketCommitInfo } from "../../models/bitbucket-github/bitbucket-commit.model";
+import { BitbucketRepository } from "../../models/bitbucket-github/bitbucket-repository-response.model";
+import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket-github/pull-request.model";
 import { GithubService } from "../../domain/github.service";
-import { GithubEvent } from "../../models/github/repository.model";
+import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -419,13 +419,17 @@ export class AddCommitPopover {
                 return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
             });
             this.log.d("The commits from the blockchain", this.blockChainCommits);
-            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays - 10);
+            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
             this.currentSeasonStartDate = seasonDate;
-            return this.githubSrv.getRepositories(this.githubUser, this.currentSeasonStartDate);
-        }).then((repositories: Array<GithubEvent>) => {
-            repositories.forEach(repo => this.log.w("The repos", repo.actor));
+            return this.githubSrv.getRepositoriesOrg(this.currentSeasonStartDate);
+        }).then((repositories: Array<Repository>) => {
             this.log.d("The repositories from Github are: ", repositories);
-            return null;
+            repositories = repositories.filter(repo => repo.commitsInfo.length > 0);
+            repositories.forEach((repo) => (repo.commitsInfo = repo.commitsInfo.filter (
+                commit => this.blockChainCommits.indexOf(commit.hash) < 0 ), 
+                this.selectedRepositories.push(repo), 
+                repo.numCommits = repo.commitsInfo.length));
+            return repositories;
         }).then(() => {
             this.showSpinner = false;
             this.isFinishedLoadingRepo = true;
