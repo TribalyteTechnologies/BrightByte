@@ -1,5 +1,10 @@
 # Change Log
 
+#### v0.4.9-cloud
+
+- Fix recursive method, to call view methods from smart contracts.
+- Remove serve-static files in the backend.
+
 #### v0.4.8-cloud
 
 - Increase recursive params to change the workaround.
