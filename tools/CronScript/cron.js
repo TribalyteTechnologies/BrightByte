@@ -1,9 +1,11 @@
+//This is the crontab task that is executed, every minute:  * * * * * /usr/bin/nodejs /scriptPath/cron.js >> /scriptPath/nodeCron.log 2>&1
 const Web3 = require("web3");
 const axios = require("axios");
 
 const HTTP_URL_NODE = "http://domain.com/rpc";
-const BRIGHT_CONTRACT_URL = "http://domain/assets/build/Bright.json";
-const COMMIT_CONTRACT_URL = "http://domain/assets/build/Commits.json";
+const BASE_URL = "http://domain/assets/build/";
+const BRIGHT_CONTRACT_URL = BASE_URL + "Bright.json";
+const COMMIT_CONTRACT_URL = BASE_URL + "Commits.json";
 const BRIGHT_CONTRACT_ADDRESS = "0x0";
 const COMMIT_CONTRACT_ADDRESS = "0x0";
 const USER_ADDRESS = "0x0";
