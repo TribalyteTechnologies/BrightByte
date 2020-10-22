@@ -41,7 +41,7 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.link(UtilsLib, Commits);
     await deployer.deploy(Commits);
     await deployer.deploy(BrightByteSettings);
-    await deployer.deploy(CloudEventDispatcher);
+    let eventDispatcher = await deployer.deploy(CloudEventDispatcher);
     await deployer.link(Reputation, Root);
     await deployer.deploy(Root, Bright.address, Commits.address, BrightByteSettings.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     await deployer.deploy(BrightDictionary);
@@ -82,6 +82,8 @@ module.exports = async function (deployer, network, accounts) {
     cloudProxyManager = await ProxyManager.at(proxyCloudProxyManager.address);
     console.log("ProxyManager deployed: ", proxyCloudProxyManager.address);
 
+    eventDispatcher.addNewOwner(CloudBBFactory.address, { from: OWNER_ACCOUNT });
+    eventDispatcher.addNewOwner(proxyCloudBBFactory.address, { from: OWNER_ACCOUNT });
 
     await cloudBBFactory.initialize(currentVersion, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
     await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: INITIALIZER_ACCOUNT });

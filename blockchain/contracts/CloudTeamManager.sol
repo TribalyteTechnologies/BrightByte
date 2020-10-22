@@ -303,4 +303,8 @@ contract CloudTeamManager is Initializable {
     function setEventDispatcher(address eventAddress) public onlyOwner {
         remoteBbFactory.setEventDispatcher(eventAddress);
     }
+
+    function getEventDispatcherAddress() public view returns (address) {
+        return remoteBbFactory.getEventDispatcherAddress();
+    }
 }
