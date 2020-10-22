@@ -9,7 +9,8 @@ import { DeleteEventDto } from "../dto/events/delete-event.dto";
 import { NewUserEventDto } from "../dto/events/newUser-event.dto";
 import { ContractManagerService } from "./contract-manager.service";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
-import { flatMap, map } from "rxjs/operators";
+import { delayWhen, flatMap, map, retryWhen, tap } from "rxjs/operators";
+import { of, timer } from "rxjs";
 
 @Injectable()
 export class EventHandlerService {
@@ -28,6 +29,7 @@ export class EventHandlerService {
     private readonly URL = "url";
     private readonly NUMBER_REVIEWS = "numberOfReviews";
     private readonly LATEST = "latest";
+    private readonly TIME_OUT_MILIS = 10000;
     
     private firstBlockNumber = 0;
     private contractAddressEventDispatcher: string;
@@ -50,6 +52,7 @@ export class EventHandlerService {
 
     public init() {
         this.log.d("Initializing Event Handler Service");
+        this.web3 = this.web3Service.openConnection();
         this.contractManagerService.getCurrentBlock().pipe(
         flatMap((blockNumber: number) => {
             this.firstBlockNumber = blockNumber;
@@ -58,13 +61,9 @@ export class EventHandlerService {
         flatMap((eventDispatcherContract: ITrbSmartContractJson) => {
             this.eventDispatcherContract = eventDispatcherContract;
             return this.contractManagerService.getEventDispatcherContractAddress();
-        }),
-        flatMap((contractAddressEventDispatcher: string) => {
-            this.contractAddressEventDispatcher = contractAddressEventDispatcher;
-            return this.web3Service.openConnection();
         }))
-        .subscribe((web3: Web3) => {
-            this.web3 = web3;
+        .subscribe((contractAddressEventDispatcher: string) => {
+            this.contractAddressEventDispatcher = contractAddressEventDispatcher;
             this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
             this.eventsSubscription(true);
         });
@@ -130,12 +129,19 @@ export class EventHandlerService {
 
     private handlerDisconnects(error) {
         this.log.d("Disconnected from Provider");
-        this.web3Service.openConnection().pipe(
-        map((web3: Web3) => {
+        this.web3  = this.web3Service.openConnection();
+        of(this.web3Service.openConnection()).pipe(
+        map((web3: boolean) => {
             this.web3 = web3;
             this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
             this.eventsSubscription();
-        })).subscribe();
+        }),
+        retryWhen(errors => errors.pipe(
+            tap(e => this.log.e("Not able to open a connection: ", e)),
+            delayWhen(e => {
+                return timer(this.TIME_OUT_MILIS);
+            })
+        ))).subscribe();
     }
 
     private eventsSubscription(initialization = false) {

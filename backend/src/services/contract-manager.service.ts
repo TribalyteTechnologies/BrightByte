@@ -70,9 +70,9 @@ export class ContractManagerService {
 
     private init(): Observable<string> {
         this.log.d("Initializing Contract Manager Service");
-        return this.web3Service.openConnection().pipe(
-            flatMap((web3: Web3) => {
-                this.web3 = web3;
+        this.web3 = this.web3Service.openConnection();
+        return from(this.web3.eth.net.isListening()).pipe(
+            flatMap((res: boolean) => {
                 return this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL);
             }),
             flatMap(response => {

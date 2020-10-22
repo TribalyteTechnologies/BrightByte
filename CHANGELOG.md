@@ -1,5 +1,125 @@
 # Change Log
 
+#### v0.4.9-cloud
+
+- Fix recursive method, to call view methods from smart contracts.
+- Remove serve-static files in the backend.
+
+#### v0.4.8-cloud
+
+- Increase recursive params to change the workaround.
+
+#### v0.4.7-cloud
+
+- Increase recursive params to change the workaround.
+
+#### v0.4.6-cloud
+
+- Increase recursive params to change the workaround.
+- Minor visual changes in the slides tutorials.
+- Minor bug fixes.
+
+#### v0.4.5-cloud
+
+- Increase recursive params to change the workaround.
+- Improve add commit response to the users.
+- Minor bug fixes.
+
+#### v0.4.4-cloud
+
+- Added Github authentication to  to the backend.
+- Added new methods to the recursive get method workaround, to avoid erros from the blockchain.
+- Optimistic response for reviews made.
+
+#### v0.4.3-cloud
+
+- Solved transaction service issue.
+- Solved notification bell issue.
+
+#### v0.4.2-cloud
+
+- Uprade node version to v12.
+- Migration to yarn.
+- Refactor transaction queue to work with all the sendTx methods.
+- New alert that appears when the system has still pending transactions, and the users wants to leave.
+
+#### v0.4.1-cloud
+
+- Enable team creation to users alredy registered in other teams.
+- Improve visual responses to users when an action is done.
+- Refactor Ranking tab.
+- Added peding typescript types.
+- Minor bug fixes.
+
+#### v0.4.0-cloud
+
+- New scripts to automatize the upgrades with Openzeppelin.
+- Added team rules, information to the with the team rules to review.
+- New Random revievers feature, if the admin enable this option, all the commits will be assign to random reviewers.s 
+- Refactor smart contracts structures.
+- Refactor deployment scripts.
+- Minor bug fixes.
+
+#### v0.3.3-cloud
+
+- Fix review transaction queue.
+- New recursive method to avoid errors from the blockchain.
+- Minor bug fixes.
+
+#### v0.3.2-cloud
+
+- Implementes Openzeppelin smart contract upgrades. 
+- Update truffle version (5.1.33).
+- Update solidity compiler version (5.1.33).
+- Added optional bitbucket configuration after team creation.
+- Nginx config file.
+- Minor bug fixes.
+
+#### v0.3.1-cloud
+
+- Apply solidity interfaces to smart contracts.
+- Added new blockchain scrapping tool.
+- Added encryption accents support.
+- Minor bug fixes.
+
+#### v0.3.0-cloud
+
+- Enable secure connections (https, wss) on backend.
+- New smart contract, stores all the teams projects.
+- Optimization in the backend initialization.
+- Solved review filter issues.
+- Minor bug fixes.
+
+#### v0.2.0-cloud
+
+- New encryption service for the users data. 
+- Improve create team view.
+- Added linters to smart contracts, coverage to smart contracts tests.
+- Added new slides to tutorial.
+- New alert to mobile browsers users.
+- Solved minor bugs.
+
+#### v0.1.2-cloud
+
+- Implement mail service, to notify users invitations.
+- New popup service, to deploy the user required information.
+- Added new smart contract test.
+- Change intial season length to 14 days, it is also allowed to modify this variable.
+- New global scripts to deploy the entire environment immediately.
+- Added invitation managing feature and thresholds changes to team settings.
+- Change smart contract modifiers, improvement in data permissions.
+- Minor bug fixes.
+- Style refactor.
+
+#### v0.1.1-cloud
+
+- New team settings view, where the admins can change the team configurable variable.
+- Changes in the smart contracts to give special powers to the admins.
+- Improve user experience with multiple info popups.
+- Solved Firefox security flag due to password field.
+- Mayor code refactor on Backend (enforce typings, refactor controllers).
+- Minor bug fixes.
+
 #### v0.1.0-cloud
 
 BrightByte cloud is a multi team implementation for base BrightByte v0.7.0. Open to public at http://cloud.brightbyteapp.com/ 
