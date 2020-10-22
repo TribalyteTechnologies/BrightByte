@@ -26,6 +26,7 @@ export class EventHandlerService {
     private readonly TEAM_UID = "teamUid";
     private readonly NUMBER_COMMITS = "numberOfCommits";
     private readonly TIMESTAMP = "timestamp";
+    private readonly VERSION = "brightbyteVersion";
     private readonly URL = "url";
     private readonly NUMBER_REVIEWS = "numberOfReviews";
     private readonly LATEST = "latest";
@@ -80,23 +81,28 @@ export class EventHandlerService {
                         newEvent = new CommitEventDto(
                             event.returnValues[this.TEAM_UID],
                             event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_COMMITS]), 
-                            parseInt(event.returnValues[this.TIMESTAMP]));
+                            parseInt(event.returnValues[this.TIMESTAMP]),
+                            event.returnValues[this.VERSION]);
                         break;
                     case this.REVIEW:
                         newEvent = new ReviewEventDto(
                             event.returnValues[this.TEAM_UID],
                             event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_REVIEWS]), 
-                            parseInt(event.returnValues[this.TIMESTAMP]));
+                            parseInt(event.returnValues[this.TIMESTAMP]),
+                            event.returnValues[this.VERSION]);
                         break;
                     case this.DELETE:
                         newEvent = new DeleteEventDto(
                             event.returnValues[this.TEAM_UID],
-                            event.returnValues[this.USER_HASH], event.returnValues[this.URL]);
+                            event.returnValues[this.USER_HASH],
+                            event.returnValues[this.URL],
+                            event.returnValues[this.VERSION]);
                         break;
                     case this.NEW_USER:
                         newEvent = new NewUserEventDto(
                             event.returnValues[this.TEAM_UID],
-                            event.returnValues[this.HASH]);
+                            event.returnValues[this.HASH],
+                            event.returnValues[this.VERSION]);
                         break;
                     default:
                         this.log.e("The parameter 'type' is not valid");
