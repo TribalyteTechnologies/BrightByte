@@ -39,11 +39,14 @@ export class AuthenticationController {
         this.log = loggerSrv.get("AuthenticationController");
     }
 
-    @Get("authorize/:provider/:user/:teamUid")
-    public getProviderAuthCallback
-        (@Param("user") user: string, @Param("teamUid") teamUid: string, @Param("provider") provider: string): ResponseDto {
+    @Get("authorize/:provider/:user/:teamUid/:version")
+    public getProviderAuthCallback(
+        @Param("user") user: string,
+        @Param("teamUid") teamUid: string,
+        @Param("version") version: string,
+        @Param("provider") provider: string): ResponseDto {
         let ret: ResponseDto;
-        const code = user + "-" + teamUid;
+        const code = user + "-" + teamUid + "-" + version;
         this.log.d("The user requesting authentication is: " + code);
         switch (provider) {
             case this.BITBUCKET_PROVIDER:

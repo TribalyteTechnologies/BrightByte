@@ -18,46 +18,55 @@ export class TeamDatabaseController {
         this.log = loggerSrv.get("TeamDatabaseController");
     }
 
-    @Get(":id/members")
-    public getTeamMembers(@Param("id") teamUid: string): Observable<ResponseDto> {
+    @Get(":id/:version/members")
+    public getTeamMembers(@Param("id") teamUid: string, @Param("version") version: string): Observable<ResponseDto> {
         this.log.d("Request to get the member of team: ", teamUid);
-        return this.teamDatabaseService.getTeamMembers(teamUid);
+        return this.teamDatabaseService.getTeamMembers(teamUid, version);
     }
 
-    @Get(":id/workspace/:user")
-    public getTeamWorkspaces(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+    @Get(":id/:version/workspace/:user")
+    public getTeamWorkspaces(
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string): Observable<ResponseDto> {
         this.log.d("Request to get the member workspaces of team: ", teamUid);
-        return this.teamDatabaseService.getTeamWorkspaces(teamUid, user);
+        return this.teamDatabaseService.getTeamWorkspaces(teamUid, user, version);
     }
 
-    @Post(":id")
-    public createTeam(@Param("id") teamUid: string): Observable<ResponseDto> {
+    @Post(":id/:version")
+    public createTeam(@Param("id") teamUid: string, @Param("version") version: string): Observable<ResponseDto> {
         this.log.d("Request to create a new team: ", teamUid);
-        return this.teamDatabaseService.createTeam(teamUid);
+        return this.teamDatabaseService.createTeam(teamUid, version);
     }
 
-    @Post(":id/workspace/:workspaceName")
-    public addNewWorkspace(@Param("id") teamUid: string, @Param("workspaceName") workspaceName: string): Observable<ResponseDto> {
+    @Post(":id/:version/workspace/:workspaceName")
+    public addNewWorkspace(
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("workspaceName") workspaceName: string)
+        : Observable<ResponseDto> {
         this.log.d("Request to add a new workspace to the team: ", teamUid);
-        return this.teamDatabaseService.addNewWorkspace(teamUid, workspaceName);
+        return this.teamDatabaseService.addNewWorkspace(teamUid, workspaceName, version);
     }
 
-    @Post(":id/members/:user")
-    public addNewTeamMember(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+    @Post(":id/:version/members/:user")
+    public addNewTeamMember(
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string
+    ): Observable<ResponseDto> {
         this.log.d("Request to add a new member to the team: ", teamUid);
-        return this.teamDatabaseService.addNewTeamMember(teamUid, user);
+        return this.teamDatabaseService.addNewTeamMember(teamUid, user, version);
     }
 
-    @Delete(":id/workspace/:workspace")
-    public removeWorkspace(@Param("id") teamUid: string, @Param("workspace") workspace: string): Observable<ResponseDto> {
+    @Delete(":id/:version/workspace/:workspace")
+    public removeWorkspace(
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("workspace") workspace: string
+    ): Observable<ResponseDto> {
         this.log.d("Request to delete a workspace from the team: ", teamUid);
-        return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace);
+        return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace, version);
     }
 
-    @Delete(":id/members/:user")
-    public removeTeamMember(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+    @Delete(":id/:version/members/:user")
+    public removeTeamMember(
+        @Param("id") teamUid: string, @Param("user") user: string, @Param("version") version: string
+    ): Observable<ResponseDto> {
         this.log.d("Request to delete a member from the team: ", teamUid);
-        return this.teamDatabaseService.removeTeamMember(teamUid, user);
+        return this.teamDatabaseService.removeTeamMember(teamUid, user, version);
     }
 
     @Post(":email/sendInvitation")
