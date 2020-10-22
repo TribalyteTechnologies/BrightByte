@@ -38,9 +38,9 @@ export class ClientNotificationService {
         return this.sessions.delete(userSession);
     }
 
-    public sendNewAchievement(userAddress: string, teamUid: string, achievements: Array<AchievementDto>) {
+    public sendNewAchievement(userAddress: string, teamUid: string, version: string, achievements: Array<AchievementDto>) {
         this.log.d("Sending achievements: ", achievements);
-        let userSession = userAddress + "-" + teamUid;
+        let userSession = userAddress + "-" + teamUid + "-" + version;
         this.send(userSession, this.NEW_ACHIEVEMENT, achievements);
     }
 
