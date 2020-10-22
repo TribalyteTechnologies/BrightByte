@@ -299,4 +299,8 @@ contract CloudTeamManager is Initializable {
         userTeams[memberAddress].push(teamUid);
         removeInvitation(teamUid, emailId);
     }
+
+    function setEventDispatcher(address eventAddress) public onlyOwner {
+        remoteBbFactory.setEventDispatcher(eventAddress);
+    }
 }

@@ -2,7 +2,7 @@ pragma solidity 0.5.17;
 
 contract CloudEventDispatcher {
 
-    address private owner;
+    mapping (address => bool) private ownerList;
     mapping (address => bool) private contractList;
 
     event NewUserEvent (uint256 teamUid, address hash);
@@ -12,7 +12,7 @@ contract CloudEventDispatcher {
     event NewSeason(uint256 teamUid, uint256 currentSeasonIndex);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "The origin is not allowed");
+        require(ownerList[msg.sender], "The origin is not allowed");
         _;
     }
 
@@ -22,13 +22,13 @@ contract CloudEventDispatcher {
     }
 
     constructor(address brightByteFactory) public {
-        owner = brightByteFactory;
-        contractList[owner] = true;
+        ownerList[msg.sender] = true;
+        contractList[msg.sender] = true;
     }
 
-    function transferOwnership(address newOwner) public onlyOwner {
+    function addNewOwner(address newOwner) public onlyOwner {
         require(newOwner != address(0), "The new owner address in invalid");
-        owner = newOwner;
+        ownerList[newOwner] = true;
     }
 
     function addContractAllow(address newAddress) public onlyOwner {
