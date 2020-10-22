@@ -96,7 +96,7 @@ contract CloudBrightByteFactory is Initializable {
     }
 
     function deployEventDispatcher() private{
-        eventDispatcherAddress = address(new CloudEventDispatcher(address(this)));
+        eventDispatcherAddress = address(new CloudEventDispatcher());
         remoteEventDispatcher = CloudEventDispatcher(eventDispatcherAddress);
     }
 

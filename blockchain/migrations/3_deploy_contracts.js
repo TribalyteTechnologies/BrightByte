@@ -41,7 +41,7 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.link(UtilsLib, Commits);
     await deployer.deploy(Commits);
     await deployer.deploy(BrightByteSettings);
-    await deployer.deploy(CloudEventDispatcher, EMPTY_ADDRESS);
+    await deployer.deploy(CloudEventDispatcher);
     await deployer.link(Reputation, Root);
     await deployer.deploy(Root, Bright.address, Commits.address, BrightByteSettings.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
     await deployer.deploy(BrightDictionary);

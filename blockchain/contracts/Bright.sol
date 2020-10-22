@@ -18,6 +18,7 @@ contract Bright is IBright, Initializable {
     uint256 private initialSeasonTimestamp;
     uint256 private seasonLengthSecs;
     uint256 private teamUid;
+    bytes32 private brightbyteVersion;
 
     BrightModels.HashUserMap private hashUserMap;
     mapping (bytes32 => bool) private allCommits;
@@ -61,6 +62,10 @@ contract Bright is IBright, Initializable {
         allowedAddresses[userAdmin] = true;
     }
 
+    function setVersion(bytes32 version) public {
+        brightbyteVersion = version;
+    }
+
     function inviteUserEmail(bytes32 email) public {
         invitedEmails[email] = true;
     }
@@ -74,7 +79,7 @@ contract Bright is IBright, Initializable {
         newUser.hash = user;
         emailUserMap.map[email] = user;
         allUsersArray.push(user);
-        remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user);
+        remoteCloudEventDispatcher.emitNewUserEvent(teamUid, user, brightbyteVersion);
         allowedAddresses[user] = true;
         root.allowNewUser(user);
     }
@@ -131,7 +136,7 @@ contract Bright is IBright, Initializable {
         userSeason.seasonCommits[url] = true;
         userSeason.seasonStats.commitsMade++;
         user.globalStats.commitsMade++;
-        remoteCloudEventDispatcher.emitNewCommitEvent(teamUid, sender, user.globalStats.commitsMade);
+        remoteCloudEventDispatcher.emitNewCommitEvent(teamUid, sender, user.globalStats.commitsMade, brightbyteVersion);
     }
 
     function notifyCommit(string memory a, bytes32 email) public onlyRoot {
@@ -173,7 +178,7 @@ contract Bright is IBright, Initializable {
         user.globalStats.commitsMade--;
         userSeason.seasonStats.commitsMade--;
         delete userSeason.seasonCommits[url];
-        remoteCloudEventDispatcher.emitDeletedCommitEvent(teamUid, userHash, url);
+        remoteCloudEventDispatcher.emitDeletedCommitEvent(teamUid, userHash, url, brightbyteVersion);
     }
 
     function getUserSeasonState(address userHash, uint256 indSeason)
@@ -221,7 +226,7 @@ contract Bright is IBright, Initializable {
             reviewer.seasonData[currentSeasonIndex].seasonStats.reviewsMade++;
             reviewer.globalStats.reviewsMade++;
         }
-        remoteCloudEventDispatcher.emitNewReviewEvent(teamUid, sender, reviewer.globalStats.reviewsMade);
+        remoteCloudEventDispatcher.emitNewReviewEvent(teamUid, sender, reviewer.globalStats.reviewsMade, brightbyteVersion);
     }
 
     function setUserName(string memory name) public onlyAllowed {
@@ -307,7 +312,7 @@ contract Bright is IBright, Initializable {
         bool isSeasonEnded = now > seasonFinale;
         if (isSeasonEnded) {
             currentSeasonIndex++;
-            remoteCloudEventDispatcher.emitNewSeason(teamUid, currentSeasonIndex);
+            remoteCloudEventDispatcher.emitNewSeason(teamUid, currentSeasonIndex, brightbyteVersion);
         }
     }
 

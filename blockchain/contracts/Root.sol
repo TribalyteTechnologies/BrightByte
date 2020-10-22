@@ -67,6 +67,7 @@ contract Root is IRoot, Initializable {
         if(isVersionEnable) {
             brightbyteVersion = version;
             isVersionEnable = false;
+            remoteBright.setVersion(version);
         }
     }
 
