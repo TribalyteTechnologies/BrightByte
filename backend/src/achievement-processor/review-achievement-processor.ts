@@ -20,7 +20,7 @@ export class ReviewAchievementProcessor extends AchievementProcessor {
     }
 
     public process(event: ReviewEventDto): Observable<AchievementDto> {
-        return this.isAchievementObtained(event.userHash, event.teamUid).pipe(map(response => {
+        return this.isAchievementObtained(event.userHash, event.teamUid, event.version).pipe(map(response => {
             let obtainedAchievement = null;
             if (response
                 && (response.status === BackendConfig.STATUS_SUCCESS && response.data === false)

@@ -26,7 +26,7 @@ export class TimedReviewAchievementProcessor extends AchievementProcessor {
     }
 
     public process(event: ReviewEventDto): Observable<AchievementDto> {
-        return this.isAchievementObtained(event.userHash, event.teamUid).pipe(
+        return this.isAchievementObtained(event.userHash, event.teamUid, event.version).pipe(
             map(response => {
                 let obtainedAchievement = null;
                 if (response
