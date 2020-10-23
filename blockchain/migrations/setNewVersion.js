@@ -6,9 +6,11 @@ const SMART_CONTRACT_VERSION = require("../../version.json");
 const CURRENT_VERSION = SMART_CONTRACT_VERSION.version;
 
 const OWNER_ADDRESS = "0x0";
+const OWNER_EVENT = "0x0";
 const PROXY_MANAGER_ADDRESS = "0x0";
 const CLOUD_EVENT_ADDRESS = "0x0";
 const NEW_TEAM_MANAGER_ADDRESS = "0x0";
+const NEW_BB_FACTORY_ADDRESS = "0x0";
 const URL_PROVIDER = "http://localhost:7545";
 
 let proxyContract;
@@ -22,8 +24,9 @@ async function setNewVersion() {
     let currentVersion = await proxyContract.methods.getCurrentVersion().call({ from: OWNER_ADDRESS });
     console.log("The current version is:", currentVersion);
 
-    await cloudEvent.methods.addNewOwner(NEW_TEAM_MANAGER_ADDRESS).send({ from: OWNER_ADDRESS });
-    console.log("The contract is allowed to add new contracts in, ", CLOUD_EVENT_ADDRESS);
+    await cloudEvent.methods.addNewOwner(NEW_TEAM_MANAGER_ADDRESS).send({ from: OWNER_EVENT });
+    await cloudEvent.methods.addNewOwner(NEW_BB_FACTORY_ADDRESS).send({ from: OWNER_EVENT });
+    console.log("The contracta are allowed to add new contracts in, ", CLOUD_EVENT_ADDRESS);
 
     await teamManager.methods.setEventDispatcher(CLOUD_EVENT_ADDRESS).send({ from: OWNER_ADDRESS });
     cloudEventAddress = await teamManager.methods.getEventDispatcherAddress().call({ from: OWNER_ADDRESS });

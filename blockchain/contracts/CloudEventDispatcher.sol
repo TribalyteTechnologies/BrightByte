@@ -29,7 +29,7 @@ contract CloudEventDispatcher {
     function addNewOwner(address newOwner) public onlyOwner {
         require(newOwner != address(0), "The new owner address in invalid");
         ownerList[newOwner] = true;
-        contractList[msg.sender] = true;
+        contractList[newOwner] = true;
     }
 
     function addContractAllow(address newAddress) public onlyOwner {
