@@ -64,11 +64,12 @@ export class UserDatabaseService {
         );
     }
 
-    public getObtainedAchievements(userIdentifier: string, teamUid: string): Observable<ResponseDto> {
+    public getObtainedAchievements(userIdentifier: string, teamUid: string, version: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             flatMap((user: UserDto) => this.achievementDbSrv.getAchievements(
-                user.teamsData.find(userData => userData.teamUid === teamUid && userData.version === version).obtainedAchievements)
+                user.teamsData.find((userData: UserData) => 
+                userData.teamUid === teamUid && userData.version === version).obtainedAchievements)
             ),
             map((achievements: Array<AchievementDto>) => new SuccessResponseDto(achievements)),
             catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
