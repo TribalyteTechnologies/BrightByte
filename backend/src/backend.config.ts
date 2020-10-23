@@ -24,7 +24,8 @@ export class BackendConfig {
     public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:8100";
     public static readonly BRIGHTBYTE_API_PORT = process.env.PORT || 3000;
     public static readonly CLOUD_EVENT_DISPATCHER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudEventDispatcher.json";
-    public static readonly CLOUD_BB_FACTORY_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudBrightByteFactory.json";
+    public static readonly CLOUD_BB_TEAM_MANAGER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudTeamManager.json";
+    public static readonly PROXY_MANAGER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/ProxyManager.json";
     public static readonly IMAGE_STORAGE_PATH = process.env.BACKEND_STORAGE_PATH || "./public/";
     public static readonly SECRET_PRIVATE_KEY = process.env.BACKEND_PRIVATE_KEY_PATH || "./secrets/private.key";
     public static readonly SECRET_CERTIFICATE_CRT = process.env.BACKEND_SECRET_CERTIFICATE_PATH || "./secrets/certificate.crt";

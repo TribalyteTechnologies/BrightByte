@@ -8,8 +8,9 @@ import { flatMap, map, tap, shareReplay } from "rxjs/operators";
 import { ITrbSmartContact, ITrbSmartContractJson } from "../models/smart-contracts.model";
 
 enum ContractIndex {
-    BbFactory = 0,
-    EventDispatcher = 1
+    ProxyManager = 0,
+    BbTeamManager = 1,
+    EventDispatcher = 2
 }
 
 @Injectable()
@@ -20,12 +21,14 @@ export class ContractManagerService {
     private readonly RANDOM_ADDRESS = "0xF19853c2C92684B2F6C3E48d614Ad114853D52Cb";
 
     private contractAddressEventDispatcher: string;
-    private contractAddressBbFactory: string;
+    private contractAddressBbTeamManager: string;
+    private contractAddressProxyManager: string;
     private log: ILogger;
     private web3: Web3;
     private contracts: Array<ITrbSmartContact>;
     private eventDispatcherContractAbi: ITrbSmartContractJson;
-    private bbFactoryContractAbi: ITrbSmartContractJson;
+    private bbTeamManagerContractAbi: ITrbSmartContractJson;
+    private proxyManagerContractAbi: ITrbSmartContractJson;
     private initObs: Observable<string>;
 
 
@@ -56,7 +59,7 @@ export class ContractManagerService {
         return this.initObs.pipe(
             flatMap(() => {
                 return this.web3.eth.getTransaction(this.eventDispatcherContractAbi.networks[BackendConfig.NET_ID]
-                    [this.TRANSACTION_HASH_PROPERTY]);
+                [this.TRANSACTION_HASH_PROPERTY]);
             }),
             map(txInfo => {
                 return txInfo[this.BLOCK_NUMBER_PROPERTY];
@@ -64,8 +67,18 @@ export class ContractManagerService {
     }
 
     private getEventDispatcherAddress(): Observable<string> {
-        return from<string>(this.contracts[ContractIndex.BbFactory].methods.getEventDispatcherAddress()
-        .call({ from: this.RANDOM_ADDRESS }));
+        return from<string>(this.contracts[ContractIndex.BbTeamManager].methods.getEventDispatcherAddress()
+            .call({ from: this.RANDOM_ADDRESS }));
+    }
+
+    private getTeamManagerAddress(): Observable<string> {
+        return from<string>(this.contracts[ContractIndex.ProxyManager].methods.getCurrentVersion()
+            .call({ from: this.RANDOM_ADDRESS })
+            .then(res => {
+                return this.contracts[ContractIndex.ProxyManager].methods.getVersionContracts(res)
+                    .call({ from: this.RANDOM_ADDRESS });
+            })
+        );
     }
 
     private init(): Observable<string> {
@@ -73,12 +86,22 @@ export class ContractManagerService {
         this.web3 = this.web3Service.openConnection();
         return from(this.web3.eth.net.isListening()).pipe(
             flatMap((res: boolean) => {
-                return this.httpSrv.get(BackendConfig.CLOUD_BB_FACTORY_CONTRACT_URL);
+                return this.httpSrv.get(BackendConfig.PROXY_MANAGER_CONTRACT_URL);
             }),
             flatMap(response => {
-                this.bbFactoryContractAbi = response.data;
-                this.contractAddressBbFactory = this.bbFactoryContractAbi.networks[BackendConfig.NET_ID].address;
-                this.contracts.push(new this.web3.eth.Contract(this.bbFactoryContractAbi.abi, this.contractAddressBbFactory));
+                this.proxyManagerContractAbi = response.data;
+                this.contractAddressProxyManager = this.proxyManagerContractAbi.networks[BackendConfig.NET_ID].address;
+                this.contracts.push(new this.web3.eth.Contract(this.proxyManagerContractAbi.abi, this.contractAddressProxyManager));
+                return this.getTeamManagerAddress();
+            }),
+            flatMap((res: string) => {
+                this.contractAddressBbTeamManager = res;
+                this.log.d("The Team Manager address is: ", this.contractAddressBbTeamManager);
+                return this.httpSrv.get(BackendConfig.CLOUD_BB_TEAM_MANAGER_CONTRACT_URL);
+            }),
+            flatMap(response => {
+                this.bbTeamManagerContractAbi = response.data;
+                this.contracts.push(new this.web3.eth.Contract(this.bbTeamManagerContractAbi.abi, this.contractAddressBbTeamManager));
                 return this.httpSrv.get(BackendConfig.CLOUD_EVENT_DISPATCHER_CONTRACT_URL);
             }),
             flatMap(response => {
