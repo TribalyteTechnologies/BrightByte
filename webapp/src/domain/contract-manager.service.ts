@@ -1166,6 +1166,18 @@ export class ContractManagerService {
         return this.currentTeamUid;
     }
 
+    public getCurrentVersion(): Promise<string> {
+        return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
+            return proxyManager.methods.getCurrentVersion().call({ from: this.currentUser.address });
+        });
+    }
+
+    public getCurrentVersionFromBase(): Promise<string> {
+        return this.initProm.then(([bright, commit, root]) => {
+            return root.methods.getVersion().call({ from: this.currentUser.address });
+        });
+    }
+
     private getUserData(userAddress: string): Promise<Array<string>> {
         return this.initProm.then(([bright]) => {
             return this.callAndRetry(() => {

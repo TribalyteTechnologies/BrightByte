@@ -92,6 +92,7 @@ export class Profile {
     private userTeam: number;
     private isSettingSeason: boolean;
     private log: ILogger;
+    private currentVersion: string;
 
 
     constructor(
@@ -173,6 +174,9 @@ export class Profile {
             return this.contractManagerService.getTeamMembersInfo();
         }).then((teamMembers: Array<Array<TeamMember>>) => {
             this.teamMembers = teamMembers;
+            return this.contractManagerService.getCurrentVersionFromBase();
+        }).then((res: string) => {
+            this.currentVersion = res;
             return this.contractManagerService.getCurrentSeason();
         }).then((seasonState: Array<number>) => {
             this.isSettingSeason = Number(seasonState[0]) === 1;
@@ -191,7 +195,8 @@ export class Profile {
             return this.contractManagerService.getRandomReviewer();
         }).then((isRandomReviewers: boolean) => {
             this.isRandomReviewers = isRandomReviewers;
-            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.WORKSPACE + this.userAddress;
+            return this.http.get(url).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.isBackendAvailable = false;
             if (result.status !== "Error") {
@@ -563,7 +568,8 @@ export class Profile {
         this.log.d("The user admin requested to deleted the workspace: ", workspace);
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspaceIndex !== -1) {
-            this.http.delete(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then(result => {
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.WORKSPACE + workspace;
+            this.http.delete(url, {}).toPromise().then(result => {
                 this.teamWorkspaces.splice(workspaceIndex, 1);
                 this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
                     this.workspaceSuccessMsg = res;

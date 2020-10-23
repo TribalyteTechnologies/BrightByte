@@ -19,6 +19,7 @@ export class WorkspaceForm {
     public errorMsg: string;
 
     private userTeamUid: number;
+    private currentVersion: string;
 
     constructor(
         private navCtrl: NavController,
@@ -27,7 +28,10 @@ export class WorkspaceForm {
         contractManager: ContractManagerService
         ){
             contractManager.getUserTeam()
-            .then((teamUid: Array<number>) => this.userTeamUid = teamUid[teamUid.length - 1]);
+            .then((teamUid: Array<number>) => {
+                this.userTeamUid = teamUid[teamUid.length - 1];
+                return contractManager.getCurrentVersion();
+            }).then((res: string) => this.currentVersion = res);
         }
 
     public goToTabsPage() {
@@ -35,7 +39,8 @@ export class WorkspaceForm {
     }
 
     public addWorkspaceAndContinue() {
-        this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.WORKSPACE_PATH + this.workspace, {}).toPromise()
+        const url = AppConfig.TEAM_API + this.userTeamUid + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + this.workspace;
+        this.http.post(url, {}).toPromise()
         .then(() => { 
             this.navCtrl.push(TabsPage);
         })
