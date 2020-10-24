@@ -105,7 +105,7 @@
                             <ion-row justify-content-center class="ranking-details no-wrap">
                                 {{ "ranking.engagementIndex" | translate }}</ion-row>
                             <ion-row justify-content-center>
-                                <img src="../../assets/imgs/chains.svg">
+                                <img src="assets/imgs/chains.svg">
                                 <span class="ranking-score">{{ userRankDetails.engagementIndex }}</span>
                             </ion-row>
                         </ion-col>
@@ -120,14 +120,14 @@
                                         <span
                                             class="ranking-details-text text-title--grey">{{ "ranking.noReputation" | translate }}</span>
                                     </ng-template>
-                                    <img class="btn--img" src="../../assets/imgs/star-icon.svg">
+                                    <img class="btn--img" src="assets/imgs/star-icon.svg">
                                 </div>
                             </ion-col>
                             <ion-col no-padding no-margin class="text-title">
                                 <ion-row justify-content-center class="ranking-details no-wrap">
                                     {{ "ranking.engagementIndex" | translate }}</ion-row>
                                 <ion-row justify-content-center>
-                                    <img class="engagemente-index-chain" src="../../assets/imgs/chains.svg">
+                                    <img class="engagemente-index-chain" src="assets/imgs/chains.svg">
                                     <span *ngIf="userRankDetails.isRanked; else eiNotRanked" class="ranking-score engagement-index">{{ userRankDetails.engagementIndex }}</span>
                                     <ng-template #eiNotRanked>
                                         <span class="ranking-score text-title--grey engagement-index">{{ "ranking.noReputation" | translate }}</span>

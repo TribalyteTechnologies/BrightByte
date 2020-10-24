@@ -4,7 +4,7 @@
     </button>
 </ion-header>
 <ion-content>
-    <img class="logo slide-logo" src="../../assets/imgs/bright_logo.svg">
+    <img class="logo slide-logo" src="assets/imgs/bright_logo.svg">
     <h2 class="slide-title">
         <span>{{ "tutorialSlides.registerTutorialTitle" | translate }}</span>
     </h2> 
@@ -12,7 +12,7 @@
         <ion-slide *ngFor="let contentId of SLIDES_CONTENT_IDS">
                 <ion-row>
                     <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[0]">
-                        <img (click)="goPrev()" class="arrow-pointer" src="../../assets/imgs/Flecha-anterior.svg">
+                        <img (click)="goPrev()" class="arrow-pointer" src="assets/imgs/Flecha-anterior.svg">
                     </ion-col>
                     <ion-col class="slide-container-outside-padding">
                         <div [ngClass]="{'slide-first':contentId == SLIDES_CONTENT_IDS[0], 'slide-last':contentId == SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]}">
@@ -29,7 +29,7 @@
                         </div>
                     </ion-col>
                     <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]">
-                        <img (click)="goNext()" class="arrow-next arrow-pointer" src="../../assets/imgs/Flecha-anterior.svg">    
+                        <img (click)="goNext()" class="arrow-next arrow-pointer" src="assets/imgs/Flecha-anterior.svg">    
                     </ion-col>
                 </ion-row>
         </ion-slide>
