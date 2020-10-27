@@ -16,6 +16,6 @@ export class Web3Service {
 
     public openConnection(): Web3 {
         this.log.d("Opening a new Wesocket connection via Web3");
-        return new Web3(new Web3.providers.WebsocketProvider(BackendConfig.NODE_CONFIG_URL));;
+        return new Web3(new Web3.providers.WebsocketProvider(BackendConfig.NODE_CONFIG_URL));
     }
 }
