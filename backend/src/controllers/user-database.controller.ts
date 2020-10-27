@@ -7,7 +7,7 @@ import { ResponseDto } from "../dto/response/response.dto";
 export class UserDatabaseController {
     public constructor(private userDatabaseService: UserDatabaseService) { }
 
-    @Get("achievements/:id:/:version/:teamUid")
+    @Get("achievements/:id/:teamUid/:version")
     public getObtainedAchievements(
         @Param("id") id: string, @Param("teamUid") teamUid: string, @Param("version") version: string
     ): Observable<ResponseDto> {
