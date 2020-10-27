@@ -65,6 +65,7 @@ export class AddCommitPopover {
     private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
     private userAddress: string;
+    private currentVersion: string;
     private userEmail: string;
     private userTeam: number;
     private log: ILogger;
@@ -329,7 +330,7 @@ export class AddCommitPopover {
                 return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
             });
             this.log.d("The commits from the blockchain", this.blockChainCommits);
-            return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress);
+            return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion);
         }).then((config: BackendConfig) => {
             seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
             this.currentSeasonStartDate = seasonDate;
@@ -422,7 +423,7 @@ export class AddCommitPopover {
 
     public loadNextRepos(): Promise<void>{
         this.showSpinner = true;
-        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress).then(config => {
+        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion).then(config => {
             return config.bitbucketWorkspaces;
         }).then(workspaces => {
             let promisesWorkspaces = workspaces.map(workspace => {
@@ -465,8 +466,9 @@ export class AddCommitPopover {
 
     private loginToBitbucket() {
         this.userAddress = this.loginService.getAccountAddress();
+        this.currentVersion = this.loginService.getCurrentVersion();
         this.commitMethod = this.BATCH_METHOD;
-        this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam).then(user => {
+        this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion).then(user => {
             this.log.d("Waiting for the user to introduce their credentials");
             this.isServiceAvailable = true;
         }).catch(e => {

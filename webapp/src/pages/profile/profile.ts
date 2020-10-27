@@ -115,6 +115,7 @@ export class Profile {
 
     public ngOnInit() {
         this.userAddress = this.loginSrv.getAccountAddress();
+        this.currentVersion = this.loginSrv.getCurrentVersion();
         this.isLoadingInfo = true;
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
         this.translateSrv.get([
@@ -174,9 +175,6 @@ export class Profile {
             return this.contractManagerService.getTeamMembersInfo();
         }).then((teamMembers: Array<Array<TeamMember>>) => {
             this.teamMembers = teamMembers;
-            return this.contractManagerService.getCurrentVersionFromBase();
-        }).then((res: string) => {
-            this.currentVersion = res;
             return this.contractManagerService.getCurrentSeason();
         }).then((seasonState: Array<number>) => {
             this.isSettingSeason = Number(seasonState[0]) === 1;

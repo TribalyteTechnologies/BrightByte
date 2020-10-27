@@ -35,6 +35,7 @@ export class BitbucketService {
     private userToken: string;
     private userIdentifier: string;
     private userTeamUid: number;
+    private currentVersion: string;
     private headers: HttpHeaders;
     private log: ILogger;
     private authWindow: Window;
@@ -55,10 +56,11 @@ export class BitbucketService {
         return this.eventEmitter;
     }
 
-    public checkProviderAvailability(userAddress: string, teamUid: number): Promise<boolean> {
+    public checkProviderAvailability(userAddress: string, teamUid: number, version: string): Promise<boolean> {
         this.log.d("Checks the api works correctly");
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
+        this.currentVersion = version;
         return this.getUsername().then(name => {
             this.log.d("The api provider works, the user nickname is:", name);
             this.eventEmitter.emit(true);
@@ -160,16 +162,18 @@ export class BitbucketService {
         this.eventEmitter.emit(true);
     }
 
-    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendConfig> {
-        let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/workspace/" + userAddress;
+    public getTeamBackendConfig(teamUid: number, userAddress: string, version: string): Promise<BackendConfig> {
+        let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/" + version + "/workspace/" + userAddress;
         return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
     }
 
-    private loginToBitbucket(userAddress: string, teamUid: number): Promise<string> {
+    private loginToBitbucket(userAddress: string, teamUid: number, version: string): Promise<string> {
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
+        this.currentVersion = version;
         const provider = BitbucketApiConstants;
-        return this.http.get(provider.SERVER_AUTHENTICATION_URL + provider.PROVIDER_NAME + "/" + userAddress + "/" + teamUid).toPromise()
+        const urlAuth = provider.SERVER_AUTHENTICATION_URL + provider.PROVIDER_NAME + "/" + userAddress + "/" + teamUid + "/" + version;
+        return this.http.get(urlAuth).toPromise()
         .then((response: IResponse) => {
             if (response.status === AppConfig.STATUS_OK) {
                 let url = response.data;
@@ -192,7 +196,7 @@ export class BitbucketService {
 
     private refreshToken(): Promise<string> {
         this.log.d("Token experied, getting a new one for user: " + this.userIdentifier);
-        return this.loginToBitbucket(this.userIdentifier, this.userTeamUid)
+        return this.loginToBitbucket(this.userIdentifier, this.userTeamUid, this.currentVersion)
         .then(authUrl => {
             this.log.d("Refreshing token", authUrl);
             return authUrl;

@@ -32,9 +32,9 @@ export class BackendApiService {
         this.socket = this.websocketSrv.getSocket();
     }
 
-    public initBackendConnection(teamUid: number) {
+    public initBackendConnection(teamUid: number, version: string) {
         let userAddress = this.loginSrv.getAccountAddress();
-        let sessionId = userAddress + "-" + teamUid;
+        let sessionId = userAddress + "-" + teamUid + "-" + version;
         this.socket.emit(this.ADD_USER, sessionId);
         this.log.d("Backend connection established");
         this.registerNewAchievementListener();

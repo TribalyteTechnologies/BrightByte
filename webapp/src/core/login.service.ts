@@ -6,6 +6,7 @@ export class LoginService {
 
     private account: Account;
     private teamUid: number;
+    private currentVersion: string;
 
     public setAccount(acc: Account) {
         this.account = acc;
@@ -13,6 +14,10 @@ export class LoginService {
 
     public setTeamUid(teamUid: number) {
         this.teamUid = teamUid;
+    }
+
+    public setCurrentVersion(version: string) {
+        this.currentVersion = version;
     }
 
     public getAccount(): Account {
@@ -25,5 +30,9 @@ export class LoginService {
 
     public getTeamUid() {
         return this.teamUid;
+    }
+
+    public getCurrentVersion() {
+        return this.currentVersion;
     }
 }

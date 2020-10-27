@@ -165,8 +165,13 @@ export class SetProfileForm {
     }
 
     private setContractsAndProfile(teamUid: number, isCreatingTeam = true): Promise<void> {
+        let currentVersion: string;
         return this.contractManagerService.setBaseContracts(teamUid)
             .then(() => {
+                return this.contractManagerService.getCurrentVersionFromBase();
+            })
+            .then((version: string) => {
+                currentVersion = version;
                 return this.contractManagerService.setProfile(this.userName, this.userEmail);
             })
             .then(txResponse => {
@@ -178,7 +183,7 @@ export class SetProfileForm {
                 addresses.forEach(address => {
                     this.avatarSrv.addUser(address);
                 });
-                this.backendApiSrv.initBackendConnection(teamUid);
+                this.backendApiSrv.initBackendConnection(teamUid, currentVersion);
                 if (isCreatingTeam) {
                     this.showSetWorkspace();
                 } else {
