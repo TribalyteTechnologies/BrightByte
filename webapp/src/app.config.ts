@@ -36,6 +36,7 @@ export class AppConfig {
     public static readonly TEAM_MANAGER_CONTRACT_PATH = "assets/build/CloudTeamManager.json";
     public static readonly BB_FACTORY_CONTRACT_PATH = "assets/build/CloudBrightByteFactory.json";
     public static readonly BB_DICTIONARY_CONTRACT_PATH = "assets/build/BrightDictionary.json";
+    public static readonly BB_PROXY_CONTRACT_PATH = "assets/build/ProxyManager.json";
 
     public static readonly BRIGHT_CONTRACT_INDEX = 0;
     public static readonly COMMITS_CONTRACT_INDEX = 1;
