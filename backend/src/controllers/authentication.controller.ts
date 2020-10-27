@@ -84,6 +84,7 @@ export class AuthenticationController {
     public getBitbucketToken(@Req() req: Request, @Res() response: Response) {
         let code = req.query.code.toString();
         let userIdentifier = req.query.state.toString();
+        this.log.d("The user identifier is", userIdentifier);
         let digested = Buffer.from((BackendConfig.BITBUCKET_KEY + ":" + BackendConfig.BITBUCKET_SECRET)).toString("base64");
         let accessTokenOptions: IFooParams = { grant_type: this.GRANT_TYPE, code: code };
         let accessTokenConfig = {

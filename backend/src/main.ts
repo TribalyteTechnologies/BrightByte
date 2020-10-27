@@ -25,7 +25,7 @@ class BrightByteCloudBackend {
         }
         const applicationOptions = {
             cors: {
-                origin: [BackendConfig.WEBAPP_URL]
+                origin: [BackendConfig.WEBAPP_BASE_URL]
             },
             httpsOptions: httpsOptions
         };
