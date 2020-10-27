@@ -16,7 +16,7 @@ pipelines:
           - cd ../blockchain
           - yarn
           - yarn linters-ci
-          - yarn truffle:deploy:test
+          - yarn test
           - yarn truffle:compile
           - cd ../backend
           - yarn

@@ -4,12 +4,12 @@
     </button>
 </ion-header>
 <ion-content>
-    <img class="logo slide-logo" src="../../assets/imgs/bright_logo.svg">
+    <img class="logo slide-logo" src="assets/imgs/bright_logo.svg">
     <ion-slides class="slides" pager="true">
         <ion-slide *ngFor="let contentId of SLIDES_CONTENT_IDS">
                 <ion-row>
                     <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[0]">
-                        <img (click)="goPrev()"  class="arrow-pointer" src="../../assets/imgs/Flecha-anterior.svg">
+                        <img (click)="goPrev()"  class="arrow-pointer" src="assets/imgs/Flecha-anterior.svg">
                     </ion-col>
                     <ion-col [ngSwitch]="contentId" class="slide-container-outside-padding">
                         <div *ngSwitchDefault class="slide-first">
@@ -69,13 +69,13 @@
                             </ion-row>
                             <ion-row>
                                 <a class="slide-brightbyte-page" [href]="'social.url' | translate" target="_blank">
-                                    <img class="slide-brightbyte-page-img" src="../../assets/imgs/globe-outline.svg">
+                                    <img class="slide-brightbyte-page-img" src="assets/imgs/globe-outline.svg">
                                 </a>
                             </ion-row>
                         </div>
                     </ion-col>
                     <ion-col col-1 class="arrow" *ngIf="contentId != SLIDES_CONTENT_IDS[SLIDES_CONTENT_IDS.length-1]">
-                        <img (click)="goNext()" class="arrow-next arrow-pointer" src="../../assets/imgs/Flecha-anterior.svg">    
+                        <img (click)="goNext()" class="arrow-next arrow-pointer" src="assets/imgs/Flecha-anterior.svg">    
                     </ion-col>
                 </ion-row>
         </ion-slide>

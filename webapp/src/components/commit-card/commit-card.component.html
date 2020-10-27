@@ -4,11 +4,11 @@
     </ion-col>
     <ion-col align-self-center col-7 padding>
         <ion-row align-items-center>
-            <img class="ico" src="../../assets/imgs/clock-icon.svg">
+            <img class="ico" src="assets/imgs/clock-icon.svg">
             <div class="text-details">{{ creationDateMs | dateFormat }}</div>
-            <img class="ico ico__margin" src="../../assets/imgs/project-icon.svg">
+            <img class="ico ico__margin" src="assets/imgs/project-icon.svg">
             <div class="text-details"> {{ project }}</div>
-            <img class="ico ico__margin" src="../../assets/imgs/tab-icon.svg">
+            <img class="ico ico__margin" src="assets/imgs/tab-icon.svg">
             <div class="text-details" (click)="openUrl(urlLink, true, $event)">{{ "commits.newTab" | translate }}</div>
         </ion-row>
         <ion-row class="text-title">

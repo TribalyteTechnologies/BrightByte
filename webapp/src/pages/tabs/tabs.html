@@ -1,35 +1,35 @@
 <ion-split-pane [when]="isVisible">
     <div class="menu-container">
         <div class="logo-container">
-            <img class="logo-icon" src="../../assets/imgs/logo_icon.svg">
+            <img class="logo-icon" src="assets/imgs/logo_icon.svg">
         </div>
         <div class="avatar-container">
             <avatar [avatarUrl]="avatarObs | async" [isClickable]="true"></avatar>
         </div>
         <div>
             <button (click)="openAddCommitDialog()" class="tab">
-                <img class="button-icon" [src]="'../../assets/imgs/menu/'+ contribute.icon">
+                <img class="button-icon" [src]="'assets/imgs/menu/'+ contribute.icon">
                 <p class="tab-text">{{ contribute.pagName | translate }}</p>
             </button>
         </div>
         <div *ngFor="let page of menuArray">
             <button (click)="goTo(page.url)" [ngClass]="page.url === currentPage ? 'tab tab__selected' : 'tab'">
-                <img class="button-icon" [src]="'../../assets/imgs/menu/'+ page.icon">
+                <img class="button-icon" [src]="'assets/imgs/menu/'+ page.icon">
                 <p class="tab-text">{{ page.pagName | translate }}</p>
             </button>
         </div>
         <div class="logout">
             <button *ngIf="IS_SHARING" class="tab tab-resize" no-margin (click)="showSharingDialog()">
-                <img class="button-icon tabs-icon" src="../../assets/imgs/menu/share.svg">
+                <img class="button-icon tabs-icon" src="assets/imgs/menu/share.svg">
             </button>
             <button class="tab tab-resize" no-margin (click)="openSetProfileDialog()">
-                <img class="button-icon tabs-icon" src="../../assets/imgs/settings.svg">
+                <img class="button-icon tabs-icon" src="assets/imgs/settings.svg">
             </button>
             <button class="tab tab-resize" no-margin (click)="openAfterLoginTutorialDialog()">
-                <img class="button-icon tabs-icon" src="../../assets/imgs/slide_icon.png">
+                <img class="button-icon tabs-icon" src="assets/imgs/slide_icon.png">
             </button>
             <button class="tab tab-resize" no-margin (click)="logout()">
-                <img class="button-icon" src="../../assets/imgs/menu/logout.svg">
+                <img class="button-icon" src="assets/imgs/menu/logout.svg">
             </button>
         </div>
     </div>

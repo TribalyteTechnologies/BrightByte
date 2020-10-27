@@ -17,7 +17,7 @@
         <ion-row class="remove-vertical-padding">
             <ion-col col-3 class="remove-vertical-padding" *ngIf="globalSelected; else notGlobalSelectedBlock">
                 <div class="criterial-center">
-                    <img class="ico ico__big" src="../../assets/imgs/chains.svg">
+                    <img class="ico ico__big" src="assets/imgs/chains.svg">
                     <span class="text-title ranking-score">{{ engagementIndexString }}</span>
                 </div>
             </ion-col>
@@ -26,13 +26,13 @@
                     <div class="criterial-center">
                         <div *ngIf="isRanked; else notRanked">
                             <span class="text-title text-title--yellow ranking-score"> {{ reputation }} </span>
-                            <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+                            <img class="ico ico__big" src="assets/imgs/star-icon.svg">
                         </div>
                         <ng-template #notRanked no-padding>
                             <ion-col class="remove-vertical-padding tooltip">
                                 <span
                                     class="text-title text-title--grey ranking-score">{{ "ranking.noReputation" | translate }}</span>
-                                <img class="ico ico__big" src="../../assets/imgs/star-icon.svg">
+                                <img class="ico ico__big" src="assets/imgs/star-icon.svg">
                                 <div class="tooltip-text"
                                     [innerHTML]=" 'ranking.notQualified' | translate:tooltipParams"></div>
                             </ion-col>
@@ -41,7 +41,7 @@
                 </ion-col>
                 <ion-col col-1 class="remove-vertical-padding">
                     <div>
-                        <img class="ico ico__big" src="../../assets/imgs/chains.svg">
+                        <img class="ico ico__big" src="assets/imgs/chains.svg">
                     </div>
                 </ion-col>
                 <ion-col col-1 class="remove-vertical-padding margin-right">
