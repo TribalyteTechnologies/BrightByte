@@ -477,7 +477,8 @@ export class Profile {
         this.workspaceSuccessMsg = null;
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspace && workspaceIndex === -1) {
-            this.http.post(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then((response: IResponse) => {
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.WORKSPACE + workspace;
+            this.http.post(url, {}).toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
                 this.teamWorkspaces.push(workspace);
                 this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
