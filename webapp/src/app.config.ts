@@ -30,12 +30,12 @@ export class AppConfig {
     public static readonly IDENTICON_FORMAT = ".svg";
     public static readonly BRIGHTBYTE_LANDING_PAGE = "http://www.brightbyteapp.com/";
 
-    public static readonly BRIGHT_CONTRACT_PATH = "../assets/build/Bright.json";
-    public static readonly COMMITS_CONTRACT_PATH = "../assets/build/Commits.json";
-    public static readonly ROOT_CONTRACT_PATH = "../assets/build/Root.json";
-    public static readonly TEAM_MANAGER_CONTRACT_PATH = "../assets/build/CloudTeamManager.json";
-    public static readonly BB_FACTORY_CONTRACT_PATH = "../assets/build/CloudBrightByteFactory.json";
-    public static readonly BB_DICTIONARY_CONTRACT_PATH = "../assets/build/BrightDictionary.json";
+    public static readonly BRIGHT_CONTRACT_PATH = "assets/build/Bright.json";
+    public static readonly COMMITS_CONTRACT_PATH = "assets/build/Commits.json";
+    public static readonly ROOT_CONTRACT_PATH = "assets/build/Root.json";
+    public static readonly TEAM_MANAGER_CONTRACT_PATH = "assets/build/CloudTeamManager.json";
+    public static readonly BB_FACTORY_CONTRACT_PATH = "assets/build/CloudBrightByteFactory.json";
+    public static readonly BB_DICTIONARY_CONTRACT_PATH = "assets/build/BrightDictionary.json";
 
     public static readonly BRIGHT_CONTRACT_INDEX = 0;
     public static readonly COMMITS_CONTRACT_INDEX = 1;

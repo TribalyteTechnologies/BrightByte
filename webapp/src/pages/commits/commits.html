@@ -35,8 +35,8 @@
                             <div class="text-title text-ellipsis">{{ currentCommit.title }}</div>
                         </ion-row>
                         <ion-row align-items-center class="text-description">
-                            <img class="ico " src="../../../../assets/imgs/project-icon.svg">{{ currentCommit.project }}
-                            <img class="ico ico__margin" src="../../../../assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
+                            <img class="ico " src="assets/imgs/project-icon.svg">{{ currentCommit.project }}
+                            <img class="ico ico__margin" src="assets/imgs/user-icon.svg"> {{ currentCommitName }} ( {{ currentCommitEmail }} )
                         </ion-row>
                         <ion-row>
                             <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url, false)">  #{{ currentCommit.urlHash }}</div>

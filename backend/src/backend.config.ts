@@ -17,8 +17,8 @@ export class BackendConfig {
     public static readonly STATUS_FAILURE = "Error";
     public static readonly NET_ID = process.env.NET_ID || "5777";
     public static readonly SCORE_DIVISION_FACTOR = 100;
-    public static readonly ACH_TROPHY_PATH = "../../assets/imgs/trophys/achievement";
-    public static readonly ACH_TIMED_TROPHY_PATH = "../../assets/imgs/trophys/timedAchievement";
+    public static readonly ACH_TROPHY_PATH = "assets/imgs/trophys/achievement";
+    public static readonly ACH_TIMED_TROPHY_PATH = "assets/imgs/trophys/timedAchievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
     public static readonly NODE_CONFIG_URL = NodeConfig.NODE_WEBSOCKET_URL;
     public static readonly WEBAPP_URL = process.env.WEBAPP_URL || "http://localhost:8100";
