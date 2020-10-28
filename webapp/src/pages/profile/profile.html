@@ -274,7 +274,7 @@
                     </div>
                 </ion-row>
                 <div class="separator">
-                    <div *ngIf="isBackendAvailable; else backendNotAvailable">
+                    <div *ngIf="isBitbucketAvailable; else bitbucketNotAvailable">
                         <ion-row>
                             {{ "setProfile.availableWorkspaces" | translate }}
                         </ion-row>
@@ -314,12 +314,67 @@
                             </ion-item>
                         </ion-list>
                     </div>
-                    <ng-template #backendNotAvailable>
+                    <ng-template #bitbucketNotAvailable>
                         <ion-row>
-                            {{ "setProfile.backendNotAvailable" | translate }}
+                            {{ "setProfile.bitbucketNotAvailable" | translate }}
                         </ion-row>
                     </ng-template>
                 </div>
+                <ion-row class="profile-tooltip-container">
+                    <h6>{{ "setProfile.githubOrganizations" | translate }}</h6>
+                    <div class="tooltip info-icon">
+                        <ion-icon name="ios-information-circle-outline"></ion-icon>
+                        <div class="tooltip-text" [innerHTML]="('setProfile.organizationsDescription') | translate"></div>
+                    </div>
+                </ion-row>
+                <div class="separator">
+                    <div *ngIf="isGithubAvailable; else githubNotAvailable">
+                        <ion-row>
+                            {{ "setProfile.availableOrganizations" | translate }}
+                        </ion-row>
+                        <ion-row>
+                            <ion-list lines="full" class="team-name-list">
+                                <ion-item *ngFor="let organization of teamOrganizations">
+                                    <ion-label color="dark">{{ organization }}</ion-label>
+                                    <ion-icon item-right name="trash" class="trash-icon"
+                                        (click)="showRemoveOrganizationConfirmation(organization)"></ion-icon>
+                                </ion-item>
+                                <ion-item *ngIf="teamOrganizations.length <= 0">
+                                    <ion-label color="dark">{{ 'setProfile.noOrganizationAvailableYet' | translate }}
+                                    </ion-label>
+                                </ion-item>
+                            </ion-list>
+                        </ion-row>
+                        <ion-row *ngIf="organizationSuccessMsg" class="success-body">
+                            {{ organizationSuccessMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="organizationErrorMsg" class="error-body">
+                            {{ organizationErrorMsg }}
+                        </ion-row>
+                        <ion-row>
+                            {{ "setProfile.addNewOrganization" | translate }}
+                        </ion-row>
+                        <ion-list lines="full" class="team-name-list">
+                            <ion-item>
+                                <ion-label color="dark">{{ "setProfile.organizationName" | translate }}: </ion-label>
+                                <ion-input type="text" [(ngModel)]="newTeamOrganization"></ion-input>
+                            </ion-item>
+                            <ion-item class="team-name-submit">
+                                <ion-spinner *ngIf="isSettingOrganization"></ion-spinner>
+                                <button type="submit" class="btn save-button btn__blue"
+                                    (click)="addNewOrganization(newTeamOrganization)">
+                                    {{ "setProfile.addNewOrganization" | translate }}
+                                </button>
+                            </ion-item>
+                        </ion-list>
+                    </div>
+                    <ng-template #githubNotAvailable>
+                        <ion-row>
+                            {{ "setProfile.githubNotAvailable" | translate }}
+                        </ion-row>
+                    </ng-template>
+                </div>
+
             </ion-col>
         </ion-row>
     </ion-grid>

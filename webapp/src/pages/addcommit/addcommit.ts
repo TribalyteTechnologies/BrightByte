@@ -19,6 +19,7 @@ import { BitbucketRepository } from "../../models/bitbucket-github/bitbucket-rep
 import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket-github/pull-request.model";
 import { GithubService } from "../../domain/github.service";
 import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
+import { BackendConfig } from "../../models/backend-config.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -137,9 +138,20 @@ export class AddCommitPopover {
         }).then((user: UserDetails) => {
             this.userEmail = user.email;
         });
+        this.loginSubscription = this.bitbucketSrv.getLoginEmitter()
+        .subscribe(res => {
+            this.log.d("Provider bitbucket authentication completed", res);
+            this.commitMethod = this.BATCH_METHOD;
+            this.bitbucketSrv.getUsername().then((user) => {
+                this.isServiceAvailable = true;
+                this.bitbucketUser = user;
+                this.isBatchLogged = true;
+                this.loadUserPendingCommitsAndPr();
+            });
+        });
         this.loginSubscription = this.githubSrv.getLoginEmitter()
         .subscribe(res => {
-            this.log.d("Provider authentication completed", res);
+            this.log.d("Provider github authentication completed", res);
             this.commitMethod = this.BATCH_METHOD;
             this.githubSrv.getUsername().then((user) => {
                 this.isServiceAvailable = true;
@@ -305,7 +317,9 @@ export class AddCommitPopover {
         this.commitMethod = method;
         this.clearGuiMessage();
         if (this.commitMethod === this.BATCH_METHOD) {
-            this.loginToGithub();
+            this.loginToBitbucket().then(() => {
+                this.loginToGithub();
+            });   
         }
     }
 
@@ -394,6 +408,62 @@ export class AddCommitPopover {
         });
     }
 
+    public loadUserPendingCommitsAndPr(): Promise<void> {
+        this.selectedRepositories = new Array<Repository>();
+        this.blockChainCommits = new Array<string>();
+        this.nextRepositoriesUrl = new Map<string, string>();
+        let seasonDate;
+        let seasonLengthIndays;
+        this.isFinishedLoadingRepo = false;
+        this.showNextReposOption = false;
+        return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
+            let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
+            seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
+            seasonDate = seasonEndDate[1] < dateNowSecs ? 
+                new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
+            return seasonDate;
+        }).then(() => {
+            this.showSpinner = true;
+            return this.contractManagerService.getCommits();
+        }).then(commits => {
+            commits = commits.filter(com => com);    
+            this.blockChainCommits = commits.map(com => {
+                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
+            });
+            this.log.d("The commits from the blockchain", this.blockChainCommits);
+            return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress);
+        }).then((config: BackendConfig) => {
+            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
+            this.currentSeasonStartDate = seasonDate;
+            let workspaces = config.bitbucketWorkspaces;
+            let promisesWorkspaces = workspaces.map(workspace => {
+                return this.bitbucketSrv.getRepositories(workspace, this.currentSeasonStartDate).then(repositories => {
+                    this.log.d("The repositories from Bitbucket are: ", repositories);
+                    let promisesRepos = repositories.values.map(repository => {
+                        return this.handleRepository(workspace, repository);
+                    });
+                    return Promise.all(promisesRepos).then(() => {
+                        this.nextRepositoriesUrl.set(workspace, repositories.next);
+                    });   
+                });
+            });
+            return Promise.all(promisesWorkspaces).then(() => {
+                this.showNextReposOption = workspaces.some(workspace => {
+                    return this.nextRepositoriesUrl.has(workspace) && this.nextRepositoriesUrl.get(workspace) ? true : false;
+                });
+            });
+        }).then(() => {
+            this.showSpinner = false;
+            this.isFinishedLoadingRepo = true;
+            this.log.d("All the commits from the respos", this.selectedRepositories);
+        }).catch(err => { 
+            this.showSpinner = false;
+            this.isServiceAvailable = false;
+            this.isBatchLogged = false;
+            this.log.e("Error loading commits and PRs: " + err); 
+        });
+    }
+
     private readonly SORT_BY_DATE_FN = (comA, comB) => comA.date - comB.date;
 
     private loadUserPendingCommitsGithub(): Promise<void> {
@@ -454,6 +524,21 @@ export class AddCommitPopover {
 
     private clearGuiMessage() {
         this.msg = "";
+    }
+
+
+    private loginToBitbucket(): Promise<void> {
+        this.userAddress = this.loginService.getAccountAddress();
+        this.commitMethod = this.BATCH_METHOD;
+        this.log.d("The user is going to login with Bitbucket provider");
+        this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam).then(user => {
+            this.log.d("Waiting for the user to introduce their credentials");
+            this.isServiceAvailable = true;
+        }).catch(e => {
+            this.log.w("Service not available", e);
+            this.isServiceAvailable = false;
+        });
+        return null;
     }
 
     private loginToGithub() {

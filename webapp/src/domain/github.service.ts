@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
-import { IResponse } from "../models/response.model";
+import { IOrganizationResponse, IResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
 import { GithubCommitResponse } from "../models/bitbucket-github/github-commit.model";
 import { GithubUserResponse } from "../models/bitbucket-github/github-user.model";
@@ -10,9 +10,11 @@ import { PopupService } from "./popup.service";
 import { GithubRepositoryResponse} from "../models/bitbucket-github/github-repository-response.model";
 import { Repository } from "../models/bitbucket-github/repository.model";
 import { CommitInfo } from "../models/bitbucket-github/commit-info.model";
+import { BackendConfig } from "../models/backend-config.model";
 
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
+    public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/team/";
     public static readonly BASE_URL = "https://api.github.com/";
     public static readonly GET_USER_URL = "https://api.github.com/user";
     public static readonly USER_BASE_URL = "https://api.github.com/users/";
@@ -135,6 +137,11 @@ export class GithubService {
         }
         this.setNewTokenHeader(this.userToken);
         this.eventEmitter.emit(true);
+    }
+
+    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendConfig> {
+        let urlCall = GithubApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/organization/" + userAddress;
+        return this.http.get(urlCall).toPromise().then((result: IOrganizationResponse) => new BackendConfig(result.data));
     }
 
     private loginToGithub(userAddress: string, teamUid: number): Promise<string> {

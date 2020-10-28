@@ -76,7 +76,7 @@ export class BitbucketService {
         this.log.d("The user token is", this.userToken);
         return this.http.get<BitbucketUserInfo>(BitbucketApiConstants.USER_BASE_URL, { params: params, headers: this.headers }).toPromise()
         .then(result => result.uuid);
-    }
+        }
 
     public getRepositories(workspace: string, seasonStartDate: Date): Promise<BitbucketRepositoryResponse> {
         const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_REPO)
@@ -151,7 +151,7 @@ export class BitbucketService {
 
     public setUserToken(userToken: string) {
         this.userToken = userToken;
-        this.storageSrv.set(AppConfig.StorageKey.GITHUBUSERTOKEN, userToken);
+        this.storageSrv.set(AppConfig.StorageKey.BITBUCKETUSERTOKEN, userToken);
         if(this.authWindow) {
             this.authWindow.close();
             this.authWindow = null;
@@ -187,7 +187,7 @@ export class BitbucketService {
     }
 
     private getToken(): string {
-        return  this.storageSrv.get(AppConfig.StorageKey.GITHUBUSERTOKEN);
+        return  this.storageSrv.get(AppConfig.StorageKey.BITBUCKETUSERTOKEN);
     }
 
     private refreshToken(): Promise<string> {

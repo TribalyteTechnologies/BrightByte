@@ -30,6 +30,12 @@ export class TeamDatabaseController {
         return this.teamDatabaseService.getTeamWorkspaces(teamUid, user);
     }
 
+    @Get(":id/organization/:user")
+    public getTeamOrganizations(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+        this.log.d("Request to get the member organizations of team: ", teamUid);
+        return this.teamDatabaseService.getTeamOrganizations(teamUid, user);
+    }
+
     @Post(":id")
     public createTeam(@Param("id") teamUid: string): Observable<ResponseDto> {
         this.log.d("Request to create a new team: ", teamUid);
@@ -42,6 +48,12 @@ export class TeamDatabaseController {
         return this.teamDatabaseService.addNewWorkspace(teamUid, workspaceName);
     }
 
+    @Post(":id/organization/:organizationName")
+    public addNewOrganization(@Param("id") teamUid: string, @Param("organizationName") organizationName: string): Observable<ResponseDto> {
+        this.log.d("Request to add a new organization to the team: ", teamUid);
+        return this.teamDatabaseService.addNewOrganization(teamUid, organizationName);
+    }
+
     @Post(":id/members/:user")
     public addNewTeamMember(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
         this.log.d("Request to add a new member to the team: ", teamUid);
@@ -52,6 +64,12 @@ export class TeamDatabaseController {
     public removeWorkspace(@Param("id") teamUid: string, @Param("workspace") workspace: string): Observable<ResponseDto> {
         this.log.d("Request to delete a workspace from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace);
+    }
+
+    @Delete(":id/organization/:organization")
+    public removeOrganization(@Param("id") teamUid: string, @Param("organization") organization: string): Observable<ResponseDto> {
+        this.log.d("Request to delete a organization from the team: ", teamUid);
+        return this.teamDatabaseService.removeTeamOrganization(teamUid, organization);
     }
 
     @Delete(":id/members/:user")
