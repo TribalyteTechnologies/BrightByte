@@ -10,7 +10,7 @@ import { PopupService } from "./popup.service";
 import { GithubRepositoryResponse} from "../models/bitbucket-github/github-repository-response.model";
 import { Repository } from "../models/bitbucket-github/repository.model";
 import { CommitInfo } from "../models/bitbucket-github/commit-info.model";
-import { BackendConfig } from "../models/backend-config.model";
+import { BackendGithubConfig } from "../models/backend-github-config.model";
 
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
@@ -93,9 +93,9 @@ export class GithubService {
         });
     }
 
-    public getRepositoriesOrg(seasonStartDate: Date): Promise<any> {
+    public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
         return this.http.get<Array<GithubRepositoryResponse>>(
-            GithubApiConstants.REPOSITORIES_ORGS_URL + "TribalyteTechnologies" + "/repos", {headers: this.headers}).toPromise()
+            GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {headers: this.headers}).toPromise()
         .then(result => {
             this.log.d("The repositories are", result);
             const commits = result.map((repo) => this.getCommits(repo, seasonStartDate));
@@ -139,9 +139,9 @@ export class GithubService {
         this.eventEmitter.emit(true);
     }
 
-    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendConfig> {
+    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendGithubConfig> {
         let urlCall = GithubApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/organization/" + userAddress;
-        return this.http.get(urlCall).toPromise().then((result: IOrganizationResponse) => new BackendConfig(result.data));
+        return this.http.get(urlCall).toPromise().then((result: IOrganizationResponse) => new BackendGithubConfig(result.data));
     }
 
     private loginToGithub(userAddress: string, teamUid: number): Promise<string> {

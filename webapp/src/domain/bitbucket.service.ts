@@ -7,7 +7,7 @@ import { LoggerService, ILogger } from "../core/logger.service";
 import { BitbucketRepositoryResponse } from "../models/bitbucket-github/bitbucket-repository-response.model";
 import { BitbucketCommitResponse, BitbucketUserInfo } from "../models/bitbucket-github/bitbucket-commit.model";
 import { BitbucketPullRequestResponse, BitbucketPrCommitsResponse } from "../models/bitbucket-github/pull-request.model";
-import { BackendConfig } from "../models/backend-config.model";
+import { BackendBitbucketConfig } from "../models/backend-bitbucket-config.model";
 import { PopupService } from "./popup.service";
 
 export class BitbucketApiConstants {
@@ -160,9 +160,9 @@ export class BitbucketService {
         this.eventEmitter.emit(true);
     }
 
-    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendConfig> {
+    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendBitbucketConfig> {
         let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/workspace/" + userAddress;
-        return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
+        return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendBitbucketConfig(result.data));
     }
 
     private loginToBitbucket(userAddress: string, teamUid: number): Promise<string> {

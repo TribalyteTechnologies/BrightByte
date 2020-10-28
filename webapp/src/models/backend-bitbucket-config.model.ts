@@ -1,4 +1,4 @@
-export class BackendConfig { 
+export class BackendBitbucketConfig { 
     public constructor(
         public bitbucketWorkspaces: Array<string>
     ) {
