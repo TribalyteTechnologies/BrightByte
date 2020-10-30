@@ -12,6 +12,7 @@ export class Repository {
     public numPrsNotUploaded?: number;
     public isReadAllCommits: boolean;
     public workspace?: string;
+    public provider: string;
 
     constructor(slug: string, name: string, workspace?: string) {
         this.slug = slug;
@@ -23,5 +24,6 @@ export class Repository {
         this.commitsInfo = new Array<CommitInfo>();
         this.pullRequests = new Array<PullRequest>();
         this.pullRequestsNotUploaded = new Array<PullRequest>();
+        this.provider = "";
     }
 }

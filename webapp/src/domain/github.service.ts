@@ -98,7 +98,7 @@ export class GithubService {
             GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {headers: this.headers}).toPromise()
         .then(result => {
             this.log.d("The repositories are", result);
-            const commits = result.map((repo) => this.getCommits(repo, seasonStartDate));
+            const commits = result.map((repo) => this.getCommits(repo, seasonStartDate, organization));
             return Promise.all(commits);
         }).then(result => {
             return result;
@@ -106,10 +106,10 @@ export class GithubService {
             
     }
 
-    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date): Promise<any> {
+    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
         return this.http.get<Array<GithubCommitResponse>>(
-            GithubApiConstants.BASE_URL + "repos/TribalyteTechnologies/" + repository.name + "/commits", 
+            GithubApiConstants.BASE_URL + "repos/" + organization + "/" + repository.name + "/commits", 
             {params: params, headers: this.headers }).toPromise()
         .then(result => {     
             this.log.d("The getCommits response is", result);
