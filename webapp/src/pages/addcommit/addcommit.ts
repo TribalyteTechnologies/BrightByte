@@ -492,7 +492,7 @@ export class AddCommitPopover {
             seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
             this.currentSeasonStartDate = seasonDate;
             let organizations = config.githubOrganizations;
-            let promisesOrganizations = organizations.map(organization => {
+            organizations.map(organization => { 
                 return this.githubSrv.getRepositoriesOrg(this.currentSeasonStartDate, organization)
                 .then((repositories: Array<Repository>) => {
                     this.log.d("The repositories from Bitbucket are: ", repositories);
