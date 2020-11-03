@@ -25,7 +25,7 @@ export class AchievementService {
     private readonly REQ_ROUTE = AppConfig.SERVER_BASE_URL + "/database/achievements/";
     private log: ILogger;
     private achievements = new Array<Achievement>();
-    private currentVersion: string;
+    private currentVersion: number;
 
     constructor(
         loggerSrv: LoggerService,
@@ -40,7 +40,7 @@ export class AchievementService {
         this.log.d("Request to get unlocked achievements for user", userHash);
 
         let achievementsObservable = from(this.contractManagerService.getCurrentVersionFromBase()).pipe(
-            flatMap((res: string) => {
+            flatMap((res: number) => {
                 this.currentVersion = res;
                 const url = this.REQ_ROUTE + userHash + "/" + teamUid + "/" + this.currentVersion;
                 this.log.w("Get url for achivemetns is ", url);

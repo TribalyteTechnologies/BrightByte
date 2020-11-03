@@ -1,8 +1,8 @@
 export class MemberVersion { 
-    public version: string;
+    public version: number;
     public teamUids: Array<number>;
 
-    constructor(version: string, teamUids: Array<number>) {
+    constructor(version: number, teamUids: Array<number>) {
         this.version = version;
         this.teamUids = teamUids;
     }

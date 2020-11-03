@@ -120,7 +120,7 @@ export class SetProfileForm {
             });
     }
 
-    public registerToTeam(teamUid: number, version: string) {
+    public registerToTeam(teamUid: number, version: number) {
         this.isRegistering = true;
         this.isSingingUp = true;
         this.contractManagerService.registerToTeam(this.userEmail, teamUid, version)
@@ -165,12 +165,12 @@ export class SetProfileForm {
     }
 
     private setContractsAndProfile(teamUid: number, isCreatingTeam = true): Promise<void> {
-        let currentVersion: string;
+        let currentVersion: number;
         return this.contractManagerService.setBaseContracts(teamUid)
             .then(() => {
                 return this.contractManagerService.getCurrentVersionFromBase();
             })
-            .then((version: string) => {
+            .then((version: number) => {
                 currentVersion = version;
                 return this.contractManagerService.setProfile(this.userName, this.userEmail);
             })

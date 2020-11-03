@@ -65,7 +65,7 @@ export class AddCommitPopover {
     private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
     private userAddress: string;
-    private currentVersion: string;
+    private currentVersion: number;
     private userEmail: string;
     private userTeam: number;
     private log: ILogger;

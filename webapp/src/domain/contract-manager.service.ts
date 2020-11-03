@@ -153,7 +153,7 @@ export class ContractManagerService {
         return this.initProm = Promise.all(contractPromises);
     }
 
-    public setBaseContracts(teamUid: number, version?: string): Promise<Array<ITrbSmartContact>> {
+    public setBaseContracts(teamUid: number, version?: number): Promise<Array<ITrbSmartContact>> {
         let teamManagerContract: ITrbSmartContact;
         let bbFactoryContract;
         let brightDictionaryContract;
@@ -222,7 +222,7 @@ export class ContractManagerService {
         });
     }
 
-    public getVersionUserEmail(teamUid: number, memberAddress: string, version: string): Promise<string> {
+    public getVersionUserEmail(teamUid: number, memberAddress: string, version: number): Promise<string> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             return proxyManager.methods.getUserInfo(version, teamUid, memberAddress).call({ from: memberAddress });
         }).then((userInfo: Array<string>) => {
@@ -324,11 +324,11 @@ export class ContractManagerService {
     }
 
     public getUserParticipatingTeams(): Promise<Array<MemberVersion>> {
-        let availableVersions: Array<string>;
+        let availableVersions: Array<number>;
         return this.getUserParticipatingVersions()
-        .then((versions: Array<string>) => {
-            this.log.d("Available versions: " + versions);
-            availableVersions =  versions.filter(version => version !== AppConfig.EMPTY_HASH);
+        .then((versions: Array<number>) => {
+            this.log.d("Available versions: ", versions);
+            availableVersions =  versions.filter(version => version !== 0);
             return this.initProm;
         }).then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             let promises = availableVersions.map(version => 
@@ -347,22 +347,23 @@ export class ContractManagerService {
         });
     }
 
-    public getUserParticipatingVersions(): Promise<Array<string>> {
+    public getUserParticipatingVersions(): Promise<Array<number>> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             return proxyManager.methods.getUserTeamVersions(this.currentUser.address).call({ from: this.currentUser.address });
-        })
-        .catch(e => {
+        }).then((versions: Array<string>) => {
+            return versions.map(version => parseInt(version));
+        }).catch(e => {
             this.log.e("Error getting user participating versions: ", e);
             throw e;
         });
     }
 
     public getUserInvitedTeams(email: string): Promise<Array<MemberVersion>> {
-        let availableVersions: Array<string>;
+        let availableVersions: Array<number>;
         const keyEmail = this.getEncodedKey(email);
         return this.getUserInvitationsVersions(keyEmail)
-        .then((versions: Array<string>) => {
-            availableVersions = versions.filter(version => version !== AppConfig.EMPTY_HASH);
+        .then((versions: Array<number>) => {
+            availableVersions = versions.filter(version => version !== 0);
             return this.initProm;
         }).then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             let promises = availableVersions.map(version => 
@@ -380,9 +381,11 @@ export class ContractManagerService {
         });
     }
 
-    public getUserInvitationsVersions(email: string): Promise<Array<string>> {
+    public getUserInvitationsVersions(email: string): Promise<Array<number>> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             return proxyManager.methods.getVersionsInvitations(email).call({ from: this.currentUser.address });
+        }).then((versions: Array<string>) => {
+            return versions.map(version => parseInt(version));
         }).catch(e => {
             this.log.e("Error getting versions where the email is invited", e);
             return e;
@@ -391,11 +394,11 @@ export class ContractManagerService {
 
     public getUserAvailableTeams(): Promise<Array<MemberVersion>> {
         let proxyContract;
-        let availableVersions: Array<string>;
+        let availableVersions: Array<number>;
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             proxyContract = proxyManager;
             return proxyContract.methods.getUserTeamVersions().call({ from: this.currentUser.address });
-        }).then((versions: Array<string>) => {
+        }).then((versions: Array<number>) => {
             availableVersions = versions;
             let promises = versions.map(version => proxyContract.methods.getUserTeam(version).call({ from: this.currentUser.address }));
             return Promise.all(promises);
@@ -407,7 +410,7 @@ export class ContractManagerService {
         });
     }
 
-    public registerToTeam(email: string, teamUid: number, version?: string): Promise<number> {
+    public registerToTeam(email: string, teamUid: number, version?: number): Promise<number> {
         let promise = version ? this.setTeamVersionManager(version) : this.initProm;
         return promise
         .then(([bright, commit, root, teamManager]) => {
@@ -504,7 +507,7 @@ export class ContractManagerService {
         });
     }
 
-    public getVersionTeamName(teamUid: number, version: string): Promise<string> {
+    public getVersionTeamName(teamUid: number, version: number): Promise<string> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             return proxyManager.methods.getTeamName(version, teamUid).call({ from: this.currentUser.address });
         }).then(keyTeamName => {
@@ -761,7 +764,7 @@ export class ContractManagerService {
         .then(([bright]) => {
             return bright.methods.getUsersAddress().call({ from: this.currentUser.address });
         }).catch(err => {
-            this.log.e("Error checking commit season :", err);
+            this.log.e("Error getting all users adresses :", err);
             throw err;
         });
     }
@@ -1166,21 +1169,19 @@ export class ContractManagerService {
         return this.currentTeamUid;
     }
 
-    public getCurrentVersion(): Promise<string> {
+    public getCurrentVersion(): Promise<number> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             return proxyManager.methods.getCurrentVersion().call({ from: this.currentUser.address });
         });
     }
 
-    public getCurrentVersionCloud(): Promise<string> {
+    public getCurrentVersionCloud(): Promise<number> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory]) => {
             return bbFactory.methods.getCurrentVersion().call({ from: this.currentUser.address });
-        }).then((version: string) => {
-            return this.web3.utils.keccak256(version);
         });
     }
 
-    public getCurrentVersionFromBase(): Promise<string> {
+    public getCurrentVersionFromBase(): Promise<number> {
         return this.initProm.then(([bright, commit, root]) => {
             return root.methods.getVersion().call({ from: this.currentUser.address });
         });
@@ -1343,7 +1344,7 @@ export class ContractManagerService {
         });
     }
 
-    private setTeamVersionManager(version: string): Promise<Array<ITrbSmartContact>> {
+    private setTeamVersionManager(version: number): Promise<Array<ITrbSmartContact>> {
         let contractArray;
         return this.initProm.then((contracts) => {
             contractArray = contracts;

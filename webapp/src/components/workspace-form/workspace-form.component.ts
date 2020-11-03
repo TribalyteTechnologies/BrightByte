@@ -19,7 +19,7 @@ export class WorkspaceForm {
     public errorMsg: string;
 
     private userTeamUid: number;
-    private currentVersion: string;
+    private currentVersion: number;
 
     constructor(
         private navCtrl: NavController,
@@ -31,7 +31,7 @@ export class WorkspaceForm {
             .then((teamUid: Array<number>) => {
                 this.userTeamUid = teamUid[teamUid.length - 1];
                 return contractManager.getCurrentVersion();
-            }).then((res: string) => this.currentVersion = res);
+            }).then((res: number) => this.currentVersion = res);
         }
 
     public goToTabsPage() {

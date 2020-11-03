@@ -32,7 +32,7 @@ export class BackendApiService {
         this.socket = this.websocketSrv.getSocket();
     }
 
-    public initBackendConnection(teamUid: number, version: string) {
+    public initBackendConnection(teamUid: number, version: number) {
         let userAddress = this.loginSrv.getAccountAddress();
         let sessionId = userAddress + "-" + teamUid + "-" + version;
         this.socket.emit(this.ADD_USER, sessionId);

@@ -51,7 +51,7 @@ export class LoginForm {
     public invitationList: Array<Team>;
     public userName: string;
     public teamToRegisterIn: number;
-    public versionToRegisterIn: string;
+    public versionToRegisterIn: number;
     public isRegistering: boolean;
 
     private readonly NEW_USER = "new-user";
@@ -69,8 +69,8 @@ export class LoginForm {
     private lastPassword = "";
     private userEmail: string;
     private autoLoginVersion: boolean;
-    private versionToLog: string;
-    private currentCloudVersion: string;
+    private versionToLog: number;
+    private currentCloudVersion: number;
     private teamUid: number;
 
 
@@ -103,7 +103,7 @@ export class LoginForm {
             if (password) {
                 this.log.d("User retrieved from localStorage: " + this.text);
                 if (url.has(AppConfig.UrlKey.VERSIONID)) {
-                    this.versionToLog = url.get(AppConfig.UrlKey.VERSIONID);
+                    this.versionToLog = parseInt(url.get(AppConfig.UrlKey.VERSIONID));
                     this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
                     this.userName = (url.has(AppConfig.UrlKey.USERNAMEID)) ? url.get(AppConfig.UrlKey.USERNAMEID) : "";
                     this.autoLoginVersion = true;
@@ -180,7 +180,7 @@ export class LoginForm {
                 this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
                     return this.contractManager.getCurrentVersionCloud();
-                }).then((cloudVersion: string) => {
+                }).then((cloudVersion: number) => {
                     this.currentCloudVersion = cloudVersion;
                     this.log.d("The current Cloud version is", this.currentCloudVersion);
                     return true;
@@ -208,7 +208,7 @@ export class LoginForm {
         this.goToRegister.next(this.NEW_USER);
     }
 
-    public logToTeam(teamUid: number, version: string): Promise<void> {
+    public logToTeam(teamUid: number, version: number): Promise<void> {
         if (this.currentCloudVersion === version) {
             return this.contractManager.setBaseContracts(teamUid, version)
                 .then(() => {
@@ -241,7 +241,7 @@ export class LoginForm {
             .then(() => {
                 return this.contractManager.getCurrentVersionFromBase();
             })
-            .then((version: string) => {
+            .then((version: number) => {
                 this.loginService.setCurrentVersion(version);
                 this.backendApiSrv.initBackendConnection(this.teamToRegisterIn, version);
                 return this.initAvatarSrvAndContinue();
@@ -255,7 +255,7 @@ export class LoginForm {
         }
     }
 
-    public showNameBox(teamUid: number, version: string) {
+    public showNameBox(teamUid: number, version: number) {
         this.teamToRegisterIn = teamUid;
         this.versionToRegisterIn = version;
         this.showNameInput = true;

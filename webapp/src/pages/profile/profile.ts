@@ -92,7 +92,7 @@ export class Profile {
     private userTeam: number;
     private isSettingSeason: boolean;
     private log: ILogger;
-    private currentVersion: string;
+    private currentVersion: number;
 
 
     constructor(
@@ -196,6 +196,7 @@ export class Profile {
             const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.WORKSPACE + this.userAddress;
             return this.http.get(url).toPromise();
         }).then((result: IWorkspaceResponse) => {
+            this.log.d("The user worspaces are ", result);
             this.isBackendAvailable = false;
             if (result.status !== "Error") {
                 this.teamWorkspaces = result.data;

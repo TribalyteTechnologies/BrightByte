@@ -35,7 +35,7 @@ export class BitbucketService {
     private userToken: string;
     private userIdentifier: string;
     private userTeamUid: number;
-    private currentVersion: string;
+    private currentVersion: number;
     private headers: HttpHeaders;
     private log: ILogger;
     private authWindow: Window;
@@ -56,7 +56,7 @@ export class BitbucketService {
         return this.eventEmitter;
     }
 
-    public checkProviderAvailability(userAddress: string, teamUid: number, version: string): Promise<boolean> {
+    public checkProviderAvailability(userAddress: string, teamUid: number, version: number): Promise<boolean> {
         this.log.d("Checks the api works correctly");
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
@@ -162,12 +162,12 @@ export class BitbucketService {
         this.eventEmitter.emit(true);
     }
 
-    public getTeamBackendConfig(teamUid: number, userAddress: string, version: string): Promise<BackendConfig> {
+    public getTeamBackendConfig(teamUid: number, userAddress: string, version: number): Promise<BackendConfig> {
         let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/" + version + "/workspace/" + userAddress;
         return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
     }
 
-    private loginToBitbucket(userAddress: string, teamUid: number, version: string): Promise<string> {
+    private loginToBitbucket(userAddress: string, teamUid: number, version: number): Promise<string> {
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
         this.currentVersion = version;
