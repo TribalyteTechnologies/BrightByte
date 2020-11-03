@@ -13,7 +13,7 @@ library RootDeployerLib {
         return address(remoteRoot);
     }
 
-    function setVersion(address rootAddress, bytes32 version) public {
+    function setVersion(address rootAddress, uint256 version) public {
         Root remoteRoot = Root(rootAddress);
         remoteRoot.setVersion(version);
     }

@@ -20,7 +20,7 @@ contract Root is IRoot, Initializable {
     address private cloudEventDispatcherAddress;
     address private owner;
     bool private isVersionEnable;
-    bytes32 private brightbyteVersion;
+    uint256 private brightbyteVersion;
 
     modifier onlyAdmin() {
         require (adminUsers[msg.sender], "The origin address is not allowed. Not an admin");
@@ -63,7 +63,7 @@ contract Root is IRoot, Initializable {
         isVersionEnable = true;
     }
 
-    function setVersion(bytes32 version) public {
+    function setVersion(uint256 version) public {
         if(isVersionEnable) {
             brightbyteVersion = version;
             isVersionEnable = false;
@@ -76,7 +76,7 @@ contract Root is IRoot, Initializable {
         allowedAddresses[memberAddress] = true;
     }
 
-    function getVersion() public view returns(bytes32) {
+    function getVersion() public view returns(uint256) {
         return brightbyteVersion;
     }
 

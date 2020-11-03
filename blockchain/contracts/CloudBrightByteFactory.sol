@@ -10,7 +10,7 @@ import "./CloudEventDispatcher.sol";
 
 contract CloudBrightByteFactory is Initializable {
 
-    string private currentVersion;
+    uint256 private currentVersion;
     address private teamManagerAddress;
     address private eventDispatcherAddress;
     CloudEventDispatcher private remoteEventDispatcher;
@@ -29,14 +29,14 @@ contract CloudBrightByteFactory is Initializable {
         _;
     }
 
-    function initialize(string memory version, address teamMngrAddress) public initializer {
+    function initialize(uint256 version, address teamMngrAddress) public initializer {
         currentVersion = version;
         deployEventDispatcher();
         require(teamManagerAddress == address(0), "Contract already initialized");
         teamManagerAddress = teamMngrAddress;
     }
 
-    function getCurrentVersion() public view returns (string memory) {
+    function getCurrentVersion() public view returns (uint256) {
         return currentVersion;
     }
 
@@ -76,9 +76,8 @@ contract CloudBrightByteFactory is Initializable {
     }
 
     function setVersion(uint256 teamUid) public onlyTeamManager{
-        bytes32 version = keccak256(abi.encodePacked(currentVersion));
         TeamContracts memory contracts = teamContracts[teamUid];
-        RootDeployerLib.setVersion(contracts.rootAddress, version);
+        RootDeployerLib.setVersion(contracts.rootAddress, currentVersion);
     }
 
     function inviteUserEmail(uint256 teamUid, bytes32 email) public onlyTeamManager{

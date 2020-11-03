@@ -25,7 +25,9 @@ const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USER_ADMIN = EMPTY_ADDRESS;
 const SEASON_LENGTH_DAYS = 15;
 const CONTRACT_INFO_PATH = "./migrations/ContractsInfo.json";
-var currentVersion = scVersionObj.version;
+const currentVersion = scVersionObj.version;
+const versionContract = parseInt(scVersionObj.versionContract);
+
 
 module.exports = async function (deployer, network, accounts) {
     const CONFIG = TruffleConfig.networks[network];
@@ -52,10 +54,10 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.link(UtilsLib, CloudTeamManager);
     let teamManager = await deployer.deploy(CloudTeamManager);
     let bbFactory = await deployer.deploy(CloudBBFactory);
-    await bbFactory.initialize(currentVersion, CloudTeamManager.address);
+    await bbFactory.initialize(versionContract, CloudTeamManager.address);
     await teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
     let proxyManager = await deployer.deploy(ProxyManager);
-    await proxyManager.initialize(currentVersion, teamManager.address, { from: OWNER_ACCOUNT });
+    await proxyManager.initialize(versionContract, teamManager.address, { from: OWNER_ACCOUNT });
 
     let cloudBBFactory = await CloudBBFactory.new();
     let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, OWNER_ACCOUNT, []);
@@ -85,11 +87,11 @@ module.exports = async function (deployer, network, accounts) {
     eventDispatcher.addNewOwner(CloudBBFactory.address, { from: OWNER_ACCOUNT });
     eventDispatcher.addNewOwner(proxyCloudBBFactory.address, { from: OWNER_ACCOUNT });
 
-    await cloudBBFactory.initialize(currentVersion, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
+    await cloudBBFactory.initialize(versionContract, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
     await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: INITIALIZER_ACCOUNT });
     await cloudProjectStore.initialize(cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
     await brightDictionary.initialize(currentVersion, { from: INITIALIZER_ACCOUNT });
-    await cloudProxyManager.initialize(currentVersion, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
+    await cloudProxyManager.initialize(versionContract, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
 
     let contractsInfo = {};
     contractsInfo[CloudBBFactory.contract_name] = { address: cloudBBFactory.address, netId: CONFIG.network_id };

@@ -18,7 +18,7 @@ interface IRoot {
 
 interface IBright {
     function initialize(address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin) external;
-    function setVersion(bytes32 version) external;
+    function setVersion(uint256 version) external;
     function getCurrentSeason() external view returns (uint256, uint256, uint256);
     function setCommit(bytes32 url) external;
     function checkCommitSeason(bytes32 url,address author) external view returns (bool);

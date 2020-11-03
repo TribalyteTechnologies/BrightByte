@@ -18,7 +18,7 @@ contract Bright is IBright, Initializable {
     uint256 private initialSeasonTimestamp;
     uint256 private seasonLengthSecs;
     uint256 private teamUid;
-    bytes32 private brightbyteVersion;
+    uint256 private brightbyteVersion;
 
     BrightModels.HashUserMap private hashUserMap;
     mapping (bytes32 => bool) private allCommits;
@@ -62,7 +62,7 @@ contract Bright is IBright, Initializable {
         allowedAddresses[userAdmin] = true;
     }
 
-    function setVersion(bytes32 version) public {
+    function setVersion(uint256 version) public {
         brightbyteVersion = version;
     }
 
