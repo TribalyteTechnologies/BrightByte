@@ -1172,19 +1172,19 @@ export class ContractManagerService {
     public getCurrentVersion(): Promise<number> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
             return proxyManager.methods.getCurrentVersion().call({ from: this.currentUser.address });
-        });
+        }).then((version: string) => parseInt(version));
     }
 
     public getCurrentVersionCloud(): Promise<number> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory]) => {
             return bbFactory.methods.getCurrentVersion().call({ from: this.currentUser.address });
-        });
+        }).then((version: string) => parseInt(version));
     }
 
     public getCurrentVersionFromBase(): Promise<number> {
         return this.initProm.then(([bright, commit, root]) => {
             return root.methods.getVersion().call({ from: this.currentUser.address });
-        });
+        }).then((version: string) => parseInt(version));
     }
 
     private getUserData(userAddress: string): Promise<Array<string>> {
