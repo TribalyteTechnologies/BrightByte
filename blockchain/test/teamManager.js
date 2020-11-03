@@ -24,7 +24,7 @@ contract("CloudTeamManager", accounts => {
     const EXP_TIMEOUT_MILIS = 5000;
 
     const PROJECTS = ["pj0", "pj1", "pj2", "pj3"];
-    const NEW_VERSION = "New Version";
+    const NEW_VERSION = 410;
 
     let adminOwnerAccount = accounts[0];
     let emailUser0 = HASH_EMAIL_ACCOUNTS[0];
@@ -362,7 +362,7 @@ contract("CloudTeamManager", accounts => {
         let proxyManager = await ProxyManager.deployed();
         let currentVersion = await proxyManager.getCurrentVersion();
         let versions = await proxyManager.getUserTeamVersions(adminOwnerAccount, { from: adminOwnerAccount });
-        assert(currentVersion === versions[versions.length - 1], "The user is not participating in the current version");
+        assert.equal(parseBn(currentVersion), parseBn(versions[versions.length - 1]), "The user is not participating in the current version");
     });
 
     it("should add a new version to the Proxy Manager", async () => {
@@ -372,8 +372,7 @@ contract("CloudTeamManager", accounts => {
         const newAddress = newCloudTeamManager.address;
         await proxyManager.setNewVersion(NEW_VERSION, newAddress, { from: adminOwnerAccount });
         let currentVersion = await proxyManager.getCurrentVersion();
-        const versionKeccak = web3.utils.keccak256(NEW_VERSION);
-        assert(currentVersion === versionKeccak, "The expected new version is wrong");
+        assert.equal(parseBn(currentVersion), NEW_VERSION, "The expected new version is wrong");
         let currentVersionAddress = await proxyManager.getVersionContracts(currentVersion);
         assert(currentVersionAddress === newAddress, "The user is not participating in the current version");
     });
