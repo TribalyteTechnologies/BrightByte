@@ -1172,6 +1172,14 @@ export class ContractManagerService {
         });
     }
 
+    public getCurrentVersionCloud(): Promise<string> {
+        return this.initProm.then(([bright, commit, root, teamManager, bbFactory]) => {
+            return bbFactory.methods.getCurrentVersion().call({ from: this.currentUser.address });
+        }).then((version: string) => {
+            return this.web3.utils.keccak256(version);
+        });
+    }
+
     public getCurrentVersionFromBase(): Promise<string> {
         return this.initProm.then(([bright, commit, root]) => {
             return root.methods.getVersion().call({ from: this.currentUser.address });

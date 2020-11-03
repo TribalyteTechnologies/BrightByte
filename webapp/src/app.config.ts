@@ -80,6 +80,8 @@ export class AppConfig {
     public static readonly StorageKey = {
         USERNAME: "brightUser",
         PASSWORD: "brightPassword",
+        LOGUSERNAME: "logBrightUser",
+        LOGPASSWORD: "logBrightPassword",
         BITBUCKETUSERTOKEN: "brightBitbucketUserToken",
         USERMAILS: "brightEmails",
         LASTPAGE: "brightPage",
@@ -98,7 +100,11 @@ export class AppConfig {
     public static readonly UrlKey = {
         REVIEWID: "reviewId",
         COMMITID: "commitId",
-        TEAMID: "teamId"
+        TEAMID: "teamId",
+        REGISTERID: "registerId",
+        LOGID: "logId",
+        VERSIONID: "versionId",
+        USERNAMEID: "userNameId"
     };
 
     private static shuffle(array: Array<any>): Array<any> {

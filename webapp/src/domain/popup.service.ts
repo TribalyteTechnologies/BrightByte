@@ -31,6 +31,10 @@ export class PopupService {
         return promise;
     }
 
+    public openNewUrl(url: string) {
+        window.open(url, "_self");
+    }
+
     public showSharingDialog() {
         let popover = this.popoverCtrl.create(SharePopOver, { }, { cssClass: "sharepopover" });
         popover.present();

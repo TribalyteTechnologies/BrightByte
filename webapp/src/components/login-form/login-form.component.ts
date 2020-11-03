@@ -15,6 +15,7 @@ import { BackendApiService } from "../../domain/backend-api.service";
 import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
 import { MemberVersion } from "../../models/member-version.model";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "login-form",
@@ -24,16 +25,16 @@ import { MemberVersion } from "../../models/member-version.model";
 
 export class LoginForm {
 
-    @Output() 
+    @Output()
     public goToRegister = new EventEmitter();
 
-    @Output() 
+    @Output()
     public goToSetProfile = new EventEmitter();
 
-    @Output() 
+    @Output()
     public setUserName = new EventEmitter();
 
-    @Output() 
+    @Output()
     public setUserEmail = new EventEmitter();
 
     public msg: string;
@@ -56,14 +57,22 @@ export class LoginForm {
     private readonly NEW_USER = "new-user";
     private readonly SET_PROFILE = "set-profile";
     private readonly HID_CHARACTER = "*";
+    private readonly BASE_URL = window.location.origin + "/";
+    private readonly LOG_QUERY = "&" + AppConfig.UrlKey.LOGID + "=true";
+    private readonly REGISTER_QUERY = "&" + AppConfig.UrlKey.REGISTERID + "=true";
+    private readonly VERSION_QUERY = "?" + AppConfig.UrlKey.VERSIONID + "=";
+    private readonly TEAM_QUERY = "&" + AppConfig.UrlKey.TEAMID + "=";
+    private readonly USER_NAME_QUERY = "&" + AppConfig.UrlKey.USERNAMEID + "=";
 
     private log: ILogger;
     private password = "";
     private lastPassword = "";
     private userEmail: string;
-    private autoLogin: boolean;
+    private autoLoginVersion: boolean;
+    private versionToLog: string;
+    private currentCloudVersion: string;
     private teamUid: number;
-    
+
 
     constructor(
         private navCtrl: NavController,
@@ -75,35 +84,40 @@ export class LoginForm {
         private spinnerService: SpinnerService,
         private backendApiSrv: BackendApiService,
         private avatarSrv: AvatarService,
+        private popupSrv: PopupService,
         loggerSrv: LoggerService,
         appVersionSrv: AppVersionService
     ) {
         this.log = loggerSrv.get("LoginForm");
-        
+
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
-    public ngOnInit(){
-        let retrievedUser = this.userLoggerService.retrieveAccount();
-        this.text = retrievedUser.user;
-        let password = retrievedUser.password;
-        if (password){
-            this.log.d("User retrieved from localStorage: " + this.text);
-            let url = new URLSearchParams(document.location.search);
-            if (url.has(AppConfig.UrlKey.TEAMID)) {
-                this.autoLogin = true;
-                this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
-                //this.versionAutoLogin = parseInt(url.get(AppConfig.UrlKey.VersionId))
+    public ngOnInit() {
+        let url = new URLSearchParams(document.location.search);
+        this.log.d("The url is ", url);
+        if (url.has(AppConfig.UrlKey.REGISTERID) || url.has(AppConfig.UrlKey.LOGID)) {
+            let retrievedUser = this.userLoggerService.retrieveAccount();
+            this.text = retrievedUser.user;
+            let password = retrievedUser.password;
+            if (password) {
+                this.log.d("User retrieved from localStorage: " + this.text);
+                if (url.has(AppConfig.UrlKey.VERSIONID)) {
+                    this.versionToLog = url.get(AppConfig.UrlKey.VERSIONID);
+                    this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+                    this.userName = (url.has(AppConfig.UrlKey.USERNAMEID)) ? url.get(AppConfig.UrlKey.USERNAMEID) : "";
+                    this.autoLoginVersion = true;
+                    this.login(password);
+                }       
             }
-            this.login(password);
         }
     }
 
-    public toggleKeepCredentials (){
+    public toggleKeepCredentials() {
         this.isKeepCredentialsOn = !this.isKeepCredentialsOn;
     }
 
-    public openFile (event: Event) {
+    public openFile(event: Event) {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;
         let uploadedArray = <FileList>target.files;
@@ -121,12 +135,12 @@ export class LoginForm {
                 this.debuggingText = String(reader.result);
                 this.text = JSON.parse(String(reader.result));
             };
-        } else {   
+        } else {
             msg_identifier = "app.wrongFile";
         }
-        if (msg_identifier){
+        if (msg_identifier) {
             this.translateService.get(msg_identifier)
-            .subscribe(msg => this.msg = msg );
+                .subscribe(msg => this.msg = msg);
         }
     }
 
@@ -143,7 +157,7 @@ export class LoginForm {
         this.hidPass = this.password.replace(/./g, this.HID_CHARACTER);
         this.lastPassword = pass;
     }
-    
+
     public login(pass: string) {
         this.spinnerService.showLoader();
         try {
@@ -157,18 +171,22 @@ export class LoginForm {
                     });
             } else {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
-                if (this.isKeepCredentialsOn){
+                if (this.isKeepCredentialsOn) {
                     this.userLoggerService.setAccount(this.text, pass);
                 }
-                         
+                this.password = pass;
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
                 this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
+                    return this.contractManager.getCurrentVersionCloud();
+                }).then((cloudVersion: string) => {
+                    this.currentCloudVersion = cloudVersion;
+                    this.log.d("The current Cloud version is", this.currentCloudVersion);
                     return true;
                 }).catch((e) => {
                     this.spinnerService.hideLoader();
-                    
+
                     this.translateService.get("app.connectionFailure").subscribe(
                         msg => {
                             this.msg = msg;
@@ -191,33 +209,50 @@ export class LoginForm {
     }
 
     public logToTeam(teamUid: number, version: string): Promise<void> {
-        return this.contractManager.setBaseContracts(teamUid, version)
-        .then(() => {
-            this.loginService.setCurrentVersion(version);
-            this.loginService.setTeamUid(teamUid);
-            this.backendApiSrv.initBackendConnection(teamUid, version);
-            return this.initAvatarSrvAndContinue();          
-        });
+        if (this.currentCloudVersion === version) {
+            return this.contractManager.setBaseContracts(teamUid, version)
+                .then(() => {
+                    this.loginService.setCurrentVersion(version);
+                    this.loginService.setTeamUid(teamUid);
+                    this.backendApiSrv.initBackendConnection(teamUid, version);
+                    return this.initAvatarSrvAndContinue();
+                });
+        } else {
+            this.userLoggerService.setLogAccount(this.text, this.password);
+            let urlToOpen = this.BASE_URL + version + "/" + 
+            this.VERSION_QUERY + version + this.TEAM_QUERY + teamUid + this.LOG_QUERY;
+            this.popupSrv.openNewUrl(urlToOpen);
+            return Promise.resolve();
+        }
+
     }
 
-    public registerToTeam() {
+    public registerToTeam(): Promise<void> {
         this.isRegistering = true;
-        this.log.d("The user request to register to team:",  this.teamToRegisterIn, " in the version: ", this.versionToRegisterIn);
-        this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn, this.versionToRegisterIn)
-        .then(() => {
-            return this.contractManager.setBaseContracts(this.teamToRegisterIn, this.versionToRegisterIn);
-        })
-        .then(() => {
-            return this.contractManager.setProfile(this.userName, this.userEmail);
-        })
-        .then(() => {
-            return this.contractManager.getCurrentVersionFromBase();
-        })
-        .then((version: string) => {
-            this.loginService.setCurrentVersion(version);
-            this.backendApiSrv.initBackendConnection(this.teamToRegisterIn, version);
-            return this.initAvatarSrvAndContinue(); 
-        });
+        this.log.d("The user request to register to team:", this.teamToRegisterIn, " in the version: ", this.versionToRegisterIn);
+        if (this.currentCloudVersion === this.versionToRegisterIn) {
+            return this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn, this.versionToRegisterIn)
+            .then(() => {
+                return this.contractManager.setBaseContracts(this.teamToRegisterIn, this.versionToRegisterIn);
+            })
+            .then(() => {
+                return this.contractManager.setProfile(this.userName, this.userEmail);
+            })
+            .then(() => {
+                return this.contractManager.getCurrentVersionFromBase();
+            })
+            .then((version: string) => {
+                this.loginService.setCurrentVersion(version);
+                this.backendApiSrv.initBackendConnection(this.teamToRegisterIn, version);
+                return this.initAvatarSrvAndContinue();
+            });
+        } else {
+            this.userLoggerService.setLogAccount(this.text, this.password);
+            let urlToOpen = this.BASE_URL + this.versionToRegisterIn + "/" + this.VERSION_QUERY + this.versionToRegisterIn + 
+            this.TEAM_QUERY + this.teamToRegisterIn + this.REGISTER_QUERY + this.USER_NAME_QUERY + this.userName;
+            this.popupSrv.openNewUrl(urlToOpen);
+            return Promise.resolve();
+        }
     }
 
     public showNameBox(teamUid: number, version: string) {
@@ -233,9 +268,9 @@ export class LoginForm {
     }
 
     private initAvatarSrvAndContinue(): Promise<void> {
-        return this.contractManager.getAllUserAddresses()        
+        return this.contractManager.getAllUserAddresses()
         .then((addresses: Array<string>) => {
-            if (addresses.length > 0){
+            if (addresses.length > 0) {
                 addresses.forEach(address => {
                     this.avatarSrv.addUser(address);
                 });
@@ -265,6 +300,22 @@ export class LoginForm {
         .then((participantTeams: Array<Team>) => {
             this.log.d("The user is participating in the next teams", participantTeams);
             this.teamList = participantTeams;
+        }).then(() => {
+            if(this.autoLoginVersion) {
+                this.userLoggerService.removeLogAccount();
+            }
+            let url = new URLSearchParams(document.location.search);
+            if (url.has(AppConfig.UrlKey.LOGID)) {
+                this.log.d("The user is logging to team: ", this.teamUid);
+                this.log.d("Logging to team from version: ", this.versionToLog);
+                this.logToTeam(this.teamUid, this.versionToLog);
+            } else if (url.has(AppConfig.UrlKey.REGISTERID)) {
+                this.log.d("The user is register to team: ", this.teamUid);
+                this.log.d("Register to team from version: ", this.versionToLog);
+                this.teamToRegisterIn = this.teamUid;
+                this.versionToRegisterIn = this.versionToLog;
+                this.registerToTeam();
+            }
         })
         .catch(e => {
             this.log.e("Error setting user teams", e);
@@ -291,14 +342,14 @@ export class LoginForm {
         });
     }
 
-    private checkNodesAndOpenHomePage (account: Account, currentNodeIndex: number): Promise<boolean> {
+    private checkNodesAndOpenHomePage(account: Account, currentNodeIndex: number): Promise<boolean> {
         let prom = Promise.resolve(false);
         let isAlreadyRegisteredToTeam;
-        if(currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
+        if (currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
-                return this.contractManager.getUserParticipatingTeams();              
+                return this.contractManager.getUserParticipatingTeams();
             })
             .then((versions: Array<MemberVersion>) => {
                 this.log.d("The user is registered in the following teams: " + versions);
@@ -312,7 +363,7 @@ export class LoginForm {
             })
             .catch((e) => {
                 this.log.d("Failure to access the node " + currentNodeIndex);
-                return(this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
+                return (this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
             });
         }
         return prom;

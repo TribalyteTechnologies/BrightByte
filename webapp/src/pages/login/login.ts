@@ -4,7 +4,6 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { AppVersionService } from "../../core/app-version.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
-import { UpdateCheckService } from "../../core/update-check.service";
 import { AppConfig } from "../../app.config";
 import { RegisterSlidePopover } from "../../components/register-tutorial-slides/register-tutorial-slide.component";
 import { LocalStorageService } from "../../core/local-storage.service";
@@ -37,7 +36,6 @@ export class LoginPage {
         private popoverCtrl: PopoverController,
         private userLoggerService: UserLoggerService,
         private appVersionSrv: AppVersionService,
-        private versionCheckSrv: UpdateCheckService,
         private storageSrv: LocalStorageService,
         private popupSrv: PopupService,
         private translateSrv: TranslateService,
@@ -47,7 +45,6 @@ export class LoginPage {
         this.checkMobileBrowser();
         this.log = loggerSrv.get("LoginPage");
         this.migrationDone = this.userLoggerService.getMigration();
-        this.versionCheckSrv.start(AppConfig.UPDATE_CHECK_INTERVAL_MINS);
         this.appVersionSrv.getAppVersion().subscribe(
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")

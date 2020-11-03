@@ -26,7 +26,7 @@ async function setNewVersion() {
 
     await cloudEvent.methods.addNewOwner(NEW_TEAM_MANAGER_ADDRESS).send({ from: OWNER_EVENT });
     await cloudEvent.methods.addNewOwner(NEW_BB_FACTORY_ADDRESS).send({ from: OWNER_EVENT });
-    console.log("The contracta are allowed to add new contracts in, ", CLOUD_EVENT_ADDRESS);
+    console.log("The contracts are allowed to add new contracts in, ", CLOUD_EVENT_ADDRESS);
 
     await teamManager.methods.setEventDispatcher(CLOUD_EVENT_ADDRESS).send({ from: OWNER_ADDRESS });
     cloudEventAddress = await teamManager.methods.getEventDispatcherAddress().call({ from: OWNER_ADDRESS });
