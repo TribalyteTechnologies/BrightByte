@@ -9,7 +9,7 @@ export class UserDatabaseController {
 
     @Get("achievements/:id/:teamUid/:version")
     public getObtainedAchievements(
-        @Param("id") id: string, @Param("teamUid") teamUid: string, @Param("version") version: string
+        @Param("id") id: string, @Param("teamUid") teamUid: string, @Param("version") version: number
     ): Observable<ResponseDto> {
         return this.userDatabaseService.getObtainedAchievements(id, teamUid, version);
     }

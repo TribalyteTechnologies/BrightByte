@@ -3,7 +3,7 @@ import { BackendConfig } from "../../backend.config";
 
 export class ReviewEventDto extends AchievementEventDto {
 
-    public constructor(teamUid: string, userHash: string, numberOfReviewMade: number, timestamp: number, version: string) {
+    public constructor(teamUid: string, userHash: string, numberOfReviewMade: number, timestamp: number, version: number) {
         super();
         this.teamUid = teamUid;
         this.userHash = userHash;

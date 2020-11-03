@@ -91,6 +91,7 @@ export class ContractManagerService {
             flatMap(response => {
                 this.proxyManagerContractAbi = response.data;
                 this.contractAddressProxyManager = this.proxyManagerContractAbi.networks[BackendConfig.NET_ID].address;
+                this.log.d("The PROXY address is: ", this.contractAddressProxyManager);
                 this.contracts.push(new this.web3.eth.Contract(this.proxyManagerContractAbi.abi, this.contractAddressProxyManager));
                 return this.getTeamManagerAddress();
             }),
@@ -110,6 +111,7 @@ export class ContractManagerService {
             }),
             tap(address => {
                 this.contractAddressEventDispatcher = address;
+                this.log.d("The EVENT address is: ", this.contractAddressEventDispatcher);
                 this.contracts.push(new this.web3.eth.Contract(this.eventDispatcherContractAbi.abi, this.contractAddressEventDispatcher));
             }),
             shareReplay(BackendConfig.BUFFER_SIZE));

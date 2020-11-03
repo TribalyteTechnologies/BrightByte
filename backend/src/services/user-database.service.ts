@@ -28,7 +28,7 @@ export class UserDatabaseService {
         this.init();
     }
 
-    public getCommitNumber(userIdentifier: string, teamUid: string, version: string): Observable<ResponseDto> {
+    public getCommitNumber(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             map((user: UserDto) => {
@@ -39,7 +39,7 @@ export class UserDatabaseService {
         );
     }
 
-    public getReviewNumber(userIdentifier: string, teamUid: string, version: string): Observable<ResponseDto> {
+    public getReviewNumber(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             map((user: UserDto) => {
@@ -51,7 +51,7 @@ export class UserDatabaseService {
     }
 
     public hasAchievement(
-        userIdentifier: string, teamUid: string, achievementIdentifier: string, version: string
+        userIdentifier: string, teamUid: string, achievementIdentifier: string, version: number
     ): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
@@ -64,7 +64,7 @@ export class UserDatabaseService {
         );
     }
 
-    public getObtainedAchievements(userIdentifier: string, teamUid: string, version: string): Observable<ResponseDto> {
+    public getObtainedAchievements(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             flatMap((user: UserDto) => this.achievementDbSrv.getAchievements(
@@ -75,7 +75,7 @@ export class UserDatabaseService {
         );
     }
 
-    public createUser(userIdentifier: string, teamUid: string, version: string): Observable<ResponseDto> {
+    public createUser(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
@@ -99,7 +99,7 @@ export class UserDatabaseService {
         );
     }
 
-    public setCommitNumber(userIdentifier: string, teamUid: string, num: number, version: string): Observable<ResponseDto> {
+    public setCommitNumber(userIdentifier: string, teamUid: string, num: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
@@ -124,7 +124,7 @@ export class UserDatabaseService {
         );
     }
 
-    public setReviewNumber(userIdentifier: string, teamUid: string, num: number, version: string): Observable<ResponseDto> {
+    public setReviewNumber(userIdentifier: string, teamUid: string, num: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
@@ -150,7 +150,7 @@ export class UserDatabaseService {
     }
 
     public initializeNewUser(
-        userIdentifier: string, teamUid: string, numberOfCommits: number, numberOfReviews: number, version: string
+        userIdentifier: string, teamUid: string, numberOfCommits: number, numberOfReviews: number, version: number
     ): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
@@ -173,7 +173,7 @@ export class UserDatabaseService {
     }
 
     public setObtainedAchievement(
-        userIdentifier: string, teamUid: string, achievementIdentifiers: string, version: string
+        userIdentifier: string, teamUid: string, achievementIdentifiers: string, version: number
     ): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {

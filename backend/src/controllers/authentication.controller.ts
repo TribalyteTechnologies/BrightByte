@@ -43,7 +43,7 @@ export class AuthenticationController {
     public getProviderAuthCallback(
         @Param("user") user: string,
         @Param("teamUid") teamUid: string,
-        @Param("version") version: string,
+        @Param("version") version: number,
         @Param("provider") provider: string): ResponseDto {
         let ret: ResponseDto;
         const code = user + "-" + teamUid + "-" + version;

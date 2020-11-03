@@ -7,6 +7,6 @@ export abstract class AchievementEventDto{
     public url: string;
     public currentSeason: number;
     public timestamp: number;
-    public version: string;
+    public version: number;
     public eventType: BackendConfig.EventTypeEnum;
 }

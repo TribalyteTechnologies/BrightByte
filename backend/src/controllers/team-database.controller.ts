@@ -19,27 +19,27 @@ export class TeamDatabaseController {
     }
 
     @Get(":id/:version/members")
-    public getTeamMembers(@Param("id") teamUid: string, @Param("version") version: string): Observable<ResponseDto> {
+    public getTeamMembers(@Param("id") teamUid: string, @Param("version") version: number): Observable<ResponseDto> {
         this.log.d("Request to get the member of team: ", teamUid);
         return this.teamDatabaseService.getTeamMembers(teamUid, version);
     }
 
     @Get(":id/:version/workspace/:user")
     public getTeamWorkspaces(
-        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string): Observable<ResponseDto> {
+        @Param("id") teamUid: string, @Param("version") version: number, @Param("user") user: string): Observable<ResponseDto> {
         this.log.d("Request to get the member workspaces of team: ", teamUid);
         return this.teamDatabaseService.getTeamWorkspaces(teamUid, user, version);
     }
 
     @Post(":id/:version")
-    public createTeam(@Param("id") teamUid: string, @Param("version") version: string): Observable<ResponseDto> {
+    public createTeam(@Param("id") teamUid: string, @Param("version") version: number): Observable<ResponseDto> {
         this.log.d("Request to create a new team: ", teamUid);
         return this.teamDatabaseService.createTeam(teamUid, version);
     }
 
     @Post(":id/:version/workspace/:workspaceName")
     public addNewWorkspace(
-        @Param("id") teamUid: string, @Param("version") version: string, @Param("workspaceName") workspaceName: string)
+        @Param("id") teamUid: string, @Param("version") version: number, @Param("workspaceName") workspaceName: string)
         : Observable<ResponseDto> {
         this.log.d("Request to add a new workspace to the team: ", teamUid);
         return this.teamDatabaseService.addNewWorkspace(teamUid, workspaceName, version);
@@ -47,7 +47,7 @@ export class TeamDatabaseController {
 
     @Post(":id/:version/members/:user")
     public addNewTeamMember(
-        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string
+        @Param("id") teamUid: string, @Param("version") version: number, @Param("user") user: string
     ): Observable<ResponseDto> {
         this.log.d("Request to add a new member to the team: ", teamUid);
         return this.teamDatabaseService.addNewTeamMember(teamUid, user, version);
@@ -55,7 +55,7 @@ export class TeamDatabaseController {
 
     @Delete(":id/:version/workspace/:workspace")
     public removeWorkspace(
-        @Param("id") teamUid: string, @Param("version") version: string, @Param("workspace") workspace: string
+        @Param("id") teamUid: string, @Param("version") version: number, @Param("workspace") workspace: string
     ): Observable<ResponseDto> {
         this.log.d("Request to delete a workspace from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace, version);
@@ -63,7 +63,7 @@ export class TeamDatabaseController {
 
     @Delete(":id/:version/members/:user")
     public removeTeamMember(
-        @Param("id") teamUid: string, @Param("user") user: string, @Param("version") version: string
+        @Param("id") teamUid: string, @Param("user") user: string, @Param("version") version: number
     ): Observable<ResponseDto> {
         this.log.d("Request to delete a member from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamMember(teamUid, user, version);

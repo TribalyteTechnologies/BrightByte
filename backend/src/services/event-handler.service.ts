@@ -74,35 +74,36 @@ export class EventHandlerService {
         this.log.d("New Subscription");
         let callback = (error, event) => {
             if (event) {
-                this.log.d("New event received: " + JSON.stringify(event.returnValues));
+                const eventVals = event.returnValues;
+                this.log.d("New event received: " + JSON.stringify(eventVals));
                 let newEvent;
                 switch (type) {
                     case this.COMMIT:
                         newEvent = new CommitEventDto(
-                            event.returnValues[this.TEAM_UID],
-                            event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_COMMITS]), 
-                            parseInt(event.returnValues[this.TIMESTAMP]),
-                            event.returnValues[this.VERSION]);
+                            eventVals[this.TEAM_UID],
+                            eventVals[this.USER_HASH], parseInt(eventVals[this.NUMBER_COMMITS]), 
+                            parseInt(eventVals[this.TIMESTAMP]),
+                            eventVals[this.VERSION]);
                         break;
                     case this.REVIEW:
                         newEvent = new ReviewEventDto(
-                            event.returnValues[this.TEAM_UID],
-                            event.returnValues[this.USER_HASH], parseInt(event.returnValues[this.NUMBER_REVIEWS]), 
-                            parseInt(event.returnValues[this.TIMESTAMP]),
-                            event.returnValues[this.VERSION]);
+                            eventVals[this.TEAM_UID],
+                            eventVals[this.USER_HASH], parseInt(eventVals[this.NUMBER_REVIEWS]), 
+                            parseInt(eventVals[this.TIMESTAMP]),
+                            parseInt(eventVals[this.VERSION]));
                         break;
                     case this.DELETE:
                         newEvent = new DeleteEventDto(
-                            event.returnValues[this.TEAM_UID],
-                            event.returnValues[this.USER_HASH],
-                            event.returnValues[this.URL],
-                            event.returnValues[this.VERSION]);
+                            eventVals[this.TEAM_UID],
+                            eventVals[this.USER_HASH],
+                            eventVals[this.URL],
+                            parseInt(eventVals[this.VERSION]));
                         break;
                     case this.NEW_USER:
                         newEvent = new NewUserEventDto(
-                            event.returnValues[this.TEAM_UID],
-                            event.returnValues[this.HASH],
-                            event.returnValues[this.VERSION]);
+                            eventVals[this.TEAM_UID],
+                            eventVals[this.HASH],
+                            parseInt(eventVals[this.VERSION]));
                         break;
                     default:
                         this.log.e("The parameter 'type' is not valid");
