@@ -46,6 +46,7 @@ export class AddCommitPopover {
     public currentSeasonStartDate: Date;
     public hasNewCommits = false;
     public isFinishedLoadingRepo = false;
+    public isWorkspaceCorrect: boolean;
 
     public selectedRepositories = new Array<Repository>();
     public repoSelection: string;
@@ -314,6 +315,7 @@ export class AddCommitPopover {
         let seasonLengthIndays;
         this.isFinishedLoadingRepo = false;
         this.showNextReposOption = false;
+        this.isWorkspaceCorrect = true;
         return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
             let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
             seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
@@ -342,7 +344,12 @@ export class AddCommitPopover {
                     });
                     return Promise.all(promisesRepos).then(() => {
                         this.nextRepositoriesUrl.set(workspace, repositories.next);
-                    });   
+                    });
+                }).catch(err => {
+                    this.showSpinner = false;
+                    this.log.e("Error getting the workspace: ", err);
+                    this.isWorkspaceCorrect = false;
+                    this.showGuiMessage("addCommit.wrongWorkspace");
                 });
             });
             return Promise.all(promisesWorkspaces).then(() => {

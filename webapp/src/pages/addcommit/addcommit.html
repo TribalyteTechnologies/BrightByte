@@ -49,7 +49,10 @@
                 <div class="custom-spinner" *ngIf="showSpinner">
                     <ion-spinner name="bubbles"></ion-spinner>
                 </div>
-                <div *ngIf="!hasNewCommits && isFinishedLoadingRepo">
+                <div *ngIf="!isWorkspaceCorrect && isFinishedLoadingRepo">
+                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.wrongWorkspace" | translate }} </ion-label>                
+                </div>
+                <div *ngIf="!hasNewCommits && isFinishedLoadingRepo && isWorkspaceCorrect">
                     <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.noNewCommits" | translate }} </ion-label>                
                 </div>
                 <div *ngIf="!showNextReposOption && hasNewCommits && isFinishedLoadingRepo" class="custom-container-next-repos">
