@@ -73,7 +73,7 @@
         "noAvailableSelectReviewers": "Reviewers are selected automatically",
         "selectedReviewers": "Selected reviewers",
         "randomReviewersDescription": "Up to four users are picked among the available team members",
-        "wrongWorkspace": "The workspace is wrong, please ask your team administrator."
+        "wrongWorkspace": "The workspace is wrong, please notify your team administrator."
     },
     "commits": {
         "add": "Contribute",
