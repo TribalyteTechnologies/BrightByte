@@ -97,7 +97,7 @@ export class LoginForm {
         let url = new URLSearchParams(document.location.search);
         this.log.d("The url is ", url);
         if (url.has(AppConfig.UrlKey.REGISTERID) || url.has(AppConfig.UrlKey.LOGID)) {
-            let retrievedUser = this.userLoggerService.retrieveAccount();
+            let retrievedUser = this.userLoggerService.retrieveLogAccount();
             this.text = retrievedUser.user;
             let password = retrievedUser.password;
             if (password) {

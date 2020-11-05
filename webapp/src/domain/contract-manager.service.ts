@@ -155,9 +155,10 @@ export class ContractManagerService {
 
     public setBaseContracts(teamUid: number, version?: number): Promise<Array<ITrbSmartContact>> {
         let teamManagerContract: ITrbSmartContact;
-        let bbFactoryContract;
-        let brightDictionaryContract;
-        let managerContract;
+        let bbFactoryContract: ITrbSmartContact;
+        let brightDictionaryContract: ITrbSmartContact;
+        let managerContract: ITrbSmartContact;
+        this.log.d("Setting base contracts for team: ", teamUid);
         let promise = version ? this.setTeamVersionManager(version) : this.initProm;
         return promise
         .then(([bright, commit, root, teamManager, bbFactory, brightDictionary, proxyManager]) => {
@@ -1346,12 +1347,14 @@ export class ContractManagerService {
 
     private setTeamVersionManager(version: number): Promise<Array<ITrbSmartContact>> {
         let contractArray;
-        return this.initProm.then((contracts) => {
+        this.log.d("Setting team version manager: ", version);
+        return this.initProm.then((contracts: Array<ITrbSmartContact>) => {
             contractArray = contracts;
             let proxyManager = contracts[6];
             return proxyManager.methods.getVersionContracts(version).call({ from: this.currentUser.address });
         })
         .then((contractAddress: string) => {
+            this.log.d("Version team manager address is : ", contractAddress);
             let teamManagerContract = new this.web3.eth.Contract(this.contractJsonTeamManager.abi, contractAddress);
             this.contractAddressTeamManager = contractAddress;
             contractArray[3] = teamManagerContract;
