@@ -4,7 +4,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
-import { AppVersionService } from "../../core/app-version.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { SpinnerService } from "../../core/spinner.service";
@@ -69,6 +68,7 @@ export class LoginForm {
     private lastPassword = "";
     private userEmail: string;
     private autoLoginVersion: boolean;
+    private isAutoRegister: boolean;
     private versionToLog: number;
     private currentCloudVersion: number;
     private teamUid: number;
@@ -85,8 +85,7 @@ export class LoginForm {
         private backendApiSrv: BackendApiService,
         private avatarSrv: AvatarService,
         private popupSrv: PopupService,
-        loggerSrv: LoggerService,
-        appVersionSrv: AppVersionService
+        loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("LoginForm");
 
@@ -104,9 +103,11 @@ export class LoginForm {
                 this.log.d("User retrieved from localStorage: " + this.text);
                 if (url.has(AppConfig.UrlKey.VERSIONID)) {
                     this.versionToLog = parseInt(url.get(AppConfig.UrlKey.VERSIONID));
+                    window.history.pushState("", "", "/" + this.versionToLog + "/");
                     this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
                     this.userName = (url.has(AppConfig.UrlKey.USERNAMEID)) ? url.get(AppConfig.UrlKey.USERNAMEID) : "";
                     this.autoLoginVersion = true;
+                    this.isAutoRegister = url.has(AppConfig.UrlKey.REGISTERID);
                     this.login(password);
                 }       
             }
@@ -303,18 +304,15 @@ export class LoginForm {
         }).then(() => {
             if(this.autoLoginVersion) {
                 this.userLoggerService.removeLogAccount();
-            }
-            let url = new URLSearchParams(document.location.search);
-            if (url.has(AppConfig.UrlKey.LOGID)) {
-                this.log.d("The user is logging to team: ", this.teamUid);
-                this.log.d("Logging to team from version: ", this.versionToLog);
-                this.logToTeam(this.teamUid, this.versionToLog);
-            } else if (url.has(AppConfig.UrlKey.REGISTERID)) {
-                this.log.d("The user is register to team: ", this.teamUid);
-                this.log.d("Register to team from version: ", this.versionToLog);
-                this.teamToRegisterIn = this.teamUid;
-                this.versionToRegisterIn = this.versionToLog;
-                this.registerToTeam();
+                this.log.d("The user is participating in the team: ", this.teamUid);
+                this.log.d("Participating in the team from version: ", this.versionToLog);
+                if (this.isAutoRegister) {
+                    this.teamToRegisterIn = this.teamUid;
+                    this.versionToRegisterIn = this.versionToLog;
+                    this.registerToTeam(); 
+                } else {
+                    this.logToTeam(this.teamUid, this.versionToLog);
+                }
             }
         })
         .catch(e => {
