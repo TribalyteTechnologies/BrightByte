@@ -104,6 +104,7 @@ export class TabsPage {
     public logout() {
         this.websocketSrv.disconnect();
         this.userLoggerService.logout();
+        window.history.pushState("", "", "/");
         this.navCtrl.setRoot(LoginPage);
     }
 
