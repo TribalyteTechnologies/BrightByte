@@ -1013,7 +1013,7 @@ export class ContractManagerService {
     public getRandomReviewer(): Promise<boolean> {
         return this.initProm.then(([bright, commit, root]) => {
             return this.callAndRetry(() => {
-                return root.methods.getrandomReviewer().call({ from: this.currentUser.address });
+                return root.methods.getRandomReviewer().call({ from: this.currentUser.address });
             });
         }).then(res => {
             return Boolean(res);
