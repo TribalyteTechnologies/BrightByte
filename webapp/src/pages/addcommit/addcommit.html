@@ -40,9 +40,9 @@
                     <ion-label class="text-title text-details--bold">{{ "addCommit.batchUploadTitle" | translate }}</ion-label>
                 </ion-item-divider>
                 <div>
-                    <ion-item *ngFor="let selectedRepo of selectedRepositories">                        
-                        <ion-radio item-left [disabled]="isUpdatingByBatch" [value]="selectedRepo.name"></ion-radio>
-                        <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}</ion-label>
+                    <ion-item *ngFor="let selectedRepo of selectedRepositories">  
+                        <ion-radio item-left [value]="selectedRepo.name"></ion-radio>
+                        <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}  ({{ selectedRepo.provider }})</ion-label>
                         <ion-label  item-right class="text-details text-details--bold"> {{ "addCommit.batchUploadPendingCommitsText" | translate: selectedRepo }}</ion-label>                                        
                     </ion-item>
                 </div>
