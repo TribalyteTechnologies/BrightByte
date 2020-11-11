@@ -4,7 +4,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
-import { AppVersionService } from "../../core/app-version.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { SpinnerService } from "../../core/spinner.service";
@@ -49,6 +48,7 @@ export class LoginForm {
     public invitationList: Array<Team>;
     public userName: string;
     public teamToRegisterIn: number;
+    public versionToRegisterIn: number;
     public isRegistering: boolean;
 
     private readonly NEW_USER = "new-user";
@@ -59,7 +59,8 @@ export class LoginForm {
     private password = "";
     private lastPassword = "";
     private userEmail: string;
-    private autoLogin: boolean;
+    private isAutoRegister: boolean;
+    private autoLoginVersion: boolean;
     private teamUid: number;
     
 
@@ -73,26 +74,30 @@ export class LoginForm {
         private spinnerService: SpinnerService,
         private backendApiSrv: BackendApiService,
         private avatarSrv: AvatarService,
-        loggerSrv: LoggerService,
-        appVersionSrv: AppVersionService
+        loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("LoginForm");
         
         this.migrationDone = this.userLoggerService.getMigration();
     }
 
-    public ngOnInit(){
-        let retrievedUser = this.userLoggerService.retrieveAccount();
-        this.text = retrievedUser.user;
-        let password = retrievedUser.password;
-        if (password){
-            this.log.d("User retrieved from localStorage: " + this.text);
-            let url = new URLSearchParams(document.location.search);
-            if (url.has(AppConfig.UrlKey.TEAMID)) {
-                this.autoLogin = true;
-                this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+    public ngOnInit() {
+        let url = new URLSearchParams(document.location.search);
+        this.log.d("The url is ", url);
+        if (url.has(AppConfig.UrlKey.REGISTERID) || url.has(AppConfig.UrlKey.LOGID)) {
+            let retrievedUser = this.userLoggerService.retrieveLogAccount();
+            this.text = retrievedUser.user;
+            let password = retrievedUser.password;
+            if (password) {
+                this.log.d("User retrieved from localStorage: " + this.text);
+                if (url.has(AppConfig.UrlKey.TEAMID)) {
+                    this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+                    this.userName = (url.has(AppConfig.UrlKey.USERNAMEID)) ? url.get(AppConfig.UrlKey.USERNAMEID) : "";
+                    this.autoLoginVersion = true;
+                    this.isAutoRegister = url.has(AppConfig.UrlKey.REGISTERID);
+                    this.login(password);
+                }       
             }
-            this.login(password);
         }
     }
 
@@ -251,6 +256,18 @@ export class LoginForm {
         .then(() => {
             this.showTeamSelector = showSelector;
             return this.getAndSetTeamNames(alreadyRegisteredTeams, false);
+        })
+        .then(() => {
+            if(this.autoLoginVersion) {
+                this.userLoggerService.removeLogAccount();
+                this.log.d("The user is participating in the team: ", this.teamUid);
+                if (this.isAutoRegister) {
+                    this.teamToRegisterIn = this.teamUid;
+                    this.registerToTeam(); 
+                } else {
+                    this.logToTeam(this.teamUid);
+                }
+            }
         });
     }
 
@@ -274,15 +291,12 @@ export class LoginForm {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
-                return this.contractManager.getUserTeam();              
+                return this.contractManager.getUserTeam();
             })
             .then((teamUIds: Array<number>) => {
-                let promise;
                 isAlreadyRegisteredToTeam = teamUIds.length !== 0;
                 if (isAlreadyRegisteredToTeam) {
-                    let autoLogin = this.autoLogin && teamUIds.indexOf(this.teamUid) > -1;
-                    promise = autoLogin ? 
-                    this.logToTeam(this.teamUid) : this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
+                    this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
                 } else {
                     this.goToSetProfile.next(this.SET_PROFILE);
                 }
@@ -290,7 +304,7 @@ export class LoginForm {
             })
             .catch((e) => {
                 this.log.d("Failure to access the node " + currentNodeIndex);
-                return(this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
+                return (this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
             });
         }
         return prom;
