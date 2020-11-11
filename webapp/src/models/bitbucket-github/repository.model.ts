@@ -12,12 +12,14 @@ export class Repository {
     public numPrsNotUploaded?: number;
     public isReadAllCommits: boolean;
     public workspace?: string;
+    public organization?: string;
     public provider: string;
 
-    constructor(slug: string, name: string, workspace?: string) {
+    constructor(slug: string, name: string, workspace?: string, organization?: string) {
         this.slug = slug;
         this.name = name;
         this.workspace = workspace;
+        this.organization = organization;
         this.numCommits = 0;
         this.numPrs = 0;
         this.numPrsNotUploaded = 0;

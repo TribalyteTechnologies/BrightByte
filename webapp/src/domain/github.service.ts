@@ -15,7 +15,8 @@ import { BackendGithubConfig } from "../models/backend-github-config.model";
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
     public static readonly SERVER_SYSTEM_CONFIG_URL = AppConfig.SERVER_BASE_URL + "/team/";
-    public static readonly BASE_URL = "https://api.github.com/";
+    public static readonly BASE_API_URL = "https://api.github.com/";
+    public static readonly BASE_URL = "https://github.com/";
     public static readonly GET_USER_URL = "https://api.github.com/user";
     public static readonly USER_BASE_URL = "https://api.github.com/users/";
     public static readonly EVENTS_URL = "/events";
@@ -94,8 +95,9 @@ export class GithubService {
     }
 
     public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
+        const params = new HttpParams().set("type", "all");
         return this.http.get<Array<GithubRepositoryResponse>>(
-            GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {headers: this.headers}).toPromise()
+            GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {params: params, headers: this.headers}).toPromise()
         .then(result => {
             this.log.d("The repositories are", result);
             const commits = result.map((repo) => this.getCommits(repo, seasonStartDate, organization));
@@ -109,11 +111,11 @@ export class GithubService {
     public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
         return this.http.get<Array<GithubCommitResponse>>(
-            GithubApiConstants.BASE_URL + "repos/" + organization + "/" + repository.name + "/commits", 
+            GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/commits", 
             {params: params, headers: this.headers }).toPromise()
         .then(result => {     
             this.log.d("The getCommits response is", result);
-            this.repo = new Repository(repository.html_url, repository.name);
+            this.repo = new Repository(repository.html_url, repository.name, "", organization);
             this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
             return this.repo;
         });
@@ -122,10 +124,7 @@ export class GithubService {
     public getUsername(): Promise<GithubUserResponse> {
         this.log.d("The user token is", this.userToken);
         return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, {headers: this.headers }).toPromise()
-        .then(result => {
-            this.log.d("The GetUserName response is", result.login);
-            return result;
-        });
+        .then(result => result);
     }
 
     public setUserToken(userToken: string) {

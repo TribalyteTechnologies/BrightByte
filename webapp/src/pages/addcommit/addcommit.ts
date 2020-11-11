@@ -17,7 +17,7 @@ import { Repository } from "../../models/bitbucket-github/repository.model";
 import { BitbucketCommitInfo } from "../../models/bitbucket-github/bitbucket-commit.model";
 import { BitbucketRepository } from "../../models/bitbucket-github/bitbucket-repository-response.model";
 import { PullRequest, BitbucketPullRequestResponse } from "../../models/bitbucket-github/pull-request.model";
-import { GithubService } from "../../domain/github.service";
+import { GithubApiConstants, GithubService } from "../../domain/github.service";
 import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
 import { BackendBitbucketConfig } from "../../models/backend-bitbucket-config.model";
 import { BackendGithubConfig } from "../../models/backend-github-config.model";
@@ -336,8 +336,14 @@ export class AddCommitPopover {
                         (prevVal, commit) => {
                             return prevVal.then(() => {
                                 this.updatingProgress += percentage;
-                                let comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
+                                let comUrl;
+                                if(repo.provider === "bitbucket") {
+                                    comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
                                     + repoSelection.toLowerCase() + "/commits/" + commit.hash;
+                                } else {
+                                    comUrl = GithubApiConstants.BASE_URL + repo.organization + "/"
+                                    + repoSelection.toLowerCase() + "/commit/" + commit.hash;
+                                }
                                 commitIndex++;
                                 return this.addCommit(comUrl, commit.name);
                             });
@@ -348,8 +354,14 @@ export class AddCommitPopover {
                             (prevVal, pullrequest) => {
                                 return prevVal.then(() => {
                                     this.updatingProgress += percentage;
-                                    let prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
+                                    let prUrl;
+                                    if(repo.provider === "bitbucket") {
+                                        prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
                                         + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
+                                    } else {
+                                        prUrl = GithubApiConstants.BASE_URL + repo.organization + "/"
+                                        + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
+                                    }
                                     prIndex++;
                                     return this.addCommit(prUrl, pullrequest.title);
                                 });
@@ -495,7 +507,7 @@ export class AddCommitPopover {
             organizations.map(organization => { 
                 return this.githubSrv.getRepositoriesOrg(this.currentSeasonStartDate, organization)
                 .then((repositories: Array<Repository>) => {
-                    this.log.d("The repositories from Bitbucket are: ", repositories);
+                    this.log.d("The repositories from Github are: ", repositories);
                     repositories = repositories.filter(repo => repo.commitsInfo.length > 0);
                     repositories.forEach((repo) => (repo.commitsInfo = repo.commitsInfo.filter (
                     commit => this.blockChainCommits.indexOf(commit.hash) < 0 ), 
@@ -613,9 +625,17 @@ export class AddCommitPopover {
                 }
 
                 repo.numPrs = repo.pullRequests.push(pr);
-                let partialUrl = BitbucketApiConstants.BASE_URL + workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
-                if (this.blockChainCommits.indexOf(partialUrl) < 0) {
-                        repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
+                if (repo.provider === "bitbucket") {
+                    let partialUrl = BitbucketApiConstants.BASE_URL + workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
+                    if (this.blockChainCommits.indexOf(partialUrl) < 0) {
+                            repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
+                    }
+
+                } else {
+                    let partialUrl = GithubApiConstants.BASE_URL + repo.organization + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
+                    if (this.blockChainCommits.indexOf(partialUrl) < 0) {
+                            repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
+                    }
                 }
             }
         });
