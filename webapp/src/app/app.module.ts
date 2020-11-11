@@ -38,6 +38,7 @@ import { ContractManagerService } from "../domain/contract-manager.service";
 import { ErrorHandlerService } from "../domain/error-handler.service";
 import { UserLoggerService } from "../domain/user-logger.service";
 import { BitbucketService } from "../domain/bitbucket.service";
+import { GithubService } from "../domain/github.service";
 import { UserCacheService } from "../domain/user-cache.service";
 
 
@@ -165,6 +166,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         WebSocketService,
         PopupService,
         BitbucketService,
+        GithubService,
         AchievementService,
         UserLoggerService,
         UserCacheService,

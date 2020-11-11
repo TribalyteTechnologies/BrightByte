@@ -11,6 +11,7 @@
     },
 	"scripts": {
 		"build": "shx rm -rf dist && tsc -p tsconfig.build.json && shx cp ../version.json ./dist/version.json && shx cp -r ./src/{www,templates} ./dist",
+		"build:docker": "yarn build; docker build -t brightbyte/backend:latest-cloud .",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"start": "ts-node -r tsconfig-paths/register src/main.ts",
 		"start:dev": "concurrently --handle-input \"wait-on dist/main.js && nodemon\" \"tsc -w -p tsconfig.build.json\" ",

@@ -16,7 +16,12 @@ export class WorkspaceForm {
     @Input()
     public workspace: string;
 
-    public errorMsg: string;
+    @Input()
+    public organization: string;
+
+    public errorWorkspaceMsg: string;
+
+    public errorOrganizationMsg: string;
 
     private userTeamUid: number;
     private currentVersion: number;
@@ -38,17 +43,39 @@ export class WorkspaceForm {
         this.navCtrl.push(TabsPage);
     }
 
-    public addWorkspaceAndContinue() {
-        const url = AppConfig.TEAM_API + this.userTeamUid + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + this.workspace;
-        this.http.post(url, {}).toPromise()
+    public addWorkspace() {
+        this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.WORKSPACE_PATH + this.workspace, {}).toPromise()
         .then(() => { 
-            this.navCtrl.push(TabsPage);
+            this.transalateSrv.get("setProfile.newWorkspaceSuccessMsg")
+            .subscribe(translation => {
+                this.errorWorkspaceMsg = translation;
+            });
         })
         .catch(() => { 
             this.transalateSrv.get("setProfile.workspaceErrorBackendDown")
             .subscribe(translation => {
-                this.errorMsg = translation;
+                this.errorWorkspaceMsg = translation;
             });
         });
+    }
+
+    public addOrganization() {
+        this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.ORGANIZATION_PATH + this.organization, {}).toPromise()
+        .then(() => { 
+            this.transalateSrv.get("setProfile.newOrganizationSuccessMsg")
+            .subscribe(translation => {
+                this.errorOrganizationMsg = translation;
+            });
+        })
+        .catch(() => { 
+            this.transalateSrv.get("setProfile.organizationErrorBackendDown")
+            .subscribe(translation => {
+                this.errorOrganizationMsg = translation;
+            });
+        });
+    }
+
+    public continue() {
+        this.navCtrl.push(TabsPage);
     }
 }

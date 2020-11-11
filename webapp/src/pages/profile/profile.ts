@@ -1,23 +1,23 @@
-import { Component } from "@angular/core";
-import { ViewController, AlertController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
-import { AppConfig } from "../../app.config";
-import { TranslateService } from "@ngx-translate/core";
+import { Component } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { ILogger, LoggerService } from "../../core/logger.service";
-import { catchError, flatMap } from "rxjs/operators";
+import { TranslateService } from "@ngx-translate/core";
+import { AlertController, ViewController } from "ionic-angular";
 import { Observable } from "rxjs";
-import { AvatarService } from "../../domain/avatar.service";
-import { IResponse, IWorkspaceResponse } from "../../models/response.model";
-import { LoginService } from "../../core/login.service";
-import { ContractManagerService } from "../../domain/contract-manager.service";
-import { SpinnerService } from "../../core/spinner.service";
-import { UserNameService } from "../../domain/user-name.service";
-import { UserDetails } from "../../models/user-details.model";
-import { TeamMember } from "../../models/team-member.model";
-import { FormatUtils } from "../../core/format-utils";
-import { InvitedUser } from "../../models/invited-user.model";
 import { from } from "rxjs/observable/from";
+import { catchError, flatMap } from "rxjs/operators";
+import { AppConfig } from "../../app.config";
+import { FormatUtils } from "../../core/format-utils";
+import { ILogger, LoggerService } from "../../core/logger.service";
+import { LoginService } from "../../core/login.service";
+import { SpinnerService } from "../../core/spinner.service";
+import { AvatarService } from "../../domain/avatar.service";
+import { ContractManagerService } from "../../domain/contract-manager.service";
+import { UserNameService } from "../../domain/user-name.service";
+import { InvitedUser } from "../../models/invited-user.model";
+import { IOrganizationResponse, IResponse, IWorkspaceResponse } from "../../models/response.model";
+import { TeamMember } from "../../models/team-member.model";
+import { UserDetails } from "../../models/user-details.model";
 
 @Component({
     selector: "profile",
@@ -43,6 +43,8 @@ export class Profile {
     public seasonSuccessMsg: string;
     public workspaceErrorMsg: string;
     public workspaceSuccessMsg: string;
+    public organizationErrorMsg: string;
+    public organizationSuccessMsg: string;
     public seasonErrorMsg: string;
     public uploadForm: FormGroup;
     public settingsCategory = this.SETTINGS_CATEGORIES[0];
@@ -51,6 +53,7 @@ export class Profile {
     public memberType: AppConfig.UserType;
     public invitedEmail: string;
     public newTeamWorkspace: string;
+    public newTeamOrganization: string;
     public isCurrentUserAdmin: boolean;
     public isSettingTeamName = false;
     public isInvitingUser = false;
@@ -60,7 +63,9 @@ export class Profile {
     public teamMembers: Array<Array<TeamMember>>;
     public invitedUsers: Array<InvitedUser>;
     public teamWorkspaces: Array<string>;
-    public isBackendAvailable = true;
+    public teamOrganizations: Array<string>;
+    public isBitbucketAvailable = false;
+    public isGithubAvailable = false;
     public commitThreshold: number;
     public reviewThreshold: number;
     public teamRules: string;
@@ -68,6 +73,7 @@ export class Profile {
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly WORKSPACE = "/workspace/";
+    private readonly ORGANIZATION = "/organization/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
     private readonly EMAILS_SEPARATOR = /[\s,]+/;
@@ -111,6 +117,7 @@ export class Profile {
         this.log = loggerSrv.get("ProfilePage");
         this.teamMembers = Array<Array<TeamMember>>();
         this.teamWorkspaces = Array<string>();
+        this.teamOrganizations = Array<string>();
     }
 
     public ngOnInit() {
@@ -200,12 +207,16 @@ export class Profile {
             this.isBackendAvailable = false;
             if (result.status !== "Error") {
                 this.teamWorkspaces = result.data;
-                this.isBackendAvailable = true;
+                this.isBitbucketAvailable = true;
+            }
+            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + this.userAddress).toPromise();
+        }).then((result: IOrganizationResponse) => {
+            this.isGithubAvailable = false;
+            if (result.status !== "Error") {
+                this.teamOrganizations = result.data;
+                this.isGithubAvailable = true;
             }
             this.isLoadingInfo = false;
-        }).catch(e => {
-            this.log.e("Error: ", e);
-            this.isBackendAvailable = false;
         });
     }
 
@@ -496,6 +507,31 @@ export class Profile {
         }
     }
 
+    public addNewOrganization(organization: string) {
+        this.organizationErrorMsg = null;
+        this.organizationSuccessMsg = null;
+        let organizationIndex = this.teamOrganizations.indexOf(organization);
+        if (organization && organizationIndex === -1) {
+            this.http.post(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + organization, {
+            }).toPromise().then((response: IResponse) => {
+                this.log.d("Added new organization for the team");
+                this.teamOrganizations.push(organization);
+                this.translateSrv.get("setProfile.newOrganizationSuccessMsg").subscribe(res => {
+                    this.organizationSuccessMsg = res;
+                });
+            }).catch(e => {
+                this.log.e("Error setting the new team organization: ", e);
+                this.translateSrv.get("setProfile.newOrganizationError").subscribe(res => {
+                    this.organizationErrorMsg = res;
+                });
+            });
+        } else {
+            this.translateSrv.get("setProfile.invalidOrganization").subscribe(res => {
+                this.organizationErrorMsg = res;
+            });
+        }
+    }
+
     public showRemoveWorkspaceConfirmation(workspace: string) {
         this.translateSrv.get(["setProfile.removeWorkspace", "setProfile.removeWorkspaceConfirmation", "setProfile.remove", "setProfile.cancel"])
             .subscribe((response) => {
@@ -520,6 +556,38 @@ export class Profile {
                             handler: () => {
                                 this.log.d("Remove clicked");
                                 this.removeTeamWorkspace(workspace);
+                            }
+                        }
+                    ]
+                });
+                alert.present();
+            });
+    }
+
+    public showRemoveOrganizationConfirmation(organization: string) {
+        this.translateSrv.get(["setProfile.removeOrganization", "setProfile.removeOrganizationConfirmation", "setProfile.remove", "setProfile.cancel"])
+            .subscribe((response) => {
+                let removeOrganization = response["setProfile.removeOrganization"];
+                let removeOrganizationConfirmation = response["setProfile.removeOrganizationConfirmation"];
+                let remove = response["setProfile.remove"];
+                let cancel = response["setProfile.cancel"];
+
+                let alert = this.alertCtrl.create({
+                    title: removeOrganization,
+                    message: removeOrganizationConfirmation,
+                    buttons: [
+                        {
+                            text: cancel,
+                            role: "cancel",
+                            handler: () => {
+                                this.log.d("Cancel clicked");
+                            }
+                        },
+                        {
+                            text: remove,
+                            handler: () => {
+                                this.log.d("Remove clicked");
+                                this.removeTeamOrganization(organization);
                             }
                         }
                     ]
@@ -578,6 +646,25 @@ export class Profile {
                 this.log.e("Error deleting the team workspace: ", e);
                 this.translateSrv.get("setProfile.deleteWorkspaceError").subscribe(res => {
                     this.workspaceErrorMsg = res;
+                });
+            });
+        }
+
+    }
+
+    private removeTeamOrganization(organization: string) {
+        this.log.d("The user admin requested to deleted the organization: ", organization);
+        let organizationIndex = this.teamOrganizations.indexOf(organization);
+        if (organizationIndex !== -1) {
+            this.http.delete(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + organization, {}).toPromise().then(result => {
+                this.teamOrganizations.splice(organizationIndex, 1);
+                this.translateSrv.get("setProfile.removeOrganizationSuccessMsg").subscribe(res => {
+                    this.organizationSuccessMsg = res;
+                });
+            }).catch(e => {
+                this.log.e("Error deleting the team organization: ", e);
+                this.translateSrv.get("setProfile.deleteOrganizationError").subscribe(res => {
+                    this.organizationErrorMsg = res;
                 });
             });
         }

@@ -7,8 +7,6 @@ import { ILogger, LoggerService } from "../../core/logger.service";
 import { MenuItem } from "../../models/menu-items.model";
 import { LoginService } from "../../core/login.service";
 import { ContractManagerService } from "../../domain/contract-manager.service";
-import { LoginPage } from "../login/login";
-import { NavController } from "ionic-angular";
 import { UserLoggerService } from "../../domain/user-logger.service";
 import { LocalStorageService } from "../../core/local-storage.service";
 import { AppConfig } from "../../app.config";
@@ -48,7 +46,6 @@ export class TabsPage {
         loggerSrv: LoggerService,
         private userLoggerService: UserLoggerService,
         private popUpService: PopupService,
-        private navCtrl: NavController,
         private loginService: LoginService,
         private contractManagerService: ContractManagerService,
         private storageSrv: LocalStorageService,
@@ -104,8 +101,7 @@ export class TabsPage {
     public logout() {
         this.websocketSrv.disconnect();
         this.userLoggerService.logout();
-        window.history.pushState("", "", "/");
-        this.navCtrl.setRoot(LoginPage);
+        window.location.href = window.location.origin;
     }
 
     public openAddCommitDialog() {

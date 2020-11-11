@@ -24,6 +24,7 @@ export class AppConfig {
     public static readonly PROFILE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/";
     public static readonly TEAM_API = AppConfig.SERVER_BASE_URL + "/team/";
     public static readonly WORKSPACE_PATH = "/workspace/";
+    public static readonly ORGANIZATION_PATH = "/organization/";
     public static readonly AVATAR_STATUS_PATH = "/status/";
     public static readonly INVITATION_PATH = "/sendInvitation/";
     public static readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
@@ -83,6 +84,7 @@ export class AppConfig {
         LOGUSERNAME: "logBrightUser",
         LOGPASSWORD: "logBrightPassword",
         BITBUCKETUSERTOKEN: "brightBitbucketUserToken",
+        GITHUBUSERTOKEN: "brightGithubUserToken",
         USERMAILS: "brightEmails",
         LASTPAGE: "brightPage",
         MIGRATION: "brightMigration",

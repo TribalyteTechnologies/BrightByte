@@ -34,7 +34,17 @@ export class TeamDatabaseService {
         );
     }
 
-    public getTeamMembers(teamUid: number, version: number): Observable<ResponseDto> {
+    public getTeamOrganizations(teamUid: string, user: string): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            map(collection => collection.findOne({ id: teamUid }) as TeamDto),
+            map((team: TeamDto) => 
+            team.teamMembers.indexOf(user) !== -1 ? new SuccessResponseDto(team.organizations) : 
+            new SuccessResponseDto(new Array<string>())),
+            catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE)))
+        );
+    }
+
+    public getTeamMembers(teamUid: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: teamUid, version: version }) as TeamDto),
             map((team: TeamDto) => new SuccessResponseDto(team.teamMembers)),
@@ -76,7 +86,23 @@ export class TeamDatabaseService {
         );
     }
 
-    public addNewTeamMember(teamUid: number, user: string, version: number): Observable<ResponseDto> {
+    public addNewOrganization(teamUid: string, organization: string): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            flatMap(collection => {
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
+                if (team && team.organizations && team.organizations.indexOf(organization) < 0) {
+                    team.organizations.push(organization);
+                    ret = this.databaseSrv.save(this.database, collection, team);
+                }
+                return ret;
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
+    }
+
+    public addNewTeamMember(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let team = collection.findOne({ id: teamUid, version: version }) as TeamDto;
@@ -111,7 +137,25 @@ export class TeamDatabaseService {
         );
     }
 
-    public removeTeamMember(teamUid: number, user: string, version: number): Observable<ResponseDto> {
+    public removeTeamOrganization(teamUid: string, organization: string): Observable<ResponseDto> {
+        return this.initObs.pipe(
+            flatMap(collection => {
+                let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
+                let team = collection.findOne({ id: teamUid }) as TeamDto;
+                if (team) {
+                    let organizationIndex = team.organizations.indexOf(organization);
+                    organizationIndex === -1 ? this.log.d("The organization did not exists") : 
+                    team.organizations.splice(organizationIndex, 1);
+                    ret = this.databaseSrv.save(this.database, collection, team);
+                }
+                return ret;
+            }),
+            map(created => new SuccessResponseDto()),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
+    }
+
+    public removeTeamMember(teamUid: string, user: string): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
