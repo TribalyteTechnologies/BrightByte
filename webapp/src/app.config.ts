@@ -59,7 +59,8 @@ export class AppConfig {
     public static readonly REPUTATION_FACTOR = 1000;
     public static readonly FIRST_QUALIFYING_SEASON = 0;
     public static readonly COMMITS_BLOCK_SIZE = 20;
-    public static readonly EMPTY_COMMIT_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
+    public static readonly EMPTY_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
+    public static readonly EMPTY_COMMIT_HASH = AppConfig.EMPTY_HASH;
     public static readonly EMPTY_TEAM_ID = 0;
     public static readonly DEFAULT_INVITATION_EXP_IN_SECS = 60 * 60 * 24 * 7;
     public static readonly MAX_SEASON_LENGTH_DAYS = 365 * 10;
@@ -78,6 +79,8 @@ export class AppConfig {
     public static readonly StorageKey = {
         USERNAME: "brightUser",
         PASSWORD: "brightPassword",
+        LOGUSERNAME: "logBrightUser",
+        LOGPASSWORD: "logBrightPassword",
         BITBUCKETUSERTOKEN: "brightBitbucketUserToken",
         USERMAILS: "brightEmails",
         LASTPAGE: "brightPage",
@@ -96,7 +99,10 @@ export class AppConfig {
     public static readonly UrlKey = {
         REVIEWID: "reviewId",
         COMMITID: "commitId",
-        TEAMID: "teamId"
+        TEAMID: "teamId",
+        REGISTERID: "registerId",
+        LOGID: "logId",
+        USERNAMEID: "userNameId"
     };
 
     private static shuffle(array: Array<any>): Array<any> {
