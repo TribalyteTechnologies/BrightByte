@@ -1,6 +1,6 @@
 export class UserData {
     public constructor(
-        public teamUid: string,
+        public teamUid: number,
         public version: number,
         public commitCount?: number,
         public reviewCount?: number,

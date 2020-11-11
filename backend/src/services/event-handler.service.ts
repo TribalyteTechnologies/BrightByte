@@ -80,28 +80,28 @@ export class EventHandlerService {
                 switch (type) {
                     case this.COMMIT:
                         newEvent = new CommitEventDto(
-                            eventVals[this.TEAM_UID],
+                            parseInt(eventVals[this.TEAM_UID]),
                             eventVals[this.USER_HASH], parseInt(eventVals[this.NUMBER_COMMITS]), 
                             parseInt(eventVals[this.TIMESTAMP]),
-                            eventVals[this.VERSION]);
+                            parseInt(eventVals[this.VERSION]));
                         break;
                     case this.REVIEW:
                         newEvent = new ReviewEventDto(
-                            eventVals[this.TEAM_UID],
+                            parseInt(eventVals[this.TEAM_UID]),
                             eventVals[this.USER_HASH], parseInt(eventVals[this.NUMBER_REVIEWS]), 
                             parseInt(eventVals[this.TIMESTAMP]),
                             parseInt(eventVals[this.VERSION]));
                         break;
                     case this.DELETE:
                         newEvent = new DeleteEventDto(
-                            eventVals[this.TEAM_UID],
+                            parseInt(eventVals[this.TEAM_UID]),
                             eventVals[this.USER_HASH],
                             eventVals[this.URL],
                             parseInt(eventVals[this.VERSION]));
                         break;
                     case this.NEW_USER:
                         newEvent = new NewUserEventDto(
-                            eventVals[this.TEAM_UID],
+                            parseInt(eventVals[this.TEAM_UID]),
                             eventVals[this.HASH],
                             parseInt(eventVals[this.VERSION]));
                         break;

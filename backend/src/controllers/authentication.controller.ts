@@ -42,7 +42,7 @@ export class AuthenticationController {
     @Get("authorize/:provider/:user/:teamUid/:version")
     public getProviderAuthCallback(
         @Param("user") user: string,
-        @Param("teamUid") teamUid: string,
+        @Param("teamUid") teamUid: number,
         @Param("version") version: number,
         @Param("provider") provider: string): ResponseDto {
         let ret: ResponseDto;

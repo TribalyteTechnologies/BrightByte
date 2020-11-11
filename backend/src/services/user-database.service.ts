@@ -28,7 +28,7 @@ export class UserDatabaseService {
         this.init();
     }
 
-    public getCommitNumber(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
+    public getCommitNumber(userIdentifier: string, teamUid: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             map((user: UserDto) => {
@@ -39,7 +39,7 @@ export class UserDatabaseService {
         );
     }
 
-    public getReviewNumber(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
+    public getReviewNumber(userIdentifier: string, teamUid: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
             map((user: UserDto) => {
@@ -51,7 +51,7 @@ export class UserDatabaseService {
     }
 
     public hasAchievement(
-        userIdentifier: string, teamUid: string, achievementIdentifier: string, version: number
+        userIdentifier: string, teamUid: number, achievementIdentifier: string, version: number
     ): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
@@ -64,18 +64,25 @@ export class UserDatabaseService {
         );
     }
 
-    public getObtainedAchievements(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
+    public getObtainedAchievements(userIdentifier: string, teamUid: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             map(collection => collection.findOne({ id: userIdentifier }) as UserDto),
-            flatMap((user: UserDto) => this.achievementDbSrv.getAchievements(
-                user.teamsData.find((userData: UserData) =>
-                userData.teamUid === teamUid && userData.version === version).obtainedAchievements)),
+            flatMap((user: UserDto) => {
+                let achivements = user.teamsData.filter((userData: UserData) => 
+                    userData.teamUid === teamUid && userData.version === version
+                );
+                this.log.d("The user obtained achivements are", achivements);
+                return this.achievementDbSrv.getAchievements(achivements[0].obtainedAchievements);
+            }),
             map((achievements: Array<AchievementDto>) => new SuccessResponseDto(achievements)),
-            catchError(error => of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error)))
+            catchError(error => {
+                this.log.e("Error getting achivements: ", error);
+                return of(new FailureResponseDto(BackendConfig.STATUS_FAILURE, error));
+            })
         );
     }
 
-    public createUser(userIdentifier: string, teamUid: string, version: number): Observable<ResponseDto> {
+    public createUser(userIdentifier: string, teamUid: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
@@ -99,7 +106,7 @@ export class UserDatabaseService {
         );
     }
 
-    public setCommitNumber(userIdentifier: string, teamUid: string, num: number, version: number): Observable<ResponseDto> {
+    public setCommitNumber(userIdentifier: string, teamUid: number, num: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
@@ -124,7 +131,7 @@ export class UserDatabaseService {
         );
     }
 
-    public setReviewNumber(userIdentifier: string, teamUid: string, num: number, version: number): Observable<ResponseDto> {
+    public setReviewNumber(userIdentifier: string, teamUid: number, num: number, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let user = collection.findOne({ id: userIdentifier }) as UserDto;
@@ -150,7 +157,7 @@ export class UserDatabaseService {
     }
 
     public initializeNewUser(
-        userIdentifier: string, teamUid: string, numberOfCommits: number, numberOfReviews: number, version: number
+        userIdentifier: string, teamUid: number, numberOfCommits: number, numberOfReviews: number, version: number
     ): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
@@ -173,7 +180,7 @@ export class UserDatabaseService {
     }
 
     public setObtainedAchievement(
-        userIdentifier: string, teamUid: string, achievementIdentifiers: string, version: number
+        userIdentifier: string, teamUid: number, achievementIdentifiers: string, version: number
     ): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {

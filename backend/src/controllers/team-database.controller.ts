@@ -19,54 +19,54 @@ export class TeamDatabaseController {
     }
 
     @Get(":id/:version/members")
-    public getTeamMembers(@Param("id") teamUid: string, @Param("version") version: number): Observable<ResponseDto> {
+    public getTeamMembers(@Param("id") teamUid: string, @Param("version") version: string): Observable<ResponseDto> {
         this.log.d("Request to get the member of team: ", teamUid);
-        return this.teamDatabaseService.getTeamMembers(teamUid, version);
+        return this.teamDatabaseService.getTeamMembers(parseInt(teamUid), parseInt(version));
     }
 
     @Get(":id/:version/workspace/:user")
     public getTeamWorkspaces(
-        @Param("id") teamUid: string, @Param("version") version: number, @Param("user") user: string): Observable<ResponseDto> {
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string): Observable<ResponseDto> {
         this.log.d("Request to get the member workspaces of team: ", teamUid);
-        return this.teamDatabaseService.getTeamWorkspaces(teamUid, user, version);
+        return this.teamDatabaseService.getTeamWorkspaces(parseInt(teamUid), user, parseInt(version));
     }
 
     @Post(":id/:version")
-    public createTeam(@Param("id") teamUid: string, @Param("version") version: number): Observable<ResponseDto> {
+    public createTeam(@Param("id") teamUid: string, @Param("version") version: string): Observable<ResponseDto> {
         this.log.d("Request to create a new team: ", teamUid);
-        return this.teamDatabaseService.createTeam(teamUid, version);
+        return this.teamDatabaseService.createTeam(parseInt(teamUid), parseInt(version));
     }
 
     @Post(":id/:version/workspace/:workspaceName")
     public addNewWorkspace(
-        @Param("id") teamUid: string, @Param("version") version: number, @Param("workspaceName") workspaceName: string)
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("workspaceName") workspaceName: string)
         : Observable<ResponseDto> {
         this.log.d("Request to add a new workspace to the team: ", teamUid);
-        return this.teamDatabaseService.addNewWorkspace(teamUid, workspaceName, version);
+        return this.teamDatabaseService.addNewWorkspace(parseInt(teamUid), workspaceName, parseInt(version));
     }
 
     @Post(":id/:version/members/:user")
     public addNewTeamMember(
-        @Param("id") teamUid: string, @Param("version") version: number, @Param("user") user: string
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string
     ): Observable<ResponseDto> {
         this.log.d("Request to add a new member to the team: ", teamUid);
-        return this.teamDatabaseService.addNewTeamMember(teamUid, user, version);
+        return this.teamDatabaseService.addNewTeamMember(parseInt(teamUid), user, parseInt(version));
     }
 
     @Delete(":id/:version/workspace/:workspace")
     public removeWorkspace(
-        @Param("id") teamUid: string, @Param("version") version: number, @Param("workspace") workspace: string
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("workspace") workspace: string
     ): Observable<ResponseDto> {
         this.log.d("Request to delete a workspace from the team: ", teamUid);
-        return this.teamDatabaseService.removeTeamWorkspace(teamUid, workspace, version);
+        return this.teamDatabaseService.removeTeamWorkspace(parseInt(teamUid), workspace, parseInt(version));
     }
 
     @Delete(":id/:version/members/:user")
     public removeTeamMember(
-        @Param("id") teamUid: string, @Param("user") user: string, @Param("version") version: number
+        @Param("id") teamUid: string, @Param("user") user: string, @Param("version") version: string
     ): Observable<ResponseDto> {
         this.log.d("Request to delete a member from the team: ", teamUid);
-        return this.teamDatabaseService.removeTeamMember(teamUid, user, version);
+        return this.teamDatabaseService.removeTeamMember(parseInt(teamUid), user, parseInt(version));
     }
 
     @Post(":email/sendInvitation")
