@@ -191,14 +191,11 @@ export class LoginForm {
                     this.userLoggerService.setAccount(this.text, pass);
                 }
                 this.password = pass;
+                this.userLoggerService.setLogAccount(this.text, this.password);
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
                 this.checkNodesAndOpenHomePage(account, 0).then((result) => {
                     this.spinnerService.hideLoader();
-                    return this.contractManager.getCurrentVersionCloud();
-                }).then((cloudVersion: number) => {
-                    this.currentCloudVersion = cloudVersion;
-                    this.log.d("The current Cloud version is", this.currentCloudVersion);
                     return true;
                 }).catch((e) => {
                     this.spinnerService.hideLoader();
@@ -226,6 +223,7 @@ export class LoginForm {
 
     public logToTeam(teamUid: number, version: number): Promise<void> {
         if (this.currentCloudVersion === version) {
+            this.userLoggerService.removeLogAccount();
             return this.contractManager.setBaseContracts(teamUid, version)
                 .then(() => {
                     this.loginService.setCurrentVersion(version);
@@ -234,7 +232,6 @@ export class LoginForm {
                     return this.initAvatarSrvAndContinue();
                 });
         } else {
-            this.userLoggerService.setLogAccount(this.text, this.password);
             let urlToOpen = this.BASE_URL + version + "/" + 
             this.VERSION_QUERY + version + this.TEAM_QUERY + teamUid + this.LOG_QUERY;
             this.popupSrv.openNewUrl(urlToOpen);
@@ -247,6 +244,7 @@ export class LoginForm {
         this.isRegistering = true;
         this.log.d("The user request to register to team:", this.teamToRegisterIn, " in the version: ", this.versionToRegisterIn);
         if (this.currentCloudVersion === this.versionToRegisterIn) {
+            this.userLoggerService.removeLogAccount();
             return this.contractManager.registerToTeam(this.userEmail, this.teamToRegisterIn, this.versionToRegisterIn)
             .then(() => {
                 return this.contractManager.setBaseContracts(this.teamToRegisterIn, this.versionToRegisterIn);
@@ -263,7 +261,6 @@ export class LoginForm {
                 return this.initAvatarSrvAndContinue();
             });
         } else {
-            this.userLoggerService.setLogAccount(this.text, this.password);
             let urlToOpen = this.BASE_URL + this.versionToRegisterIn + "/" + this.VERSION_QUERY + this.versionToRegisterIn + 
             this.TEAM_QUERY + this.teamToRegisterIn + this.REGISTER_QUERY + this.USER_NAME_QUERY + this.userName;
             this.popupSrv.openNewUrl(urlToOpen);
@@ -318,7 +315,6 @@ export class LoginForm {
             this.teamList = participantTeams;
         }).then(() => {
             if(this.autoLoginVersion) {
-                this.userLoggerService.removeLogAccount();
                 this.log.d("The user is participating in the team: ", this.teamUid);
                 this.log.d("Participating in the team from version: ", this.versionToLog);
                 if (this.isAutoRegister) {

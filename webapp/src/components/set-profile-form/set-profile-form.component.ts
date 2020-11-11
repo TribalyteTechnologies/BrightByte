@@ -12,6 +12,7 @@ import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
 import { BackendApiService } from "../../domain/backend-api.service";
 import { MemberVersion } from "../../models/member-version.model";
+import { PopupService } from "../../domain/popup.service";
 
 @Component({
     selector: "set-profile-form",
@@ -26,6 +27,9 @@ export class SetProfileForm {
 
     @Input()
     public userEmail: string;
+
+    @Input()
+    public version: number;
 
     @Output()
     public goToSetWorkspace = new EventEmitter();
@@ -46,6 +50,11 @@ export class SetProfileForm {
 
     private readonly EMAILS_SEPARATOR = "\n";
     private readonly SET_WORKSPACE_TAG = "set-workspace";
+    private readonly BASE_URL = window.location.origin + "/";
+    private readonly REGISTER_QUERY = "&" + AppConfig.UrlKey.REGISTERID + "=true";
+    private readonly VERSION_QUERY = "?" + AppConfig.UrlKey.VERSIONID + "=";
+    private readonly TEAM_QUERY = "&" + AppConfig.UrlKey.TEAMID + "=";
+    private readonly USER_NAME_QUERY = "&" + AppConfig.UrlKey.USERNAMEID + "=";
 
     private log: ILogger;
 
@@ -57,7 +66,8 @@ export class SetProfileForm {
         public http: HttpClient,
         private contractManagerService: ContractManagerService,
         private avatarSrv: AvatarService,
-        private backendApiSrv: BackendApiService
+        private backendApiSrv: BackendApiService,
+        private popupSrv: PopupService
     ) {
         let emailValidator = FormatUtils.getEmailValidatorPattern();
         this.log = loggerSrv.get("SetProfilePage");
@@ -123,19 +133,26 @@ export class SetProfileForm {
     public registerToTeam(teamUid: number, version: number) {
         this.isRegistering = true;
         this.isSingingUp = true;
-        this.contractManagerService.registerToTeam(this.userEmail, teamUid, version)
-        .then((uid: number) => {
-            this.setContractsAndProfile(uid, false);
-        })
-        .catch((e) => {
-            this.isRegistering = false;
-            this.translateService.get("setProfile.getEmails").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                });
-            throw e;
-        });
+        this.log.d("The user request to register to team:", teamUid, " in the version: ", version);
+        if(this.version === version) {
+            this.contractManagerService.registerToTeam(this.userEmail, teamUid, version)
+            .then((uid: number) => {
+                this.setContractsAndProfile(uid, false);
+            })
+            .catch((e) => {
+                this.isRegistering = false;
+                this.translateService.get("setProfile.getEmails").subscribe(
+                    msg => {
+                        this.msg = msg;
+                        this.log.e(msg, e);
+                    });
+                throw e;
+            });
+        } else {
+            let urlToOpen = this.BASE_URL + version + "/" + this.VERSION_QUERY + version + 
+            this.TEAM_QUERY + teamUid + this.REGISTER_QUERY + this.USER_NAME_QUERY + this.userName;
+            this.popupSrv.openNewUrl(urlToOpen);
+        }
     }
 
     public createTeam(teamName: string, invitedEmails: string, seasonLength: number) {
