@@ -92,7 +92,7 @@ export class AuthenticationController {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         };
-        this.httpSrv.post(this.GET_TOKEN_URL, querystring.stringify(accessTokenOptions), accessTokenConfig)
+        this.httpSrv.post(this.GET_TOKEN_URL_BITCUCKET, querystring.stringify(accessTokenOptions), accessTokenConfig)
             .subscribe(res => {
                 let userToken = res.data.access_token;
                 this.log.d("Response: ", res.data);
