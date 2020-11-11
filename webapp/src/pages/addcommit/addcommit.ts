@@ -21,6 +21,7 @@ import { GithubApiConstants, GithubService } from "../../domain/github.service";
 import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
 import { BackendBitbucketConfig } from "../../models/backend-bitbucket-config.model";
 import { BackendGithubConfig } from "../../models/backend-github-config.model";
+import { UserReputation } from "../../models/user-reputation.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -38,6 +39,7 @@ export class AddCommitPopover {
     public arraySearch = new Array<string>();
     public myForm: FormGroup;
     public userAdded = new Array<string>();
+    public isWorkspaceCorrect: boolean;
 
     public bitbucketForm: FormGroup;
     public bitbucketUser: string;
@@ -50,7 +52,6 @@ export class AddCommitPopover {
     public currentSeasonStartDate: Date;
     public hasNewCommits = false;
     public isFinishedLoadingRepo = false;
-    public isWorkspaceCorrect: boolean;
 
     public selectedRepositories = new Array<Repository>();
     public repoSelection: string;
@@ -66,6 +67,7 @@ export class AddCommitPopover {
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
     private readonly FACTOR_PERCENTAGE_DECIMALS = 100; 
+    private readonly INITIAL_SEASON_INDEX = 0;
     private readonly BITBUCKET_PROVIDER = "bitbucket";
     private readonly GITHUB_PROVIDER = "github";
 
@@ -81,6 +83,8 @@ export class AddCommitPopover {
     private bitbucketLoginSubscription: EventEmitter<boolean>;
     private blockChainCommits: Array<string>;
     private nextRepositoriesUrl: Map<string, string>;
+    private seasonDate: Date;
+    private seasonLengthIndays: number;
 
     constructor(
         public navCtrl: NavController,
@@ -110,41 +114,11 @@ export class AddCommitPopover {
         });
         this.userAddress = this.loginService.getAccountAddress();
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.userAddress);
-        this.contractManagerService.getAllUserReputation(0, true)
-            .then(allReputations => {
-                this.log.d("All user reputations: ", allReputations);
-                this.allEmails = allReputations.map(userRep => userRep.email).sort();
-                this.setUpList(this.searchInput);
-                if (this.isRandomReviewers) {
-                    this.selectRandomReviewers();
-                } else{
-                    let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
-                    if (mailString) {
-                        let mailArray = mailString.split(";");
-                        mailArray.forEach(mail => {
-                            this.log.d("Setting email from local Storage: " + mail);
-                            this.setEmailFromList(mail);
-                        });
-                    }
-                }
-                return this.contractManagerService.getCurrentTeam();
-            }).then(userTeam =>  {
-                this.log.d("The user team is: ", userTeam);
-                this.userTeam = userTeam;
-            }).catch((e) => {
-                this.showGuiMessage("addCommit.errorEmails", e);
-            });
+        this.init();
     }
 
     public ngOnInit() {
         this.log.d("Subscribing to event emitter");
-        this.contractManagerService.getRandomReviewer()
-        .then((isRandomReviewers: boolean) => {
-            this.isRandomReviewers = isRandomReviewers;
-            return this.contractManagerService.getUserDetails(this.userAddress);
-        }).then((user: UserDetails) => {
-            this.userEmail = user.email;
-        });
         this.bitbucketLoginSubscription = this.bitbucketSrv.getLoginEmitter()
         .subscribe(res => {
             this.log.d("Provider authentication completed", res);
@@ -432,32 +406,8 @@ export class AddCommitPopover {
     }
 
     public loadUserPendingCommitsAndPr(): Promise<void> {
-        this.selectedRepositories = new Array<Repository>();
-        this.blockChainCommits = new Array<string>();
-        this.nextRepositoriesUrl = new Map<string, string>();
-        let seasonDate;
-        let seasonLengthIndays;
-        this.isFinishedLoadingRepo = false;
-        this.showNextReposOption = false;
-        return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
-            let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
-            seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
-            seasonDate = seasonEndDate[1] < dateNowSecs ? 
-                new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
-            return seasonDate;
-        }).then(() => {
-            this.showSpinner = true;
-            return this.contractManagerService.getCommits();
-        }).then(commits => {
-            commits = commits.filter(com => com);    
-            this.blockChainCommits = commits.map(com => {
-                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
-            });
-            this.log.d("The commits from the blockchain", this.blockChainCommits);
-            return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress);
-        }).then((config: BackendBitbucketConfig) => {
-            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
-            this.currentSeasonStartDate = seasonDate;
+        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress)
+        .then((config: BackendBitbucketConfig) => {
             let workspaces = config.bitbucketWorkspaces;
             let promisesWorkspaces = workspaces.map(workspace => {
                 return this.bitbucketSrv.getRepositories(workspace, this.currentSeasonStartDate).then(repositories => {
@@ -478,6 +428,7 @@ export class AddCommitPopover {
         }).then(() => {
             this.showSpinner = false;
             this.isFinishedLoadingRepo = true;
+            this.isWorkspaceCorrect = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
         }).catch(err => { 
             this.showSpinner = false;
@@ -490,33 +441,8 @@ export class AddCommitPopover {
     private readonly SORT_BY_DATE_FN = (comA, comB) => comA.date - comB.date;
 
     private loadUserPendingCommitsGithub(): Promise<void> {
-        this.selectedRepositories = new Array<Repository>();
-        this.blockChainCommits = new Array<string>();
-        this.nextRepositoriesUrl = new Map<string, string>();
-        let seasonDate;
-        let seasonLengthIndays;
-        this.isFinishedLoadingRepo = false;
-        this.showNextReposOption = false;
-        return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
-            let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
-            seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
-            seasonDate = seasonEndDate[1] < dateNowSecs ? 
-                new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
-            return seasonDate;
-        }).then(() => {
-            this.showSpinner = true;
-            return this.contractManagerService.getCommits();
-        }).then(commits => {
-            commits = commits.filter(com => com);    
-            this.blockChainCommits = commits.map(com => {
-                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
-            });
-            this.log.d("The commits from the blockchain", this.blockChainCommits);
-
-            return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress);
-        }).then((config: BackendGithubConfig) => {
-            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
-            this.currentSeasonStartDate = seasonDate;
+        return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress)
+        .then((config: BackendGithubConfig) => {
             let organizations = config.githubOrganizations;
             organizations.map(organization => { 
                 return this.githubSrv.getRepositoriesOrg(this.currentSeasonStartDate, organization)
@@ -706,9 +632,73 @@ export class AddCommitPopover {
         return repository;
     }
 
+    private init(): Promise<void> {
+        return this.contractManagerService.getAllUserReputation(this.INITIAL_SEASON_INDEX, true)
+        .then((allReputations: Array<UserReputation>) => {
+            this.log.d("All user reputations: ", allReputations);
+            this.allEmails = allReputations.map(userRep => userRep.email).sort();
+            const user = allReputations.filter(userRep => userRep.userHash === this.userAddress);
+            this.userEmail = user[0].email;
+            this.setUpList(this.searchInput);
+            return this.contractManagerService.getRandomReviewer();
+        }).then((isRandomReviewers: boolean) => {
+            this.isRandomReviewers = isRandomReviewers;
+            if (this.isRandomReviewers) {
+                this.selectRandomReviewers();
+            } else{
+                this.setStorageEmails();
+            }
+            return this.contractManagerService.getCurrentTeam();
+        }).then(userTeam =>  {
+            this.log.d("The user team is: ", userTeam);
+            this.userTeam = userTeam;
+            return this.loadBatchConfig();
+        }).catch((e) => {
+            this.showGuiMessage("addCommit.errorAddView", e);
+        });
+    }
+
+    private loadBatchConfig(): Promise<void> {
+        this.selectedRepositories = new Array<Repository>();
+        this.blockChainCommits = new Array<string>();
+        this.nextRepositoriesUrl = new Map<string, string>();
+        this.isFinishedLoadingRepo = false;
+        this.showNextReposOption = false;
+        return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
+            let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
+            this.seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
+            this.seasonDate = seasonEndDate[1] < dateNowSecs ? 
+                new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
+            this.showSpinner = true;
+            return this.contractManagerService.getCommits();
+        }).then(commits => {
+            commits = commits.filter(com => com);    
+            this.blockChainCommits = commits.map(com => {
+                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
+            });
+            this.log.d("The commits from the blockchain", this.blockChainCommits);
+            this.seasonDate.setDate(this.seasonDate.getDate() - this.seasonLengthIndays);
+            this.currentSeasonStartDate = this.seasonDate;
+        }).catch((e) => {
+            this.log.e("Error getting blockchain config: ", e);
+            throw e;
+        });
+    }
+
     private setBatch() {
         this.isServiceAvailable = this.isGithubAvailable || this.isBitbucketAvailable;
         this.commitMethod = this.BATCH_METHOD;
         this.isBatchLogged = true;
+    }
+
+    private setStorageEmails() {
+        let mailString = this.storageSrv.get(AppConfig.StorageKey.USERMAILS);
+        if (mailString) {
+            let mailArray = mailString.split(";");
+            mailArray.forEach(mail => {
+                this.log.d("Setting email from local Storage: " + mail);
+                this.setEmailFromList(mail);
+            });
+        }
     }
 }

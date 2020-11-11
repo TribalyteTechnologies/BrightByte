@@ -48,6 +48,7 @@
         "date": "Date",
         "users": "Available users",
         "errorEmails": "Error getting emails",
+        "errorAddView": "Error setting add view",
         "urlDuplicated": "Error: URL already registered in BrightByte",
         "addingCommit": "Error adding new commit",
         "commitDetails": "Error getting commit details",
