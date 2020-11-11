@@ -67,6 +67,7 @@ export class LoginForm {
     private password = "";
     private lastPassword = "";
     private userEmail: string;
+    private autoLogin: boolean;
     private autoLoginVersion: boolean;
     private isAutoRegister: boolean;
     private versionToLog: number;
@@ -93,12 +94,13 @@ export class LoginForm {
     }
 
     public ngOnInit() {
+        let password: string;
         let url = new URLSearchParams(document.location.search);
         this.log.d("The url is ", url);
         if (url.has(AppConfig.UrlKey.REGISTERID) || url.has(AppConfig.UrlKey.LOGID)) {
             let retrievedUser = this.userLoggerService.retrieveLogAccount();
             this.text = retrievedUser.user;
-            let password = retrievedUser.password;
+            password = retrievedUser.password;
             if (password) {
                 this.log.d("User retrieved from localStorage: " + this.text);
                 if (url.has(AppConfig.UrlKey.VERSIONID)) {
@@ -109,7 +111,20 @@ export class LoginForm {
                     this.autoLoginVersion = true;
                     this.isAutoRegister = url.has(AppConfig.UrlKey.REGISTERID);
                     this.login(password);
-                }       
+                }
+            }
+        } else if (url.has(AppConfig.UrlKey.REVIEWID) || url.has(AppConfig.UrlKey.COMMITID)) {
+            let retrievedUser = this.userLoggerService.retrieveAccount();
+            this.text = retrievedUser.user;
+            password = retrievedUser.password;
+            if (password){
+                this.log.d("User retrieved from localStorage: " + this.text);
+                if (url.has(AppConfig.UrlKey.TEAMID)) {
+                    this.autoLogin = true;
+                    this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+                    this.versionToLog = parseInt(url.get(AppConfig.UrlKey.VERSIONID));
+                }
+                this.login(password);
             }
         }
     }
@@ -347,13 +362,20 @@ export class LoginForm {
             prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
+                return this.contractManager.getCurrentVersionCloud();
+            }).then((cloudVersion: number) => {
+                this.currentCloudVersion = cloudVersion;
+                this.log.d("The current Cloud version is", this.currentCloudVersion);
                 return this.contractManager.getUserParticipatingTeams();
             })
             .then((versions: Array<MemberVersion>) => {
+                let promise;
                 this.log.d("The user is registered in the following teams: " + versions);
                 isAlreadyRegisteredToTeam = versions.length !== 0;
                 if (isAlreadyRegisteredToTeam) {
-                    this.setUserTeams(versions, account.address);
+                    promise = this.autoLogin ? 
+                    this.logToTeam(this.teamUid, this.versionToLog) : this.setUserTeams(versions, account.address);
+                    
                 } else {
                     this.goToSetProfile.next(this.SET_PROFILE);
                 }

@@ -25,6 +25,7 @@ export class CommitPage {
     public readonly INCOMPLETE = "incomplete";
     public readonly COMPLETE = "complete";
     public teamUid: number;
+    public version: number;
     public arrayCommits = new Array<UserCommit>();
     public filterArrayCommits = new Array<UserCommit>();
     public currentCommit: UserCommit;
@@ -57,6 +58,7 @@ export class CommitPage {
         this.filterValue = this.storageSrv.get(AppConfig.StorageKey.COMMITFILTER);
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.COMMITPENDINGFILTER) === "true";
         this.teamUid = this.loginService.getTeamUid();
+        this.version = this.loginService.getCurrentVersion();
     }
 
     public ionViewWillEnter() {

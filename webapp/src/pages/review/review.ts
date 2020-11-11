@@ -30,6 +30,7 @@ export class ReviewPage {
 
     public userAdress: string;
     public teamUid: number;
+    public version: number;
     public displayCommitsToReview: Array<UserCommit>;
     public arrayCommits: Array<UserCommit>;
     public msg: string;
@@ -105,6 +106,7 @@ export class ReviewPage {
         this.filterIsPending = this.storageSrv.get(AppConfig.StorageKey.REVIEWPENDINGFILTER) === this.TRUE_STRING;
         this.userAdress = this.loginService.getAccountAddress();
         this.teamUid = this.loginService.getTeamUid();
+        this.version = this.loginService.getCurrentVersion();
         this.initializing = true;
         this.isSpinnerLoadingObs = this.transactionSrv.getProcessingStatus();
         this.refresh();

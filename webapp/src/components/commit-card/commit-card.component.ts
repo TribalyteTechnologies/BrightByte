@@ -40,7 +40,10 @@ export class CommitCard {
 
     @Input()
     public teamUid: number;
-    
+
+    @Input()
+    public version: number;
+
     @Input()
     public set commit(val: UserCommit){
         this._commit = val;
@@ -80,6 +83,7 @@ export class CommitCard {
     private readonly REVIEW_QUERY = "&" + AppConfig.UrlKey.REVIEWID + "=";
     private readonly COMMIT_QUERY = "&" + AppConfig.UrlKey.COMMITID + "=";
     private readonly TEAM_QUERY = "?" + AppConfig.UrlKey.TEAMID + "=";
+    private readonly VERSION_QUERY = "&" + AppConfig.UrlKey.VERSIONID + "=";
     private _commit: UserCommit;
     private init: boolean;
 
@@ -99,7 +103,7 @@ export class CommitCard {
     }
   
     public openUrl(url: string, isCommitParam: boolean, e?: Event) {
-        let queryParams = this.TEAM_QUERY + this.teamUid;
+        let queryParams = this.TEAM_QUERY + this.teamUid + this.VERSION_QUERY + this.version;
         let currentPage = this.isReviewPage ? this.REVIEW_QUERY : this.COMMIT_QUERY;
         queryParams += currentPage;
         let urlToOpen = url;

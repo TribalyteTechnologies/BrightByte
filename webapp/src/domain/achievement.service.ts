@@ -43,7 +43,6 @@ export class AchievementService {
             flatMap((res: number) => {
                 this.currentVersion = res;
                 const url = this.REQ_ROUTE + userHash + "/" + teamUid + "/" + this.currentVersion;
-                this.log.w("Get url for achivemetns is ", url);
                 return this.http.get(url);
             }),
             map((response: IAchievementResponse) => {

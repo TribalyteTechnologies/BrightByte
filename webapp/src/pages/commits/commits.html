@@ -23,7 +23,7 @@
         <ion-col no-padding [attr.col-6]="currentCommit" class="main-style scroll-y">
             <div class="scrollable-content">
                 <div [ngClass]="commit === currentCommit ? 'card card__selected' : 'card'" *ngFor="let commit of filterArrayCommits; let i = index" (click)="shouldOpen(commit)">
-                    <commit-card [commit]="commit" [isReviewPage]="false" [teamUid]="teamUid"></commit-card>
+                    <commit-card [commit]="commit" [isReviewPage]="false" [teamUid]="teamUid" [version]="version"></commit-card>
                 </div>
             </div>
         </ion-col>
