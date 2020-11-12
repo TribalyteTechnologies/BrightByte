@@ -204,7 +204,6 @@ export class Profile {
             return this.http.get(url).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.log.d("The user worspaces are ", result);
-            this.isBackendAvailable = false;
             if (result.status !== "Error") {
                 this.teamWorkspaces = result.data;
                 this.isBitbucketAvailable = true;

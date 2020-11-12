@@ -162,9 +162,9 @@ export class BitbucketService {
         this.eventEmitter.emit(true);
     }
 
-    public getTeamBackendConfig(teamUid: number, userAddress: string, version: number): Promise<BackendConfig> {
+    public getTeamBackendConfig(teamUid: number, userAddress: string, version: number): Promise<BackendBitbucketConfig> {
         let urlCall = BitbucketApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/" + version + "/workspace/" + userAddress;
-        return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendConfig(result.data));
+        return this.http.get(urlCall).toPromise().then((result: IWorkspaceResponse) => new BackendBitbucketConfig(result.data));
     }
 
     private loginToBitbucket(userAddress: string, teamUid: number, version: number): Promise<string> {
