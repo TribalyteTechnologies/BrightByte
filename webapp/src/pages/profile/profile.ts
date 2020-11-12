@@ -72,8 +72,6 @@ export class Profile {
     public isRandomReviewers: boolean;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
-    private readonly WORKSPACE = "/workspace/";
-    private readonly ORGANIZATION = "/organization/";
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
     private readonly EMAILS_SEPARATOR = /[\s,]+/;
@@ -198,14 +196,14 @@ export class Profile {
             return this.contractManagerService.getRandomReviewer();
         }).then((isRandomReviewers: boolean) => {
             this.isRandomReviewers = isRandomReviewers;
-            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + this.userAddress).toPromise();
+            return this.http.get(AppConfig.TEAM_API + this.userTeam + AppConfig.WORKSPACE_PATH  + this.userAddress).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.isBitbucketAvailable = false;
             if (result.status !== "Error") {
                 this.teamWorkspaces = result.data;
                 this.isBitbucketAvailable = true;
             }
-            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + this.userAddress).toPromise();
+            return this.http.get(AppConfig.TEAM_API + this.userTeam + AppConfig.ORGANIZATION_PATH + this.userAddress).toPromise();
         }).then((result: IOrganizationResponse) => {
             this.isGithubAvailable = false;
             if (result.status !== "Error") {
@@ -483,7 +481,8 @@ export class Profile {
         this.workspaceSuccessMsg = null;
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspace && workspaceIndex === -1) {
-            this.http.post(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then((response: IResponse) => {
+            this.http.post(AppConfig.TEAM_API + this.userTeam + AppConfig.WORKSPACE_PATH + workspace, {})
+            .toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
                 this.teamWorkspaces.push(workspace);
                 this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
@@ -507,7 +506,7 @@ export class Profile {
         this.organizationSuccessMsg = null;
         let organizationIndex = this.teamOrganizations.indexOf(organization);
         if (organization && organizationIndex === -1) {
-            this.http.post(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + organization, {
+            this.http.post(AppConfig.TEAM_API + this.userTeam + AppConfig.ORGANIZATION_PATH + organization, {
             }).toPromise().then((response: IResponse) => {
                 this.log.d("Added new organization for the team");
                 this.teamOrganizations.push(organization);
@@ -529,66 +528,66 @@ export class Profile {
 
     public showRemoveWorkspaceConfirmation(workspace: string) {
         this.translateSrv.get(["setProfile.removeWorkspace", "setProfile.removeWorkspaceConfirmation", "setProfile.remove", "setProfile.cancel"])
-            .subscribe((response) => {
-                let removeWorkspace = response["setProfile.removeWorkspace"];
-                let removeWorkspaceConfirmation = response["setProfile.removeWorkspaceConfirmation"];
-                let remove = response["setProfile.remove"];
-                let cancel = response["setProfile.cancel"];
+        .subscribe((response) => {
+            let removeWorkspace = response["setProfile.removeWorkspace"];
+            let removeWorkspaceConfirmation = response["setProfile.removeWorkspaceConfirmation"];
+            let remove = response["setProfile.remove"];
+            let cancel = response["setProfile.cancel"];
 
-                let alert = this.alertCtrl.create({
-                    title: removeWorkspace,
-                    message: removeWorkspaceConfirmation,
-                    buttons: [
-                        {
-                            text: cancel,
-                            role: "cancel",
-                            handler: () => {
-                                this.log.d("Cancel clicked");
-                            }
-                        },
-                        {
-                            text: remove,
-                            handler: () => {
-                                this.log.d("Remove clicked");
-                                this.removeTeamWorkspace(workspace);
-                            }
+            let alert = this.alertCtrl.create({
+                title: removeWorkspace,
+                message: removeWorkspaceConfirmation,
+                buttons: [
+                    {
+                        text: cancel,
+                        role: "cancel",
+                        handler: () => {
+                            this.log.d("Cancel clicked");
                         }
-                    ]
-                });
-                alert.present();
+                    },
+                    {
+                        text: remove,
+                        handler: () => {
+                            this.log.d("Remove clicked");
+                            this.removeTeamWorkspace(workspace);
+                        }
+                    }
+                ]
             });
+            alert.present();
+        });
     }
 
     public showRemoveOrganizationConfirmation(organization: string) {
         this.translateSrv.get(["setProfile.removeOrganization", "setProfile.removeOrganizationConfirmation", "setProfile.remove", "setProfile.cancel"])
-            .subscribe((response) => {
-                let removeOrganization = response["setProfile.removeOrganization"];
-                let removeOrganizationConfirmation = response["setProfile.removeOrganizationConfirmation"];
-                let remove = response["setProfile.remove"];
-                let cancel = response["setProfile.cancel"];
+        .subscribe((response) => {
+            let removeOrganization = response["setProfile.removeOrganization"];
+            let removeOrganizationConfirmation = response["setProfile.removeOrganizationConfirmation"];
+            let remove = response["setProfile.remove"];
+            let cancel = response["setProfile.cancel"];
 
-                let alert = this.alertCtrl.create({
-                    title: removeOrganization,
-                    message: removeOrganizationConfirmation,
-                    buttons: [
-                        {
-                            text: cancel,
-                            role: "cancel",
-                            handler: () => {
-                                this.log.d("Cancel clicked");
-                            }
-                        },
-                        {
-                            text: remove,
-                            handler: () => {
-                                this.log.d("Remove clicked");
-                                this.removeTeamOrganization(organization);
-                            }
+            let alert = this.alertCtrl.create({
+                title: removeOrganization,
+                message: removeOrganizationConfirmation,
+                buttons: [
+                    {
+                        text: cancel,
+                        role: "cancel",
+                        handler: () => {
+                            this.log.d("Cancel clicked");
                         }
-                    ]
-                });
-                alert.present();
+                    },
+                    {
+                        text: remove,
+                        handler: () => {
+                            this.log.d("Remove clicked");
+                            this.removeTeamOrganization(organization);
+                        }
+                    }
+                ]
             });
+            alert.present();
+        });
     }
 
     public changeSeasonThreshold(commitThreshold: number, reviewThreshold: number) {
@@ -630,8 +629,8 @@ export class Profile {
     private removeTeamWorkspace(workspace: string) {
         this.log.d("The user admin requested to deleted the workspace: ", workspace);
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
-        if (workspaceIndex !== -1) {
-            this.http.delete(AppConfig.TEAM_API + this.userTeam + this.WORKSPACE + workspace, {}).toPromise().then(result => {
+        if (workspaceIndex >= 0) {
+            this.http.delete(AppConfig.TEAM_API + this.userTeam + AppConfig.WORKSPACE_PATH + workspace, {}).toPromise().then(result => {
                 this.teamWorkspaces.splice(workspaceIndex, 1);
                 this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
                     this.workspaceSuccessMsg = res;
@@ -649,8 +648,9 @@ export class Profile {
     private removeTeamOrganization(organization: string) {
         this.log.d("The user admin requested to deleted the organization: ", organization);
         let organizationIndex = this.teamOrganizations.indexOf(organization);
-        if (organizationIndex !== -1) {
-            this.http.delete(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + organization, {}).toPromise().then(result => {
+        if (organizationIndex >= 0) {
+            this.http.delete(AppConfig.TEAM_API + this.userTeam + AppConfig.ORGANIZATION_PATH + organization, {})
+            .toPromise().then(result => {
                 this.teamOrganizations.splice(organizationIndex, 1);
                 this.translateSrv.get("setProfile.removeOrganizationSuccessMsg").subscribe(res => {
                     this.organizationSuccessMsg = res;

@@ -65,8 +65,7 @@
         "tabSelection-batch": "Batch Upload",
         "batchUploadTitle": "Select a repository to import:",
         "batchUploadPendingCommitsText": "{{ numCommits }} commits and {{ numPrsNotUploaded }} PRs pending to upload",
-        "repositoriesMissingInfo": "Remote repositories not accessible. Please check that your Bitbucket account is linked properly and the corresponding Bitbucket workspace is configured.",
-        "bitbucketServiceNotAvailable": "Bitbucket provider not defined, feature not available. Please contact your BrightByte administrator to enable it.",
+        "providerServiceNotAvailable": "Bitbucket or Github provider not defined, feature not available. Please contact your BrightByte administrator to enable it.",
         "loadMoreRepositoriesMessage": "Is the repository you were looking for not listed? Try load more repositories",
         "loadMoreRepositoriesButtonText": "Load more",
         "noMoreRepo": "No more repositories to load",
@@ -74,7 +73,8 @@
         "noAvailableSelectReviewers": "Reviewers are selected automatically",
         "selectedReviewers": "Selected reviewers",
         "randomReviewersDescription": "Up to four users are picked among the available team members",
-        "wrongWorkspace": "The workspace is wrong, please notify your team administrator."
+        "wrongWorkspace": "The workspace is wrong, please notify your team administrator.",
+        "wrongOrganization": "The organization is wrong, please notify your team administrator."
     },
     "commits": {
         "add": "Contribute",
