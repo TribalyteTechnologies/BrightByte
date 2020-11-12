@@ -21,7 +21,7 @@ export class AuthenticationController {
     private readonly BITBUCKET_OAUTH_URL = "https://bitbucket.org/site/oauth2/authorize?client_id=";
     private readonly AUTHORIZE_AUX = this.BITBUCKET_OAUTH_URL + BackendConfig.BITBUCKET_KEY + "&response_type=" + this.RESPONSE_TYPE;
     private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
-    private readonly GET_TOKEN_URL_BITCUCKET = "https://bitbucket.org/site/oauth2/access_token";
+    private readonly GET_TOKEN_URL_BITBUCKET = "https://bitbucket.org/site/oauth2/access_token";
     private readonly GET_TOKEN_URL_GITHUB = "https://github.com/login/oauth/access_token";
     private readonly GRANT_TYPE = "authorization_code";
     private readonly GITHUB_URL = "https://github.com/login/oauth/";
@@ -96,7 +96,7 @@ export class AuthenticationController {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         };
-        this.httpSrv.post(this.GET_TOKEN_URL_BITCUCKET, querystring.stringify(accessTokenOptions), accessTokenConfig).subscribe(
+        this.httpSrv.post(this.GET_TOKEN_URL_BITBUCKET, querystring.stringify(accessTokenOptions), accessTokenConfig).subscribe(
             res => {
             let userToken = res.data.access_token;
             this.log.d("Response: ", res.data);

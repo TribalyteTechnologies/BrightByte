@@ -127,7 +127,7 @@ export class TeamDatabaseService {
                 let team = collection.findOne({ id: teamUid, version: version }) as TeamDto;
                 if (team) {
                     let workspaceIndex = team.workspaces.indexOf(workspace);
-                    workspaceIndex === -1 ? this.log.d("The workspace did not exists") : team.workspaces.splice(workspaceIndex, 1);
+                    workspaceIndex < 0 ? this.log.d("The workspace did not exists") : team.workspaces.splice(workspaceIndex, 1);
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }
                 return ret;
@@ -144,7 +144,7 @@ export class TeamDatabaseService {
                 let team = collection.findOne({ id: teamUid, version: version }) as TeamDto;
                 if (team) {
                     let organizationIndex = team.organizations.indexOf(organization);
-                    organizationIndex === -1 ? this.log.d("The organization did not exists") : 
+                    organizationIndex < 0 ? this.log.d("The organization did not exists") : 
                     team.organizations.splice(organizationIndex, 1);
                     ret = this.databaseSrv.save(this.database, collection, team);
                 }

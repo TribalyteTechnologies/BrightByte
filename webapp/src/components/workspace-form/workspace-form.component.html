@@ -1,5 +1,5 @@
-<h4>{{ "setProfile.bitBucketWorkspaces" | translate }}</h4>
-<ion-row class="explanation-text">{{ "setProfile.workspacesFullDescription" | translate }}</ion-row>
+<h4>{{ "setProfile.bitBucketAndGithubConfiguration" | translate }}</h4>
+<ion-row class="explanation-text">{{ "setProfile.workspacesAndOrganizationsFullDescription" | translate }}</ion-row>
 <ion-row class="mini-title">{{ "setProfile.addNewWorkspace" | translate }}</ion-row>
 <input class="password-form" type="text" [placeholder]="'setProfile.workspaceName' | translate" [(ngModel)]="workspace">
 <ion-row *ngIf="isWorkspaceAdded">
@@ -14,8 +14,6 @@
     <button class="btn btn--full btn__blue" [disabled]="!workspace || errorWorkspaceMsg" (click)="addWorkspace()">{{ "setProfile.addWorkspace" | translate }}</button>
     <div class="separator"></div>
 </div>
-<h4>{{ "setProfile.githubOrganizations" | translate }}</h4>
-<ion-row class="explanation-text">{{ "setProfile.organizationsFullDescription" | translate }}</ion-row>
 <ion-row class="mini-title">{{ "setProfile.addNewOrganization" | translate }}</ion-row>
 <input class="password-form" type="text" [placeholder]="'setProfile.organizationName' | translate" [(ngModel)]="organization">
 <ion-row *ngIf="isOrganizationAdded">
