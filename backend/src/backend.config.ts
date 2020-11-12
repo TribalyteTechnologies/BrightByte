@@ -21,8 +21,8 @@ export class BackendConfig {
     public static readonly ACH_TIMED_TROPHY_PATH = "assets/imgs/trophys/timedAchievement";
     public static readonly ACH_IMG_FORMAT = ".svg";
     public static readonly NODE_CONFIG_URL = NodeConfig.NODE_WEBSOCKET_URL;
-    public static readonly WEBAPP_BASE_URL = process.env.WEBAPP_BASE_URL || "http://localhost:8080";
-    public static readonly WEBAPP_URL = BackendConfig.WEBAPP_BASE_URL + "/lastVersion";
+    public static readonly WEBAPP_BASE_URL = process.env.WEBAPP_BASE_URL || "http://localhost:8100";
+    public static readonly WEBAPP_URL = BackendConfig.WEBAPP_BASE_URL + process.env.LATEST_DIR || "";
     public static readonly BRIGHTBYTE_API_PORT = process.env.PORT || 3000;
     public static readonly CLOUD_EVENT_DISPATCHER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudEventDispatcher.json";
     public static readonly CLOUD_BB_TEAM_MANAGER_CONTRACT_URL = BackendConfig.WEBAPP_URL + "/assets/build/CloudTeamManager.json";

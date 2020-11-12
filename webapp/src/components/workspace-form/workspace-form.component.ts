@@ -46,7 +46,8 @@ export class WorkspaceForm {
 
     public addWorkspace() {
         this.isWorkspaceAdded = false;
-        this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.WORKSPACE_PATH + this.workspace, {}).toPromise()
+        const url = AppConfig.TEAM_API + this.userTeamUid + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + this.workspace;
+        this.http.post(url, {}).toPromise()
         .then(() => { 
             this.isWorkspaceAdded = true;
         })
@@ -60,7 +61,8 @@ export class WorkspaceForm {
 
     public addOrganization() {
         this.isOrganizationAdded = false;
-        this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.ORGANIZATION_PATH + this.organization, {}).toPromise()
+        const url = AppConfig.TEAM_API + this.userTeamUid + "/" + this.currentVersion + AppConfig.ORGANIZATION_PATH + this.organization;
+        this.http.post(url, {}).toPromise()
         .then(() => { 
             this.isOrganizationAdded = true;
         })
