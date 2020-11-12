@@ -92,13 +92,16 @@ export class AuthenticationController {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         };
-        this.httpSrv.post(this.GET_TOKEN_URL_BITCUCKET, querystring.stringify(accessTokenOptions), accessTokenConfig)
-            .subscribe(res => {
-                let userToken = res.data.access_token;
-                this.log.d("Response: ", res.data);
-                this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
-                this.log.d("The user has completed the authentication process");
-                return response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
-            });
+        this.httpSrv.post(this.GET_TOKEN_URL_BITCUCKET, querystring.stringify(accessTokenOptions), accessTokenConfig).subscribe(
+            res => {
+            let userToken = res.data.access_token;
+            this.log.d("Response: ", res.data);
+            this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
+            this.log.d("The user has completed the authentication process");
+            return response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+        },  error => {
+            this.log.e("Error getting bitbucket token ", error);
+            return response.status(404).send();
+        });
     }
 }
