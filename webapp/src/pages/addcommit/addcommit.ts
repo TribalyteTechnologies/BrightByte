@@ -412,7 +412,8 @@ export class AddCommitPopover {
 
     public loadNextRepos(): Promise<void>{
         this.showSpinner = true;
-        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion).then(config => {
+        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
+        .then(config => {
             return config.bitbucketWorkspaces;
         }).then(workspaces => {
             let promisesWorkspaces = workspaces.map(workspace => {
@@ -438,33 +439,9 @@ export class AddCommitPopover {
     }
 
     public loadUserPendingCommitsAndPrs(): Promise<void> {
-        this.selectedRepositories = new Array<Repository>();
-        this.blockChainCommits = new Array<string>();
-        this.nextRepositoriesUrl = new Map<string, string>();
-        let seasonDate;
-        let seasonLengthIndays;
-        this.isFinishedLoadingRepo = false;
-        this.showNextReposOption = false;
-        //this.isWorkspaceCorrect = true;
-        return this.contractManagerService.getCurrentSeason().then((seasonEndDate) => {
-            let dateNowSecs = Date.now() / AppConfig.SECS_TO_MS;
-            seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
-            seasonDate = seasonEndDate[1] < dateNowSecs ? 
-                new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
-            return seasonDate;
-        }).then(() => {
-            this.showSpinner = true;
-            return this.contractManagerService.getCommits();
-        }).then(commits => {
-            commits = commits.filter(com => com);    
-            this.blockChainCommits = commits.map(com => {
-                return com.url.indexOf("pull-requests") >= 0 ? com.url : com.urlHash;
-            });
-            this.log.d("The commits from the blockchain", this.blockChainCommits);
-            return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress);
-        }).then((config: BackendBitbucketConfig) => {
-            seasonDate.setDate(seasonDate.getDate() - seasonLengthIndays);
-            this.currentSeasonStartDate = seasonDate;
+        this.isWorkspaceCorrect = true;
+        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
+        .then((config: BackendBitbucketConfig) => {
             let workspaces = config.bitbucketWorkspaces;
             let promisesWorkspaces = workspaces.map(workspace => {
                 return this.bitbucketSrv.getRepositories(workspace, this.currentSeasonStartDate).then(repositories => {

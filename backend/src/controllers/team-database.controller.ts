@@ -38,7 +38,9 @@ export class TeamDatabaseController {
     }
 
     @Get(":id/:version/organization/:user")
-    public getTeamOrganizations(@Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string): Observable<ResponseDto> {
+    public getTeamOrganizations(
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string
+    ): Observable<ResponseDto> {
         this.log.d("Request to get the member organizations of team: ", teamUid);
         return this.teamDatabaseService.getTeamOrganizations(parseInt(teamUid), user, parseInt(version));
     }

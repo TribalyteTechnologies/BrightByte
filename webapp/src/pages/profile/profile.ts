@@ -198,7 +198,7 @@ export class Profile {
             return this.contractManagerService.getRandomReviewer();
         }).then((isRandomReviewers: boolean) => {
             this.isRandomReviewers = isRandomReviewers;
-            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.WORKSPACE + this.userAddress;
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + this.userAddress;
             return this.http.get(url).toPromise();
         }).then((result: IWorkspaceResponse) => {
             this.log.d("The user worspaces are ", result);
@@ -206,7 +206,8 @@ export class Profile {
                 this.teamWorkspaces = result.data;
                 this.isBitbucketAvailable = true;
             }
-            const urlGithub = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.ORGANIZATION + this.userAddress;
+            const urlGithub = AppConfig.TEAM_API + this.userTeam + "/" + 
+            this.currentVersion + AppConfig.ORGANIZATION_PATH + this.userAddress;
             return this.http.get(urlGithub).toPromise();
         }).then((result: IOrganizationResponse) => {
             this.isGithubAvailable = false;
@@ -486,7 +487,7 @@ export class Profile {
         this.workspaceSuccessMsg = null;
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspace && workspaceIndex === -1) {
-            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.WORKSPACE + workspace;
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + workspace;
             this.http.post(url, {}).toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
                 this.teamWorkspaces.push(workspace);
@@ -511,7 +512,7 @@ export class Profile {
         this.organizationSuccessMsg = null;
         let organizationIndex = this.teamOrganizations.indexOf(organization);
         if (organization && organizationIndex === -1) {
-            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion  + this.ORGANIZATION + organization;
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion  + AppConfig.ORGANIZATION_PATH + organization;
             this.http.post(url, {
             }).toPromise().then((response: IResponse) => {
                 this.log.d("Added new organization for the team");
