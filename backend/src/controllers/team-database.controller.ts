@@ -37,10 +37,10 @@ export class TeamDatabaseController {
         return this.teamDatabaseService.createTeam(parseInt(teamUid), parseInt(version));
     }
 
-    @Get(":id/organization/:user")
-    public getTeamOrganizations(@Param("id") teamUid: string, @Param("user") user: string): Observable<ResponseDto> {
+    @Get(":id/:version/organization/:user")
+    public getTeamOrganizations(@Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string): Observable<ResponseDto> {
         this.log.d("Request to get the member organizations of team: ", teamUid);
-        return this.teamDatabaseService.getTeamOrganizations(parseInt(teamUid), user);
+        return this.teamDatabaseService.getTeamOrganizations(parseInt(teamUid), user, parseInt(version));
     }
 
     @Post(":id/:version/workspace/:workspaceName")
@@ -59,12 +59,12 @@ export class TeamDatabaseController {
         return this.teamDatabaseService.addNewTeamMember(parseInt(teamUid), user, parseInt(version));
     }
 
-    @Post(":id/organization/:organizationName")
+    @Post(":id/:version/organization/:organizationName")
     public addNewOrganization(
         @Param("id") teamUid: string, @Param("version") version: string, @Param("organizationName") organizationName: string
     ): Observable<ResponseDto> {
         this.log.d("Request to add a new organization to the team: ", teamUid);
-        return this.teamDatabaseService.addNewOrganization(parseInt(teamUid), organizationName);
+        return this.teamDatabaseService.addNewOrganization(parseInt(teamUid), organizationName, parseInt(version));
     }
 
     @Delete(":id/:version/workspace/:workspace")
@@ -75,10 +75,12 @@ export class TeamDatabaseController {
         return this.teamDatabaseService.removeTeamWorkspace(parseInt(teamUid), workspace, parseInt(version));
     }
 
-    @Delete(":id/organization/:organization")
-    public removeOrganization(@Param("id") teamUid: string, @Param("organization") organization: string): Observable<ResponseDto> {
+    @Delete(":id/:version/organization/:organization")
+    public removeOrganization(
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("organization") organization: string
+    ): Observable<ResponseDto> {
         this.log.d("Request to delete a organization from the team: ", teamUid);
-        return this.teamDatabaseService.removeTeamOrganization(parseInt(teamUid), organization);
+        return this.teamDatabaseService.removeTeamOrganization(parseInt(teamUid), organization, parseInt(version));
     }
 
     @Delete(":id/:version/members/:user")

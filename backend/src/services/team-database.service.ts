@@ -34,9 +34,9 @@ export class TeamDatabaseService {
         );
     }
 
-    public getTeamOrganizations(teamUid: number, user: string): Observable<ResponseDto> {
+    public getTeamOrganizations(teamUid: number, user: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
-            map(collection => collection.findOne({ id: teamUid }) as TeamDto),
+            map(collection => collection.findOne({ id: teamUid, version: version }) as TeamDto),
             map((team: TeamDto) => 
             team.teamMembers.indexOf(user) !== -1 ? new SuccessResponseDto(team.organizations) : 
             new SuccessResponseDto(new Array<string>())),
@@ -86,11 +86,11 @@ export class TeamDatabaseService {
         );
     }
 
-    public addNewOrganization(teamUid: number, organization: string): Observable<ResponseDto> {
+    public addNewOrganization(teamUid: number, organization: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let team = collection.findOne({ id: teamUid }) as TeamDto;
+                let team = collection.findOne({ id: teamUid, version: version }) as TeamDto;
                 if (team && team.organizations && team.organizations.indexOf(organization) < 0) {
                     team.organizations.push(organization);
                     ret = this.databaseSrv.save(this.database, collection, team);
@@ -137,11 +137,11 @@ export class TeamDatabaseService {
         );
     }
 
-    public removeTeamOrganization(teamUid: number, organization: string): Observable<ResponseDto> {
+    public removeTeamOrganization(teamUid: number, organization: string, version: number): Observable<ResponseDto> {
         return this.initObs.pipe(
             flatMap(collection => {
                 let ret: Observable<string> = throwError(BackendConfig.STATUS_FAILURE);
-                let team = collection.findOne({ id: teamUid }) as TeamDto;
+                let team = collection.findOne({ id: teamUid, version: version }) as TeamDto;
                 if (team) {
                     let organizationIndex = team.organizations.indexOf(organization);
                     organizationIndex === -1 ? this.log.d("The organization did not exists") : 
