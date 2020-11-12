@@ -57,7 +57,7 @@ export class BitbucketService {
     }
 
     public checkProviderAvailability(userAddress: string, teamUid: number, version: number): Promise<boolean> {
-        this.log.d("Checks the api works correctly");
+        this.log.d("Checks the bitbucket api works correctly");
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
         this.currentVersion = version;

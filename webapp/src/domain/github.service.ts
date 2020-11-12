@@ -49,6 +49,7 @@ export class GithubService {
     private eventEmitter = new EventEmitter<boolean>();
     private repo: Repository;
     private githubUser: string;
+    private currentVersion: number;
 
     constructor(
         private http: HttpClient,
@@ -65,10 +66,11 @@ export class GithubService {
         return this.eventEmitter;
     }
 
-    public checkProviderAvailability(userAddress: string, teamUid: number): Promise<boolean> {
-        this.log.d("Checks the api works correctly");
+    public checkProviderAvailability(userAddress: string, teamUid: number, version: number): Promise<boolean> {
+        this.log.d("Checks the github api works correctly");
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
+        this.currentVersion = version;
         return this.getUsername().then(name => {
             this.githubUser = name.login;
             this.log.d("The api provider works, the user nickname is:", this.githubUser);
@@ -138,16 +140,18 @@ export class GithubService {
         this.eventEmitter.emit(true);
     }
 
-    public getTeamBackendConfig(teamUid: number, userAddress: string): Promise<BackendGithubConfig> {
-        let urlCall = GithubApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/organization/" + userAddress;
+    public getTeamBackendConfig(teamUid: number, userAddress: string, version: number): Promise<BackendGithubConfig> {
+        let urlCall = GithubApiConstants.SERVER_SYSTEM_CONFIG_URL + teamUid + "/" + version + "/organization/" + userAddress;
         return this.http.get(urlCall).toPromise().then((result: IOrganizationResponse) => new BackendGithubConfig(result.data));
     }
 
-    private loginToGithub(userAddress: string, teamUid: number): Promise<string> {
+    private loginToGithub(userAddress: string, teamUid: number, version: number): Promise<string> {
         this.userIdentifier = userAddress;
         this.userTeamUid = teamUid;
+        this.currentVersion = version;
         const provider = GithubApiConstants;
-        return this.http.get(provider.SERVER_AUTHENTICATION_URL + provider.PROVIDER_NAME + "/" + userAddress + "/" + teamUid).toPromise()
+        const urlAuth = provider.SERVER_AUTHENTICATION_URL + provider.PROVIDER_NAME + "/" + userAddress + "/" + teamUid + "/" + version;
+        return this.http.get(urlAuth).toPromise()
         .then((response: IResponse) => {
             if (response.status === AppConfig.STATUS_OK) {
                 let url = response.data;
@@ -170,7 +174,7 @@ export class GithubService {
 
     private refreshToken(): Promise<string> {
         this.log.d("Token experied, getting a new one for user: " + this.userIdentifier);
-        return this.loginToGithub(this.userIdentifier, this.userTeamUid)
+        return this.loginToGithub(this.userIdentifier, this.userTeamUid, this.currentVersion)
         .then(authUrl => {
             this.log.d("Refreshing token", authUrl);
             return authUrl;

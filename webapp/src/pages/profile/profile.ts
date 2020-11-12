@@ -208,9 +208,11 @@ export class Profile {
                 this.teamWorkspaces = result.data;
                 this.isBitbucketAvailable = true;
             }
-            return this.http.get(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + this.userAddress).toPromise();
+            const urlGithub = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + this.ORGANIZATION + this.userAddress;
+            return this.http.get(urlGithub).toPromise();
         }).then((result: IOrganizationResponse) => {
             this.isGithubAvailable = false;
+            this.log.d("The user worspaces are ", result);
             if (result.status !== "Error") {
                 this.teamOrganizations = result.data;
                 this.isGithubAvailable = true;
@@ -511,7 +513,8 @@ export class Profile {
         this.organizationSuccessMsg = null;
         let organizationIndex = this.teamOrganizations.indexOf(organization);
         if (organization && organizationIndex === -1) {
-            this.http.post(AppConfig.TEAM_API + this.userTeam + this.ORGANIZATION + organization, {
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion  + this.ORGANIZATION + organization;
+            this.http.post(url, {
             }).toPromise().then((response: IResponse) => {
                 this.log.d("Added new organization for the team");
                 this.teamOrganizations.push(organization);

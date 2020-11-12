@@ -442,7 +442,7 @@ export class AddCommitPopover {
     private readonly SORT_BY_DATE_FN = (comA, comB) => comA.date - comB.date;
 
     private loadUserPendingCommitsGithub(): Promise<void> {
-        return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress)
+        return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
         .then((config: BackendGithubConfig) => {
             let organizations = config.githubOrganizations;
             organizations.map(organization => { 
@@ -503,8 +503,9 @@ export class AddCommitPopover {
     private loginToGithub(): Promise<void> {
         this.userAddress = this.loginService.getAccountAddress();
         this.commitMethod = this.BATCH_METHOD;
+        this.currentVersion = this.loginService.getCurrentVersion();
         this.log.d("The user is going to login with Github provider");
-        return this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam).then(user => {
+        return this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion).then(user => {
             this.log.d("Waiting for the user to introduce their github credentials");
             this.isGithubAvailable = true;
         }).catch(e => {
