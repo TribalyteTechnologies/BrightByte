@@ -1,6 +1,6 @@
 <ion-header no-border class="main-header">
     <ion-row no-padding class="header-row">
-        <ion-col no-padding align-self-center col-4>
+        <ion-col no-padding align-self-center col-3>
             <ion-row>
                 <span class="text-main">{{ "app.ranking" | translate }}</span>
                 <select [(ngModel)]="comboSelected" (ngModelChange)="setSeason($event)"
@@ -12,17 +12,17 @@
                 </select>
             </ion-row>
         </ion-col>
-        <ion-col col-4 no-padding class="text-ranking">
+        <ion-col col-5 no-padding class="text-ranking">
             <div class="ranking-top">
                 <ion-row>
-                    <ion-col col-7>{{ teamName }}. {{ "ranking.season" | translate }}:
+                    <ion-col col-9>{{ teamName }}. {{ "ranking.season" | translate }}:
                         {{ numberOfSeasons }}</ion-col>
-                    <ion-col col-5 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }}
+                    <ion-col col-3 *ngIf="days > 0" class="ranking-left">{{ days }} {{ "ranking.day" | translate }}
                         {{ "ranking.left" | translate }}</ion-col>
-                    <ion-col col-5 *ngIf="days <= 0 && !seasonEnded" class="ranking-left">{{ hours }}
+                    <ion-col col-3 *ngIf="days <= 0 && !seasonEnded" class="ranking-left">{{ hours }}
                         {{ "ranking.hours" | translate }}, {{ minutes }} {{ "ranking.minutes" | translate }}
                         {{ "ranking.left" | translate }} </ion-col>
-                    <ion-col col-5 *ngIf="seasonEnded" class="ranking-left">{{ "ranking.seasonEnd" | translate }}
+                    <ion-col col-3 *ngIf="seasonEnded" class="ranking-left">{{ "ranking.seasonEnd" | translate }}
                     </ion-col>
                 </ion-row>
             </div>
