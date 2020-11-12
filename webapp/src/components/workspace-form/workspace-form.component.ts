@@ -20,8 +20,9 @@ export class WorkspaceForm {
     public organization: string;
 
     public errorWorkspaceMsg: string;
-
+    public isWorkspaceAdded: boolean;
     public errorOrganizationMsg: string;
+    public isOrganizationAdded: boolean;
 
     private userTeamUid: number;
 
@@ -40,12 +41,10 @@ export class WorkspaceForm {
     }
 
     public addWorkspace() {
+        this.isWorkspaceAdded = false;
         this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.WORKSPACE_PATH + this.workspace, {}).toPromise()
         .then(() => { 
-            this.transalateSrv.get("setProfile.newWorkspaceSuccessMsg")
-            .subscribe(translation => {
-                this.errorWorkspaceMsg = translation;
-            });
+            this.isWorkspaceAdded = true;
         })
         .catch(() => { 
             this.transalateSrv.get("setProfile.workspaceErrorBackendDown")
@@ -56,12 +55,10 @@ export class WorkspaceForm {
     }
 
     public addOrganization() {
+        this.isOrganizationAdded = false;
         this.http.post(AppConfig.TEAM_API + this.userTeamUid + AppConfig.ORGANIZATION_PATH + this.organization, {}).toPromise()
         .then(() => { 
-            this.transalateSrv.get("setProfile.newOrganizationSuccessMsg")
-            .subscribe(translation => {
-                this.errorOrganizationMsg = translation;
-            });
+            this.isOrganizationAdded = true;
         })
         .catch(() => { 
             this.transalateSrv.get("setProfile.organizationErrorBackendDown")

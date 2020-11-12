@@ -2,6 +2,9 @@
 <ion-row class="explanation-text">{{ "setProfile.workspacesFullDescription" | translate }}</ion-row>
 <ion-row class="mini-title">{{ "setProfile.addNewWorkspace" | translate }}</ion-row>
 <input class="password-form" type="text" [placeholder]="'setProfile.workspaceName' | translate" [(ngModel)]="workspace">
+<ion-row *ngIf="isWorkspaceAdded">
+    <ion-row class="success-body">{{ "setProfile.newWorkspaceSuccessMsg" | translate }}</ion-row>
+</ion-row>
 <ion-row *ngIf="errorWorkspaceMsg">
     <ion-row class="error-body">
         {{ errorWorkspaceMsg }}
@@ -15,6 +18,9 @@
 <ion-row class="explanation-text">{{ "setProfile.organizationsFullDescription" | translate }}</ion-row>
 <ion-row class="mini-title">{{ "setProfile.addNewOrganization" | translate }}</ion-row>
 <input class="password-form" type="text" [placeholder]="'setProfile.organizationName' | translate" [(ngModel)]="organization">
+<ion-row *ngIf="isOrganizationAdded">
+    <ion-row class="success-body">{{ "setProfile.newOrganizationSuccessMsg" | translate }}</ion-row>
+</ion-row>
 <ion-row *ngIf="errorOrganizationMsg">
     <ion-row class="error-body">
         {{ errorOrganizationMsg }}
