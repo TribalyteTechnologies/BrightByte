@@ -13,6 +13,7 @@ import { Team } from "../../models/team.model";
 import { BackendApiService } from "../../domain/backend-api.service";
 import { MemberVersion } from "../../models/member-version.model";
 import { PopupService } from "../../domain/popup.service";
+import { LoginService } from "../../core/login.service";
 
 @Component({
     selector: "set-profile-form",
@@ -27,9 +28,6 @@ export class SetProfileForm {
 
     @Input()
     public userEmail: string;
-
-    @Input()
-    public version: number;
 
     @Output()
     public goToSetWorkspace = new EventEmitter();
@@ -57,6 +55,7 @@ export class SetProfileForm {
     private readonly USER_NAME_QUERY = "&" + AppConfig.UrlKey.USERNAMEID + "=";
 
     private log: ILogger;
+    private version: number;
 
     constructor(
         public navCtrl: NavController,
@@ -67,7 +66,8 @@ export class SetProfileForm {
         private contractManagerService: ContractManagerService,
         private avatarSrv: AvatarService,
         private backendApiSrv: BackendApiService,
-        private popupSrv: PopupService
+        private popupSrv: PopupService,
+        private loginService: LoginService
     ) {
         let emailValidator = FormatUtils.getEmailValidatorPattern();
         this.log = loggerSrv.get("SetProfilePage");
@@ -89,6 +89,7 @@ export class SetProfileForm {
         if (this.userName && this.userEmail) {
             this.openCreateTeam();
         }
+        this.contractManagerService.getCurrentVersion().then(res => this.version = res);
     }
 
     public openCreateTeam() {
@@ -134,9 +135,10 @@ export class SetProfileForm {
         this.isRegistering = true;
         this.isSingingUp = true;
         this.log.d("The user request to register to team:", teamUid, " in the version: ", version);
-        if(this.version === version) {
+        if(this.version === version) {   
             this.contractManagerService.registerToTeam(this.userEmail, teamUid, version)
             .then((uid: number) => {
+                this.loginService.setCurrentVersion(version);
                 this.setContractsAndProfile(uid, false);
             })
             .catch((e) => {
