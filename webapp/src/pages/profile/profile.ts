@@ -637,7 +637,8 @@ export class Profile {
         this.log.d("The user admin requested to deleted the workspace: ", workspace);
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspaceIndex >= 0) {
-            this.http.delete(AppConfig.TEAM_API + this.userTeam + AppConfig.WORKSPACE_PATH + workspace, {}).toPromise().then(result => {
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + workspace;
+            this.http.delete(url, {}).toPromise().then(result => {
                 this.teamWorkspaces.splice(workspaceIndex, 1);
                 this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
                     this.workspaceSuccessMsg = res;
@@ -656,7 +657,8 @@ export class Profile {
         this.log.d("The user admin requested to deleted the organization: ", organization);
         let organizationIndex = this.teamOrganizations.indexOf(organization);
         if (organizationIndex >= 0) {
-            this.http.delete(AppConfig.TEAM_API + this.userTeam + AppConfig.ORGANIZATION_PATH + organization, {})
+            const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + AppConfig.ORGANIZATION_PATH + organization;
+            this.http.delete(url, {})
             .toPromise().then(result => {
                 this.teamOrganizations.splice(organizationIndex, 1);
                 this.translateSrv.get("setProfile.removeOrganizationSuccessMsg").subscribe(res => {
