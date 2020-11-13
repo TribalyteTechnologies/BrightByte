@@ -307,39 +307,6 @@ export class AddCommitPopover {
         }
     }
 
-    public loadUserPendingCommitsAndPr(): Promise<void> {
-        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
-        .then((config: BackendBitbucketConfig) => {
-            let workspaces = config.bitbucketWorkspaces;
-            let promisesWorkspaces = workspaces.map(workspace => {
-                return this.bitbucketSrv.getRepositories(workspace, this.currentSeasonStartDate).then(repositories => {
-                    this.log.d("The repositories from Bitbucket are: ", repositories);
-                    let promisesRepos = repositories.values.map(repository => {
-                        return this.handleRepository(workspace, repository);
-                    });
-                    return Promise.all(promisesRepos).then(() => {
-                        this.nextRepositoriesUrl.set(workspace, repositories.next);
-                    });   
-                });
-            });
-            return Promise.all(promisesWorkspaces).then(() => {
-                this.showNextReposOption = workspaces.some(workspace => {
-                    return this.nextRepositoriesUrl.has(workspace) && this.nextRepositoriesUrl.get(workspace) ? true : false;
-                });
-            });
-        }).then(() => {
-            this.showSpinner = false;
-            this.isFinishedLoadingRepo = true;
-            this.isWorkspaceCorrect = true;
-            this.log.d("All the commits from the respos", this.selectedRepositories);
-        }).catch(err => { 
-            this.showSpinner = false;
-            this.isServiceAvailable = false;
-            this.isBatchLogged = false;
-            this.log.e("Error loading commits and PRs: " + err); 
-        });
-    }
-
     public addRepoStartingFrom(repoSelection: string, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
         let errMsgId: string;
         if (this.userAdded.every(userEmail => !userEmail)) {
@@ -499,7 +466,7 @@ export class AddCommitPopover {
         }).catch(err => { 
             this.showSpinner = false;
             this.isOrganizationCorrect = false;
-            this.log.e("Error loading commits and PRs: " + err); 
+            this.log.e("Error loading commits from provider (Github): " + err); 
         });
     }
 

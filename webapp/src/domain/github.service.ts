@@ -84,18 +84,6 @@ export class GithubService {
         });
     }
 
-    public getRepositories(): Promise<Array<GithubRepositoryResponse>> {
-        const params = new HttpParams().set("visibility", "all");
-        this.log.d("The user token is", this.userToken);
-        this.log.d("params", params);
-        return this.http.get<Array<GithubRepositoryResponse>>(
-            GithubApiConstants.REPOSITORIES_BASE_URL, {params: params, headers: this.headers}).toPromise()
-        .then(result => {
-            this.log.d("The repositories are", result);
-            return result;
-        });
-    }
-
     public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("type", "all");
         return this.http.get<Array<GithubRepositoryResponse>>(
