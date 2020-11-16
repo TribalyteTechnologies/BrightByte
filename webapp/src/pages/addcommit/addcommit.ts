@@ -41,6 +41,7 @@ export class AddCommitPopover {
     public userAdded = new Array<string>();
     public isWorkspaceCorrect: boolean;
     public isOrganizationCorrect: boolean;
+    public areProvidersWorking: boolean;
 
     public bitbucketForm: FormGroup;
     public bitbucketUser: string;
@@ -55,7 +56,7 @@ export class AddCommitPopover {
     public isFinishedLoadingRepo = false;
 
     public selectedRepositories = new Array<Repository>();
-    public repoSelection: string;
+    public repoSelection: Repository;
     public isBatchLogged = false;
     public isServiceAvailable = false;
     public showSpinner = false;
@@ -114,28 +115,31 @@ export class AddCommitPopover {
         });
         this.userAddress = this.loginService.getAccountAddress();
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.userAddress);
-        this.init();
     }
 
     public ngOnInit() {
         this.isWorkspaceCorrect = true;
-        this.log.d("Subscribing to event emitter");
-        this.bitbucketLoginSubscription = this.bitbucketSrv.getLoginEmitter()
-        .subscribe(res => {
-            this.log.d("Provider authentication completed", res);
-            this.bitbucketSrv.getUsername().then((user) => {
-                this.bitbucketUser = user;
-                this.setBatch();
-                return this.loadUserPendingCommitsAndPrs();
+        this.isOrganizationCorrect = true;
+        this.areProvidersWorking = true;
+        this.init().then(() => {
+            this.log.d("Subscribing to event emitter");
+            this.bitbucketLoginSubscription = this.bitbucketSrv.getLoginEmitter()
+            .subscribe(res => {
+                this.log.d("Provider authentication completed", res);
+                this.bitbucketSrv.getUsername().then((user) => {
+                    this.bitbucketUser = user;
+                    this.setBatch();
+                    return this.loadUserPendingCommitsAndPrs();
+                });
             });
-        });
-        this.githubLoginSubscription = this.githubSrv.getLoginEmitter()
-        .subscribe(res => {
-            this.log.d("Provider authentication completed", res);
-            this.githubSrv.getUsername().then((user) => {
-                this.githubUser = user.login;
-                this.setBatch();
-                return this.loadUserPendingCommitsGithub();
+            this.githubLoginSubscription = this.githubSrv.getLoginEmitter()
+            .subscribe(res => {
+                this.log.d("Provider authentication completed", res);
+                this.githubSrv.getUsername().then((user) => {
+                    this.githubUser = user.login;
+                    this.setBatch();
+                    return this.loadUserPendingCommitsGithub();
+                });
             });
         });
     }
@@ -307,7 +311,8 @@ export class AddCommitPopover {
         }
     }
 
-    public addRepoStartingFrom(repoSelection: string, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
+    public addRepoStartingFrom(repoSelection: Repository, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
+        this.log.w("The selected repo is", repoSelection);
         let errMsgId: string;
         if (this.userAdded.every(userEmail => !userEmail)) {
             errMsgId = "addCommit.emptyInput";
@@ -315,22 +320,21 @@ export class AddCommitPopover {
         if (!errMsgId) {
             this.updatingProgress = updatedProgress;
             this.isUpdatingByBatch = true;
+            let repoName = repoSelection.name;
+            const repoNameLowerCase = repoName.toLowerCase();
+            let repoProvider = repoSelection.provider;
             this.selectedRepositories.forEach((repo) => {
-                if (repo != null && repoSelection === repo.name) {
+                if (repo != null && repoName === repo.name && repoProvider === repo.provider) {
                     let percentage = Math.floor(this.PERCENTAGE_RANGE * this.FACTOR_PERCENTAGE_DECIMALS / (repo.numCommits + repo.numPrs)) 
                                     / this.FACTOR_PERCENTAGE_DECIMALS;
                     repo.commitsInfo.slice(commitIndex).reduce(
                         (prevVal, commit) => {
                             return prevVal.then(() => {
                                 this.updatingProgress += percentage;
-                                let comUrl;
-                                if(repo.provider === this.BITBUCKET_PROVIDER) {
-                                    comUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
-                                    + repoSelection.toLowerCase() + "/commits/" + commit.hash;
-                                } else {
-                                    comUrl = GithubApiConstants.BASE_URL + repo.organization + "/"
-                                    + repoSelection.toLowerCase() + "/commit/" + commit.hash;
-                                }
+                                let comUrl = (repo.provider === this.BITBUCKET_PROVIDER) ? 
+                                (BitbucketApiConstants.BASE_URL + repo.workspace + "/" + repoNameLowerCase + "/commits/") : 
+                                GithubApiConstants.BASE_URL + repo.organization + "/" + repoNameLowerCase + "/commit/";
+                                comUrl += commit.hash;    
                                 commitIndex++;
                                 return this.addCommit(comUrl, commit.name);
                             });
@@ -341,14 +345,10 @@ export class AddCommitPopover {
                             (prevVal, pullrequest) => {
                                 return prevVal.then(() => {
                                     this.updatingProgress += percentage;
-                                    let prUrl;
-                                    if(repo.provider === this.BITBUCKET_PROVIDER) {
-                                        prUrl = BitbucketApiConstants.BASE_URL + repo.workspace + "/"
-                                        + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
-                                    } else {
-                                        prUrl = GithubApiConstants.BASE_URL + repo.organization + "/"
-                                        + repoSelection.toLowerCase() + "/pull-requests/" + pullrequest.id;
-                                    }
+                                    let prUrl = (repo.provider === this.BITBUCKET_PROVIDER) ? 
+                                    BitbucketApiConstants.BASE_URL + repo.workspace : 
+                                    GithubApiConstants.BASE_URL + repo.organization;
+                                    prUrl += "/" + repoNameLowerCase + "/pull-requests/" + pullrequest.id;
                                     prIndex++;
                                     return this.addCommit(prUrl, pullrequest.title);
                                 });
@@ -407,6 +407,7 @@ export class AddCommitPopover {
 
     public loadUserPendingCommitsAndPrs(): Promise<void> {
         this.isWorkspaceCorrect = true;
+        this.showSpinner = true;
         return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
         .then((config: BackendBitbucketConfig) => {
             let workspaces = config.bitbucketWorkspaces;
@@ -434,6 +435,7 @@ export class AddCommitPopover {
         }).catch(err => { 
             this.showSpinner = false;
             this.isWorkspaceCorrect = false;
+            this.areProvidersWorking = this.isOrganizationCorrect || this.isWorkspaceCorrect;
             this.log.e("Error loading commits and PRs: " + err); 
         });
     }
@@ -455,13 +457,16 @@ export class AddCommitPopover {
                     repo.provider = this.GITHUB_PROVIDER,
                     this.selectedRepositories.push(repo), 
                     repo.numCommits = repo.commitsInfo.length));
+                    this.hasNewCommits = repositories.length > 0;
                     return repositories;                      
+                }).catch(error => {
+                    this.isOrganizationCorrect = false;
+                    this.areProvidersWorking = this.isOrganizationCorrect || this.isWorkspaceCorrect;
+                    this.log.e("Error with provider (Github)", error);
                 });
             });
         }).then(() => {
-            this.showSpinner = false;
             this.isServiceAvailable = true;
-            this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the repos", this.selectedRepositories);
         }).catch(err => { 
             this.showSpinner = false;
@@ -488,7 +493,6 @@ export class AddCommitPopover {
     private tryLoginBitbucket(): Promise<void> {
         this.userAddress = this.loginService.getAccountAddress();
         this.currentVersion = this.loginService.getCurrentVersion();
-        this.commitMethod = this.BATCH_METHOD;
         this.log.d("The user is going to login with Bitbucket provider");
         this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion).then(user => {
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
@@ -500,7 +504,6 @@ export class AddCommitPopover {
 
     private tryLoginGithub(): Promise<void> {
         this.userAddress = this.loginService.getAccountAddress();
-        this.commitMethod = this.BATCH_METHOD;
         this.currentVersion = this.loginService.getCurrentVersion();
         this.log.d("The user is going to login with Github provider");
         return this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion).then(user => {
@@ -668,7 +671,6 @@ export class AddCommitPopover {
             this.seasonLengthIndays = seasonEndDate[2] / AppConfig.DAY_TO_SECS;
             this.seasonDate = seasonEndDate[1] < dateNowSecs ? 
                 new Date((seasonEndDate[1] + seasonEndDate[2]) * AppConfig.SECS_TO_MS) : new Date(seasonEndDate[1] * AppConfig.SECS_TO_MS);
-            this.showSpinner = true;
             return this.contractManagerService.getCommits();
         }).then(commits => {
             commits = commits.filter(com => com);    

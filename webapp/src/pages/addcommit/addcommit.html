@@ -41,7 +41,7 @@
                 </ion-item-divider>
                 <div>
                     <ion-item *ngFor="let selectedRepo of selectedRepositories">  
-                        <ion-radio item-left [value]="selectedRepo.name"></ion-radio>
+                        <ion-radio item-left [value]="selectedRepo"></ion-radio>
                         <ion-label item-center class="text-details text-details--bold">{{ selectedRepo.name }}  ({{ selectedRepo.provider }})</ion-label>
                         <ion-label  item-right class="text-details text-details--bold"> {{ "addCommit.batchUploadPendingCommitsText" | translate: selectedRepo }}</ion-label>                                        
                     </ion-item>
@@ -49,13 +49,10 @@
                 <div class="custom-spinner" *ngIf="showSpinner">
                     <ion-spinner name="bubbles"></ion-spinner>
                 </div>
-                <div *ngIf="!isWorkspaceCorrect && isFinishedLoadingRepo">
-                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.wrongWorkspace" | translate }} </ion-label>                
+                <div *ngIf="!areProvidersWorking && isFinishedLoadingRepo">
+                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.providersNotWorking" | translate }} </ion-label>                
                 </div>
-                <div *ngIf="!isOrganizationCorrect && isFinishedLoadingRepo">
-                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.wrongOrganization" | translate }} </ion-label>                
-                </div>
-                <div *ngIf="!hasNewCommits && isFinishedLoadingRepo && isWorkspaceCorrect && isOrganizationCorrect">
+                <div *ngIf="!hasNewCommits && isFinishedLoadingRepo">
                     <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.noNewCommits" | translate }} </ion-label>                
                 </div>
                 <div *ngIf="!showNextReposOption && hasNewCommits && isFinishedLoadingRepo" class="custom-container-next-repos">

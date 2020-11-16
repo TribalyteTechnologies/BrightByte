@@ -94,6 +94,9 @@ export class GithubService {
             return Promise.all(commits);
         }).then(result => {
             return result;
+        }).catch(error => {
+            this.log.e("Error getting user organization repositories: ", error);
+            throw error;
         });
             
     }
