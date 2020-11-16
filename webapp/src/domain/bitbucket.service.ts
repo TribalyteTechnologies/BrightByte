@@ -75,7 +75,11 @@ export class BitbucketService {
         const params = new HttpParams().set(BitbucketApiConstants.TAG_FIELDS, BitbucketApiConstants.FIELDS_USER);
         this.log.d("The user token is", this.userToken);
         return this.http.get<BitbucketUserInfo>(BitbucketApiConstants.USER_BASE_URL, { params: params, headers: this.headers }).toPromise()
-        .then(result => result.uuid);
+        .then(result => result.uuid)
+        .catch(e => {
+            this.log.e("Error getting user name from provider (Bitbucket)", e);
+            throw e;
+        });
     }
 
     public getRepositories(workspace: string, seasonStartDate: Date): Promise<BitbucketRepositoryResponse> {

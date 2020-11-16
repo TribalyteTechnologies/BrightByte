@@ -102,7 +102,8 @@ export class AppConfig {
         TEAMID: "teamId",
         REGISTERID: "registerId",
         LOGID: "logId",
-        USERNAMEID: "userNameId"
+        USERNAMEID: "userNameId",
+        VERSIONID: "versionId"
     };
 
     private static shuffle(array: Array<any>): Array<any> {

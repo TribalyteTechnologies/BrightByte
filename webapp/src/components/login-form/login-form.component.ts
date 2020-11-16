@@ -62,6 +62,7 @@ export class LoginForm {
     private isAutoRegister: boolean;
     private autoLoginVersion: boolean;
     private teamUid: number;
+    private autoLogin: boolean;
     
 
     constructor(
@@ -82,12 +83,13 @@ export class LoginForm {
     }
 
     public ngOnInit() {
+        let password: string;
         let url = new URLSearchParams(document.location.search);
         this.log.d("The url is ", url);
         if (url.has(AppConfig.UrlKey.REGISTERID) || url.has(AppConfig.UrlKey.LOGID)) {
             let retrievedUser = this.userLoggerService.retrieveLogAccount();
             this.text = retrievedUser.user;
-            let password = retrievedUser.password;
+            password = retrievedUser.password;
             if (password) {
                 this.log.d("User retrieved from localStorage: " + this.text);
                 if (url.has(AppConfig.UrlKey.TEAMID)) {
@@ -97,6 +99,18 @@ export class LoginForm {
                     this.isAutoRegister = url.has(AppConfig.UrlKey.REGISTERID);
                     this.login(password);
                 }       
+            }
+        } else if (url.has(AppConfig.UrlKey.REVIEWID) || url.has(AppConfig.UrlKey.COMMITID)) {
+            let retrievedUser = this.userLoggerService.retrieveAccount();
+            this.text = retrievedUser.user;
+            password = retrievedUser.password;
+            if (password){
+                this.log.d("User retrieved from localStorage: " + this.text);
+                if (url.has(AppConfig.UrlKey.TEAMID)) {
+                    this.autoLogin = true;
+                    this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
+                }
+                this.login(password);
             }
         }
     }
@@ -294,9 +308,12 @@ export class LoginForm {
                 return this.contractManager.getUserTeam();
             })
             .then((teamUIds: Array<number>) => {
+                let promise;
                 isAlreadyRegisteredToTeam = teamUIds.length !== 0;
                 if (isAlreadyRegisteredToTeam) {
-                    this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
+                    let autoLogin = this.autoLogin && teamUIds.indexOf(this.teamUid) > -1;
+                    promise = autoLogin ? 
+                    this.logToTeam(this.teamUid) : this.getUserTeamAndInvitations(teamUIds[0], account.address, teamUIds);
                 } else {
                     this.goToSetProfile.next(this.SET_PROFILE);
                 }
