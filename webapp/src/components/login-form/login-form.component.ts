@@ -100,13 +100,13 @@ export class LoginForm {
                     this.login(password);
                 }       
             }
-        } else if (url.has(AppConfig.UrlKey.REVIEWID) || url.has(AppConfig.UrlKey.COMMITID)) {
+        } else {
             let retrievedUser = this.userLoggerService.retrieveAccount();
             this.text = retrievedUser.user;
             password = retrievedUser.password;
-            if (password){
+            if (password) {
                 this.log.d("User retrieved from localStorage: " + this.text);
-                if (url.has(AppConfig.UrlKey.TEAMID)) {
+                if (url.has(AppConfig.UrlKey.REVIEWID) || url.has(AppConfig.UrlKey.COMMITID) && url.has(AppConfig.UrlKey.TEAMID)) {
                     this.autoLogin = true;
                     this.teamUid = parseInt(url.get(AppConfig.UrlKey.TEAMID));
                 }
