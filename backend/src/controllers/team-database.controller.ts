@@ -87,15 +87,16 @@ export class TeamDatabaseController {
 
     @Delete(":id/:version/members/:user")
     public removeTeamMember(
-        @Param("id") teamUid: string, @Param("user") user: string, @Param("version") version: string
+        @Param("id") teamUid: string, @Param("version") version: string, @Param("user") user: string
     ): Observable<ResponseDto> {
         this.log.d("Request to delete a member from the team: ", teamUid);
         return this.teamDatabaseService.removeTeamMember(parseInt(teamUid), user, parseInt(version));
     }
 
-    @Post(":email/sendInvitation")
-    public sendInvitation(@Param("email") userEmail: string): Observable<ResponseDto> {
+    @Post(":email/:version/sendInvitation")
+    public sendInvitation(@Param("email") userEmail: string, @Param("version") version: string): Observable<ResponseDto> {
         this.log.d("Request to send a invitation to participate for user: ", userEmail);
+        this.log.d("Request to send a invitation to participate for user: ", version);
         return this.emailService.sendInvitationEmail(userEmail);
     }
 }

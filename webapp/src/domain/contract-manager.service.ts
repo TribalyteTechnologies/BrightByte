@@ -292,10 +292,13 @@ export class ContractManagerService {
     }
 
     public sendEmailInvitations(emails: Array<string>): Promise<void> {
-        let promises = emails.map(email => this.http.post(AppConfig.TEAM_API + email + AppConfig.INVITATION_PATH, {}).toPromise());
-        return Promise.all(promises)
-            .then(result => this.log.d("The email invitations have been send"))
-            .catch(e => this.log.e("Error sending the invitation via email"));
+        return this.getCurrentVersionCloud().then((version: number) => {
+            let promises = emails.map(email => 
+                this.http.post(AppConfig.TEAM_API + email + "/" + version + AppConfig.INVITATION_PATH, {}).toPromise()
+            );
+            return Promise.all(promises);
+        }).then(result => this.log.d("The email invitations have been send"))
+        .catch(e => this.log.e("Error sending the invitation via email"));
     }
 
     public removeInvitation(email: string): Promise<void | TransactionReceipt> {
