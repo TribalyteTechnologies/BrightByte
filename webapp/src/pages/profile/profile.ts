@@ -97,6 +97,7 @@ export class Profile {
     private isSettingSeason: boolean;
     private log: ILogger;
     private currentVersion: number;
+    private initSeasonTimestamp: number;
 
 
     constructor(
@@ -184,6 +185,8 @@ export class Profile {
         }).then((seasonState: Array<number>) => {
             this.isSettingSeason = Number(seasonState[0]) === 1;
             this.seasonLength = seasonState[2] / AppConfig.DAY_TO_SECS;
+            this.initSeasonTimestamp = seasonState[1] - seasonState[2];
+            this.log.d("Season init date in MS", this.initSeasonTimestamp);
             return this.contractManagerService.getCurrentSeasonThreshold();
         }).then(seasonThreshold => {
             this.log.d("The season thresholds are", seasonThreshold);
@@ -374,7 +377,10 @@ export class Profile {
         this.seasonLength = seasonLength;
         this.seasonErrorMsg = null;
         this.seasonSuccessMsg = null;
-        if (seasonLength >= AppConfig.MIN_SEASON_LENGTH_DAYS && seasonLength < AppConfig.MAX_SEASON_LENGTH_DAYS) {
+        const seasonLengthInMS = seasonLength * AppConfig.DAY_TO_SECS;
+        const timeElapsed = (Date.now() / AppConfig.SECS_TO_MS) - this.initSeasonTimestamp;
+        if (seasonLengthInMS > timeElapsed){
+            if (seasonLength >= AppConfig.MIN_SEASON_LENGTH_DAYS && seasonLength < AppConfig.MAX_SEASON_LENGTH_DAYS) {
             this.isSettingSeasonData = true;
             this.contractManagerService.setSeasonLength(this.seasonLength)
             .then(() => {
@@ -389,8 +395,13 @@ export class Profile {
             }).then(res => {
                 this.seasonErrorMsg = res;
             });
+            } else {
+                this.translateSrv.get("setProfile.seasonLengthErrorMsg").subscribe(res => {
+                    this.seasonErrorMsg = res;
+                });
+            }
         } else {
-            this.translateSrv.get("setProfile.seasonLengthErrorMsg").subscribe(res => {
+            this.translateSrv.get("setProfile.seasonChangeError").subscribe(res => {
                 this.seasonErrorMsg = res;
             });
         }
