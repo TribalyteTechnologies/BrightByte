@@ -494,19 +494,32 @@ export class AddCommitPopover {
         this.userAddress = this.loginService.getAccountAddress();
         this.currentVersion = this.loginService.getCurrentVersion();
         this.log.d("The user is going to login with Bitbucket provider");
-        this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion).then(user => {
+        return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
+        .then((config: BackendBitbucketConfig) => {
+            const workspaces = config.bitbucketWorkspaces;
+            let promise = workspaces.length > 0 ? 
+            this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
+            Promise.reject(new Error("No Bitbucket workspaces available"));
+            return promise;
+        }).then(user => {
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
             this.log.w("Bitbucket service not available", e);
         });
-        return null;
     }
 
     private tryLoginGithub(): Promise<void> {
         this.userAddress = this.loginService.getAccountAddress();
         this.currentVersion = this.loginService.getCurrentVersion();
         this.log.d("The user is going to login with Github provider");
-        return this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion).then(user => {
+        return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
+        .then((config: BackendGithubConfig) => {
+            let organizations = config.githubOrganizations;
+            let promise = organizations.length > 0 ? 
+            this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
+            Promise.reject(new Error("No github organizations available"));
+            return promise;
+        }).then(user => {
             this.log.d("Waiting for the user to introduce their github credentials");
         }).catch(e => {
             this.log.w("Github service not available", e);
