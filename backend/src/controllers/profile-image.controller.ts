@@ -9,6 +9,7 @@ import { FailureResponseDto } from "../dto/response/failure-response.dto";
 import { SuccessResponseDto } from "../dto/response/success-response.dto";
 import { ResponseDto } from "../dto/response/response.dto";
 import { BackendConfig } from "../backend.config";
+import { Observable, of } from "rxjs";
 
 interface IUploadedFile { 
     fieldname: string;
@@ -41,13 +42,13 @@ export class ProfileImageController {
         })
     }))
     @Bind(UploadedFile())
-    public uploadFile(file: IUploadedFile): ResponseDto {
+    public uploadFile(file: IUploadedFile): Observable<ResponseDto> {
         this.log.d("The avatar is saved for user: " + file);
-        return new SuccessResponseDto(this.ROUTE_AVATARS + file.filename);
+        return of(new SuccessResponseDto(this.ROUTE_AVATARS + file.filename));
     }
 
     @Get("/:userAddress/status")
-    public checkStatus(@Param("userAddress") hash: string): ResponseDto {
+    public checkStatus(@Param("userAddress") hash: string): Observable<ResponseDto> {
         this.log.d("Request to get avatar: " + hash);
         let ret: ResponseDto;
         if(fs.existsSync(BackendConfig.IMAGE_STORAGE_PATH + hash)) {
@@ -57,7 +58,7 @@ export class ProfileImageController {
             this.log.d("User avatar does not exists: " + hash);
             ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "User avatar not available");
         }
-        return ret;
+        return of(ret);
     }
     
     @Get(":userAddress")
@@ -67,9 +68,9 @@ export class ProfileImageController {
     }
 
     @Delete(":userAddress")
-    public deleteAvatar(@Param("userAddress") hash: string): ResponseDto {
+    public deleteAvatar(@Param("userAddress") hash: string): Observable<ResponseDto> {
         this.log.d("Erasing avatar: " + hash);
         fs.unlinkSync(BackendConfig.IMAGE_STORAGE_PATH + hash);
-        return new SuccessResponseDto("Image deleted");
+        return of(new SuccessResponseDto("Image deleted"));
     }
 }

@@ -8,6 +8,7 @@ import { map } from "rxjs/operators";
 import * as querystring from "querystring";
 import { ClientNotificationService } from "../services/client-notfication.service";
 import { FailureResponseDto } from "../dto/response/failure-response.dto";
+import { Observable, of } from "rxjs";
 
 interface IFooParams extends querystring.ParsedUrlQueryInput {
     readonly grant_type: string;
@@ -22,7 +23,6 @@ export class AuthenticationController {
     private readonly AUTHORIZE_AUX = this.BITBUCKET_OAUTH_URL + BackendConfig.BITBUCKET_KEY + "&response_type=" + this.RESPONSE_TYPE;
     private readonly AUTHORIZE_CALLBACK = this.AUTHORIZE_AUX + "&state=";
     private readonly GET_TOKEN_URL_BITBUCKET = "https://bitbucket.org/site/oauth2/access_token";
-    private readonly GET_TOKEN_URL_GITHUB = "https://github.com/login/oauth/access_token";
     private readonly GRANT_TYPE = "authorization_code";
     private readonly GITHUB_URL = "https://github.com/login/oauth/";
     private readonly GITHUB_AUTHORIZE_CALLBACK = this.GITHUB_URL + "authorize?client_id=" + BackendConfig.GITHUB_KEY + "&state=";
@@ -45,7 +45,7 @@ export class AuthenticationController {
         @Param("user") user: string,
         @Param("teamUid") teamUid: number,
         @Param("version") version: number,
-        @Param("provider") provider: string): ResponseDto {
+        @Param("provider") provider: string): Observable<ResponseDto> {
         let ret: ResponseDto;
         const code = user + "-" + teamUid + "-" + version;
         this.log.d("The user requesting authentication is: " + code);
@@ -61,7 +61,7 @@ export class AuthenticationController {
             default:
                 ret = new FailureResponseDto(BackendConfig.STATUS_NOT_FOUND, "Provider not defined.");
         }
-        return ret;
+        return of(ret);
     }
 
     @Get("oauth-callback/github")
@@ -69,15 +69,15 @@ export class AuthenticationController {
         let code = req.query.code;
         let userIdentifier = req.query.state ? req.query.state .toString() : "";
         let tokenUrlPath = this.GET_GITHUB_TOKEN_URL + "&code=" + code + "&state=" + userIdentifier;
-        this.httpSrv.post(tokenUrlPath, null, { headers: { "Accept": "application/json" } }).pipe(
-            map(res => {
+        this.httpSrv.post(tokenUrlPath, null, { headers: { "Accept": "application/json" } }).subscribe(
+            res => {
                 this.log.d("Response: ", res.data);
                 let userToken = res.data.access_token;
                 this.clientNotificationService.sendToken(userIdentifier, userToken, this.GITHUB_PROVIDER);
                 return response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
-            })
-        ).subscribe(() => {
-            this.log.d("The user has completed the Github authentication process");
+        },  error => {
+            this.log.e("Error getting Github token ", error);
+            response.status(404).send();
         });
     }
 
@@ -102,10 +102,10 @@ export class AuthenticationController {
             this.log.d("Response: ", res.data);
             this.clientNotificationService.sendToken(userIdentifier, userToken, this.BITBUCKET_PROVIDER);
             this.log.d("The user has completed the authentication process");
-            return response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
+            response.sendFile(BackendConfig.CONFIRM_AUTHENTICATION_PAGE);
         },  error => {
             this.log.e("Error getting bitbucket token ", error);
-            return response.status(404).send();
+            response.status(404).send();
         });
     }
 }
