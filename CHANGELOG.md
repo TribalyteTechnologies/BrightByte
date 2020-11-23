@@ -1,5 +1,32 @@
 # Change Log
 
+#### v0.5.1-cloud
+
+- Refactor backend.
+- Fix season changes, duration should be bigger than the time elapsed.
+- Minor bug fixes.
+
+#### v0.5.0-cloud
+
+BrightByte cloud now can work with different cloud versions.
+- Added Github provider for importing batch commits.
+- New smart contracts for multi version management.
+- Adapted BrightByte cloud smart contracts for multi version.
+- Fronted changes for multi versions and new provider (Github).
+- Backend changes for multi versions (New achievements events subscription).
+- New frontend-backend-blockchain integration (on ConctractManagerService both backend and frontend).
+- Added multiple test for new multi version team smart contracts.
+
+
+#### v0.4.10-cloud
+
+- Added cron script to call view methods.
+- Fixed issue with Bitbucket workspaces.
+- Back-end retry to connect to node.
+- Added retry method to all getter view methods.
+- Minor bug fixes.
+- Remove serve-static files in the backend.
+
 #### v0.4.9-cloud
 
 - Fix recursive method, to call view methods from smart contracts.
