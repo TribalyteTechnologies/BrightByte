@@ -3,18 +3,18 @@
     <ion-row class="main-container">
         <ion-col col-6 class="container-left">
             <ion-col class="overlay">
-                <ion-row justify-content-center align-items-center  class= "text-container">
+                <ion-row  flex justify-content-center align-items-center  class= "text-container">
                     <ion-col>
                             <img class="logo" src="assets/imgs/logo_bkg.svg">
                             <div class="title">{{ "app.welcome" | translate }}</div>
                             <div class="subtitle">{{ "app.enterCredentials" | translate }}</div>
                     </ion-col>
                 </ion-row>
-                <ion-footer no-border>
+                <ion-row class="footer-container">
                     <div class="project-version">
                         <ion-label>{{ "app.title" | translate }} v{{ appVersion }}</ion-label>
                     </div>
-                </ion-footer>
+                </ion-row>
             </ion-col>
 
         </ion-col>
@@ -34,9 +34,7 @@
                     <workspace-form *ngSwitchCase="'set-workspace'"></workspace-form>
                 </ion-col>
             </ion-row>
-            
-            <ion-footer no-border>
-                <ion-row>
+            <ion-row class="footer-container">
                     <ion-col col-8>
                         <div class="tribalyte-logo">
                             <img class="logo" src="assets/imgs/tribalytetech.png">
@@ -52,8 +50,7 @@
                             <ion-label (click)="showTerms()" text-left no-padding>{{ "app.terms" | translate }}</ion-label>
                         </div>
                     </ion-col>
-                </ion-row>
-            </ion-footer>
+            </ion-row>
         </ion-col>
         
     </ion-row>

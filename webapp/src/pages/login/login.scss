@@ -73,6 +73,7 @@ page-login {
         }
         .form-container {
             margin-top: 60px;
+            min-height: 750px;
             .mini-title {
                 font-size: 14px;
                 font-weight: bold;
@@ -190,5 +191,13 @@ page-login {
         text-align: left;
         font-size: 12px;
         color: rgb(209, 210, 212);
+    }
+
+    .footer-container {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        opacity: 1;
+        background: transparent;
     }
 }
