@@ -26,11 +26,11 @@
         <h4>{{ "setProfile.selectTeamToregister" | translate }}</h4>
         <h6>{{ "setProfile.avaialableTeams" | translate }}</h6>
         <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue"
-            (click)="logToTeam(team.uid, team.version)">{{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+            (click)="logToTeam(team.uid, team.version)"> {{ team.name }}</button>
         <h6>{{ "setProfile.availableInvitations" | translate }}</h6>
         <ng-container *ngIf="invitationList.length > 0; else noInvitations">
             <button margin *ngFor="let team of invitationList; let i = index" class="btn btn--full btn__blue"
-                (click)="showNameBox(team.uid, team.version)">{{ "ranking.team" | translate }} {{ team.uid }}: {{ team.name }}</button>
+                (click)="showNameBox(team.uid, team.version)"> {{ team.name }}</button>
         </ng-container>
         <ng-template #noInvitations>
             <p>{{ "setProfile.noAvailableInvitations" | translate }}</p>
