@@ -224,6 +224,7 @@
         "settings": "Settings",
         "tabCategoryProfile": "Profile settings",
         "tabCategoryTeam": "Team settings",
+        "tabCategoryProviders": "Team providers",
         "changeTeamName": "Change team name",
         "changeTextRules": "Change team rules",
         "invitedUsers": "Invited users",

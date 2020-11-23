@@ -26,7 +26,7 @@ import { UserDetails } from "../../models/user-details.model";
 
 export class Profile {
 
-    public readonly SETTINGS_CATEGORIES = ["Profile", "Team"];
+    public readonly SETTINGS_CATEGORIES = ["Profile", "Team", "Providers"];
     public readonly ADMIN = AppConfig.UserType.Admin;
     public readonly MEMBER = AppConfig.UserType.Member;
 
