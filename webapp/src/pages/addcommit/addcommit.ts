@@ -447,30 +447,29 @@ export class AddCommitPopover {
         return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
         .then((config: BackendGithubConfig) => {
             let organizations = config.githubOrganizations;
-            organizations.map(organization => { 
-                return this.githubSrv.getRepositoriesOrg(this.currentSeasonStartDate, organization)
-                .then((repositories: Array<Repository>) => {
-                    this.log.d("The repositories from Github are: ", repositories);
-                    repositories = repositories.filter(repo => repo.commitsInfo.length > 0);
-                    repositories.forEach((repo) => (repo.commitsInfo = repo.commitsInfo.filter (
-                    commit => this.blockChainCommits.indexOf(commit.hash) < 0 ), 
-                    repo.provider = this.GITHUB_PROVIDER,
-                    this.selectedRepositories.push(repo), 
-                    repo.numCommits = repo.commitsInfo.length));
-                    this.hasNewCommits = repositories.length > 0;
-                    return repositories;                      
-                }).catch(error => {
-                    this.isOrganizationCorrect = false;
-                    this.areProvidersWorking = this.isOrganizationCorrect || this.isWorkspaceCorrect;
-                    this.log.e("Error with provider (Github)", error);
+            let promises = organizations.map(organization => this.githubSrv.getRepositoriesOrg(this.currentSeasonStartDate, organization));
+            return Promise.all(promises);
+        }).then((organizations: Array<Array<Repository>>) => {
+            let repositories = organizations.map((orgRepositories: Array<Repository>) => {
+                return orgRepositories.filter(repo => {
+                    repo.commitsInfo = repo.commitsInfo.filter(commit =>
+                        this.blockChainCommits.indexOf(commit.hash) < 0
+                    );
+                    repo.provider = this.GITHUB_PROVIDER, 
+                    repo.numCommits = repo.commitsInfo.length;
+                    return repo.numCommits > 0;
                 });
             });
-        }).then(() => {
+            this.log.d("The repositories from Github are: ", repositories);
+            repositories.forEach(orgRepositories => orgRepositories.forEach(repo => this.selectedRepositories.push(repo)));
+            this.hasNewCommits = repositories.length > 0;
             this.isServiceAvailable = true;
             this.log.d("All the commits from the repos", this.selectedRepositories);
+            return Promise.resolve();
         }).catch(err => { 
             this.showSpinner = false;
             this.isOrganizationCorrect = false;
+            this.areProvidersWorking = this.isOrganizationCorrect || this.isWorkspaceCorrect;
             this.log.e("Error loading commits from provider (Github): " + err); 
         });
     }
