@@ -70,6 +70,7 @@ export class Profile {
     public reviewThreshold: number;
     public teamRules: string;
     public isRandomReviewers: boolean;
+    public isBackendAvailable: boolean;
 
     private readonly UPDATE_IMAGE_URL = AppConfig.SERVER_BASE_URL + "/profile-image/upload?userHash=";
     private readonly IMAGE_FIELD_NAME = "image";
@@ -123,6 +124,7 @@ export class Profile {
         this.userAddress = this.loginSrv.getAccountAddress();
         this.currentVersion = this.loginSrv.getCurrentVersion();
         this.isLoadingInfo = true;
+        this.isBackendAvailable = true;
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
         this.translateSrv.get([
             "setProfile.uploadError",
@@ -213,13 +215,15 @@ export class Profile {
             this.currentVersion + AppConfig.ORGANIZATION_PATH + this.userAddress;
             return this.http.get(urlGithub).toPromise();
         }).then((result: IOrganizationResponse) => {
-            this.isGithubAvailable = false;
             this.log.d("The user worspaces are ", result);
             if (result.status !== "Error") {
                 this.teamOrganizations = result.data;
                 this.isGithubAvailable = true;
             }
             this.isLoadingInfo = false;
+        }).catch(e => {
+            this.log.e("Error: ", e);
+            this.isBackendAvailable = this.isBitbucketAvailable || this.isGithubAvailable;
         });
     }
 

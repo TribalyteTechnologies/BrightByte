@@ -268,7 +268,7 @@
                 </div>
             </ion-col>
         </ion-row>
-        <ion-row no-padding *ngIf="settingsCategory === SETTINGS_CATEGORIES[2]">
+        <ion-row no-padding *ngIf="settingsCategory === SETTINGS_CATEGORIES[2] && isBackendAvailable">
             <ion-col>
                 <ion-row class="profile-tooltip-container">
                     <h6>{{ "setProfile.bitBucketWorkspaces" | translate }}</h6>
