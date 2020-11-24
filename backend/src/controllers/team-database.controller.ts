@@ -99,4 +99,12 @@ export class TeamDatabaseController {
         this.log.d("Request to send a invitation to participate for user: ", version);
         return this.emailService.sendInvitationEmail(userEmail);
     }
+
+    @Post(":email/:teamName/sendNotification/:numCommits")
+    public sendNotification(
+        @Param("email") userEmail: string, @Param("teamName") teamName: string, @Param("numCommits") numCommits: string
+    ): Observable<ResponseDto> {
+        this.log.d("Request to send a notification for user: ", userEmail);
+        return this.emailService.sendNotificationEmail(userEmail, teamName, parseInt(numCommits));
+    }
 }

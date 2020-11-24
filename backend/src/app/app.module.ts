@@ -19,6 +19,7 @@ import { ContractManagerService } from "../services/contract-manager.service";
 import { EmailService } from "../services/email.service";
 import { MulterModule } from "@nestjs/platform-express";
 import { MailerModule } from "@nestjs-modules/mailer";
+import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
 
 
 @Module({
@@ -32,6 +33,13 @@ import { MailerModule } from "@nestjs-modules/mailer";
             transport: BackendConfig.EMAIL_TRANSPORT,
             defaults: {
                 from: '"nest-modules" <modules@nestjs.com>'
+            },
+            template: {
+                dir: BackendConfig.EMAIL_TEMPLATES,
+                adapter: new PugAdapter(),
+                options: {
+                    strict: true
+                }
             }
         })
     ],

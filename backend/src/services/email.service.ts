@@ -12,8 +12,10 @@ import * as fs from "fs";
 export class EmailService {
 
     private readonly INVITATION_SUBJECT = "Invitation to participate on BrightByte";
+    private readonly NOTIFICATION_SUBJECT = "You got pending commits on BrightByte";
     private readonly FROM_EMAIL = BackendConfig.EMAIL_TRANSPORT.auth.user;
     private readonly INVITATION_TEMPLATE_PATH = BackendConfig.EMAIL_TEMPLATES + "invitation.html";
+    private readonly NOTIFICATION_TEMPLATE = "notification";
 
     constructor(private mailerService: MailerService) { }
 
@@ -26,6 +28,22 @@ export class EmailService {
             html: content
         })).pipe(
             map(response => new SuccessResponseDto("The invitation has been send to: " + toEmail)),
+            catchError(error => of(new FailureResponseDto(error)))
+        );
+    }
+
+    public sendNotificationEmail(toEmail: string, teamName: string, numOfCommits: number): Observable<ResponseDto> {
+        return from(this.mailerService.sendMail({
+            to: toEmail,
+            from: this.FROM_EMAIL,
+            subject: this.NOTIFICATION_SUBJECT,
+            template: this.NOTIFICATION_TEMPLATE,
+            context: {
+                teamName: teamName,
+                numOfCommits: numOfCommits
+            }
+        })).pipe(
+            map(response => new SuccessResponseDto("The notification has been send to: " + toEmail)),
             catchError(error => of(new FailureResponseDto(error)))
         );
     }
