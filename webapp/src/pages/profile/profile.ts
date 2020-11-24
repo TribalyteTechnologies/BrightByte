@@ -76,6 +76,9 @@ export class Profile {
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
     private readonly EMAILS_SEPARATOR = /[\s,]+/;
+    private readonly MAX_SIZE_IMAGE_MB = 1;
+    private readonly MB_TO_BYTES = 1048576;
+    private readonly MAX_SIZE_IMAGE_BYTES = this.MAX_SIZE_IMAGE_MB * this.MB_TO_BYTES;
 
 
     private noChangesError: string;
@@ -99,6 +102,8 @@ export class Profile {
     private log: ILogger;
     private currentVersion: number;
     private initSeasonTimestamp: number;
+    private isTooBigImage: boolean;
+    private tooBigImageError: string;
 
 
     constructor(
@@ -141,7 +146,8 @@ export class Profile {
             "setProfile.invitationError",
             "setProfile.invitationEmailFormatError",
             "setProfile.alreadyRegisteredError",
-            "setProfile.userTypeError"])
+            "setProfile.userTypeError",
+            "setProfile.tooBigImageError"])
             .subscribe(translation => {
                 this.uploadError = translation["setProfile.uploadError"];
                 this.defaultError = translation["setProfile.defaultError"];
@@ -149,7 +155,7 @@ export class Profile {
                 this.successMessageName = translation["setProfile.successMessageName"];
                 this.successMessageTeamName = translation["setProfile.succesTeamNameChange"];
                 this.successMessageTeamRules = translation["setProfile.succesTeamRulesChange"],
-                    this.successMessageAvatar = translation["setProfile.successMessageAvatar"];
+                this.successMessageAvatar = translation["setProfile.successMessageAvatar"];
                 this.successMessageInvitation = translation["setProfile.successInvitation"];
                 this.changeNameError = translation["setProfile.changeNameError"];
                 this.changeTeamNameError = translation["setProfile.changeTeamNameError"];
@@ -158,6 +164,7 @@ export class Profile {
                 this.invitationEmailFormatError = translation["setProfile.invitationEmailFormatError"];
                 this.userTypeError = translation["setProfile.userTypeError"];
                 this.alreadyRegisteredError = translation["setProfile.alreadyRegisteredError"];
+                this.tooBigImageError = translation["setProfile.tooBigImageError"] + this.MAX_SIZE_IMAGE_MB + "MB";
             });
         this.uploadForm = this.formBuilder.group({
             image: [""],
@@ -263,12 +270,19 @@ export class Profile {
         let target = <HTMLInputElement>event.target;
         let uploadedFiles = <FileList>target.files;
         let input = uploadedFiles[0];
-        this.uploadForm.get(this.IMAGE_FIELD_NAME).setValue(input);
-        this.getBase64(input).then((data: string) => {
-            this.avatarData = data;
-            this.imageSelected = true;
-            this.errorMsg = null;
-        });
+        let fileSize = input.size;
+        this.log.d("Tamaño imagen: ", fileSize);
+        if(fileSize < this.MAX_SIZE_IMAGE_BYTES) {
+            this.uploadForm.get(this.IMAGE_FIELD_NAME).setValue(input);
+            this.getBase64(input).then((data: string) => {
+                this.avatarData = data;
+                this.imageSelected = true;
+                this.errorMsg = null;
+            });
+        } else {
+            this.isTooBigImage = true;
+            this.errorMsg = this.tooBigImageError;
+        }
     }
 
     public confirmImageRemove() {
@@ -343,6 +357,8 @@ export class Profile {
                     this.dismiss();
                 }
             });
+        } else if(this.isTooBigImage) {
+            this.errorMsg = this.tooBigImageError;
         } else {
             this.errorMsg = this.noChangesError;
         }

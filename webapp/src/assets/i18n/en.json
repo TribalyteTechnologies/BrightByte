@@ -208,6 +208,7 @@
         "successMessageName": "You have changed your name.",
         "successMessageAvatar": "You have changed your avatar.",
         "noChangesError": "Please, change you user name or select an image to save.",
+        "tooBigImageError": "Please select other image. Maximum size ",
         "removeImage": "Remove image",
         "removeMember": "Remove member",
         "removeWorkspace": "Remove workspace",
