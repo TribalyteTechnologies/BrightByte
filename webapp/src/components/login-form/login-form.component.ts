@@ -305,17 +305,16 @@ export class LoginForm {
             return this.getTeams(invitedTeams);
         })
         .then((invitedTeams: Array<Team>) => {
-            this.invitationList = invitedTeams;
-            this.invitationList = this.sortTeams(this.invitationList);
+            this.invitationList = this.sortTeams(invitedTeams);
             this.log.d("The user is invited to the next teams", invitedTeams);
             this.showTeamSelector = (this.invitationList.length > 0 || userTeams.length > 0);
             return this.getTeams(userTeams);
         })
         .then((participantTeams: Array<Team>) => {
             this.log.d("The user is participating in the next teams", participantTeams);
-            this.teamList = participantTeams;
-            this.teamList = this.sortTeams(this.teamList);
-        }).then(() => {
+            this.teamList = this.sortTeams(participantTeams);
+        })
+        .then(() => {
             if(this.autoLoginVersion) {
                 this.log.d("The user is participating in the team: ", this.teamUid);
                 this.log.d("Participating in the team from version: ", this.versionToLog);
