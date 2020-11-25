@@ -30,7 +30,7 @@
         <ion-col col-6 *ngIf="currentCommit" class="scroll-y">
             <div class="scrollable-content">
                 <ion-row padding class="main-style">
-                    <ion-col>
+                    <ion-col col-11>
                         <ion-row >  
                             <div class="text-title text-ellipsis">{{ currentCommit.title }}</div>
                         </ion-row>
@@ -41,6 +41,9 @@
                         <ion-row>
                             <div class="text-url text-ellipsis" (click)="openUrl(currentCommit.url, false)">  #{{ currentCommit.urlHash }}</div>
                         </ion-row>
+                    </ion-col>
+                    <ion-col col-1 *ngIf="(isSpinnerLoadingObs | async)">
+                        <ion-spinner name="bubbles"></ion-spinner>
                     </ion-col>
                 </ion-row>
                 <ion-col *ngIf="commitComments.length === 0; else hasComments">

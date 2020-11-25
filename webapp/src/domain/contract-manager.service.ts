@@ -950,17 +950,18 @@ export class ContractManagerService {
 
 
     public setThumbReviewForComment(url: string, index: number, value: number): Promise<void | TransactionReceipt> {
+        let rootContract: ITrbSmartContact;
         return this.initProm.then(([bright, commit, root]) => {
-            return this.getCommentsOfCommit(url)
-                .then((arrayOfComments: Array<CommitComment>) => {
-                    const encodeUrl = EncryptionUtils.encode(url);
-                    let byteCodeData = root.methods.setVote(encodeUrl, arrayOfComments[index].user, value).encodeABI();
-                    this.log.d("Introduced value: ", value);
-                    return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
-                }).then(res => {
-                    this.log.d("Transaction processed");
-                    return res;
-                });
+            rootContract = root;
+            return this.getCommentsOfCommit(url);
+        }).then((arrayOfComments: Array<CommitComment>) => {
+            const encodeUrl = EncryptionUtils.encode(url);
+            let byteCodeData = rootContract.methods.setVote(encodeUrl, arrayOfComments[index].user, value).encodeABI();
+            this.log.d("Introduced value: ", value);
+            return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
+        }).then(res => {
+            this.log.d("Transaction processed");
+            return res;
         }).catch(e => {
             this.log.e("Error setting thumbs: ", e);
             throw e;
@@ -1125,21 +1126,6 @@ export class ContractManagerService {
         }).catch(err => {
             this.log.e("Error getting urls (Feedback) :", err);
             throw err;
-        });
-    }
-
-    public setFeedback(url: string): Promise<void | TransactionReceipt> {
-        return this.initProm.then(([bright, commit, root]) => {
-            const encodeUrl = EncryptionUtils.encode(url);
-            let byteCodeData = root.methods.setFeedback(encodeUrl, this.currentUser.address).encodeABI();
-            this.log.d("Introduced url: ", url);
-            return this.transactionQueueSrv.enqueue(byteCodeData, this.contractAddressRoot, this.currentUser);
-        }).then(res => {
-            this.log.d("Transaction processed");
-            return res;
-        }).catch(e => {
-            this.log.e("Error setting feedback: ", e);
-            throw e;
         });
     }
 

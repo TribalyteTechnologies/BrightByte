@@ -13,6 +13,8 @@ import { AppConfig } from "../../app.config";
 import { AlertController } from "ionic-angular";
 import { PopupService } from "../../domain/popup.service";
 import { LoginService } from "../../core/login.service";
+import { Observable } from "rxjs";
+import { TransactionExecutorService } from "../../domain/transaction-executor.service";
 
 @Component({
     selector: "page-commits",
@@ -38,6 +40,7 @@ export class CommitPage {
     public filterValue = "";
     public filterIsPending = false;
     public msg: string;
+    public isSpinnerLoadingObs: Observable<boolean>;
     private log: ILogger;
 
 
@@ -52,6 +55,7 @@ export class CommitPage {
         private alertCtrl: AlertController,
         private popupSrv: PopupService,
         private loginService: LoginService,
+        private transactionSrv: TransactionExecutorService,
         loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("CommitsPage");
@@ -61,7 +65,8 @@ export class CommitPage {
         this.version = this.loginService.getCurrentVersion();
     }
 
-    public ionViewWillEnter() {
+    public ngOnInit() {
+        this.isSpinnerLoadingObs = this.transactionSrv.getProcessingStatus();
         this.refresh();
     }
 
@@ -120,12 +125,10 @@ export class CommitPage {
     }
 
     public setThumbs(url: string, index: number, value: number) {
-        this.spinnerService.showLoader();
+        this.commitComments[index].vote = value;
         this.contractManagerService.setThumbReviewForComment(url, index, value)
             .then(txResponse => {
                 this.log.d("Contract manager response: ", txResponse);
-                this.commitComments[index].vote = value;
-                this.spinnerService.hideLoader();
             }).catch(e => {
                 this.log.e("Cant set the vote", e);
                 this.translateService.get("commitDetails.setThumbs").subscribe(
@@ -134,7 +137,6 @@ export class CommitPage {
                         this.log.e(msg, e);
                     }
                 );
-                this.spinnerService.hideLoader();
                 throw e;
             });
     }
