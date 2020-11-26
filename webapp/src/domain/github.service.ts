@@ -102,11 +102,12 @@ export class GithubService {
     }
 
     public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
-        const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
-        return this.http.get<Array<GithubCommitResponse>>(
-            GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/commits", 
-            {params: params, headers: this.headers }).toPromise()
-        .then(result => {     
+        return this.getUsername().then(userName => {
+            this.githubUser = userName.login;
+            const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
+            const url =  GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/commits";
+            return this.http.get<Array<GithubCommitResponse>>(url, {params: params, headers: this.headers }).toPromise();
+        }).then(result => {     
             this.log.d("The getCommits response is", result);
             this.repo = new Repository(repository.html_url, repository.name, "", organization);
             this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));

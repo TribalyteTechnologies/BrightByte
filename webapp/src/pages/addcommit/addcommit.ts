@@ -464,6 +464,7 @@ export class AddCommitPopover {
             repositories.forEach(orgRepositories => orgRepositories.forEach(repo => this.selectedRepositories.push(repo)));
             this.hasNewCommits = repositories.length > 0;
             this.isServiceAvailable = true;
+            this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the repos", this.selectedRepositories);
             return Promise.resolve();
         }).catch(err => { 
