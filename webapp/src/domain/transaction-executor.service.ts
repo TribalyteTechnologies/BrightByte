@@ -17,6 +17,7 @@ export class TransactionExecutorService implements OnDestroy{
     private log: ILogger;
     private web3: Web3;
     private pendingPromise: boolean;
+    private nonceValue: number;
 
     constructor(
         loggerSrv: LoggerService,
@@ -66,8 +67,10 @@ export class TransactionExecutorService implements OnDestroy{
     }
 
     private sendTx(transaction: UnsignedTransaction): Promise<void | TransactionReceipt> {
-        return this.web3.eth.getTransactionCount(transaction.user.address, "pending")
+        return this.getNonce(transaction.user.address)
             .then(nonceValue => {
+                this.nonceValue = nonceValue;
+                this.log.d("Nonce value", this.nonceValue);
                 let nonce = "0x" + (nonceValue).toString(16);
                 this.log.d("Nonce value", nonce);
                 let networkConfig = AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX];
@@ -95,5 +98,10 @@ export class TransactionExecutorService implements OnDestroy{
                 this.log.e("Error in transaction (sendTx function): ", e);
                 throw e;
             });
+    }
+
+    private getNonce(userAddress: string): Promise<number> {
+        return this.nonceValue ? new Promise(resolve => resolve(this.nonceValue + 1)) :
+        this.web3.eth.getTransactionCount(userAddress, "pending");
     }
 }
