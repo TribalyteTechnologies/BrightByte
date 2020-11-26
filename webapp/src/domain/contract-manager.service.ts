@@ -57,6 +57,7 @@ export class ContractManagerService {
     private currentUser: Account;
     private teamUids: Array<number>;
     private currentTeamUid: number;
+    private pendingReviews: number;
 
     constructor(
         private http: HttpClient,
@@ -700,6 +701,30 @@ export class ContractManagerService {
                 });
         }).catch(err => {
             this.log.e("Error obtaining commits to review :", err);
+            throw err;
+        });
+    }
+
+    public getUserPendingReviews(address: string): Promise<number> {
+        let brightContract;
+        return this.initProm
+        .then(([bright]) => {
+            brightContract = bright;
+            return this.callAndRetry(() => {
+                return bright.methods.getCurrentSeason().call({from: address});
+            });
+        }).then(seasonData => {
+            let currentSeason = seasonData[0];
+            this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
+            return this.callAndRetry(() => {
+                return brightContract.methods.getUserSeasonState(address, currentSeason)
+                .call({ from: address});
+            });
+        }).then((seasonState: Array<string>) => {
+            this.pendingReviews = parseInt(seasonState[0]);
+            return this.pendingReviews;
+        }).catch(err => {
+            this.log.e("Error obtaining the pending reviews of the user:", err);
             throw err;
         });
     }

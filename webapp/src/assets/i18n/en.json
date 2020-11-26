@@ -232,11 +232,13 @@
         "invitationStatus": "Invitation status",
         "expiration": "Expiration",
         "inviteToTeam": "Invite",
-        "succesTeamNameChange": "Team name changed correctly",
-        "succesTeamRulesChange": "Team rules changed correctly",
+        "successTeamNameChange": "Team name changed correctly",
+        "successTeamRulesChange": "Team rules changed correctly",
+        "successNotification": "Notification send correctly",
         "successInvitation": "Users invited correctly",
         "changeTeamNameError": "Cannot change your team name. Please contact the service provider.",
         "changeTextRuleError": "Cannot change your team rules. Please contact the service provider.",
+        "sendNotificationError": "Cannot send notification. Please contact the service provider.",
         "invitationError": "Cannot invite emails. Please contact the service provider.",
         "invitationEmailFormatError": "One or more user emails wrong format. Ex: email@example.com",
         "userTypeError": "Please select a Member type.",
@@ -305,7 +307,10 @@
         "teamRules": "Team review rules",
         "changeTeamRules": "Change team rules (optional)",
         "randomReviewers": "Automatic reviewer selection",
-        "randomReviewersDescription": "Up to four users are picked among the available team members"
+        "randomReviewersDescription": "Up to four users are picked among the available team members",
+        "sendNotificationToTeam": "Send notification to team",
+        "sendNotification": "Send notification",
+        "teamNotificationDescription": "Send a notification by email to remind each team member of pending reviews"
     },
     "commitDetails": {
         "author": "Author",

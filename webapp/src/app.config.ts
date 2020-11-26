@@ -27,6 +27,7 @@ export class AppConfig {
     public static readonly ORGANIZATION_PATH = "/organization/";
     public static readonly AVATAR_STATUS_PATH = "/status/";
     public static readonly INVITATION_PATH = "/sendInvitation/";
+    public static readonly NOTIFICATION_PATH = "/sendNotification/";
     public static readonly IDENTICON_URL = "https://avatars.dicebear.com/v2/identicon/";
     public static readonly IDENTICON_FORMAT = ".svg";
     public static readonly BRIGHTBYTE_LANDING_PAGE = "http://www.brightbyteapp.com/";

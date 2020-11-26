@@ -266,6 +266,28 @@
                         </ion-item>
                     </ion-list>
                 </div>
+                <ion-row class="profile-tooltip-container">
+                    <h6>{{ "setProfile.sendNotificationToTeam" | translate }}</h6>
+                    <div class="tooltip info-icon">
+                        <ion-icon name="ios-information-circle-outline"></ion-icon>
+                        <div class="tooltip-text">{{ "setProfile.teamNotificationDescription" | translate }}</div>
+                    </div>
+                </ion-row>
+                <div class="separator">
+                    <ion-list lines="full" class="team-name-list">
+                        <ion-row *ngIf="successNotificationMsg" class="success-body">
+                            {{ successNotificationMsg }}
+                        </ion-row>
+                        <ion-row *ngIf="errorNotificationMsg" class="error-body">
+                            {{ errorNotificationMsg }}
+                        </ion-row>
+                        <ion-item class="team-name-submit">
+                            <button type="submit" class="btn save-button btn__blue" (click)="sendNotification()">
+                                {{ "setProfile.sendNotification" | translate }}
+                            </button>
+                        </ion-item>
+                    </ion-list>
+                </div>
             </ion-col>
         </ion-row>
         <ion-row no-padding *ngIf="settingsCategory === SETTINGS_CATEGORIES[2] && isBackendAvailable">

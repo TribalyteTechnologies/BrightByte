@@ -37,8 +37,10 @@ export class Profile {
     public errorMsg: string;
     public errorInviteMsg: string;
     public errorRulesMsg: string;
+    public errorNotificationMsg: string;
     public successMsg: string;
     public successRulesMsg: string;
+    public successNotificationMsg: string;
     public successInviteMsg: string;
     public seasonSuccessMsg: string;
     public workspaceErrorMsg: string;
@@ -87,11 +89,13 @@ export class Profile {
     private successMessageName: string;
     private successMessageTeamName: string;
     private successMessageTeamRules: string;
+    private successMessageNotification: string;
     private successMessageAvatar: string;
     private successMessageInvitation: string;
     private changeNameError: string;
     private changeTeamNameError: string;
     private changeTextRuleError: string;
+    private sendNotificationError: string;
     private invitationError: string;
     private invitationEmailFormatError: string;
     private userTypeError: string;
@@ -140,9 +144,11 @@ export class Profile {
             "setProfile.successInvitation",
             "setProfile.changeNameError",
             "setProfile.changeTeamNameError",
-            "setProfile.succesTeamNameChange",
+            "setProfile.successTeamNameChange",
             "setProfile.changeTextRuleError",
-            "setProfile.succesTeamRulesChange",
+            "setProfile.sendNotificationError",
+            "setProfile.successTeamRulesChange",
+            "setProfile.successNotification",
             "setProfile.invitationError",
             "setProfile.invitationEmailFormatError",
             "setProfile.alreadyRegisteredError",
@@ -153,13 +159,15 @@ export class Profile {
                 this.defaultError = translation["setProfile.defaultError"];
                 this.noChangesError = translation["setProfile.noChangesError"];
                 this.successMessageName = translation["setProfile.successMessageName"];
-                this.successMessageTeamName = translation["setProfile.succesTeamNameChange"];
-                this.successMessageTeamRules = translation["setProfile.succesTeamRulesChange"],
+                this.successMessageTeamName = translation["setProfile.successTeamNameChange"];
+                this.successMessageTeamRules = translation["setProfile.successTeamRulesChange"];
+                this.successMessageNotification = translation["setProfile.successNotification"];
                 this.successMessageAvatar = translation["setProfile.successMessageAvatar"];
                 this.successMessageInvitation = translation["setProfile.successInvitation"];
                 this.changeNameError = translation["setProfile.changeNameError"];
                 this.changeTeamNameError = translation["setProfile.changeTeamNameError"];
                 this.changeTextRuleError = translation["setProfile.changeTextRuleError"];
+                this.sendNotificationError = translation["setProfile.sendNotificationError"];
                 this.invitationError = translation["setProfile.invitationError"];
                 this.invitationEmailFormatError = translation["setProfile.invitationEmailFormatError"];
                 this.userTypeError = translation["setProfile.userTypeError"];
@@ -271,7 +279,6 @@ export class Profile {
         let uploadedFiles = <FileList>target.files;
         let input = uploadedFiles[0];
         let fileSize = input.size;
-        this.log.d("Tamaño imagen: ", fileSize);
         if(fileSize < this.MAX_SIZE_IMAGE_BYTES) {
             this.uploadForm.get(this.IMAGE_FIELD_NAME).setValue(input);
             this.getBase64(input).then((data: string) => {
@@ -662,6 +669,28 @@ export class Profile {
 
     public pressToggleRandomReviewers() {
         this.contractManagerService.setRandomReviewer(this.isRandomReviewers);
+    }
+
+    public sendNotification() {
+        this.successNotificationMsg = null;
+        this.errorNotificationMsg = null;
+        let promises = this.teamMembers.map(teams => 
+            teams.map(teamMember =>  {
+                return this.contractManagerService.getUserPendingReviews(teamMember.address)
+                .then((pendingReviews: number) => {
+                    if(pendingReviews > 0) {
+                        this.http.post(
+                        AppConfig.TEAM_API + teamMember.email + "/" + this.teamName + AppConfig.NOTIFICATION_PATH + pendingReviews, {}
+                        ).toPromise();
+                    }
+                    this.successNotificationMsg = this.successMessageNotification;
+                })
+                .catch(e => {
+                    this.errorNotificationMsg = this.sendNotificationError;
+                });    
+            }) 
+        );
+        return Promise.all(promises);
     }
 
     private removeTeamWorkspace(workspace: string) {
