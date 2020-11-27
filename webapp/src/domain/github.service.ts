@@ -59,7 +59,7 @@ export class GithubService {
     ) {
         this.log = loggerSrv.get("GithubService");
         this.userToken = this.getToken();
-        this.setNewTokenHeader(this.userToken);
+        this.setNewHeader(this.userToken);
     }
 
     public getLoginEmitter(): EventEmitter<boolean> {
@@ -86,6 +86,8 @@ export class GithubService {
 
     public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("type", "all");
+        let commitsResponse;
+        let pullsResponse;
         return this.http.get<Array<GithubRepositoryResponse>>(
             GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {params: params, headers: this.headers}).toPromise()
         .then(result => {
@@ -93,6 +95,12 @@ export class GithubService {
             const commits = result.map((repo) => this.getCommits(repo, seasonStartDate, organization));
             return Promise.all(commits);
         }).then(result => {
+            commitsResponse = result;
+            const pulls = result.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
+            return Promise.all(pulls);
+        }).then(result => {
+            pullsResponse = result;
+            result = commitsResponse.concat(pullsResponse);
             return result;
         }).catch(error => {
             this.log.e("Error getting user organization repositories: ", error);
@@ -115,6 +123,28 @@ export class GithubService {
         });
     }
 
+    public getPullRequests(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
+        const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
+        return this.http.get<any>(
+            GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls", 
+            {params: params, headers: this.headers }).toPromise()
+        .then(result => {
+            const numberPullRequests = result.length;
+            let promiseArray = new Array<any>();
+            for(let i = 1; i <= numberPullRequests; i++){
+               const url =  GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls/" + i + "/commits";
+               const promise = this.http.get<any>(url).toPromise();
+               promiseArray.push(promise);
+            }
+            return Promise.all(promiseArray);
+        }).then(result => {
+            this.log.d("The PullRequests response is", result);
+            this.repo = new Repository(repository.html_url, repository.name, "", organization);
+            this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
+            return this.repo;
+        });
+    }
+
     public getUsername(): Promise<GithubUserResponse> {
         this.log.d("The user token is", this.userToken);
         return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, {headers: this.headers }).toPromise()
@@ -128,7 +158,7 @@ export class GithubService {
             this.authWindow.close();
             this.authWindow = null;
         }
-        this.setNewTokenHeader(this.userToken);
+        this.setNewHeader(this.userToken);
         this.eventEmitter.emit(true);
     }
 
@@ -176,9 +206,10 @@ export class GithubService {
         });
     }
 
-    private setNewTokenHeader(userToken: string) {
+    private setNewHeader(userToken: string) {
         this.headers = new HttpHeaders({
-            "Authorization": "Bearer " + userToken
+            "Authorization": "Bearer " + userToken,
+            "Accept": "application/vnd.github.v3+json"
         });
         this.log.d("Github header", this.headers);
     }
