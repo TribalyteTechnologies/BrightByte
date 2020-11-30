@@ -85,22 +85,23 @@ export class GithubService {
 
     public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("type", "all");
-        let commitsResponse;
-        let pullsResponse;
+        let githubCommits: Array<Repository>;
+        let pullsResponse: Array<Repository>;
+        let githubRepositories: Array<GithubRepositoryResponse>;
         return this.http.get<Array<GithubRepositoryResponse>>(
             GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {params: params, headers: this.headers}).toPromise()
-        .then(result => {
-            this.log.d("The repositories are", result);
-            const commits = result.map((repo) => this.getCommits(repo, seasonStartDate, organization));
+        .then((githubRepos: Array<GithubRepositoryResponse>) => {
+            githubRepositories = githubRepos;
+            this.log.d("The repositories are", githubRepositories);
+            const commits = githubRepositories.map((repo) => this.getCommits(repo, seasonStartDate, organization));
             return Promise.all(commits);
-        }).then(result => {
-            commitsResponse = result;
-            const pulls = result.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
+        }).then((commitsResponse: Array<Repository>) => {
+            githubCommits = commitsResponse;
+            const pulls = githubRepositories.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
             return Promise.all(pulls);
-        }).then(result => {
-            pullsResponse = result;
-            result = commitsResponse.concat(pullsResponse);
-            return result;
+        }).then((prResponse: Array<Repository>) => {
+            pullsResponse = prResponse;
+            return githubCommits.concat(pullsResponse);
         }).catch(error => {
             this.log.e("Error getting user organization repositories: ", error);
             throw error;
@@ -108,7 +109,7 @@ export class GithubService {
             
     }
 
-    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
+    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<Repository> {
         return this.getUsername().then(userName => {
             this.githubUser = userName.login;
             const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
@@ -123,14 +124,13 @@ export class GithubService {
     }
 
     public getPullRequests(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<Repository> {
-        this.log.w("The season start date is: ", seasonStartDate);
-        const params = new HttpParams().set("since", seasonStartDate.toISOString().split("+")[0]);
+        this.log.d("The season start date is: ", seasonStartDate);
         return this.http.get<any>(
             GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls", 
-            {params: params, headers: this.headers }).toPromise()
+            { headers: this.headers }).toPromise()
         .then(result => {
             const promises = result.map(pr => {
-                return this.http.get<any>(pr.commits_url).toPromise();
+                return this.http.get(pr.commits_url).toPromise();
             });
             return Promise.all(promises);
         }).then(pullrequests => {
