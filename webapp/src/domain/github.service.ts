@@ -47,7 +47,6 @@ export class GithubService {
     private log: ILogger;
     private authWindow: Window;
     private eventEmitter = new EventEmitter<boolean>();
-    private repo: Repository;
     private githubUser: string;
     private currentVersion: number;
 
@@ -117,31 +116,27 @@ export class GithubService {
             return this.http.get<Array<GithubCommitResponse>>(url, {params: params, headers: this.headers }).toPromise();
         }).then(result => {     
             this.log.d("The getCommits response is", result);
-            this.repo = new Repository(repository.html_url, repository.name, "", organization);
-            this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
-            return this.repo;
+            let commitsRepository  = new Repository(repository.html_url, repository.name, "", organization);
+            commitsRepository.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
+            return commitsRepository;
         });
     }
 
-    public getPullRequests(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
-        const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
+    public getPullRequests(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<Repository> {
+        this.log.w("The season start date is: ", seasonStartDate);
+        const params = new HttpParams().set("since", seasonStartDate.toISOString().split("+")[0]);
         return this.http.get<any>(
             GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls", 
             {params: params, headers: this.headers }).toPromise()
         .then(result => {
-            const numberPullRequests = result.length;
-            let promiseArray = new Array<any>();
-            for(let i = 1; i <= numberPullRequests; i++){
-               const url =  GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls/" + i + "/commits";
-               const promise = this.http.get<any>(url).toPromise();
-               promiseArray.push(promise);
-            }
-            return Promise.all(promiseArray);
-        }).then(result => {
-            this.log.d("The PullRequests response is", result);
-            this.repo = new Repository(repository.html_url, repository.name, "", organization);
-            this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
-            return this.repo;
+            const promises = result.map(pr => {
+                return this.http.get<any>(pr.commits_url).toPromise();
+            });
+            return Promise.all(promises);
+        }).then(pullrequests => {
+            this.log.d("The PullRequests response from github is", pullrequests);
+            let repo = new Repository(repository.html_url, repository.name, "", organization);
+            return repo;
         });
     }
 
