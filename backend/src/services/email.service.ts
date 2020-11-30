@@ -12,7 +12,7 @@ import * as fs from "fs";
 export class EmailService {
 
     private readonly INVITATION_SUBJECT = "Invitation to participate on BrightByte";
-    private readonly NOTIFICATION_SUBJECT = "You got pending commits on BrightByte";
+    private readonly NOTIFICATION_SUBJECT = "You've got BrightByte reviews to do on BrightByte";
     private readonly FROM_EMAIL = BackendConfig.EMAIL_TRANSPORT.auth.user;
     private readonly INVITATION_TEMPLATE_PATH = BackendConfig.EMAIL_TEMPLATES + "invitation.html";
     private readonly NOTIFICATION_TEMPLATE = "notification";

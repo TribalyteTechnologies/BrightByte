@@ -101,7 +101,7 @@ export class TransactionExecutorService implements OnDestroy{
     }
 
     private getNonce(userAddress: string): Promise<number> {
-        return this.nonceValue ? new Promise(resolve => resolve(this.nonceValue + 1)) :
+        return this.nonceValue ? Promise.resolve(this.nonceValue + 1) :
         this.web3.eth.getTransactionCount(userAddress, "pending");
     }
 }

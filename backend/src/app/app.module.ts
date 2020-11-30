@@ -31,9 +31,6 @@ import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
         }),
         MailerModule.forRoot({
             transport: BackendConfig.EMAIL_TRANSPORT,
-            defaults: {
-                from: '"nest-modules" <modules@nestjs.com>'
-            },
             template: {
                 dir: BackendConfig.EMAIL_TEMPLATES,
                 adapter: new PugAdapter(),

@@ -466,7 +466,6 @@ export class AddCommitPopover {
             this.isServiceAvailable = true;
             this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the repos", this.selectedRepositories);
-            return Promise.resolve();
         }).catch(err => { 
             this.showSpinner = false;
             this.isOrganizationCorrect = false;
@@ -498,13 +497,13 @@ export class AddCommitPopover {
         .then((config: BackendBitbucketConfig) => {
             const workspaces = config.bitbucketWorkspaces;
             let promise = workspaces.length > 0 ? 
-            this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
-            Promise.reject(new Error("No Bitbucket workspaces available"));
+                this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
+                Promise.reject("No Bitbucket workspaces available");
             return promise;
         }).then(user => {
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
-            this.log.w("Bitbucket service not available", e);
+            this.log.w("Bitbucket service not available: ", e);
         });
     }
 
@@ -516,8 +515,8 @@ export class AddCommitPopover {
         .then((config: BackendGithubConfig) => {
             let organizations = config.githubOrganizations;
             let promise = organizations.length > 0 ? 
-            this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
-            Promise.reject(new Error("No github organizations available"));
+                this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
+                Promise.reject("No github organizations available");
             return promise;
         }).then(user => {
             this.log.d("Waiting for the user to introduce their github credentials");
