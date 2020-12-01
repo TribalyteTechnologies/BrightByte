@@ -333,8 +333,7 @@ export class LoginForm {
     }
 
     private sortTeams(teams: Array<Team>): Array<Team> {
-        teams.sort((a, b) => (a.version > b.version ? -1 : 1));
-        this.log.d("Sorted teams by version.");
+        teams.sort((a, b) => (b.version - a.version) !== 0 ? (b.version - a.version) : (b.uid - a.uid));
         return teams;
     }
 
