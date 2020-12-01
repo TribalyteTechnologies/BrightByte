@@ -408,20 +408,20 @@ export class Profile {
         const timeElapsed = (Date.now() / AppConfig.SECS_TO_MS) - this.initSeasonTimestamp;
         if (seasonLengthInMS > timeElapsed){
             if (seasonLength >= AppConfig.MIN_SEASON_LENGTH_DAYS && seasonLength < AppConfig.MAX_SEASON_LENGTH_DAYS) {
-            this.isSettingSeasonData = true;
-            this.contractManagerService.setSeasonLength(this.seasonLength)
-            .then(() => {
-                this.isSettingSeasonData = false;
-                return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
-            }).then(res => {
-                this.seasonSuccessMsg = res;
-            }).catch(e => {
-                this.log.e("Error setting the new season duration", e);
-                this.isSettingSeasonData = false;
-                return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
-            }).then(res => {
-                this.seasonErrorMsg = res;
-            });
+                this.isSettingSeasonData = true;
+                this.contractManagerService.setSeasonLength(this.seasonLength)
+                .then(() => {
+                    this.isSettingSeasonData = false;
+                    return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
+                }).then(res => {
+                    this.seasonSuccessMsg = res;
+                }).catch(e => {
+                    this.log.e("Error setting the new season duration", e);
+                    this.isSettingSeasonData = false;
+                    return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
+                }).then(res => {
+                    this.seasonErrorMsg = res;
+                });
             } else {
                 this.translateSrv.get("setProfile.seasonLengthErrorMsg").subscribe(res => {
                     this.seasonErrorMsg = res;

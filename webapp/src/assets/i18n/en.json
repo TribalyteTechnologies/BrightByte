@@ -291,7 +291,7 @@
         "teamSeasons": "The duration of the seasons of your team are the following number of days",
         "seasonLengthSuccessMsg": "The duration of the season has been changed correctly",
         "seasonLengthErrorMsg": "Cannot change the duration of the season. Please try again later or contact your service provider.",
-        "seasonChangeError" : "The duration of the season should be bigger than the time elapsed.",
+        "seasonChangeError" : "The duration of the season should be longer than the time elapsed of the current season.",
         "setSeasonThreshold": "Qualification thresholds",
         "submitChanges": "Submit qualification thresholds",
         "commitThreshold": "Commit threshold",
