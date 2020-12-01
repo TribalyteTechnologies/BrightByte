@@ -706,7 +706,7 @@ export class ContractManagerService {
     }
 
     public getUserPendingReviews(address: string): Promise<number> {
-        let brightContract;
+        let brightContract: ITrbSmartContact;
         return this.initProm
         .then(([bright]) => {
             brightContract = bright;
@@ -715,7 +715,6 @@ export class ContractManagerService {
             });
         }).then(seasonData => {
             let currentSeason = seasonData[0];
-            this.storageSrv.set(AppConfig.StorageKey.CURRENTSEASONINDEX, currentSeason);
             return this.callAndRetry(() => {
                 return brightContract.methods.getUserSeasonState(address, currentSeason)
                 .call({ from: address});
@@ -730,7 +729,7 @@ export class ContractManagerService {
     }
 
     public getCurrentSeasonState(): Promise<UserSeasonState> {
-        let brightContract;
+        let brightContract: ITrbSmartContact;
         return this.initProm
         .then(([bright]) => {
             brightContract = bright;
@@ -761,7 +760,7 @@ export class ContractManagerService {
     }
 
     public getSeasonCommitsToReviewRecursive(endIndex: number, iterationIndex = 0): Promise<Array<Array<UserCommit>>> {
-        let brightContract;
+        let brightContract: ITrbSmartContact;
         return this.initProm
         .then(([bright]) => {
             brightContract = bright;

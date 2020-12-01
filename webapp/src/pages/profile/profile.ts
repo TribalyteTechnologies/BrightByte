@@ -78,7 +78,7 @@ export class Profile {
     private readonly IMAGE_FIELD_NAME = "image";
     private readonly USER_NAME_FIELD_NAME = "userName";
     private readonly EMAILS_SEPARATOR = /[\s,]+/;
-    private readonly MAX_SIZE_IMAGE_MB = 1;
+    private readonly MAX_SIZE_IMAGE_MB = 2;
     private readonly MB_TO_BYTES = 1048576;
     private readonly MAX_SIZE_IMAGE_BYTES = this.MAX_SIZE_IMAGE_MB * this.MB_TO_BYTES;
 

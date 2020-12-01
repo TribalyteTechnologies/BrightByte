@@ -234,7 +234,7 @@
         "inviteToTeam": "Invite",
         "successTeamNameChange": "Team name changed correctly",
         "successTeamRulesChange": "Team rules changed correctly",
-        "successNotification": "Notification send correctly",
+        "successNotification": "Notifications sent correctly",
         "successInvitation": "Users invited correctly",
         "changeTeamNameError": "Cannot change your team name. Please contact the service provider.",
         "changeTextRuleError": "Cannot change your team rules. Please contact the service provider.",
@@ -310,7 +310,7 @@
         "randomReviewersDescription": "Up to four users are picked among the available team members",
         "sendNotificationToTeam": "Send notification to team",
         "sendNotification": "Send notification",
-        "teamNotificationDescription": "Send a notification by email to remind each team member of pending reviews"
+        "teamNotificationDescription": "Send notifications via email to remind team members of their pending reviews"
     },
     "commitDetails": {
         "author": "Author",
