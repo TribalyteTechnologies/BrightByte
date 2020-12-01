@@ -184,25 +184,26 @@ html
       // Hero Image, Flush : BEGIN
       tr
         td(style='background-color: #ffffff;')
-          img.g-img(src='http://brightbyteapp.com/wp-content/uploads/2020/07/header.jpg' width='1200' height='600' alt='alt_text' border='0' style="width: 100%; max-width: 600px; height: auto; background: #dddddd; font-family: 'Segoe UI', Segoe, 'DejaVu Sans', 'Trebuchet MS', Verdana, 'sans-serif'; font-size: 15px; line-height: 15px; color: #555555; margin: auto; display: block;")
-      // Hero Image, Flush : END
-      // 1 Column Text + Button : BEGIN
-      tr
-        td(style='background-color: #ffffff;')
           table(role='presentation' cellspacing='0' cellpadding='0' border='0' width='100%')
             tr
               td(style="padding: 20px; font-family: 'Segoe UI', Segoe, 'DejaVu Sans', 'Trebuchet MS', Verdana, 'sans-serif'; font-size: 17px; line-height: 22px; color: #555555;")
                 h1(style='margin: 0 0 10px; font-size: 29px; line-height: 34px; color: #139dd9; font-weight: normal;')
                   | Hi my fellow 
-                  strong teammate!
-                p(style='margin: 0 0 10px;')
-                  | You have been 
+                  strong teammate!         
+      tr
+        td(valign='middle' style='text-align: center; background-color:#096d99;')
+          div
+            table(role='presentation' border='0' cellpadding='0' cellspacing='0' width='100%')
+              tr
+                td(valign='middle' style="text-align: center; padding: 40px; font-family: 'Segoe UI', Segoe, 'DejaVu Sans', 'Trebuchet MS', Verdana, 'sans-serif'; font-size: 15px; line-height: 20px; color: #ffffff;")
+                  p(style='margin: 0;')
+                  span(style='margin: 0 0 10px; font-size: 21px; line-height: 30px; color: #ffffff; font-weight: normal;')
+                  | You have 
                   strong #{numOfCommits}
                   |  pending commits to review in your BrightByte team: 
-                  strong #{teamName}
-                p(style='margin: 0 0 10px;') Review now your commits:                                  
+                  strong #{teamName}                         
             tr
-              td(style='padding: 0 20px 60px;')
+              td(style='padding: 40px 20px 10px;')
                 // Button : BEGIN
                 table(align='center' role='presentation' cellspacing='0' cellpadding='0' border='0' style='margin: auto;')
                   tr
@@ -210,24 +211,7 @@ html
                       a.button-a.button-a-primary(href='http://cloud.brightbyteapp.com/' style="background: #096d99; border: 1px solid #096d99; font-family: 'Segoe UI', Segoe, 'DejaVu Sans', 'Trebuchet MS', Verdana, 'sans-serif'; font-size: 15px; line-height: 15px; text-decoration: none; padding: 13px 30px; color: #ffffff; display: block; border-radius: 16px;") REVIEW NOW
                 // Button : END
       // 1 Column Text + Button : END
-      // Background Image with Text : BEGIN
-      tr
-        td(valign='middle' style='text-align: center; background-color:#096d99;')
-          div
-            table(role='presentation' border='0' cellpadding='0' cellspacing='0' width='100%')
-              tr
-                td(valign='middle' style="text-align: center; padding: 40px; font-family: 'Segoe UI', Segoe, 'DejaVu Sans', 'Trebuchet MS', Verdana, 'sans-serif'; font-size: 15px; line-height: 20px; color: #ffffff;")
-                  h1
-                    span(style='font-weight: 300') We
-                    |  &#x2764;&#xFE0F; Blockchain
-                  p(style='margin: 0;')
-                    span(style='margin: 0 0 10px; font-size: 21px; line-height: 30px; color: #ffffff; font-weight: normal;')
-                      | To get more details about this tool that will 
-                      strong boost
-                      |  you abilities as a developer, don&apos;t hesitate to visit our website at 
-                      a(style='color: #ffffff; font-size: 29px' href='http://brightbyteapp.com/') brightbyteapp.com
-      // Background Image with Text : END
-      // 1 Column Text : BEGIN
+      // Background Image with Text : BEGIN        
       tr
         td(style='background-color: #ffffff;')
           table(role='presentation' cellspacing='0' cellpadding='0' border='0' width='100%')
