@@ -580,17 +580,9 @@ export class AddCommitPopover {
                 }
 
                 repo.numPrs = repo.pullRequests.push(pr);
-                if (repo.provider === this.BITBUCKET_PROVIDER) {
-                    let partialUrl = BitbucketApiConstants.BASE_URL + workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
-                    if (this.blockChainCommits.indexOf(partialUrl) < 0) {
-                            repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
-                    }
-
-                } else {
-                    let partialUrl = GithubApiConstants.BASE_URL + repo.organization + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
-                    if (this.blockChainCommits.indexOf(partialUrl) < 0) {
-                            repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
-                    }
+                let partialUrl = BitbucketApiConstants.BASE_URL + workspace + "/" + repo.slug + "/pull-requests/" + pullrequest.id;
+                if (this.blockChainCommits.indexOf(partialUrl) < 0) {
+                    repo.numPrsNotUploaded = repo.pullRequestsNotUploaded.push(pr);
                 }
             }
         });

@@ -96,7 +96,7 @@ export class GithubService {
             const commits = githubRepositories.map((repo) => this.getCommits(repo, seasonStartDate, organization));
             return Promise.all(commits);
         }).then((commitsResponse: Array<Repository>) => {
-            githubCommits = commitsResponse;
+            githubCommits = commitsResponse.filter(repo => repo.commitsInfo.length > 0);
             const pulls = githubRepositories.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
             return Promise.all(pulls);
         }).then((prResponse: Array<Repository>) => {
