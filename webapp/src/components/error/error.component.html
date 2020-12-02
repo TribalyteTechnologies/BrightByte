@@ -1,0 +1,8 @@
+<ion-row *ngIf="isErrorMessage; else successMessage" class="error-body">
+    {{ messageTranslate }}
+</ion-row>
+<ng-template #successMessage>
+    <ion-row class="success-body">
+        {{ messageTranslate }}
+    </ion-row>
+</ng-template>
