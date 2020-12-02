@@ -230,11 +230,15 @@ export class SetProfileForm {
                     version.teamUids.forEach((uid, j) => teams.push(new Team(uid, teamNames[i][j], version.version)));
                 });
             }
-            return teams;
+            return this.sortTeams(teams);
         }).catch(e => {
             this.log.e("Error getting teams info", e);
             return e;
         });
+    }
+    private sortTeams(teams: Array<Team>): Array<Team> {
+        teams.sort((Team1, Team2) => (Team2.version - Team1.version) !== 0 ? (Team2.version - Team1.version) : (Team2.uid - Team1.uid));
+        return teams;
     }
 }
 
