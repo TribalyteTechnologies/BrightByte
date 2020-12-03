@@ -120,6 +120,7 @@ export class SetProfileForm {
             })
             .then((teamNames: Array<Team>) => {
                 this.teamList = teamNames;
+                this.sortTeams(this.teamList);
             })
             .catch((e) => {
                 this.translateService.get("setProfile.getEmails").subscribe(
@@ -230,14 +231,14 @@ export class SetProfileForm {
                     version.teamUids.forEach((uid, j) => teams.push(new Team(uid, teamNames[i][j], version.version)));
                 });
             }
-            return this.sortTeams(teams);
+            return teams;
         }).catch(e => {
             this.log.e("Error getting teams info", e);
             return e;
         });
     }
     private sortTeams(teams: Array<Team>): Array<Team> {
-        teams.sort((Team1, Team2) => (Team2.version - Team1.version) !== 0 ? (Team2.version - Team1.version) : (Team2.uid - Team1.uid));
+        teams.sort((team1, team2) => (team2.version - team1.version) !== 0 ? (team2.version - team1.version) : (team2.uid - team1.uid));
         return teams;
     }
 }

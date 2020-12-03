@@ -25,12 +25,18 @@
     <ng-container *ngIf="!showNameInput; else showInput">
         <h4>{{ "setProfile.selectTeamToregister" | translate }}</h4>
         <h6>{{ "setProfile.avaialableTeams" | translate }}</h6>
-        <button margin *ngFor="let team of teamList; let i = index" class="btn btn--full btn__blue"
+        <button margin *ngFor="let team of displayTeamList; let i = index" class="btn btn--full btn__blue"
             (click)="logToTeam(team.uid, team.version)"> {{ team.name }}</button>
+        <ng-container *ngIf="showMoreTeams">
+            <a (click)= "showAllTeams()" > {{ "setProfile.showMoreTeams" | translate }} </a>
+        </ng-container>
         <h6>{{ "setProfile.availableInvitations" | translate }}</h6>
-        <ng-container *ngIf="invitationList.length > 0; else noInvitations">
-            <button margin *ngFor="let team of invitationList; let i = index" class="btn btn--full btn__blue"
+        <ng-container *ngIf="displayInvitationList.length > 0; else noInvitations">
+            <button margin *ngFor="let team of displayInvitationList; let i = index" class="btn btn--full btn__blue"
                 (click)="showNameBox(team.uid, team.version)"> {{ team.name }}</button>
+        </ng-container>
+        <ng-container *ngIf="showMoreInvites">
+            <a (click)="showAllInvites()" > {{ "setProfile.showMoreInvites" | translate }}  </a>
         </ng-container>
         <ng-template #noInvitations>
             <p>{{ "setProfile.noAvailableInvitations" | translate }}</p>

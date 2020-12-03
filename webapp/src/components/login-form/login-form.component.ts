@@ -46,13 +46,17 @@ export class LoginForm {
     public hidPass = "";
     public showTeamSelector = false;
     public showNameInput = false;
+    public showMoreTeams = false;
+    public showMoreInvites = false;
+    public displayTeamList: Array<Team>;
+    public displayInvitationList: Array<Team>;
     public teamList: Array<Team>;
     public invitationList: Array<Team>;
     public userName: string;
     public teamToRegisterIn: number;
     public versionToRegisterIn: number;
     public isRegistering: boolean;
-
+    
     private readonly NEW_USER = "new-user";
     private readonly SET_PROFILE = "set-profile";
     private readonly HID_CHARACTER = "*";
@@ -62,6 +66,7 @@ export class LoginForm {
     private readonly VERSION_QUERY = "?" + AppConfig.UrlKey.VERSIONID + "=";
     private readonly TEAM_QUERY = "&" + AppConfig.UrlKey.TEAMID + "=";
     private readonly USER_NAME_QUERY = "&" + AppConfig.UrlKey.USERNAMEID + "=";
+    private readonly MAX_TEAMS_DISPLAY = 4;
 
     private log: ILogger;
     private password = "";
@@ -73,6 +78,8 @@ export class LoginForm {
     private versionToLog: number;
     private currentCloudVersion: number;
     private teamUid: number;
+
+
 
 
     constructor(
@@ -280,6 +287,16 @@ export class LoginForm {
         this.goToSetProfile.next(this.SET_PROFILE);
     }
 
+    public showAllInvites(){
+        this.displayInvitationList = this.invitationList;
+        this.showMoreInvites = false;
+    }
+
+    public showAllTeams(){
+        this.displayTeamList = this.teamList;
+        this.showMoreTeams = false;
+    }
+
     private initAvatarSrvAndContinue(): Promise<void> {
         return this.contractManager.getAllUserAddresses()
         .then((addresses: Array<string>) => {
@@ -301,18 +318,28 @@ export class LoginForm {
             return this.contractManager.getUserInvitedTeams(email);
         })
         .then((invitedTeams: Array<MemberVersion>) => {
-            this.log.d("The user is invited to the following teams teams", invitedTeams);
+            this.log.d("The user is invited to the following teams", invitedTeams);
             return this.getTeams(invitedTeams);
         })
         .then((invitedTeams: Array<Team>) => {
             this.invitationList = this.sortTeams(invitedTeams);
+            this.displayInvitationList = this.invitationList;
+            this.showMoreInvites = this.invitationList.length > this.MAX_TEAMS_DISPLAY;
             this.log.d("The user is invited to the next teams", invitedTeams);
             this.showTeamSelector = (this.invitationList.length > 0 || userTeams.length > 0);
+            if (this.showMoreInvites) {
+                this.displayInvitationList = this.invitationList.slice(0, this.MAX_TEAMS_DISPLAY);
+            }
             return this.getTeams(userTeams);
         })
         .then((participantTeams: Array<Team>) => {
             this.log.d("The user is participating in the next teams", participantTeams);
             this.teamList = this.sortTeams(participantTeams);
+            this.displayTeamList = this.teamList;
+            this.showMoreTeams = this.teamList.length > this.MAX_TEAMS_DISPLAY;
+            if (this.showMoreTeams) {
+                this.displayTeamList = this.teamList.slice(0, this.MAX_TEAMS_DISPLAY);
+            }
         })
         .then(() => {
             if(this.autoLoginVersion) {
@@ -331,9 +358,9 @@ export class LoginForm {
             this.log.e("Error setting user teams", e);
         });
     }
-
+    
     private sortTeams(teams: Array<Team>): Array<Team> {
-        teams.sort((Team1, Team2) => (Team2.version - Team1.version) !== 0 ? (Team2.version - Team1.version) : (Team2.uid - Team1.uid));
+        teams.sort((team1, team2) => (team2.version - team1.version) !== 0 ? (team2.version - team1.version) : (team2.uid - team1.uid));
         return teams;
     }
 
@@ -350,7 +377,7 @@ export class LoginForm {
                     version.teamUids.forEach((uid, j) => teams.push(new Team(uid, teamNames[i][j], version.version)));
                 });
             }
-            return teams;
+            return this.sortTeams(teams);
         }).catch(e => {
             this.log.e("Error getting teams info", e);
             return e;

@@ -310,7 +310,9 @@
         "randomReviewersDescription": "Up to four users are picked among the available team members",
         "sendNotificationToTeam": "Send notification to team",
         "sendNotification": "Send notification",
-        "teamNotificationDescription": "Send notifications via email to remind team members of their pending reviews"
+        "teamNotificationDescription": "Send notifications via email to remind team members of their pending reviews",
+        "showMoreTeams": "Show more teams",
+        "showMoreInvites": "Show more invites"
     },
     "commitDetails": {
         "author": "Author",
