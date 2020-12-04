@@ -1,0 +1,15 @@
+NODE_WEBSOCKET_URL=ws://domain.com
+WEBAPP_BASE_URL=http://domain.com
+LATEST_DIR=/latest
+PORT=3000
+BACKEND_STORAGE_PATH=/public/
+BACKEND_PRIVATE_KEY_PATH=/path/secrets/private.key
+BACKEND_SECRET_CERTIFICATE_PATH=path/secrets
+NET_ID=5777
+BITBUCKET_KEY=bitbucketkey
+BITBUCKET_SECRET=bitbucketsecret
+EMAIL_ADDRESS=email@test.com
+EMAIL_PASS=pass
+SMTP_EMAIL_HOST=smtp.host
+SMTP_EMAIL_PORT=587
+
