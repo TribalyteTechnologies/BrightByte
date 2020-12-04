@@ -1,6 +1,5 @@
 import { Component, Output, EventEmitter } from "@angular/core";
 import { NavController } from "ionic-angular";
-import { TranslateService } from "@ngx-translate/core";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
@@ -77,7 +76,6 @@ export class LoginForm {
 
     constructor(
         private navCtrl: NavController,
-        private translateService: TranslateService,
         private contractManager: ContractManagerService,
         private web3Service: Web3Service,
         private loginService: LoginService,
@@ -155,8 +153,7 @@ export class LoginForm {
             msg_identifier = "app.wrongFile";
         }
         if (msg_identifier) {
-            this.translateService.get(msg_identifier)
-                .subscribe(msg => this.msg = msg);
+            this.msg = msg_identifier;
         }
     }
 
@@ -180,11 +177,9 @@ export class LoginForm {
             this.log.d("File imported: ", this.text);
             if (this.text === undefined) {
                 this.log.e("File not loaded");
-                this.translateService.get("app.fileNotLoaded").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.spinnerService.hideLoader();
-                    });
+                this.msg = "app.fileNotLoaded";
+                this.spinnerService.hideLoader();
+                    
             } else {
                 let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                 if (this.isKeepCredentialsOn) {
@@ -198,22 +193,16 @@ export class LoginForm {
                     this.spinnerService.hideLoader();
                     return true;
                 }).catch((e) => {
-                    this.spinnerService.hideLoader();
-
-                    this.translateService.get("app.connectionFailure").subscribe(
-                        msg => {
-                            this.msg = msg;
-                            this.log.e(msg, e);
-                        });
+                    this.spinnerService.hideLoader();     
+                    this.msg = "app.connectionFailure";
+                    this.log.e("There is no node available for connection", e);
+                       
                 });
             }
-        } catch (e) {
-            this.translateService.get("app.wrongPassword").subscribe(
-                msg => {
-                    this.msg = msg;
-                    this.log.e(msg, e);
-                    this.spinnerService.hideLoader();
-                });
+        } catch (e) { 
+            this.msg = "app.wrongPassword";
+            this.log.e("Wrong password", e);
+            this.spinnerService.hideLoader();
         }
     }
 

@@ -1261,8 +1261,8 @@ export class ContractManagerService {
         }).then((allUserCommits: Array<Array<string>>) => {
             let userCommits = allUserCommits[2].filter(commit => commit !== AppConfig.EMPTY_COMMIT_HASH);
             allCommits = allCommits.concat(userCommits);
-            let batchLenght = allCommits.length;
-            return (totalNumberOfCommits > batchLenght) ? this.getBatchCommits(totalNumberOfCommits, endIndex, allCommits) : allCommits;
+            let batchLength = allCommits.length;
+            return (totalNumberOfCommits > batchLength) ? this.getBatchCommits(totalNumberOfCommits, endIndex, allCommits) : allCommits;
         }).catch(err => {
             this.log.e("Error obtaining user commits :", err);
             throw err;

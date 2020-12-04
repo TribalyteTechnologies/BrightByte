@@ -4,7 +4,6 @@ import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../../app.config";
-import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: "workspace-form",
@@ -30,7 +29,6 @@ export class WorkspaceForm {
     constructor(
         private navCtrl: NavController,
         private http: HttpClient,
-        private transalateSrv: TranslateService,
         contractManager: ContractManagerService
         ){
             contractManager.getUserTeam()
@@ -52,10 +50,7 @@ export class WorkspaceForm {
             this.isWorkspaceAdded = true;
         })
         .catch(() => { 
-            this.transalateSrv.get("setProfile.workspaceErrorBackendDown")
-            .subscribe(translation => {
-                this.errorWorkspaceMsg = translation;
-            });
+            this.errorWorkspaceMsg = "setProfile.workspaceErrorBackendDown";
         });
     }
 
@@ -67,10 +62,7 @@ export class WorkspaceForm {
             this.isOrganizationAdded = true;
         })
         .catch(() => { 
-            this.transalateSrv.get("setProfile.organizationErrorBackendDown")
-            .subscribe(translation => {
-                this.errorOrganizationMsg = translation;
-            });
+            this.errorOrganizationMsg = "setProfile.organizationErrorBackendDown";
         });
     }
 

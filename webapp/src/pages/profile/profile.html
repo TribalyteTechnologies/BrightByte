@@ -42,12 +42,7 @@
                             <input type="file" (change)="openFile($event)">
                         </ion-item>
                     </ion-list>
-                    <ion-row *ngIf="successMsg" class="success-body">
-                        {{ successMsg }}
-                    </ion-row>
-                    <ion-row *ngIf="errorMsg" class="error-body">
-                        {{ errorMsg }}
-                    </ion-row>
+                    <status-message *ngIf="generalMsg" [isErrorMessage]= "isErrorMsg" [messageId]= "generalMsg | translate: {size: MAX_SIZE_IMAGE_MB}"></status-message>
                     <ion-row padding-top justify-content-end>
                         <button type="submit"
                             class="btn save-button btn__blue">{{ "setProfile.save" | translate }}</button>
@@ -65,12 +60,7 @@
                             <ion-label color="dark">{{ "setProfile.teamName" | translate }}: </ion-label>
                             <ion-input type="text" [(ngModel)]="teamName"></ion-input>
                         </ion-item>
-                        <ion-row *ngIf="successMsg" class="success-body">
-                            {{ successMsg }}
-                        </ion-row>
-                        <ion-row *ngIf="errorMsg" class="error-body">
-                            {{ errorMsg }}
-                        </ion-row>
+                        <status-message *ngIf="generalMsg" [isErrorMessage]= "isErrorMsg" [messageId]= "generalMsg"></status-message>
                         <ion-item class="team-name-submit">
                             <ion-spinner *ngIf="isSettingTeamName"></ion-spinner>
                             <button type="submit" class="btn save-button btn__blue" (click)="changeTeamName(teamName)"
@@ -129,12 +119,7 @@
                         </ion-row>
                     </ion-list>
                     <ion-spinner *ngIf="isSettingSeasonData"></ion-spinner>
-                    <ion-row *ngIf="seasonSuccessMsg" class="success-body">
-                        {{ seasonSuccessMsg }}
-                    </ion-row>
-                    <ion-row *ngIf="seasonErrorMsg" class="error-body">
-                        {{ seasonErrorMsg }}
-                    </ion-row>
+                    <status-message *ngIf="seasonMsg" [isErrorMessage]= "isErrorSeasonMsg" [messageId]= "seasonMsg"></status-message>
                 </ion-row>
                 <h6>{{ "setProfile.invitedUsers" | translate }}</h6>
                 <div class="separator">
@@ -174,12 +159,7 @@
                                     <ion-option [value]="ADMIN">{{ "setProfile.admin" | translate }}</ion-option>
                                 </ion-select>
                             </ion-item>
-                            <ion-row *ngIf="successInviteMsg" class="success-body">
-                                {{ successInviteMsg }}
-                            </ion-row>
-                            <ion-row *ngIf="errorInviteMsg" class="error-body">
-                                {{ errorInviteMsg }}
-                            </ion-row>
+                            <status-message *ngIf="inviteMsg" [isErrorMessage]= "isErrorInviteMsg" [messageId]= "inviteMsg"></status-message>
                             <ion-item class="team-name-submit">
                                 <ion-spinner *ngIf="isInvitingUser"></ion-spinner>
                                 <button type="submit" class="btn save-button btn__blue"
@@ -253,12 +233,7 @@
                         <ion-item class="rules-textarea">
                             <ion-textarea rows="5" auto-grow="true" type="text" [(ngModel)]="teamRules"></ion-textarea>
                         </ion-item> 
-                        <ion-row *ngIf="successRulesMsg" class="success-body">
-                            {{ successRulesMsg }}
-                        </ion-row>
-                        <ion-row *ngIf="errorRulesMsg" class="error-body">
-                            {{ errorRulesMsg }}
-                        </ion-row>
+                        <status-message *ngIf="rulesMsg" [isErrorMessage]= "isErrorRulesMsg" [messageId]= "rulesMsg"></status-message>
                         <ion-item class="team-name-submit">
                             <button type="submit" class="btn save-button btn__blue" (click)="changeTextRules(teamRules)">
                                 {{ "setProfile.changeTextRules" | translate }}
@@ -295,12 +270,7 @@
                                 </ion-item>
                             </ion-list>
                         </ion-row>
-                        <ion-row *ngIf="workspaceSuccessMsg" class="success-body">
-                            {{ workspaceSuccessMsg }}
-                        </ion-row>
-                        <ion-row *ngIf="workspaceErrorMsg" class="error-body">
-                            {{ workspaceErrorMsg }}
-                        </ion-row>
+                        <status-message *ngIf="workspaceMsg" [isErrorMessage]= "isErrorWorkspaceMsg" [messageId]= "workspaceMsg"></status-message>
                         <ion-row>
                             {{ "setProfile.addNewWorkspace" | translate }}
                         </ion-row>
@@ -349,12 +319,7 @@
                                 </ion-item>
                             </ion-list>
                         </ion-row>
-                        <ion-row *ngIf="organizationSuccessMsg" class="success-body">
-                            {{ organizationSuccessMsg }}
-                        </ion-row>
-                        <ion-row *ngIf="organizationErrorMsg" class="error-body">
-                            {{ organizationErrorMsg }}
-                        </ion-row>
+                        <status-message *ngIf="organizationMsg" [isErrorMessage]= "isErrorOrganizationMsg" [messageId]= "organizationMsg"></status-message>
                         <ion-row>
                             {{ "setProfile.addNewOrganization" | translate }}
                         </ion-row>
@@ -387,12 +352,7 @@
                 </ion-row>
                 <div class="separator">
                     <ion-list lines="full" class="team-name-list">
-                        <ion-row *ngIf="successNotificationMsg" class="success-body">
-                            {{ successNotificationMsg }}
-                        </ion-row>
-                        <ion-row *ngIf="errorNotificationMsg" class="error-body">
-                            {{ errorNotificationMsg }}
-                        </ion-row>
+                        <status-message *ngIf="notificationMsg" [isErrorMessage]= "isErrorNotificationMsg" [messageId]= "notificationMsg"></status-message>
                         <ion-item class="team-name-submit">
                             <button type="submit" class="btn save-button btn__blue" (click)="sendNotification()">
                                 {{ "setProfile.sendNotification" | translate }}

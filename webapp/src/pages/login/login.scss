@@ -145,16 +145,6 @@ page-login {
         }
     }
 
-    .error-body {
-        background-color: color($colors, dangerLight);
-        padding: 10px;
-        width: 100%;
-        border-radius: 5px;
-        border: 1px solid color($colors, danger);
-        color: white;
-        margin: 5px;
-    }
-
     .page-body {
         background-color: color($colors, backgroundLight);
     }

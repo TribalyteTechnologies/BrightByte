@@ -71,7 +71,7 @@ import { UserNameService } from "../domain/user-name.service";
 import { RegisterSlidePopover } from "../components/register-tutorial-slides/register-tutorial-slide.component";
 import { AfterLoginSlidePopover } from "../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
 import { PopupService } from "../domain/popup.service";
-import { ErrorMessage } from "../components/error/error.component";
+import { StatusMessage } from "../components/status-message/status-message.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "assets/i18n/", ".json");
@@ -108,7 +108,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         FacebookComponent,
         RegisterSlidePopover,
         AfterLoginSlidePopover,
-        ErrorMessage
+        StatusMessage
     ],
     imports: [
         BrowserModule,
@@ -154,7 +154,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         FacebookComponent,
         RegisterSlidePopover,
         AfterLoginSlidePopover,
-        ErrorMessage
+        StatusMessage
     ],
     providers: [
         AppConfig,
