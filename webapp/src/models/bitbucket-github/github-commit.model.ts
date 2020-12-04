@@ -10,6 +10,41 @@ export class GithubCommitResponse {
     public parents: Parent[];
 }
 
+export class GithubPullResponse {
+    public url: string;
+    public id: string;
+    public node_id: string;
+    public html_url: string;
+    public diff_url: string;
+    public patch_url: string;
+    public issue_url: string;
+    public number: number;
+    public state: string;
+    public locked: boolean;
+    public title: string;
+    public created_at: Date;
+    public commits_url: string;
+}
+
+export class PullRequest {
+    public id: number;
+    public title: string;
+    public author: CommitModelAuthor;
+    public commitsHash: Array<string>;
+    public destHash: string;
+    public date: Date;
+
+    constructor(id: number, title: string, author: CommitModelAuthor, date: Date, destHash: string){
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.date = date;
+        this.commitsHash = new Array<string>();
+        this.destHash = destHash;
+    }
+}
+
+
 export class CommitModelAuthor {
     public login: string;
     public id: number;

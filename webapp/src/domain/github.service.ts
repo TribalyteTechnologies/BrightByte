@@ -4,13 +4,14 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
 import { IOrganizationResponse, IResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
-import { GithubCommitResponse } from "../models/bitbucket-github/github-commit.model";
+import { GithubCommitResponse, GithubPullResponse } from "../models/bitbucket-github/github-commit.model";
 import { GithubUserResponse } from "../models/bitbucket-github/github-user.model";
 import { PopupService } from "./popup.service";
 import { GithubRepositoryResponse} from "../models/bitbucket-github/github-repository-response.model";
 import { Repository } from "../models/bitbucket-github/repository.model";
 import { CommitInfo } from "../models/bitbucket-github/commit-info.model";
 import { BackendGithubConfig } from "../models/backend-github-config.model";
+import { PullRequest } from "../models/bitbucket-github/pull-request.model";
 
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
@@ -86,7 +87,6 @@ export class GithubService {
     public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("type", "all");
         let githubCommits: Array<Repository>;
-        let pullsResponse: Array<Repository>;
         let githubRepositories: Array<GithubRepositoryResponse>;
         return this.http.get<Array<GithubRepositoryResponse>>(
             GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {params: params, headers: this.headers}).toPromise()
@@ -100,8 +100,14 @@ export class GithubService {
             const pulls = githubRepositories.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
             return Promise.all(pulls);
         }).then((prResponse: Array<Repository>) => {
-            pullsResponse = prResponse;
-            return githubCommits.concat(pullsResponse);
+            githubCommits.forEach((repo, index) => {
+                const repoPullRequest = prResponse.filter(repoPr => repoPr.name === repo.name);
+                if(repoPullRequest.length > 0) {
+                    repo.pullRequestsNotUploaded = repoPullRequest[0].pullRequestsNotUploaded;
+                    repo.pullRequests = repoPullRequest[0].pullRequests;   
+                }
+            });
+            return githubCommits;
         }).catch(error => {
             this.log.e("Error getting user organization repositories: ", error);
             throw error;
@@ -118,25 +124,37 @@ export class GithubService {
         }).then(result => {     
             this.log.d("The getCommits response is", result);
             let commitsRepository  = new Repository(repository.html_url, repository.name, "", organization);
-            commitsRepository.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
+            commitsRepository.commitsInfo = result.map((r) => CommitInfo.fromGithubApi(r));
             return commitsRepository;
         });
     }
 
     public getPullRequests(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<Repository> {
         this.log.d("The season start date is: ", seasonStartDate);
-        return this.http.get<any>(
+        let result = new Array<PullRequest>();
+        let repoPullRequests: Array<GithubPullResponse>;
+        return this.http.get<Array<GithubPullResponse>>(
             GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls", 
             { headers: this.headers }).toPromise()
-        .then(result => {
-            const promises = result.map(pr => {
-                return this.http.get(pr.commits_url).toPromise();
+        .then((repoPRs: Array<GithubPullResponse>) => {
+            repoPullRequests = repoPRs;
+            const promises = repoPullRequests.map((pr: GithubPullResponse) => this.http.get<any>(pr.url).toPromise());
+            return Promise.all(promises);
+        }).then(res => {
+            result = res.map(prGit => new PullRequest(prGit.id, prGit.title, prGit.created_at, prGit.merge_commit_sha));
+            const promises = repoPullRequests.map((pr: GithubPullResponse) => {
+                return this.http.get<GithubCommitResponse>(pr.commits_url).toPromise();
             });
             return Promise.all(promises);
-        }).then(pullrequests => {
-            this.log.d("The PullRequests response from github is", pullrequests);
+        }).then((commitsArray: Array<any>) => {
+            const commitsPr = commitsArray.map((commits) => commits.map(commit => commit.sha));
+            result.forEach((pr, index) => pr.commitsHash = commitsPr[index]);
             let repo = new Repository(repository.html_url, repository.name, "", organization);
+            repo.pullRequestsNotUploaded = result;
             return repo;
+        }).catch(error => {
+            this.log.e("Error getting github pull requests: ", error);
+            return null;
         });
     }
 

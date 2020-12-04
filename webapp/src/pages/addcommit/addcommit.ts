@@ -561,7 +561,7 @@ export class AddCommitPopover {
                                         pullrequestsResponse: BitbucketPullRequestResponse): Promise<string> {
         let promises = pullrequestsResponse.values.map(async pullrequest => {
             let prDate = new Date(pullrequest.updated_on);
-            let pr = new PullRequest(pullrequest.id, pullrequest.title, pullrequest.author, prDate, pullrequest.destination.commit.hash);
+            let pr = new PullRequest(pullrequest.id, pullrequest.title, prDate, pullrequest.destination.commit.hash, pullrequest.author);
 
             if (prDate < this.currentSeasonStartDate) {
                 pullrequestsResponse.next = null;
