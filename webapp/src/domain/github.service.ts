@@ -138,12 +138,14 @@ export class GithubService {
             { headers: this.headers }).toPromise()
         .then((repoPRs: Array<GithubPullResponse>) => {
             repoPullRequests = repoPRs;
-            const promises = repoPullRequests.map((pr: GithubPullResponse) => this.http.get<any>(pr.url).toPromise());
+            const promises = repoPullRequests.map((pr: GithubPullResponse) => 
+                this.http.get<any>(pr.url, { headers: this.headers }).toPromise()
+            );
             return Promise.all(promises);
         }).then(res => {
             result = res.map(prGit => new PullRequest(prGit.id, prGit.title, prGit.created_at, prGit.merge_commit_sha));
             const promises = repoPullRequests.map((pr: GithubPullResponse) => {
-                return this.http.get<GithubCommitResponse>(pr.commits_url).toPromise();
+                return this.http.get<GithubCommitResponse>(pr.commits_url, { headers: this.headers }).toPromise();
             });
             return Promise.all(promises);
         }).then((commitsArray: Array<any>) => {
@@ -160,7 +162,7 @@ export class GithubService {
 
     public getUsername(): Promise<GithubUserResponse> {
         this.log.d("The user token is", this.userToken);
-        return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, {headers: this.headers }).toPromise()
+        return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, { headers: this.headers }).toPromise()
         .then(result => result);
     }
 
