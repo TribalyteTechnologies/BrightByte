@@ -24,6 +24,7 @@ export class GithubPullResponse {
     public title: string;
     public created_at: Date;
     public commits_url: string;
+    public user: any;
 }
 
 export class PullRequest {

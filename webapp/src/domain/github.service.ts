@@ -97,15 +97,13 @@ export class GithubService {
             return Promise.all(commits);
         }).then((commitsResponse: Array<Repository>) => {
             githubCommits = commitsResponse.filter(repo => repo.commitsInfo.length > 0);
+            githubRepositories = githubRepositories.filter(repos => githubCommits.filter(repo => repo.name === repos.name).length > 0);
             const pulls = githubRepositories.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
             return Promise.all(pulls);
         }).then((prResponse: Array<Repository>) => {
             githubCommits.forEach((repo, index) => {
-                const repoPullRequest = prResponse.filter(repoPr => repoPr.name === repo.name);
-                if(repoPullRequest.length > 0) {
-                    repo.pullRequestsNotUploaded = repoPullRequest[0].pullRequestsNotUploaded;
-                    repo.pullRequests = repoPullRequest[0].pullRequests;   
-                }
+                repo.pullRequestsNotUploaded = prResponse[index].pullRequestsNotUploaded;
+                repo.pullRequests = prResponse[index].pullRequests;   
             });
             return githubCommits;
         }).catch(error => {
@@ -137,17 +135,17 @@ export class GithubService {
             GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls", 
             { headers: this.headers }).toPromise()
         .then((repoPRs: Array<GithubPullResponse>) => {
-            repoPullRequests = repoPRs;
+            repoPullRequests = repoPRs.filter(pr => pr.user.login === this.githubUser);
             const promises = repoPullRequests.map((pr: GithubPullResponse) => 
                 this.http.get<any>(pr.url, { headers: this.headers }).toPromise()
             );
             return Promise.all(promises);
         }).then(res => {
             result = res.map(prGit => new PullRequest(prGit.id, prGit.title, prGit.created_at, prGit.merge_commit_sha));
-            const promises = repoPullRequests.map((pr: GithubPullResponse) => {
-                return this.http.get<GithubCommitResponse>(pr.commits_url, { headers: this.headers }).toPromise();
-            });
-            return Promise.all(promises);
+            const commitPromises = repoPullRequests.map((pr: GithubPullResponse) =>
+                this.http.get<GithubCommitResponse>(pr.commits_url, { headers: this.headers }).toPromise()
+            );
+            return Promise.all(commitPromises);
         }).then((commitsArray: Array<any>) => {
             const commitsPr = commitsArray.map((commits) => commits.map(commit => commit.sha));
             result.forEach((pr, index) => pr.commitsHash = commitsPr[index]);
