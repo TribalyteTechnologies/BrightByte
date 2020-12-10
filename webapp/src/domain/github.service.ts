@@ -4,13 +4,14 @@ import { LocalStorageService } from "../core/local-storage.service";
 import { AppConfig } from "../app.config";
 import { IOrganizationResponse, IResponse } from "../models/response.model";
 import { LoggerService, ILogger } from "../core/logger.service";
-import { GithubCommitResponse } from "../models/bitbucket-github/github-commit.model";
+import { GithubCommitResponse, GithubPullResponse } from "../models/bitbucket-github/github-commit.model";
 import { GithubUserResponse } from "../models/bitbucket-github/github-user.model";
 import { PopupService } from "./popup.service";
 import { GithubRepositoryResponse} from "../models/bitbucket-github/github-repository-response.model";
 import { Repository } from "../models/bitbucket-github/repository.model";
 import { CommitInfo } from "../models/bitbucket-github/commit-info.model";
 import { BackendGithubConfig } from "../models/backend-github-config.model";
+import { PullRequest } from "../models/bitbucket-github/pull-request.model";
 
 export class GithubApiConstants {
     public static readonly SERVER_AUTHENTICATION_URL =  AppConfig.SERVER_BASE_URL + "/authentication/authorize/";
@@ -47,7 +48,6 @@ export class GithubService {
     private log: ILogger;
     private authWindow: Window;
     private eventEmitter = new EventEmitter<boolean>();
-    private repo: Repository;
     private githubUser: string;
     private currentVersion: number;
 
@@ -59,7 +59,7 @@ export class GithubService {
     ) {
         this.log = loggerSrv.get("GithubService");
         this.userToken = this.getToken();
-        this.setNewTokenHeader(this.userToken);
+        this.setNewHeader(this.userToken);
     }
 
     public getLoginEmitter(): EventEmitter<boolean> {
@@ -86,14 +86,26 @@ export class GithubService {
 
     public getRepositoriesOrg(seasonStartDate: Date, organization: string): Promise<any> {
         const params = new HttpParams().set("type", "all");
+        let githubCommits: Array<Repository>;
+        let githubRepositories: Array<GithubRepositoryResponse>;
         return this.http.get<Array<GithubRepositoryResponse>>(
             GithubApiConstants.REPOSITORIES_ORGS_URL + organization + "/repos", {params: params, headers: this.headers}).toPromise()
-        .then(result => {
-            this.log.d("The repositories are", result);
-            const commits = result.map((repo) => this.getCommits(repo, seasonStartDate, organization));
+        .then((githubRepos: Array<GithubRepositoryResponse>) => {
+            githubRepositories = githubRepos;
+            this.log.d("The repositories are", githubRepositories);
+            const commits = githubRepositories.map((repo) => this.getCommits(repo, seasonStartDate, organization));
             return Promise.all(commits);
-        }).then(result => {
-            return result;
+        }).then((commitsResponse: Array<Repository>) => {
+            githubCommits = commitsResponse.filter(repo => repo.commitsInfo.length > 0);
+            githubRepositories = githubRepositories.filter(repos => githubCommits.filter(repo => repo.name === repos.name).length > 0);
+            const pulls = githubRepositories.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
+            return Promise.all(pulls);
+        }).then((prResponse: Array<Repository>) => {
+            githubCommits.forEach((repo, index) => {
+                repo.pullRequestsNotUploaded = prResponse[index].pullRequestsNotUploaded;
+                repo.pullRequests = prResponse[index].pullRequests;   
+            });
+            return githubCommits;
         }).catch(error => {
             this.log.e("Error getting user organization repositories: ", error);
             throw error;
@@ -101,7 +113,7 @@ export class GithubService {
             
     }
 
-    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<any> {
+    public getCommits(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<Repository> {
         return this.getUsername().then(userName => {
             this.githubUser = userName.login;
             const params = new HttpParams().set("author", this.githubUser).set("since", seasonStartDate.toISOString().split("+")[0]);
@@ -109,15 +121,46 @@ export class GithubService {
             return this.http.get<Array<GithubCommitResponse>>(url, {params: params, headers: this.headers }).toPromise();
         }).then(result => {     
             this.log.d("The getCommits response is", result);
-            this.repo = new Repository(repository.html_url, repository.name, "", organization);
-            this.repo.commitsInfo = result.map((r) => CommitInfo.fromSmartContract(r));
-            return this.repo;
+            let commitsRepository  = new Repository(repository.html_url, repository.name, "", organization);
+            commitsRepository.commitsInfo = result.map((r) => CommitInfo.fromGithubApi(r));
+            return commitsRepository;
+        });
+    }
+
+    public getPullRequests(repository: GithubRepositoryResponse, seasonStartDate: Date, organization: string): Promise<Repository> {
+        this.log.d("The season start date is: ", seasonStartDate);
+        let result = new Array<PullRequest>();
+        let repoPullRequests: Array<GithubPullResponse>;
+        return this.http.get<Array<GithubPullResponse>>(
+            GithubApiConstants.BASE_API_URL + "repos/" + organization + "/" + repository.name + "/pulls", 
+            { headers: this.headers }).toPromise()
+        .then((repoPRs: Array<GithubPullResponse>) => {
+            repoPullRequests = repoPRs.filter(pr => pr.user.login === this.githubUser);
+            const promises = repoPullRequests.map((pr: GithubPullResponse) => 
+                this.http.get<any>(pr.url, { headers: this.headers }).toPromise()
+            );
+            return Promise.all(promises);
+        }).then(res => {
+            result = res.map(prGit => new PullRequest(prGit.id, prGit.title, prGit.created_at, prGit.merge_commit_sha));
+            const commitPromises = repoPullRequests.map((pr: GithubPullResponse) =>
+                this.http.get<GithubCommitResponse>(pr.commits_url, { headers: this.headers }).toPromise()
+            );
+            return Promise.all(commitPromises);
+        }).then((commitsArray: Array<any>) => {
+            const commitsPr = commitsArray.map((commits) => commits.map(commit => commit.sha));
+            result.forEach((pr, index) => pr.commitsHash = commitsPr[index]);
+            let repo = new Repository(repository.html_url, repository.name, "", organization);
+            repo.pullRequestsNotUploaded = result;
+            return repo;
+        }).catch(error => {
+            this.log.e("Error getting github pull requests: ", error);
+            return null;
         });
     }
 
     public getUsername(): Promise<GithubUserResponse> {
         this.log.d("The user token is", this.userToken);
-        return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, {headers: this.headers }).toPromise()
+        return this.http.get<GithubUserResponse>(GithubApiConstants.GET_USER_URL, { headers: this.headers }).toPromise()
         .then(result => result);
     }
 
@@ -128,7 +171,7 @@ export class GithubService {
             this.authWindow.close();
             this.authWindow = null;
         }
-        this.setNewTokenHeader(this.userToken);
+        this.setNewHeader(this.userToken);
         this.eventEmitter.emit(true);
     }
 
@@ -176,9 +219,10 @@ export class GithubService {
         });
     }
 
-    private setNewTokenHeader(userToken: string) {
+    private setNewHeader(userToken: string) {
         this.headers = new HttpHeaders({
-            "Authorization": "Bearer " + userToken
+            "Authorization": "Bearer " + userToken,
+            "Accept": "application/vnd.github.v3+json"
         });
         this.log.d("Github header", this.headers);
     }

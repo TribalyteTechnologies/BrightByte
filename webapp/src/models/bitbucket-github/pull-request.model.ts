@@ -40,7 +40,7 @@ export class PullRequest {
     public destHash: string;
     public date: Date;
 
-    constructor(id: number, title: string, author: BitbucketPrAuthor, date: Date, destHash: string){
+    constructor(id: number, title: string, date: Date, destHash: string, author?: BitbucketPrAuthor){
         this.id = id;
         this.title = title;
         this.author = author;
