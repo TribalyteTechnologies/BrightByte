@@ -101,9 +101,10 @@ export class GithubService {
             const pulls = githubRepositories.map((repo) => this.getPullRequests(repo, seasonStartDate, organization));
             return Promise.all(pulls);
         }).then((prResponse: Array<Repository>) => {
-            githubCommits.forEach((repo, index) => {
-                repo.pullRequestsNotUploaded = prResponse[index].pullRequestsNotUploaded;
-                repo.pullRequests = prResponse[index].pullRequests;   
+            prResponse = prResponse.filter(pr => pr);
+            prResponse.forEach((repo, index) => {
+                githubCommits[index].pullRequestsNotUploaded = repo.pullRequestsNotUploaded;
+                githubCommits[index].pullRequests = repo.pullRequests;   
             });
             return githubCommits;
         }).catch(error => {
