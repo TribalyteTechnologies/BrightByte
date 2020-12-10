@@ -6,11 +6,7 @@
     <ion-row class="mini-title">{{ "app.enterPass" | translate }}</ion-row>
     <input class="password-form" [placeholder]="'app.password' | translate" [(ngModel)]="hidPass"
         (keyup.enter)="login(password)" (input)="hidePassword(hidPass)">
-    <ion-row *ngIf="msg">
-        <ion-row class="error-body">
-            {{ msg }}
-        </ion-row>
-    </ion-row>
+        <status-message *ngIf="msg" [isErrorMessage]= "true" [messageId]= "msg"></status-message>
     <ion-row class="remember">
         <input type="checkbox" [(ngModel)]="isKeepCredentialsOn">
         <ion-row class="text" (click)="toggleKeepCredentials()">{{ "app.remember" | translate }}</ion-row>

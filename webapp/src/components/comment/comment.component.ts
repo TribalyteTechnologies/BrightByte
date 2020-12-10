@@ -70,16 +70,12 @@ export class CommentComponent {
             this.avatarObs = this.avatarSrv.getAvatarObs(this.review.user);
         }
         this.translateService.get([
-            "review.reviewCommentError",
-            "review.reviewEmptyRatingError",
             "alerts.claim",
             "alerts.claimMsg", 
             "alerts.cancel", 
             "alerts.accept"
         ])
         .subscribe(translation => {
-            this.emptyCommentError = translation["review.reviewCommentError"];
-            this.emptyRatingError = translation["review.reviewEmptyRatingError"];
             this.alertClaim = translation["alerts.claim"];
             this.claimMsg =  translation["alerts.claimMsg"];
             this.alertCancel =  translation["alerts.cancel"];
@@ -117,9 +113,9 @@ export class CommentComponent {
         isPointsEmpty = this.points.some(val => val === 0);
 
         if (!text){
-            this.submitError = this.emptyCommentError;
+            this.submitError = "review.reviewCommentError";
         } else if(isPointsEmpty) {
-            this.submitError = this.emptyRatingError;
+            this.submitError = "review.reviewEmptyRatingError";
         } else {
             let obj = {txt: text, points: this.points};
             this.isSettingReview = true;

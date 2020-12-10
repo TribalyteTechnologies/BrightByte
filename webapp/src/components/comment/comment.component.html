@@ -51,11 +51,7 @@
                 </button>
             </ion-col>
         </ion-row>
-        <ion-row *ngIf="submitError">
-            <div class="error-body">
-                {{ submitError }}
-            </div>
-        </ion-row>
+        <status-message *ngIf="submitError" [isErrorMessage]= "true" [messageId]= "submitError"></status-message>
     </ion-col>
     <ion-col col-12 *ngIf="isReviewPage && !isReviewNeeded">
         <ion-row padding *ngIf="review.vote==0">

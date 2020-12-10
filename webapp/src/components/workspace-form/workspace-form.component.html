@@ -5,11 +5,7 @@
 <ion-row *ngIf="isWorkspaceAdded">
     <ion-row class="success-body">{{ "setProfile.newWorkspaceSuccessMsg" | translate }}</ion-row>
 </ion-row>
-<ion-row *ngIf="errorWorkspaceMsg">
-    <ion-row class="error-body">
-        {{ errorWorkspaceMsg }}
-    </ion-row>
-</ion-row>
+<status-message *ngIf="errorWorkspaceMsg" [isErrorMessage]= "true" [messageId]= "errorWorkspaceMsg"></status-message>
 <div class="buttons">
     <button class="btn btn--full btn__blue" [disabled]="!workspace || errorWorkspaceMsg" (click)="addWorkspace()">{{ "setProfile.addWorkspace" | translate }}</button>
     <div class="separator"></div>
@@ -19,11 +15,7 @@
 <ion-row *ngIf="isOrganizationAdded">
     <ion-row class="success-body">{{ "setProfile.newOrganizationSuccessMsg" | translate }}</ion-row>
 </ion-row>
-<ion-row *ngIf="errorOrganizationMsg">
-    <ion-row class="error-body">
-        {{ errorOrganizationMsg }}
-    </ion-row>
-</ion-row>
+<status-message *ngIf="errorOrganizationMsg" [isErrorMessage]= "true" [messageId]= "errorOrganizationMsg"></status-message>
 <div class="buttons">
     <button class="btn btn--full btn__blue" [disabled]="!organization || errorOrganizationMsg" (click)="addOrganization()">{{ "setProfile.addOrganization" | translate }}</button>
     <div class="separator"></div>

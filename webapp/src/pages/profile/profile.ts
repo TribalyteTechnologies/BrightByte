@@ -4,8 +4,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { AlertController, ViewController } from "ionic-angular";
 import { Observable } from "rxjs";
-import { from } from "rxjs/observable/from";
-import { catchError, flatMap } from "rxjs/operators";
+import { catchError } from "rxjs/operators";
 import { AppConfig } from "../../app.config";
 import { FormatUtils } from "../../core/format-utils";
 import { ILogger, LoggerService } from "../../core/logger.service";
@@ -34,19 +33,20 @@ export class Profile {
     public avatarData: string;
     public imageSelected = false;
     public userName: string;
-    public errorMsg: string;
-    public errorInviteMsg: string;
-    public errorRulesMsg: string;
-    public errorNotificationMsg: string;
-    public successMsg: string;
-    public successRulesMsg: string;
-    public successNotificationMsg: string;
-    public successInviteMsg: string;
-    public seasonSuccessMsg: string;
-    public workspaceErrorMsg: string;
-    public workspaceSuccessMsg: string;
-    public organizationErrorMsg: string;
-    public organizationSuccessMsg: string;
+    public isErrorMsg: boolean;
+    public isErrorRulesMsg: boolean;
+    public isErrorNotificationMsg: boolean;
+    public isErrorInviteMsg: boolean;
+    public isErrorSeasonMsg: boolean;
+    public isErrorworkspaceMsg: boolean;
+    public isErrorOrganizationsMsg: boolean;
+    public generalMsg: string;
+    public rulesMsg: string;
+    public notificationMsg: string;
+    public inviteMsg: string;
+    public seasonMsg: string;
+    public workspaceMsg: string;
+    public organizationMsg: string;
     public seasonErrorMsg: string;
     public uploadForm: FormGroup;
     public settingsCategory = this.SETTINGS_CATEGORIES[0];
@@ -84,22 +84,6 @@ export class Profile {
 
 
     private noChangesError: string;
-    private uploadError: string;
-    private defaultError: string;
-    private successMessageName: string;
-    private successMessageTeamName: string;
-    private successMessageTeamRules: string;
-    private successMessageNotification: string;
-    private successMessageAvatar: string;
-    private successMessageInvitation: string;
-    private changeNameError: string;
-    private changeTeamNameError: string;
-    private changeTextRuleError: string;
-    private sendNotificationError: string;
-    private invitationError: string;
-    private invitationEmailFormatError: string;
-    private userTypeError: string;
-    private alreadyRegisteredError: string;
     private userAddress: string;
     private userTeam: number;
     private isSettingSeason: boolean;
@@ -107,7 +91,6 @@ export class Profile {
     private currentVersion: number;
     private initSeasonTimestamp: number;
     private isTooBigImage: boolean;
-    private tooBigImageError: string;
 
 
     constructor(
@@ -135,50 +118,10 @@ export class Profile {
         this.isLoadingInfo = true;
         this.isBackendAvailable = true;
         this.avatarObs = this.avatarSrv.getAvatarObs(this.userAddress);
-        this.translateSrv.get([
-            "setProfile.uploadError",
-            "setProfile.defaultError",
-            "setProfile.noChangesError",
-            "setProfile.successMessageName",
-            "setProfile.successMessageAvatar",
-            "setProfile.successInvitation",
-            "setProfile.changeNameError",
-            "setProfile.changeTeamNameError",
-            "setProfile.successTeamNameChange",
-            "setProfile.changeTextRuleError",
-            "setProfile.sendNotificationError",
-            "setProfile.successTeamRulesChange",
-            "setProfile.successNotification",
-            "setProfile.invitationError",
-            "setProfile.invitationEmailFormatError",
-            "setProfile.alreadyRegisteredError",
-            "setProfile.userTypeError",
-            "setProfile.tooBigImageError"])
-            .subscribe(translation => {
-                this.uploadError = translation["setProfile.uploadError"];
-                this.defaultError = translation["setProfile.defaultError"];
-                this.noChangesError = translation["setProfile.noChangesError"];
-                this.successMessageName = translation["setProfile.successMessageName"];
-                this.successMessageTeamName = translation["setProfile.successTeamNameChange"];
-                this.successMessageTeamRules = translation["setProfile.successTeamRulesChange"];
-                this.successMessageNotification = translation["setProfile.successNotification"];
-                this.successMessageAvatar = translation["setProfile.successMessageAvatar"];
-                this.successMessageInvitation = translation["setProfile.successInvitation"];
-                this.changeNameError = translation["setProfile.changeNameError"];
-                this.changeTeamNameError = translation["setProfile.changeTeamNameError"];
-                this.changeTextRuleError = translation["setProfile.changeTextRuleError"];
-                this.sendNotificationError = translation["setProfile.sendNotificationError"];
-                this.invitationError = translation["setProfile.invitationError"];
-                this.invitationEmailFormatError = translation["setProfile.invitationEmailFormatError"];
-                this.userTypeError = translation["setProfile.userTypeError"];
-                this.alreadyRegisteredError = translation["setProfile.alreadyRegisteredError"];
-                this.tooBigImageError = translation["setProfile.tooBigImageError"] + this.MAX_SIZE_IMAGE_MB + "MB";
-            });
         this.uploadForm = this.formBuilder.group({
             image: [""],
             userName: this.formBuilder.control("")
         });
-
         this.contractManagerService.getUserDetails(this.userAddress)
         .then((user: UserDetails) => {
             this.userName = user.name;
@@ -284,11 +227,12 @@ export class Profile {
             this.getBase64(input).then((data: string) => {
                 this.avatarData = data;
                 this.imageSelected = true;
-                this.errorMsg = null;
+                this.generalMsg = null;
             });
         } else {
             this.isTooBigImage = true;
-            this.errorMsg = this.tooBigImageError;
+            this.generalMsg = "setProfile.tooBigImageError";
+            this.isErrorMsg = true;
         }
     }
 
@@ -327,16 +271,17 @@ export class Profile {
     public saveProfileChange() {
         let userName = this.uploadForm.get(this.USER_NAME_FIELD_NAME).value;
         let promises = new Array<Promise<any>>();
-        this.errorMsg = null;
-        this.successMsg = null;
+        this.generalMsg = null;
         if (userName && userName !== this.userName) {
             let promise = this.contractManagerService.setUserName(userName).then(() => {
                 this.log.d("The user has set a new name");
                 this.userNameSrv.updateName(userName);
-                this.successMsg = this.successMessageName;
+                this.generalMsg = "setProfile.successMessageName";
+                this.isErrorMsg = false;
             }).catch(e => {
                 this.log.e("Error setting the new user name: ", e);
-                this.errorMsg = this.changeNameError;
+                this.generalMsg = "setProfile.changeNameError";
+                this.isErrorMsg = true;
             });
             promises.push(promise);
         }
@@ -347,11 +292,13 @@ export class Profile {
                 .then((response: IResponse) => {
                     if (response.status === AppConfig.STATUS_OK) {
                         this.avatarSrv.updateUrl(this.userAddress, AppConfig.SERVER_BASE_URL + response.data);
-                        this.successMsg = this.successMessageAvatar;
+                        this.generalMsg = "setProfile.successMessageAvatar";
+                        this.isErrorMsg = false;
                     }
                 }).catch(e => {
                     this.log.e("Error setting the new user avatar: ", e);
-                    this.errorMsg = this.uploadError;
+                    this.generalMsg = "setProfile.uploadError";
+                    this.isErrorMsg = true;
                 });
             promises.push(promise);
         }
@@ -360,50 +307,53 @@ export class Profile {
             Promise.all(promises).then(() => {
                 this.log.d("The user profile changed his profile");
                 this.spinnerService.hideLoader();
-                if (!this.errorMsg) {
+                if (!this.generalMsg) {
                     this.dismiss();
                 }
             });
         } else if(this.isTooBigImage) {
-            this.errorMsg = this.tooBigImageError;
+            this.generalMsg = "setProfile.tooBigImageError";
+            this.isErrorMsg = true;
         } else {
-            this.errorMsg = this.noChangesError;
+            this.generalMsg = this.noChangesError;
+            this.isErrorMsg = true;
         }
     }
 
     public changeTextRules(rules: string) {
-        this.successRulesMsg = null;
-        this.errorRulesMsg = null;
+        this.rulesMsg = null;
         this.contractManagerService.changeTextRules(rules)
         .then(() => {
-            this.successRulesMsg = this.successMessageTeamRules;
+            this.rulesMsg = "setProfile.successTeamRulesChange";
+            this.isErrorRulesMsg = false;
             this.teamRules = rules;
         })
         .catch(e => {
-            this.errorRulesMsg = this.changeTextRuleError;
+            this.rulesMsg = "setProfile.changeTextRuleError";
+            this.isErrorRulesMsg = true;
         });
     }
 
     public changeTeamName(teamName: string) {
         this.teamName = teamName;
-        this.errorMsg = null;
-        this.successMsg = null;
+        this.generalMsg = null;
         this.isSettingTeamName = true;
         this.contractManagerService.changeTeamName(teamName)
         .then(() => {
             this.isSettingTeamName = false;
-            this.successMsg = this.successMessageTeamName;
+            this.generalMsg = "setProfile.successTeamNameChange";
+            this.isErrorMsg = false;
         })
         .catch(e => {
             this.isSettingTeamName = false;
-            this.errorMsg = this.changeTeamNameError;
+            this.generalMsg = "setProfile.changeTeamNameError";
+            this.isErrorMsg = true;
         });
     }
 
     public changeSeasonLength(seasonLength: number) {
         this.seasonLength = seasonLength;
-        this.seasonErrorMsg = null;
-        this.seasonSuccessMsg = null;
+        this.seasonMsg = null;
         const seasonLengthInMS = seasonLength * AppConfig.DAY_TO_SECS;
         const timeElapsed = (Date.now() / AppConfig.SECS_TO_MS) - this.initSeasonTimestamp;
         if (seasonLengthInMS > timeElapsed){
@@ -412,32 +362,27 @@ export class Profile {
                 this.contractManagerService.setSeasonLength(this.seasonLength)
                 .then(() => {
                     this.isSettingSeasonData = false;
-                    return this.translateSrv.get("setProfile.seasonLengthSuccessMsg").toPromise();
-                }).then(res => {
-                    this.seasonSuccessMsg = res;
+                    this.seasonMsg = "setProfile.seasonLengthSuccessMsg";
+                    this.isErrorSeasonMsg = false;
                 }).catch(e => {
                     this.log.e("Error setting the new season duration", e);
                     this.isSettingSeasonData = false;
-                    return this.translateSrv.get("setProfile.seasonLengthErrorMsg").toPromise();
-                }).then(res => {
-                    this.seasonErrorMsg = res;
+                    this.seasonMsg = "setProfile.seasonLengthErrorMsg";
+                    this.isErrorSeasonMsg = true;
                 });
-            } else {
-                this.translateSrv.get("setProfile.seasonLengthErrorMsg").subscribe(res => {
-                    this.seasonErrorMsg = res;
-                });
+            } else {   
+                this.seasonMsg = "setProfile.seasonLengthErrorMsg";
+                this.isErrorSeasonMsg = true; 
             }
         } else {
-            this.translateSrv.get("setProfile.seasonChangeError").subscribe(res => {
-                this.seasonErrorMsg = res;
-            });
+            this.seasonMsg = "setProfile.seasonChangeError";
+            this.isErrorSeasonMsg = true;
         }
     }
 
     public inviteUsersToTeam(invitedEmails: string, userType: AppConfig.UserType) {
         let areEmailsWellFormated = true;
-        this.successInviteMsg = null;
-        this.errorInviteMsg = null;
+        this.inviteMsg = null;
         let emails = invitedEmails.split(this.EMAILS_SEPARATOR).map(email => {
             let mail = email.trim();
             if (areEmailsWellFormated && mail !== "") {
@@ -471,20 +416,25 @@ export class Profile {
                             }
                         });
                         this.invitedUsers = this.invitedUsers.concat(newInvitedUsers);
-                        this.successInviteMsg = this.successMessageInvitation;
+                        this.inviteMsg = "setProfile.successInvitation";
+                        this.isErrorInviteMsg = false;
                     })
                     .catch(e => {
                         this.isInvitingUser = false;
-                        this.errorInviteMsg = this.invitationError;
+                        this.inviteMsg = "setProfile.invitationError";
+                        this.isErrorInviteMsg = true;
                     });
                 } else {
-                    this.errorInviteMsg = this.userTypeError;
+                    this.inviteMsg = "setProfile.userTypeError";
+                    this.isErrorInviteMsg = true;
                 }
             } else {
-                this.errorInviteMsg = this.alreadyRegisteredError;
+                this.inviteMsg = "setProfile.alreadyRegisteredError";
+                this.isErrorInviteMsg = true;
             }
         } else {
-            this.errorInviteMsg = this.invitationEmailFormatError;
+            this.inviteMsg = "setProfile.invitationEmailFormatError";
+            this.isErrorInviteMsg = true;
         }
     }
 
@@ -521,33 +471,28 @@ export class Profile {
     }
 
     public addNewWorkspace(workspace: string) {
-        this.workspaceErrorMsg = null;
-        this.workspaceSuccessMsg = null;
+        this.workspaceMsg = null;
         let workspaceIndex = this.teamWorkspaces.indexOf(workspace);
         if (workspace && workspaceIndex === -1) {
             const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + workspace;
             this.http.post(url, {}).toPromise().then((response: IResponse) => {
                 this.log.d("Added new workspace for the team");
                 this.teamWorkspaces.push(workspace);
-                this.translateSrv.get("setProfile.newWorkspaceSuccessMsg").subscribe(res => {
-                    this.workspaceSuccessMsg = res;
-                });
+                this.workspaceMsg = "setProfile.newWorkspaceSuccessMsg";
+                this.isErrorworkspaceMsg = false;
             }).catch(e => {
                 this.log.e("Error setting the new team workspace: ", e);
-                this.translateSrv.get("setProfile.newWorkspaceError").subscribe(res => {
-                    this.workspaceErrorMsg = res;
-                });
+                this.workspaceMsg = "setProfile.newWorkspaceError";
+                this.isErrorworkspaceMsg = true;
             });
         } else {
-            this.translateSrv.get("setProfile.invalidWorkspace").subscribe(res => {
-                this.workspaceErrorMsg = res;
-            });
+            this.workspaceMsg = "setProfile.invalidWorkspace";
+            this.isErrorworkspaceMsg = true;
         }
     }
 
     public addNewOrganization(organization: string) {
-        this.organizationErrorMsg = null;
-        this.organizationSuccessMsg = null;
+        this.organizationMsg = null;
         let organizationIndex = this.teamOrganizations.indexOf(organization);
         if (organization && organizationIndex === -1) {
             const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion  + AppConfig.ORGANIZATION_PATH + organization;
@@ -555,19 +500,16 @@ export class Profile {
             }).toPromise().then((response: IResponse) => {
                 this.log.d("Added new organization for the team");
                 this.teamOrganizations.push(organization);
-                this.translateSrv.get("setProfile.newOrganizationSuccessMsg").subscribe(res => {
-                    this.organizationSuccessMsg = res;
-                });
+                this.organizationMsg = "setProfile.newOrganizationSuccessMsg";
+                this.isErrorOrganizationsMsg = false;
             }).catch(e => {
                 this.log.e("Error setting the new team organization: ", e);
-                this.translateSrv.get("setProfile.newOrganizationError").subscribe(res => {
-                    this.organizationErrorMsg = res;
-                });
+                this.organizationMsg = "setProfile.newOrganizationError";
+                this.isErrorOrganizationsMsg = true;
             });
         } else {
-            this.translateSrv.get("setProfile.invalidOrganization").subscribe(res => {
-                this.organizationErrorMsg = res;
-            });
+                this.organizationMsg = "setProfile.invalidOrganization";
+                this.isErrorOrganizationsMsg = true;
         }
     }
 
@@ -636,44 +578,31 @@ export class Profile {
     }
 
     public changeSeasonThreshold(commitThreshold: number, reviewThreshold: number) {
-        let error: boolean;
         this.commitThreshold = commitThreshold;
         this.reviewThreshold = reviewThreshold;
         if (this.commitThreshold >= 0 && this.reviewThreshold >= 0) {
             this.isSettingSeasonData = true;
-            from(this.contractManagerService.setCurrentSeasonThreshold(this.commitThreshold, this.reviewThreshold)).pipe(
-                flatMap(res => {
-                    this.log.d("The user has set a new threshold");
-                    return this.translateSrv.get("setProfile.successSettingThreshold");
-                }),
-                catchError(e => {
-                    this.log.e("Error: ", e);
-                    error = true;
-                    return this.translateSrv.get("setProfile.errorSettingThreshold");
-                })
-            ).subscribe((res: string) => {
-                this.isSettingSeasonData = false;
-                if (error) {
-                    this.seasonErrorMsg = res;
-                } else {
-                    this.seasonSuccessMsg = res;
-                }
-
+            this.contractManagerService.setCurrentSeasonThreshold(this.commitThreshold, this.reviewThreshold)
+            .then(res => {
+                this.seasonMsg = "setProfile.successSettingThreshold";
+                this.isErrorMsg = false;
+            }).catch(e => {
+                this.seasonMsg = "setProfile.errorSettingThreshold";
+                this.isErrorMsg = true;
             });
         } else {
-            this.translateSrv.get("setProfile.invalidThreshold").subscribe(res => {
-                this.seasonErrorMsg = res;
-            });
+            this.seasonErrorMsg = "setProfile.invalidThreshold";
+            this.isErrorMsg = true;
         }
     }
+
 
     public pressToggleRandomReviewers() {
         this.contractManagerService.setRandomReviewer(this.isRandomReviewers);
     }
 
     public sendNotification() {
-        this.successNotificationMsg = null;
-        this.errorNotificationMsg = null;
+        this.notificationMsg = null;
         let promises = this.teamMembers.map(teams => 
             teams.map(teamMember =>  {
                 return this.contractManagerService.getUserPendingReviews(teamMember.address)
@@ -683,10 +612,12 @@ export class Profile {
                         AppConfig.TEAM_API + teamMember.email + "/" + this.teamName + AppConfig.NOTIFICATION_PATH + pendingReviews, {}
                         ).toPromise();
                     }
-                    this.successNotificationMsg = this.successMessageNotification;
+                    this.notificationMsg = "setProfile.successNotification";
+                    this.isErrorNotificationMsg = false;
                 })
                 .catch(e => {
-                    this.errorNotificationMsg = this.sendNotificationError;
+                    this.notificationMsg = "setProfile.sendNotificationError";
+                    this.isErrorNotificationMsg = true;
                 });    
             }) 
         );
@@ -700,14 +631,12 @@ export class Profile {
             const url = AppConfig.TEAM_API + this.userTeam + "/" + this.currentVersion + AppConfig.WORKSPACE_PATH + workspace;
             this.http.delete(url, {}).toPromise().then(result => {
                 this.teamWorkspaces.splice(workspaceIndex, 1);
-                this.translateSrv.get("setProfile.removeWorkspaceSuccessMsg").subscribe(res => {
-                    this.workspaceSuccessMsg = res;
-                });
+                this.workspaceMsg = "setProfile.removeWorkspaceSuccessMsg";
+                this.isErrorworkspaceMsg = false;
             }).catch(e => {
-                this.log.e("Error deleting the team workspace: ", e);
-                this.translateSrv.get("setProfile.deleteWorkspaceError").subscribe(res => {
-                    this.workspaceErrorMsg = res;
-                });
+                this.log.e("Error deleting the team workspace: ", e); 
+                this.workspaceMsg = "setProfile.deleteWorkspaceError";
+                this.isErrorworkspaceMsg = true;
             });
         }
 
@@ -721,14 +650,12 @@ export class Profile {
             this.http.delete(url, {})
             .toPromise().then(result => {
                 this.teamOrganizations.splice(organizationIndex, 1);
-                this.translateSrv.get("setProfile.removeOrganizationSuccessMsg").subscribe(res => {
-                    this.organizationSuccessMsg = res;
-                });
+                this.organizationMsg = "setProfile.removeOrganizationSuccessMsg";
+                this.isErrorOrganizationsMsg = false;
             }).catch(e => {
                 this.log.e("Error deleting the team organization: ", e);
-                this.translateSrv.get("setProfile.deleteOrganizationError").subscribe(res => {
-                    this.organizationErrorMsg = res;
-                });
+                this.organizationMsg = "setProfile.deleteOrganizationError";
+                this.isErrorOrganizationsMsg = true;
             });
         }
 
@@ -761,7 +688,8 @@ export class Profile {
                     ret = this.http.delete(AppConfig.PROFILE_IMAGE_URL + this.userAddress);
                 } else {
                     this.log.d("User already has his default avatar");
-                    this.errorMsg = this.defaultError;
+                    this.generalMsg = "setProfile.defaultError";
+                    this.isErrorMsg = true;
                 }
                 return ret;
             }).
@@ -773,7 +701,11 @@ export class Profile {
                     this.dismiss();
                 }
             }),
-            catchError(error => this.errorMsg = this.defaultError);
+            catchError(error => {
+                this.generalMsg = "setProfile.defaultError"; 
+                this.isErrorMsg = true; 
+                throw error;          
+            });
     }
 
     private getBase64(file: File): Promise<string | ArrayBuffer> {

@@ -122,12 +122,9 @@ export class SetProfileForm {
                 this.teamList = teamNames;
                 this.sortTeams(this.teamList);
             })
-            .catch((e) => {
-                this.translateService.get("setProfile.getEmails").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
+            .catch((e) => {   
+                this.msg = "setProfile.getEmails";
+                this.log.e("Error getting emails", e);    
                 throw e;
             });
     }
@@ -144,11 +141,8 @@ export class SetProfileForm {
             })
             .catch((e) => {
                 this.isRegistering = false;
-                this.translateService.get("setProfile.getEmails").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
+                this.msg = "setProfile.getEmails";
+                this.log.e("Error getting emails", e);    
                 throw e;
             });
         } else {
@@ -210,11 +204,8 @@ export class SetProfileForm {
                     this.navCtrl.push(TabsPage);
                 }
             }).catch((e) => {
-                this.translateService.get("setProfile.tx").subscribe(
-                    msg => {
-                        this.msg = msg;
-                        this.log.e(msg, e);
-                    });
+                this.msg = "setProfile.tx";
+                this.log.e("Transaction error", e);
             });
     }
 
