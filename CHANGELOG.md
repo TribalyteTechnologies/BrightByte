@@ -1,5 +1,15 @@
 # Change Log
 
+#### v0.5.2-cloud
+
+- Added notification feature, to remind team users their pending reviews.
+- Enable Github provider to import batch pull request.
+- Fix Bitbucket import batch pull requests.
+- New message component.
+- Limit avatar size to 2MB.
+- Change user transaction, the nonce increase manually.
+- Minor bug fixes.
+
 #### v0.5.1-cloud
 
 - Refactor backend.
