@@ -40,6 +40,7 @@ export class Profile {
     public isErrorSeasonMsg: boolean;
     public isErrorworkspaceMsg: boolean;
     public isErrorOrganizationsMsg: boolean;
+    public avatarMsg: string;
     public generalMsg: string;
     public rulesMsg: string;
     public notificationMsg: string;
@@ -227,11 +228,11 @@ export class Profile {
             this.getBase64(input).then((data: string) => {
                 this.avatarData = data;
                 this.imageSelected = true;
-                this.generalMsg = null;
+                this.avatarMsg = null;
             });
         } else {
             this.isTooBigImage = true;
-            this.generalMsg = "setProfile.tooBigImageError";
+            this.avatarMsg = "setProfile.tooBigImageError";
             this.isErrorMsg = true;
         }
     }
@@ -271,16 +272,16 @@ export class Profile {
     public saveProfileChange() {
         let userName = this.uploadForm.get(this.USER_NAME_FIELD_NAME).value;
         let promises = new Array<Promise<any>>();
-        this.generalMsg = null;
+        this.avatarMsg = null;
         if (userName && userName !== this.userName) {
             let promise = this.contractManagerService.setUserName(userName).then(() => {
                 this.log.d("The user has set a new name");
                 this.userNameSrv.updateName(userName);
-                this.generalMsg = "setProfile.successMessageName";
+                this.avatarMsg = "setProfile.successMessageName";
                 this.isErrorMsg = false;
             }).catch(e => {
                 this.log.e("Error setting the new user name: ", e);
-                this.generalMsg = "setProfile.changeNameError";
+                this.avatarMsg = "setProfile.changeNameError";
                 this.isErrorMsg = true;
             });
             promises.push(promise);
@@ -292,12 +293,12 @@ export class Profile {
                 .then((response: IResponse) => {
                     if (response.status === AppConfig.STATUS_OK) {
                         this.avatarSrv.updateUrl(this.userAddress, AppConfig.SERVER_BASE_URL + response.data);
-                        this.generalMsg = "setProfile.successMessageAvatar";
+                        this.avatarMsg = "setProfile.successMessageAvatar";
                         this.isErrorMsg = false;
                     }
                 }).catch(e => {
                     this.log.e("Error setting the new user avatar: ", e);
-                    this.generalMsg = "setProfile.uploadError";
+                    this.avatarMsg = "setProfile.uploadError";
                     this.isErrorMsg = true;
                 });
             promises.push(promise);
@@ -307,15 +308,15 @@ export class Profile {
             Promise.all(promises).then(() => {
                 this.log.d("The user profile changed his profile");
                 this.spinnerService.hideLoader();
-                if (!this.generalMsg) {
+                if (!this.avatarMsg) {
                     this.dismiss();
                 }
             });
         } else if(this.isTooBigImage) {
-            this.generalMsg = "setProfile.tooBigImageError";
+            this.avatarMsg = "setProfile.tooBigImageError";
             this.isErrorMsg = true;
         } else {
-            this.generalMsg = this.noChangesError;
+            this.avatarMsg = this.noChangesError;
             this.isErrorMsg = true;
         }
     }
@@ -336,6 +337,7 @@ export class Profile {
 
     public changeTeamName(teamName: string) {
         this.teamName = teamName;
+        this.spinnerService.showLoader();
         this.generalMsg = null;
         this.isSettingTeamName = true;
         this.contractManagerService.changeTeamName(teamName)
@@ -343,11 +345,13 @@ export class Profile {
             this.isSettingTeamName = false;
             this.generalMsg = "setProfile.successTeamNameChange";
             this.isErrorMsg = false;
+            this.spinnerService.hideLoader();
         })
         .catch(e => {
             this.isSettingTeamName = false;
             this.generalMsg = "setProfile.changeTeamNameError";
             this.isErrorMsg = true;
+            this.spinnerService.hideLoader();
         });
     }
 
@@ -586,9 +590,11 @@ export class Profile {
             .then(res => {
                 this.seasonMsg = "setProfile.successSettingThreshold";
                 this.isErrorMsg = false;
+                this.isSettingSeasonData = false;
             }).catch(e => {
                 this.seasonMsg = "setProfile.errorSettingThreshold";
                 this.isErrorMsg = true;
+                this.isSettingSeasonData = false;
             });
         } else {
             this.seasonErrorMsg = "setProfile.invalidThreshold";
@@ -688,7 +694,7 @@ export class Profile {
                     ret = this.http.delete(AppConfig.PROFILE_IMAGE_URL + this.userAddress);
                 } else {
                     this.log.d("User already has his default avatar");
-                    this.generalMsg = "setProfile.defaultError";
+                    this.avatarMsg = "setProfile.defaultError";
                     this.isErrorMsg = true;
                 }
                 return ret;
@@ -702,7 +708,7 @@ export class Profile {
                 }
             }),
             catchError(error => {
-                this.generalMsg = "setProfile.defaultError"; 
+                this.avatarMsg = "setProfile.defaultError"; 
                 this.isErrorMsg = true; 
                 throw error;          
             });

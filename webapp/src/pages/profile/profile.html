@@ -42,7 +42,7 @@
                             <input type="file" (change)="openFile($event)">
                         </ion-item>
                     </ion-list>
-                    <status-message *ngIf="generalMsg" [isErrorMessage]= "isErrorMsg" [messageId]= "generalMsg | translate: {size: MAX_SIZE_IMAGE_MB}"></status-message>
+                    <status-message *ngIf="avatarMsg" [isErrorMessage]= "isErrorMsg" [messageId]= "avatarMsg | translate: {size: MAX_SIZE_IMAGE_MB}"></status-message>
                     <ion-row padding-top justify-content-end>
                         <button type="submit"
                             class="btn save-button btn__blue">{{ "setProfile.save" | translate }}</button>
@@ -119,7 +119,7 @@
                         </ion-row>
                     </ion-list>
                     <ion-spinner *ngIf="isSettingSeasonData"></ion-spinner>
-                    <status-message *ngIf="seasonMsg" [isErrorMessage]= "isErrorSeasonMsg" [messageId]= "seasonMsg"></status-message>
+                    <status-message class="status-container" *ngIf="seasonMsg" [isErrorMessage]= "isErrorSeasonMsg" [messageId]= "seasonMsg"></status-message>
                 </ion-row>
                 <h6>{{ "setProfile.invitedUsers" | translate }}</h6>
                 <div class="separator">

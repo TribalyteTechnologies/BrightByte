@@ -1,19 +1,17 @@
 .error-body {
     background-color: color($colors, dangerLight);
-    padding: 10px;
-    width: 100%;
-    border-radius: 5px;
     border: 1px solid color($colors, danger);
-    color: white;
-    margin: 5px;
 }
 
 .success-body {
     background-color: color($colors, primary);
+    border: 1px solid color($colors, primary);
+}
+
+.msg-body {
     padding: 10px;
     width: 100%;
     border-radius: 5px;
-    border: 1px solid color($colors, primary);
-    color: white;
     margin: 5px;
+    color: white;
 }
