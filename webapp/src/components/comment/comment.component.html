@@ -73,13 +73,6 @@
                 <button class="btn btn--full btn__red" (click)="setThumbsDown()">{{ "commits.disagree" | translate }}</button>
             </ion-col>
         </ion-row>
-        <ion-row *ngIf="review.vote==0" no-padding>
-            <ion-col text-right>
-                <a class="complaint-text" (click)="setComplaint()">
-                    {{ "commitDetails.reportAbuse" | translate }}
-                </a>
-            </ion-col>
-        </ion-row>
         <ion-row padding *ngIf="review.vote==1">
             <button class="btn btn--full btn__blue">  {{ "commits.ratedAgree" | translate }}</button>
         </ion-row>
