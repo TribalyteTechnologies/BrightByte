@@ -9,6 +9,7 @@ import { RegisterSlidePopover } from "../../components/register-tutorial-slides/
 import { LocalStorageService } from "../../core/local-storage.service";
 import { PopupService } from "../../domain/popup.service";
 import { TranslateService } from "@ngx-translate/core";
+import { UpdateCheckService } from "../../core/update-check.service";
 
 @Component({
     selector: "page-login",
@@ -39,12 +40,14 @@ export class LoginPage {
         private storageSrv: LocalStorageService,
         private popupSrv: PopupService,
         private translateSrv: TranslateService,
+        private versionCheckSrv: UpdateCheckService,
         loggerSrv: LoggerService
 
     ) {
         this.checkMobileBrowser();
         this.log = loggerSrv.get("LoginPage");
         this.migrationDone = this.userLoggerService.getMigration();
+        this.versionCheckSrv.start();
         this.appVersionSrv.getAppVersion().subscribe(
             ver => this.appVersion = ver,
             err => this.log.w("No app version could be detected")
