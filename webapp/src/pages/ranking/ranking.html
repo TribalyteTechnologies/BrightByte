@@ -149,17 +149,8 @@
                 </ion-col>
             </ion-row>
             <ion-row padding></ion-row>
-            <ion-row *ngIf="globalSelected && isPageLoaded" padding class="achievement-box-style">
-                <ion-col class="box-height">
-                    <ion-row *ngFor="let rowIndex of [0,1,2,3]" padding>
-                        <ion-col class="achievement-grid-style"
-                            *ngFor="let i of [(rowIndex*4),(rowIndex*4)+1,(rowIndex*4)+2,(rowIndex*4)+3]">
-                            <achievement [isEmpty]="achievementsUnlocked[i].isEmpty"
-                                [achievementInfo]="achievementsUnlocked[i]"></achievement>
-                        </ion-col>
-                    </ion-row>
-                </ion-col>
-            </ion-row>
+            <achievements-block [isPageLoaded]="isPageLoaded"
+                [achievementsUnlocked]="achievementsUnlocked"></achievements-block>       
         </ion-col>
         <ng-template #notShowDetails>
             <ion-col></ion-col>

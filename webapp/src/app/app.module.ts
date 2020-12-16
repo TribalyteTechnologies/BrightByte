@@ -72,6 +72,7 @@ import { RegisterSlidePopover } from "../components/register-tutorial-slides/reg
 import { AfterLoginSlidePopover } from "../components/after-login-tutorial-slide/after-login-tutorial-slide.component";
 import { PopupService } from "../domain/popup.service";
 import { StatusMessage } from "../components/status-message/status-message.component";
+import { AchievementsBlockComponent } from "../components/achievements-block/achievements-block.component";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, "assets/i18n/", ".json");
@@ -94,6 +95,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommitCard,
         CommentComponent,
         AchievementComponent,
+        AchievementsBlockComponent,
         LoginForm,
         NewUserForm,
         WorkspaceForm,
@@ -140,6 +142,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         CommitCard,
         CommentComponent,
         AchievementComponent,
+        AchievementsBlockComponent,
         LoginForm,
         NewUserForm,
         WorkspaceForm,

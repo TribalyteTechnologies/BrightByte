@@ -195,9 +195,7 @@ export class RankingPage {
                 this.isCurrentUserName = false;
             }
             this.currentUserObs = this.avatarSrv.getAvatarObs(userDetails.userHash);
-            if(this.globalSelected) {
-                this.setUpTrophys(userDetails.userHash);
-            }
+            this.setUpTrophys(userDetails.userHash);
             this.tooltipParams = {
                 pendingCommits: Math.max(0, this.minNumberCommit - this.userRankDetails.numberCommitsMade),
                 pendingReviews: Math.max(0, this.minNumberReview - this.userRankDetails.numberReviewsMade),
