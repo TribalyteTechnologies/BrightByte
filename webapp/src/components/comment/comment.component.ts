@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { CommitComment } from "../../models/commit-comment.model";
 import { TranslateService } from "@ngx-translate/core";
-import { AlertController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
 import { Observable } from "rxjs";
 import { AvatarService } from "../../domain/avatar.service";
@@ -57,7 +56,6 @@ export class CommentComponent {
 
     constructor (
         public translateService: TranslateService,
-        private alertCtrl: AlertController,
         private avatarSrv: AvatarService,
         loggerSrv: LoggerService
     ) {
@@ -122,29 +120,4 @@ export class CommentComponent {
             this.submitReview.next(obj);
         }
     }
-
-    public setComplaint(){
-
-        // TODO: connect with Smart contracts and send the complaint
-        let alert = this.alertCtrl.create({
-            title: this.alertClaim,
-            message: this.claimMsg,
-            buttons: [
-              {
-                text: this.alertCancel,
-                role: "cancel",
-                handler: () => {
-                      this.log.d("Complain cancelled");
-                }
-              },
-              {
-                text: this.alertAccept,
-                handler: () => {
-                    this.log.d("Complain accepted");
-                }
-              }
-            ]
-        });
-        alert.present();
-    } 
 }
