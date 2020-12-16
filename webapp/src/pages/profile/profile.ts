@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { TranslateService } from "@ngx-translate/core";
 import { AlertController, ViewController } from "ionic-angular";
 import { Observable } from "rxjs";
-import { catchError } from "rxjs/operators";
 import { AppConfig } from "../../app.config";
 import { FormatUtils } from "../../core/format-utils";
 import { ILogger, LoggerService } from "../../core/logger.service";
@@ -84,7 +83,6 @@ export class Profile {
     private readonly MAX_SIZE_IMAGE_BYTES = this.MAX_SIZE_IMAGE_MB * this.MB_TO_BYTES;
 
 
-    private noChangesError: string;
     private userAddress: string;
     private userTeam: number;
     private isSettingSeason: boolean;
@@ -316,7 +314,7 @@ export class Profile {
             this.avatarMsg = "setProfile.tooBigImageError";
             this.isErrorMsg = true;
         } else {
-            this.avatarMsg = this.noChangesError;
+            this.avatarMsg = "setProfile.noChangesError";
             this.isErrorMsg = true;
         }
     }
@@ -699,19 +697,20 @@ export class Profile {
                 }
                 return ret;
             }).
-            subscribe((response: IResponse) => {
-                if (response && response.status === AppConfig.STATUS_OK) {
-                    this.avatarData = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
-                    this.log.d("Changed the avatar to default one " + this.avatarData);
-                    this.avatarSrv.updateUrl(this.userAddress);
-                    this.dismiss();
-                }
-            }),
-            catchError(error => {
-                this.avatarMsg = "setProfile.defaultError"; 
-                this.isErrorMsg = true; 
-                throw error;          
-            });
+            subscribe(
+                (response: IResponse) => {
+                    if (response && response.status === AppConfig.STATUS_OK) {
+                        this.avatarData = AppConfig.IDENTICON_URL + this.userAddress + AppConfig.IDENTICON_FORMAT;
+                        this.log.d("Changed the avatar to default one " + this.avatarData);
+                        this.avatarSrv.updateUrl(this.userAddress);
+                        this.dismiss();
+                    }
+                }, 
+                error => {
+                    this.avatarMsg = "setProfile.defaultError"; 
+                    this.isErrorMsg = true; 
+                    throw error;          
+                });
     }
 
     private getBase64(file: File): Promise<string | ArrayBuffer> {

@@ -142,11 +142,11 @@ export class LoginForm {
         this.log.d("Event: ", event);
         let target = <HTMLInputElement>event.target;
         let uploadedArray = <FileList>target.files;
-        let msg_identifier = "";
+        let msgIdentifier = "";
         this.log.d("Target: ", target);
         let input = uploadedArray[0];
         if (!input) {
-            msg_identifier = "app.fileNotSelected";
+            msgIdentifier = "app.fileNotSelected";
         } else if (input.type === "application/json") {
             this.msg = "";
             this.log.d("Input: ", input);
@@ -157,10 +157,10 @@ export class LoginForm {
                 this.text = JSON.parse(String(reader.result));
             };
         } else {
-            msg_identifier = "app.wrongFile";
+            msgIdentifier = "app.wrongFile";
         }
-        if (msg_identifier) {
-            this.msg = msg_identifier;
+        if (msgIdentifier) {
+            this.msg = msgIdentifier;
         }
     }
 

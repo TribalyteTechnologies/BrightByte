@@ -59,16 +59,6 @@ profile {
       cursor: pointer;
     }
 
-    .success-body {
-        background-color: color($colors, primary);
-        padding: 10px;
-        width: 100%;
-        border-radius: 5px;
-        border: 1px solid color($colors, primary);
-        color: white;
-        margin: 5px;
-    }
-
     .separator {
         padding: 10px;
         border: 1px solid rgba(0, 0, 0, 0.1);
