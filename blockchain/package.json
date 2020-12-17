@@ -31,8 +31,9 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
     "@openzeppelin/contracts": "3.3.0",
+    "@openzeppelin/test-helpers": "0.5.9",
     "@openzeppelin/upgrades": "2.8.0",
-    "@truffle/contract": "^4.3.2",
+    "@truffle/contract": "4.3.2",
     "async": "3.2.0",
     "keccak": "^3.0.1",
     "truffle": "5.1.57",

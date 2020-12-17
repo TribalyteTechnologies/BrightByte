@@ -1,12 +1,11 @@
+const { web3 } = require("@openzeppelin/test-helpers/src/setup");
+const truffleAssert = require("truffle-assertions");
 const Bright = artifacts.require("./Bright.sol");
 const Commits = artifacts.require("./Commits.sol");
 const Root = artifacts.require("./Root.sol");
 const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 const BrightDictionary = artifacts.require("./BrightDictionary.sol");
-const Web3 = require("web3");
-const truffleAssert = require("truffle-assertions");
 
-const NODE_URL = "http://127.0.0.1:7545";
 const NUMBER_OF_USERS = 2;
 const NUMBER_OF_REVIEWERS = 1;
 const NUMBER_OF_REVIEWS = 1;
@@ -64,11 +63,11 @@ contract("Bright", accounts => {
 
     it("Should change season length", async () => {
         let currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
-        parseBnAndAssertEqual(currentSeason[2], INITIAL_SEASON_DAY_LENGTH_SECS, "The initial season length is not correct");
+        assert.equal(parseBnToInt(currentSeason[2]), INITIAL_SEASON_DAY_LENGTH_SECS, "The initial season length is not correct");
 
         await rootInstance.setSeasonLength(NEW_SEASON_LENGTH_DAYS, { from: adminUserAddress });
         currentSeason = await brightInstance.getCurrentSeason({ from: adminUserAddress });
-        parseBnAndAssertEqual(currentSeason[2], NEW_SEASON_LENGTH_DAYS * DAY_TO_SECS, "The season length change was not done correctly");
+        assert.equal(parseBnToInt(currentSeason[2]), NEW_SEASON_LENGTH_DAYS * DAY_TO_SECS, "The season length change was not done correctly");
     });
 
     it("Should give error changing the season length with an invalid address", async () => {
@@ -108,7 +107,6 @@ contract("Bright", accounts => {
     });
 
     it("Should Create and remove a new commit with one reviewer", async () => {
-        const web3 = openConnection();
         let commitUrl = web3.utils.keccak256(COMMIT_URL)
 
         await createNewCommit(brightInstance, commitInstance, rootInstance, accountOne, accountTwo);
@@ -116,10 +114,10 @@ contract("Bright", accounts => {
         await brightInstance.removeUserCommit(commitUrl, { from: accountOne });
 
         user1 = await brightInstance.getUser(accountOne, { from: accountOne });
-        parseBnAndAssertEqual(user1[3], 0);
+        assert.equal(parseBnToInt(user1[3]), 0);
 
         userState = await brightInstance.getUserSeasonState(accountTwo, 1, { from: accountTwo });
-        parseBnAndAssertEqual(userState[0], 0);
+        assert.equal(parseBnToInt(userState[0]), 0);
     });
 
     it("Should Create a new commit with one reviewer", async () => {
@@ -128,28 +126,27 @@ contract("Bright", accounts => {
 
     it("Should review one commit", async () => {
         let userState = await brightInstance.getUserSeasonState(accountTwo, 1, { from: accountTwo });
-        parseBnAndAssertEqual(userState[0], NUMBER_OF_REVIEWS);
-        parseBnAndAssertEqual(userState[1], 0);
+        assert.equal(parseBnToInt(userState[0]), NUMBER_OF_REVIEWS);
+        assert.equal(parseBnToInt(userState[1]), 0);
 
         await commitInstance.setReview(COMMIT_URL, REVIEW_COMMENT, REVIEW_POINTS, { from: accountTwo })
 
         userState = await brightInstance.getUserSeasonState(accountTwo, 1, { from: accountTwo });
-        parseBnAndAssertEqual(userState[0], 0);
-        parseBnAndAssertEqual(userState[1], NUMBER_OF_REVIEWS);
+        assert.equal(parseBnToInt(userState[0]), 0);
+        assert.equal(parseBnToInt(userState[1]), NUMBER_OF_REVIEWS);
     });
 
     it("Should set feedback of commit", async () => {
-        const web3 = openConnection();
         let commitUrl = web3.utils.keccak256(COMMIT_URL)
 
         let comments = await commitInstance.getCommentsOfCommit(commitUrl, { from: accountOne });
         let commentDetails = await commitInstance.getCommentDetail(commitUrl, comments[1][0], { from: accountOne });
-        parseBnAndAssertEqual(commentDetails[1], 0);
+        assert.equal(parseBnToInt(commentDetails[1]), 0);
         
         await rootInstance.setVote(COMMIT_URL, accountTwo, COMMENT_VOTE, { from: accountOne });
 
         commentDetails = await commitInstance.getCommentDetail(commitUrl, comments[1][0], { from: accountOne });
-        parseBnAndAssertEqual(commentDetails[1], COMMENT_VOTE);
+        assert.equal(parseBnToInt(commentDetails[1]), COMMENT_VOTE);
 
     });
 
@@ -167,40 +164,24 @@ async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName
 }
 
 async function createNewCommit(brightInstance, commitInstance, rootInstance, committerAddr, reviewerAddr) {
-    const web3 = openConnection();
 
     await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: committerAddr });
     let user1 = await brightInstance.getUser(committerAddr, { from: committerAddr });
 
-    parseBnAndAssertEqual(user1[3], NUMBER_OF_COMMITS);
+    assert.equal(parseBnToInt(user1[3]), NUMBER_OF_COMMITS);
 
     let userState = await brightInstance.getUserSeasonState(reviewerAddr, 1, { from: reviewerAddr });
-    parseBnAndAssertEqual(userState[0], 0);
+    assert.equal(parseBnToInt(userState[0]), 0);
 
     let reviewers = new Array();
     reviewers.push(emailUserTwoHash);
     await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: committerAddr });
     userState = await brightInstance.getUserSeasonState(reviewerAddr, 1, { from: reviewerAddr });
-    parseBnAndAssertEqual(userState[0], NUMBER_OF_REVIEWS);
-}
-
-function parseBnAndAssertEqual(bigNumber, equalValue, assertMsg) {
-    let integer = parseBnToInt(bigNumber);
-    if (assertMsg){
-        assert.equal(integer, equalValue, assertMsg);
-    }else{
-        assert.equal(integer, equalValue);
-    }
+    assert.equal(parseBnToInt(userState[0]), NUMBER_OF_REVIEWS);
 }
 
 function parseBnToInt(bigNumber) {
-    const web3 = openConnection();
-    var BN = web3.utils.BN;
-    return parseInt(new BN(bigNumber));
-}
-
-function openConnection() {
-    return new Web3(new Web3.providers.HttpProvider(NODE_URL));
+    return parseInt(bigNumber.toString());
 }
 
 async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, usertype, expiration, senderAddress) {
@@ -209,7 +190,7 @@ async function inviteUser(teamManagerInstance, team1Uid, email, invitedAddress, 
     let isUserInvited = await teamManagerInstance.isUserEmailInvitedToTeam(email, team1Uid);
     assert(isUserInvited, "User is not invited to team");
     let invitedUserInfo = await teamManagerInstance.getInvitedUserInfo(email, team1Uid);
-    parseBnAndAssertEqual(invitedUserInfo[2], usertype, "User invitation is not member");
+    assert.equal(parseBnToInt(invitedUserInfo[2]), usertype, "User invitation is not member");
     await registerToTeam(teamManagerInstance, invitedAddress, email, team1Uid, 0, false);
 }
 
@@ -222,7 +203,6 @@ async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid,
 }
 
 async function transformVariables(brightDictionary) {
-    const web3 = openConnection();
     teamNameHash = web3.utils.keccak256(TEAM_NAME);
     emailUserOneHash = web3.utils.keccak256(EMAIL_USER_ONE);
     emailUserTwoHash = web3.utils.keccak256(EMAIL_USER_TWO);

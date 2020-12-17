@@ -1,10 +1,10 @@
+const { web3 } = require("@openzeppelin/test-helpers/src/setup");
 const Bright = artifacts.require("./Bright.sol");
 const Commits = artifacts.require("./Commits.sol");
 const Root = artifacts.require("./Root.sol");
 const CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
 const CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
 const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
-const Web3 = require("web3");
 
 require("truffle-test-utils").init();
 
@@ -73,29 +73,27 @@ contract("EventDispatcher", accounts => {
     });
 
     it("Should Create a new commit with one reviewer", async () => {
-        const web3 = openConnection();
 
         await commitInstance.setNewCommit(COMMIT_TITTLE, COMMIT_URL, NUMBER_OF_REVIEWERS, { from: accountOne });
         let user1 = await brightInstance.getUser(accountOne, { from: accountOne });
-        parseBnAndAssertEqual(user1[3], NUMBER_OF_COMMITS);
+        assert.equal(parseBnToInt(user1[3]), NUMBER_OF_COMMITS);
 
         let userState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
-        parseBnAndAssertEqual(userState[0], 0);
+        assert.equal(parseBnToInt(userState[0]), 0);
 
         let reviewers = new Array();
         reviewers.push(emailUserTwoHash);
         await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
-        parseBnAndAssertEqual(reviewerState[0], NUMBER_OF_COMMITS);
+        assert.equal(parseBnToInt(reviewerState[0]), NUMBER_OF_COMMITS);
     });
 
     it("Should Create a new review", async () => {
         let reviewerState = await brightInstance.getUser(accountTwo, { from: accountTwo });
-        parseBnAndAssertEqual(reviewerState[2], 0);
+        assert.equal(parseBnToInt(reviewerState[2]), 0);
         commitInstance.setReview(COMMIT_URL, REVIEW_TEXT, REVIEW_POINTS, { from: accountTwo });
-        const web3 = openConnection();
         reviewerState = await brightInstance.getUser(accountTwo, { from: accountTwo });
-        parseBnAndAssertEqual(reviewerState[2], NUMBER_OF_REVIEWS);
+        assert.equal(parseBnToInt(reviewerState[2]), NUMBER_OF_REVIEWS);
     });
 
     it("Check the event emmited for the new Users", async () => {
@@ -115,24 +113,23 @@ contract("EventDispatcher", accounts => {
 
     it("Should Create a new commit and then delete it", async () => {
         const urlCommit = COMMIT_URL + "delete";
-        const web3 = openConnection();
         let user1 = await brightInstance.getUser(accountOne, { from: accountOne });
         const initialNumberOfCommits = parseBnToInt(user1[3]);
         await commitInstance.setNewCommit(COMMIT_TITTLE, urlCommit, NUMBER_OF_REVIEWERS, { from: accountOne });
         user1 = await brightInstance.getUser(accountOne, { from: accountOne });
-        parseBnAndAssertEqual(user1[3], initialNumberOfCommits + 1);
+        assert.equal(parseBnToInt(user1[3]), initialNumberOfCommits + 1);
 
         let reviewers = new Array();
         reviewers.push(emailUserTwoHash);
         await rootInstance.notifyCommit(COMMIT_URL, reviewers, { from: accountOne });
         let reviewerState = await brightInstance.getUserSeasonState(accountTwo, INITIAL_SEASON_INDEX, { from: accountTwo });
-        parseBnAndAssertEqual(reviewerState[0], 1);
+        assert.equal(parseBnToInt(reviewerState[0]), 1);
 
         const urlKeccak = web3.utils.keccak256(urlCommit);
         await brightInstance.removeUserCommit(urlKeccak, { from: accountOne });
 
         user1 = await brightInstance.getUser(accountOne, { from: accountOne });
-        parseBnAndAssertEqual(user1[3], initialNumberOfCommits);
+        assert.equal(parseBnToInt(user1[3]), initialNumberOfCommits);
     });
 
     it("Check the event emmited for the new review", async () => {
@@ -152,28 +149,11 @@ async function createTeamAndDeployContracts(cloudTeamManager, userMail, teamName
     return teamUid;
 }
 
-function openConnection() {
-    return new Web3(new Web3.providers.HttpProvider(NODE_URL));
-}
-
-function parseBnAndAssertEqual(bigNumber, equalValue, assertMsg) {
-    let integer = parseBnToInt(bigNumber);
-    if (assertMsg){
-        assert.equal(integer, equalValue, assertMsg);
-    }else{
-        assert.equal(integer, equalValue);
-    }
-}
-
 function parseBnToInt(bigNumber) {
-    const web3 = openConnection();
-    var BN = web3.utils.BN;
-    let integer = parseInt(new BN(bigNumber));
-    return integer;
+    return parseInt(bigNumber.toString());
 }
 
 async function instanceContractEvent(cloudEventDispatcher, eventType) {
-    const web3 = openConnection();
     const contract = new web3.eth.Contract(cloudEventDispatcher.abi, cloudEventDispatcher.address);
     const eventsResult = await contract.getPastEvents(eventType, {fromBlock: 0, toBlock: "latest"});
     return eventsResult;
@@ -198,7 +178,6 @@ async function registerToTeam(teamManagerInstance, userAddress, email, team1Uid,
 }
 
 async function transformVariables() {
-    const web3 = openConnection();
     teamNameHash = web3.utils.utf8ToHex(TEAM_NAME);
     userOneHash = web3.utils.utf8ToHex(USER_ONE);
     emailUserOneHash = web3.utils.utf8ToHex(EMAIL_USER_ONE);

@@ -1,11 +1,9 @@
+const { web3 } = require("@openzeppelin/test-helpers/src/setup");
 const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
 const ProxyManager = artifacts.require("./ProxyManager.sol");
-const Web3 = require("web3");
 
-const NODE_URL = "http://127.0.0.1:7545";
 
 contract("CloudTeamManager", accounts => {
-    const web3 = openConnection();
 
     const EMAIL_ACCOUNTS = ["0@example.com", "1@example.com", "2@example.com"];
     const HASH_EMAIL_ACCOUNTS = EMAIL_ACCOUNTS.map(email =>  web3.utils.utf8ToHex(email));
@@ -52,7 +50,7 @@ contract("CloudTeamManager", accounts => {
                 assert(response.receipt.status, "The transaction was not created correctly");
                 return teamManagerInstance.getUserTeam(adminOwnerAccount);
             }).then(teamUids => {
-                team1Uid = parseBn(teamUids[teamUids.length-1]);
+                team1Uid = parseBnToInt(teamUids[teamUids.length-1]);
                 assert(teamUids.length !== EMPTY_TEAM_ID, "Team was created incorrectly");
                 return teamManagerInstance.getTeamMembers(team1Uid);
             })
@@ -362,17 +360,16 @@ contract("CloudTeamManager", accounts => {
         let proxyManager = await ProxyManager.deployed();
         let currentVersion = await proxyManager.getCurrentVersion();
         let versions = await proxyManager.getUserTeamVersions(adminOwnerAccount, { from: adminOwnerAccount });
-        assert.equal(parseBn(currentVersion), parseBn(versions[versions.length - 1]), "The user is not participating in the current version");
+        assert.equal(parseBnToInt(currentVersion), parseBnToInt(versions[versions.length - 1]), "The user is not participating in the current version");
     });
 
     it("should add a new version to the Proxy Manager", async () => {
-        const web3 = openConnection();
         let proxyManager = await ProxyManager.deployed();
         let newCloudTeamManager = await CloudTeamManager.new();
         const newAddress = newCloudTeamManager.address;
         await proxyManager.setNewVersion(NEW_VERSION, newAddress, { from: adminOwnerAccount });
         let currentVersion = await proxyManager.getCurrentVersion();
-        assert.equal(parseBn(currentVersion), NEW_VERSION, "The expected new version is wrong");
+        assert.equal(parseBnToInt(currentVersion), NEW_VERSION, "The expected new version is wrong");
         let currentVersionAddress = await proxyManager.getVersionContracts(currentVersion);
         assert(currentVersionAddress === newAddress, "The user is not participating in the current version");
     });
@@ -394,7 +391,7 @@ function inviteUser(teamManagerInstance, team1Uid, email, usertype, expiration, 
         return teamManagerInstance.getInvitedUserInfo(email, team1Uid);
     })
     .then(invitedUserInfo => {
-        assert(parseBn(invitedUserInfo[2]) === usertype, "User invitation is not member");
+        assert(parseBnToInt(invitedUserInfo[2]) === usertype, "User invitation is not member");
     });
 }
 
@@ -442,14 +439,8 @@ function concatEndPromise(teamManagerInstance, promise, teamUId, shouldFail) {
     return newPromise;
 }
 
-function parseBn(bigNumber) {
-    const web3 = openConnection();
-    var BN = web3.utils.BN;
-    return parseInt(new BN(bigNumber));
-}
-
-function openConnection() {
-    return new Web3(new Web3.providers.HttpProvider(NODE_URL));
+function parseBnToInt(bigNumber) {
+    return parseInt(bigNumber.toString());
 }
 
 async function deployTeamContracts(userMail, teamManagerInstance, teamUid, seasonLength, adminUserAddress) {
