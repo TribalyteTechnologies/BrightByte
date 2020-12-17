@@ -3,14 +3,14 @@ const ProxyManagerJson = require("../build/contracts/ProxyManager.json");
 const CloudTeamManagerJson = require("../build/contracts/CloudTeamManager.json");
 const CloudEventJson = require("../build/contracts/CloudEventDispatcher.json");
 const SMART_CONTRACT_VERSION = require("../../version.json");
-const CURRENT_VERSION = SMART_CONTRACT_VERSION.version;
+const CURRENT_VERSION = SMART_CONTRACT_VERSION.versionContract;
 
-const OWNER_ADDRESS = "0x0";
-const OWNER_EVENT = "0x0";
-const PROXY_MANAGER_ADDRESS = "0x0";
-const CLOUD_EVENT_ADDRESS = "0x0";
-const NEW_TEAM_MANAGER_ADDRESS = "0x0";
-const NEW_BB_FACTORY_ADDRESS = "0x0";
+const OWNER_ADDRESS = "0xA47b95E415516a34469540e50FC0c0A539ED0bc9";
+const OWNER_EVENT = "0x94c519c57bc27B75C88bDf8c68181C5D2F7340d8";
+const PROXY_MANAGER_ADDRESS = "0xcc6A01C89c36BC95433194B4dD6f8145705581EC";
+const CLOUD_EVENT_ADDRESS = "0x5c18abFc841E2b3dbD00f49637416736e1298564";
+const NEW_TEAM_MANAGER_ADDRESS = "0xf0D0F097d130C8dB43e1a38780F2b0696a863325";
+const NEW_BB_FACTORY_ADDRESS = "0x17357bb21B28d7B6005732fD28CdF273131B66FC";
 const URL_PROVIDER = "http://localhost:7545";
 
 let proxyContract;
