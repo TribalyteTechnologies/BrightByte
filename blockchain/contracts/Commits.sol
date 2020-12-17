@@ -1,6 +1,7 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
-import "./openzeppelin/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, ICommit } from "./IBrightByte.sol";
@@ -58,7 +59,7 @@ contract Commits is ICommit, Initializable {
         _;
     }
 
-    function initialize(address _root) public initializer {
+    function initialize(address _root) public override initializer {
         require(rootAddress == address(0), "Root address cannot be 0");
         owner = msg.sender;
         root = IRoot(_root);
@@ -78,12 +79,17 @@ contract Commits is ICommit, Initializable {
 
     function setNewCommit (string memory _title, string memory _url, uint256 _users) public onlyAllowed {
         address auth = tx.origin;
-        address[] memory a;
         bytes32 _id = keccak256(abi.encodePacked(_url));
-        if(storedData[_id].author == address(0)){
-            storedData[_id] = Commit(_title, _url, msg.sender, block.timestamp, false, block.timestamp,_users, 0, 0, 0, 0, 0, a,a);
-            allCommitsArray.push(_id);
+        if(storedData[_id].author == address(0)) {
             if(msg.sender == tx.origin){
+                Commit storage newCommit = storedData[_id];
+                newCommit.title = _title;
+                newCommit.url = _url;
+                newCommit.author = msg.sender;
+                newCommit.creationDate =  block.timestamp;
+                newCommit.lastModificationDate = block.timestamp;
+                newCommit.numberReviews = _users;
+                allCommitsArray.push(_id);
                 root.setNewCommit(_id);
             }
         } else {
@@ -91,7 +97,7 @@ contract Commits is ICommit, Initializable {
             storedData[_id].title = _title;
         }
     }
-    function notifyCommit(bytes32 url,address a) public onlyRoot {
+    function notifyCommit(bytes32 url,address a) public override onlyRoot {
         require(storedData[url].author == tx.origin, "Author is not tx sender");
         bool saved = false;
         for(uint256 i = 0; i < storedData[url].pendingComments.length; i++){
@@ -113,7 +119,7 @@ contract Commits is ICommit, Initializable {
         }
     }
 
-    function deleteCommit(bytes32 url) public onlyRoot {
+    function deleteCommit(bytes32 url) public override onlyRoot {
         UtilsLib.removeFromArray(allCommitsArray, url);
         delete storedData[url];
     }
@@ -121,7 +127,7 @@ contract Commits is ICommit, Initializable {
     function getDetailsCommits(bytes32 _url) public onlyAllowed view
     returns(string memory, string memory, address, uint, uint, bool, uint256, uint256, uint256){
         bytes32 id = _url;
-        Commit memory data = storedData[id];
+        Commit storage data = storedData[id];
         return (data.url,
                 data.title,
                 data.author,
@@ -142,7 +148,7 @@ contract Commits is ICommit, Initializable {
     function getAllCommitsId(uint index) public onlyAllowed view returns(bytes32){
         return allCommitsArray[index];
     }
-    function getNumbersNeedUrl(bytes32 _url) public onlyAllowed view returns (uint, uint){
+    function getNumbersNeedUrl(bytes32 _url) public override onlyAllowed view returns (uint, uint){
         return (storedData[_url].pendingComments.length,
                 storedData[_url].finishedComments.length
         );
@@ -175,7 +181,7 @@ contract Commits is ICommit, Initializable {
         for (uint256 j = 0;j < commit.pendingComments.length; j++){
             if (author == commit.pendingComments[j]){
                 commit.pendingComments[j] = commit.pendingComments[commit.pendingComments.length-1];
-                commit.pendingComments.length--;
+                commit.pendingComments.pop();
                 saved = true;
                 break;
             }
@@ -216,18 +222,20 @@ contract Commits is ICommit, Initializable {
         //score per commit
         root.setReview(url, commit.author);
     }
-    function setVote(bytes32 url, address user, uint256 vote) public onlyRoot {
+
+    function setVote(bytes32 url, address user, uint256 vote)
+    public override onlyRoot {
         require(storedData[url].author == tx.origin, "Commit author is not sender");
         assert(vote == 1 || vote == 2 || vote == 3);
         require(storedData[url].commitComments[user].author == user, "Comment author is not user");
         storedData[url].commitComments[user].vote = vote;
     }
-    function readCommit(bytes32 _url) public onlyRoot {
+    function readCommit(bytes32 _url) public override onlyRoot {
         if(storedData[_url].author == tx.origin){
             storedData[_url].isReadNeeded = false;
         }
     }
-    function isCommit(bytes32 _url) public onlyRoot view returns(bool,bool){
+    function isCommit(bytes32 _url) public override onlyRoot view returns(bool,bool){
         bool yes = false;
         bool auth = false;
         if(storedData[_url].author != address(0)){
@@ -239,15 +247,15 @@ contract Commits is ICommit, Initializable {
         return (yes,auth);
     }
 
-    function getCommitScores(bytes32 url) public onlyAllowed view returns (uint256, uint256, uint256, uint256) {
+    function getCommitScores(bytes32 url) public override onlyAllowed view returns (uint256, uint256, uint256, uint256) {
         return(storedData[url].score, storedData[url].weightedComplexity, storedData[url].previousScore, storedData[url].previousComplexity);
     }
 
-    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view returns (address) {
+    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public override view returns (address) {
         return storedData[url].pendingComments[reviewerIndex];
     }
 
-    function allowNewUser(address userAddress) public onlyRoot {
+    function allowNewUser(address userAddress) public override onlyRoot {
         allowedAddresses[userAddress] = true;
     }
 }

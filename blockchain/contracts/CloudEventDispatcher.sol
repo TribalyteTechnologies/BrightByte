@@ -1,4 +1,5 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
 contract CloudEventDispatcher {
 
@@ -21,7 +22,7 @@ contract CloudEventDispatcher {
         _;
     }
 
-    constructor() public {
+    constructor() {
         ownerList[msg.sender] = true;
         contractList[msg.sender] = true;
     }

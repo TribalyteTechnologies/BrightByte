@@ -1,5 +1,5 @@
 const Web3 = require("web3");
-var Contract = require("truffle-contract");
+const Contract = require("@truffle/contract");
 var CloudTeamManagerJson = require("../build/contracts/CloudTeamManager.json");
 var ProxyJson = require("../build/contracts/AdminUpgradeabilityProxy.json");
 var CloudBbFactoryJson = require("../build/contracts/CloudBrightByteFactory.json");

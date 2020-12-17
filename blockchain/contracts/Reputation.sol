@@ -1,4 +1,5 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
 library Reputation {
     uint256 private constant WEIGHT_FACTOR = 10000000000;

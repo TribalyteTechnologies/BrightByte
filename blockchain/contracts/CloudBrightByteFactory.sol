@@ -1,6 +1,7 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
-import "./openzeppelin/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 import { BrightDeployerLib } from "./deployers/BrightDeployerLib.sol";
 import { CommitsDeployerLib } from "./deployers/CommitsDeployerLib.sol";
 import { BrightByteSettingsDeployerLib } from "./deployers/BrightByteSettingsDeployerLib.sol";

@@ -1,4 +1,5 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
 library UtilsLib {
 
@@ -59,8 +60,7 @@ library UtilsLib {
         }
         if(isFound) {
             array[index] = array[arrayLength - 1];
-            delete array[arrayLength - 1];
-            array.length--;
+            array.pop();
         }
     }
 
@@ -77,8 +77,7 @@ library UtilsLib {
         }
         if(isFound) {
             array[index] = array[arrayLength - 1];
-            delete array[arrayLength - 1];
-            array.length--;
+            array.pop();
         }
     }
 
@@ -95,8 +94,7 @@ library UtilsLib {
         }
         if(isFound) {
             array[index] = array[arrayLength - 1];
-            delete array[arrayLength - 1];
-            array.length--;
+            array.pop();
         }
     }
 }

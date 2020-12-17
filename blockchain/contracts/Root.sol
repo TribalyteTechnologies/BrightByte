@@ -1,6 +1,7 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
-import "./openzeppelin/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "./BrightByteSettings.sol";
 import "./CloudEventDispatcher.sol";
 import { Reputation } from "./Reputation.sol";
@@ -81,7 +82,7 @@ contract Root is IRoot, Initializable {
     }
 
     //sendNotificationOfNewCommit function must be called from the front after call setNewCommit
-    function setNewCommit(bytes32 url) public onlyCommit {
+    function setNewCommit(bytes32 url) public override onlyCommit {
         remoteBright.setCommit(url);
     }
 
@@ -107,7 +108,7 @@ contract Root is IRoot, Initializable {
         remoteCommits.readCommit(keccak256(abi.encodePacked(url)));
     }
 
-    function setReview(bytes32 url,address a) public onlyCommit {
+    function setReview(bytes32 url,address a) public override onlyCommit {
         remoteBright.setReview(url,a);
     }
 
@@ -122,12 +123,12 @@ contract Root is IRoot, Initializable {
     }
 
     function calculatePonderation(uint256[] memory cleanliness, uint256[] memory complexity, uint256[] memory revKnowledge)
-    public onlyCommit view returns(uint256, uint256) {
+    public override onlyCommit view returns(uint256, uint256) {
         return Reputation.calculateCommitPonderation(cleanliness, complexity, revKnowledge);
     }
 
     function calculateUserReputation(bytes32 commitsUrl, uint256 reputation, uint256 cumulativeComplexity)
-    public onlyBright view returns (uint256, uint256) {
+    public override onlyBright view returns (uint256, uint256) {
         uint256 commitScore;
         uint256 commitPonderation;
         uint256 previousScore;
@@ -137,22 +138,22 @@ contract Root is IRoot, Initializable {
             reputation, cumulativeComplexity, commitScore, commitPonderation, previousScore, previousPonderation);
     }
 
-    function checkCommitSeason(bytes32 url,address author) public onlyCommit view returns (bool) {
+    function checkCommitSeason(bytes32 url,address author) public override onlyCommit view returns (bool) {
         return remoteBright.checkCommitSeason(url,author);
     }
 
-    function getNumberOfReviews(bytes32 url) public view onlyBright returns (uint, uint) {
+    function getNumberOfReviews(bytes32 url) public override view onlyBright returns (uint, uint) {
         uint pending;
         uint finish;
         (pending, finish) = remoteCommits.getNumbersNeedUrl(url);
         return (pending, finish);
     }
 
-    function deleteCommit(bytes32 url) public onlyBright {
+    function deleteCommit(bytes32 url) public override onlyBright {
         remoteCommits.deleteCommit(url);
     }
 
-    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public view onlyBright returns (address) {
+    function getCommitPendingReviewer(bytes32 url, uint reviewerIndex) public override view onlyBright returns (address) {
         return remoteCommits.getCommitPendingReviewer(url, reviewerIndex);
     }
 
@@ -178,11 +179,11 @@ contract Root is IRoot, Initializable {
     }
 
     function setNewSeasonThreshold(uint256 currentSeasonIndex, uint256 averageNumberOfCommits, uint256 averageNumberOfReviews)
-    public onlyBright {
+    public override onlyBright {
         remoteSettings.setNewSeasonThreshold(currentSeasonIndex, averageNumberOfCommits, averageNumberOfReviews);
     }
 
-    function allowNewUser(address userAddress) public onlyBright {
+    function allowNewUser(address userAddress) public override onlyBright {
         allowedAddresses[userAddress] = true;
         remoteCommits.allowNewUser(userAddress);
     }

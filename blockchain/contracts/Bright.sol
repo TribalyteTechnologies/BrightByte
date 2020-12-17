@@ -1,7 +1,8 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
 import "./CloudEventDispatcher.sol";
-import "./openzeppelin/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";
@@ -48,7 +49,7 @@ contract Bright is IBright, Initializable {
     }
 
     function initialize (address _root, address _cloudEventDispatcherAddress, uint256 teamId, uint256 seasonLength, address userAdmin)
-    public initializer {
+    public override initializer {
         require(rootAddress == address(0), "Root address canot be 0");
         root = IRoot(_root);
         rootAddress = _root;
@@ -62,7 +63,7 @@ contract Bright is IBright, Initializable {
         allowedAddresses[userAdmin] = true;
     }
 
-    function setVersion(uint256 version) public {
+    function setVersion(uint256 version) public override {
         brightbyteVersion = version;
     }
 
@@ -84,7 +85,7 @@ contract Bright is IBright, Initializable {
         root.allowNewUser(user);
     }
 
-    function setSeasonLength(uint256 seasonLengthDays) public {
+    function setSeasonLength(uint256 seasonLengthDays) public override {
         uint256 changeLimitTime = initialSeasonTimestamp + seasonLengthSecs - LIMIT_CHANGE_LENGTH;
         require(currentSeasonIndex == 1 && block.timestamp < changeLimitTime, "Not able to change the seasons length");
         require(seasonLengthDays > 0 && seasonLengthDays < MAX_SEASON_LENGTH_DAYS, "Invalid season length");
@@ -95,27 +96,27 @@ contract Bright is IBright, Initializable {
         return allUsersArray;
     }
 
-    function getAddressByEmail(bytes32 email) public onlyAllowed view returns(address) {
+    function getAddressByEmail(bytes32 email) public override onlyAllowed view returns(address) {
         return emailUserMap.map[email];
     }
 
     function getUser(address userHash) public onlyAllowed view returns (string memory, bytes32, uint256, uint256, uint256, address) {
-        BrightModels.UserProfile memory user = hashUserMap.map[userHash];
-        return (user.name,
-            user.email,
-            user.globalStats.reviewsMade,
-            user.globalStats.commitsMade,
-            user.globalStats.agreedPercentage,
-            user.hash
+        return (
+            hashUserMap.map[userHash].name,
+            hashUserMap.map[userHash].email,
+            hashUserMap.map[userHash].globalStats.reviewsMade,
+            hashUserMap.map[userHash].globalStats.commitsMade,
+            hashUserMap.map[userHash].globalStats.agreedPercentage,
+            hashUserMap.map[userHash].hash
         );
     }
 
     function getUserSeasonReputation(address userHash, uint256 seasonIndex)
     public onlyAllowed view returns(string memory, bytes32, uint256, uint256, uint256, uint256, address, uint256) {
-        BrightModels.UserProfile memory user = hashUserMap.map[userHash];
-        BrightModels.UserSeason memory season = hashUserMap.map[userHash].seasonData[seasonIndex];
-        return (user.name,
-            user.email,
+        BrightModels.UserProfile storage user = hashUserMap.map[userHash];
+        BrightModels.UserSeason storage season = hashUserMap.map[userHash].seasonData[seasonIndex];
+        return (hashUserMap.map[userHash].name,
+            hashUserMap.map[userHash].email,
             season.seasonStats.reputation,
             season.seasonStats.reviewsMade,
             season.seasonStats.commitsMade,
@@ -125,7 +126,7 @@ contract Bright is IBright, Initializable {
         );
     }
 
-    function setCommit(bytes32 url) public onlyRoot {
+    function setCommit(bytes32 url) public override onlyRoot {
         checkSeason();
         address sender = tx.origin;
         require ((hashUserMap.map[sender].hash == sender && !allCommits[url]), "Not able to set a new commit");
@@ -139,7 +140,7 @@ contract Bright is IBright, Initializable {
         remoteCloudEventDispatcher.emitNewCommitEvent(teamUid, sender, user.globalStats.commitsMade, brightbyteVersion);
     }
 
-    function notifyCommit(string memory a, bytes32 email) public onlyRoot {
+    function notifyCommit(string memory a, bytes32 email) public override onlyRoot {
         bytes32 url = keccak256(abi.encodePacked(a));
         address user = getAddressByEmail(email);
         require(user != address(0), "User address is 0");
@@ -207,7 +208,7 @@ contract Bright is IBright, Initializable {
         return allUsersArray.length;
     }
 
-    function setReview(bytes32 url, address author) public onlyRoot {
+    function setReview(bytes32 url, address author) public override onlyRoot {
         address sender = tx.origin;
         require(hashUserMap.map[author].hash == author && hashUserMap.map[sender].hash == sender, "Author or sender is not correct");
         checkSeason();
@@ -216,7 +217,7 @@ contract Bright is IBright, Initializable {
         for (uint256 j = 0 ; j < reviewer.seasonData[currentSeasonIndex].pendingReviews.length; j++){
             if (url == reviewer.seasonData[currentSeasonIndex].pendingReviews[j]){
                 reviewer.seasonData[currentSeasonIndex].pendingReviews[j] = reviewer.seasonData[currentSeasonIndex].pendingReviews[reviewer.seasonData[currentSeasonIndex].pendingReviews.length-1];
-                reviewer.seasonData[currentSeasonIndex].pendingReviews.length--;
+                reviewer.seasonData[currentSeasonIndex].pendingReviews.pop();
                 break;
             }
         }
@@ -257,7 +258,7 @@ contract Bright is IBright, Initializable {
         UtilsLib.removeFromArray(userSeason.toRead, url);
     }
 
-    function setFeedback(bytes32 url, address userAddr, bool value, uint256 vote) public onlyRoot{
+    function setFeedback(bytes32 url, address userAddr, bool value, uint256 vote) public override onlyRoot{
         address sender = userAddr;
         address maker = tx.origin;
         require(hashUserMap.map[sender].hash == sender && hashUserMap.map[maker].hash == maker, "Author or sender is not correct");
@@ -281,7 +282,7 @@ contract Bright is IBright, Initializable {
             for (uint256 i = 0 ; i < userSeason.toRead.length; i++){
                 if (url == userSeason.toRead[i]){
                     userSeason.toRead[i] = userSeason.toRead[userSeason.toRead.length - 1];
-                    userSeason.toRead.length--;
+                    userSeason.toRead.pop();
                     break;
                 }
             }
@@ -293,13 +294,13 @@ contract Bright is IBright, Initializable {
             (hashUserMap.map[userHash].seasonData[indSeason].seasonStats.positeVotes, hashUserMap.map[userHash].seasonData[indSeason].seasonStats.negativeVotes);
     }
 
-    function getCurrentSeason() public onlyAllowed view returns (uint256, uint256, uint256) {
+    function getCurrentSeason() public override onlyAllowed view returns (uint256, uint256, uint256) {
         uint256 totalTimeSeasons = currentSeasonIndex * seasonLengthSecs;
         uint256 seasonFinaleTime = initialSeasonTimestamp + totalTimeSeasons;
         return (currentSeasonIndex, seasonFinaleTime, seasonLengthSecs);
     }
 
-    function checkCommitSeason(bytes32 url,address author) public onlyAllowed view returns (bool) {
+    function checkCommitSeason(bytes32 url,address author) public override onlyAllowed view returns (bool) {
         return hashUserMap.map[author].seasonData[currentSeasonIndex].seasonCommits[url];
     }
 
@@ -309,7 +310,7 @@ contract Bright is IBright, Initializable {
 
     function checkSeason() public onlyAllowed {
         uint256 seasonFinale = initialSeasonTimestamp + (currentSeasonIndex * seasonLengthSecs);
-        bool isSeasonEnded = now > seasonFinale;
+        bool isSeasonEnded = block.timestamp > seasonFinale;
         if (isSeasonEnded) {
             currentSeasonIndex++;
             remoteCloudEventDispatcher.emitNewSeason(teamUid, currentSeasonIndex, brightbyteVersion);

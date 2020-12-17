@@ -1,6 +1,7 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
-import "./openzeppelin/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 
 contract BrightByteSettings is Initializable {
 

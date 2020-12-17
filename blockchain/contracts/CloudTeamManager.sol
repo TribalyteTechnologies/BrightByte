@@ -1,6 +1,7 @@
-pragma solidity 0.5.17;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.0;
 
-import "./openzeppelin/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
 import { UtilsLib } from "./UtilsLib.sol";
@@ -153,7 +154,7 @@ contract CloudTeamManager is Initializable {
         }
         user.isInvited = true;
         user.userType = userType;
-        user.expirationTime = now + exp;
+        user.expirationTime = block.timestamp + exp;
     }
 
     function removeInvitationToTeam(uint256 teamUid, bytes32 emailId) public onlyAdmins(teamUid) {
@@ -179,7 +180,7 @@ contract CloudTeamManager is Initializable {
 
     function registerToTeam(address memberAddress, bytes32 emailId, uint256 teamUid) public onlySender(memberAddress) {
         require(teamUid != 0 && isUserEmailInvitedToTeam(emailId, teamUid), "TeamUid is 0 or email is not invited to team");
-        if (usersRegister[emailId].userTeams[teamUid].expirationTime > now) {
+        if (usersRegister[emailId].userTeams[teamUid].expirationTime > block.timestamp) {
             addToTeam(teamUid, memberAddress, emailId, UserType.NotRegistered);
             remoteBbFactory.inviteUserEmail(teamUid, emailId);
             if(createdTeams[teamUid].users[memberAddress].userType == UserType.Admin) {

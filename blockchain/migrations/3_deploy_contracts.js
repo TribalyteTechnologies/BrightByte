@@ -1,24 +1,26 @@
 const fs = require("fs")
-var Bright = artifacts.require("./Bright.sol");
-var Commits = artifacts.require("./Commits.sol");
-var BrightByteSettings = artifacts.require("./BrightByteSettings.sol");
-var CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
-var Root = artifacts.require("./Root.sol");
-var Reputation = artifacts.require("./Reputation.sol");
-var BrightModels = artifacts.require("./BrightModels.sol");
-var UtilsLib = artifacts.require("./UtilsLib.sol");
-var CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
-var CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
-var ProxyManager = artifacts.require("./ProxyManager.sol");
-var CloudProjectStore = artifacts.require("./CloudProjectStore.sol");
-var BrightDeployerLib = artifacts.require("./BrightDeployerLib.sol");
-var CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
-var BrightByteSettingsDeployerLib = artifacts.require("./BrightByteSettingsDeployerLib.sol");
-var RootDeployerLib = artifacts.require("./RootDeployerLib.sol");
-var BrightDictionary = artifacts.require("./BrightDictionary.sol");
-var Proxy = artifacts.require("./contracts/openzeppelin/upgradeability/AdminUpgradeabilityProxy.sol");
-var scVersionObj = require("../../version.json");
+const Contract = require("@truffle/contract");
+const Bright = artifacts.require("./Bright.sol");
+const Commits = artifacts.require("./Commits.sol");
+const BrightByteSettings = artifacts.require("./BrightByteSettings.sol");
+const CloudEventDispatcher = artifacts.require("./CloudEventDispatcher.sol");
+const Root = artifacts.require("./Root.sol");
+const Reputation = artifacts.require("./Reputation.sol");
+const BrightModels = artifacts.require("./BrightModels.sol");
+const UtilsLib = artifacts.require("./UtilsLib.sol");
+const CloudTeamManager = artifacts.require("./CloudTeamManager.sol");
+const CloudBBFactory = artifacts.require("./CloudBrightByteFactory.sol");
+const ProxyManager = artifacts.require("./ProxyManager.sol");
+const CloudProjectStore = artifacts.require("./CloudProjectStore.sol");
+const BrightDeployerLib = artifacts.require("./BrightDeployerLib.sol");
+const CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
+const BrightByteSettingsDeployerLib = artifacts.require("./BrightByteSettingsDeployerLib.sol");
+const RootDeployerLib = artifacts.require("./RootDeployerLib.sol");
+const BrightDictionary = artifacts.require("./BrightDictionary.sol");
+const ProxyJSON = require("../node_modules/@openzeppelin/upgrades/build/contracts/AdminUpgradeabilityProxy.json")
+const scVersionObj = require("../../version.json");
 const TruffleConfig = require("../truffle-config");
+const Proxy = Contract(ProxyJSON);
 
 const TEAM_UID = 1;
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -59,28 +61,30 @@ module.exports = async function (deployer, network, accounts) {
     let proxyManager = await deployer.deploy(ProxyManager);
     await proxyManager.initialize(versionContract, teamManager.address, { from: OWNER_ACCOUNT });
 
+    Proxy.setProvider(deployer.provider);
+
     let cloudBBFactory = await CloudBBFactory.new();
-    let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, OWNER_ACCOUNT, []);
+    let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, OWNER_ACCOUNT, [], { from: OWNER_ACCOUNT });
     cloudBBFactory = await CloudBBFactory.at(proxyCloudBBFactory.address);
     console.log("CloudBBFactory deployed: ", proxyCloudBBFactory.address);
 
     let cloudTeamManager = await CloudTeamManager.new();
-    let proxyCloudTeamManager = await Proxy.new(cloudTeamManager.address, OWNER_ACCOUNT, []);
+    let proxyCloudTeamManager = await Proxy.new(cloudTeamManager.address, OWNER_ACCOUNT, [], { from: OWNER_ACCOUNT });
     cloudTeamManager = await CloudTeamManager.at(proxyCloudTeamManager.address);
     console.log("CloudTeamManager deployed: ", proxyCloudTeamManager.address);
 
     let cloudProjectStore = await CloudProjectStore.new(EMPTY_ADDRESS);
-    let proxyCloudProjectStore = await Proxy.new(cloudProjectStore.address, OWNER_ACCOUNT, []);
+    let proxyCloudProjectStore = await Proxy.new(cloudProjectStore.address, OWNER_ACCOUNT, [], { from: OWNER_ACCOUNT });
     cloudProjectStore = await CloudProjectStore.at(proxyCloudProjectStore.address);
     console.log("CloudProjectStore deployed: ", cloudProjectStore.address);
 
     let brightDictionary = await BrightDictionary.new();
-    let proxyBrightDictionary = await Proxy.new(brightDictionary.address, OWNER_ACCOUNT, []);
+    let proxyBrightDictionary = await Proxy.new(brightDictionary.address, OWNER_ACCOUNT, [],  { from: OWNER_ACCOUNT });
     brightDictionary = await BrightDictionary.at(proxyBrightDictionary.address);
     console.log("BrightDictionary deployed: ", proxyBrightDictionary.address);
 
     let cloudProxyManager = await ProxyManager.new();
-    let proxyCloudProxyManager = await Proxy.new(cloudProxyManager.address, OWNER_ACCOUNT, []);
+    let proxyCloudProxyManager = await Proxy.new(cloudProxyManager.address, OWNER_ACCOUNT, [],  { from: OWNER_ACCOUNT });
     cloudProxyManager = await ProxyManager.at(proxyCloudProxyManager.address);
     console.log("ProxyManager deployed: ", proxyCloudProxyManager.address);
 
