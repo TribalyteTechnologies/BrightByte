@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
+import "@openzeppelin/contracts/math/SafeMath.sol";
 pragma solidity 0.7.0;
 
 library UtilsLib {
-
+    using SafeMath for uint256;
     function splitArray(bytes32[] storage array, uint256 start, uint256 end) public view returns (bytes32[] memory) {
         bytes32[] memory newArray;
         uint arrayLength = array.length;

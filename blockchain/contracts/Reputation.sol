@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
+import "@openzeppelin/contracts/math/SafeMath.sol";
 pragma solidity 0.7.0;
 
 library Reputation {
+    using SafeMath for uint256;
     uint256 private constant WEIGHT_FACTOR = 10000000000;
     function calculateCommitPonderation(uint256[] memory cleanliness, uint256[] memory complexity, uint256[] memory revKnowledge)
     public pure returns (uint256, uint256) {

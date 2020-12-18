@@ -2,12 +2,13 @@
 pragma solidity 0.7.0;
 
 import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./CloudBrightByteFactory.sol";
 import "./CloudProjectStore.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 
 contract CloudTeamManager is Initializable {
-
+    using SafeMath for uint256;
     uint256 constant public INVITATION_DURATION_IN_SECS = 1 * 60 * 60 * 24 * 7;
     enum UserType { NotRegistered, Admin, Member }
     uint256 private seasonLengthInDays;

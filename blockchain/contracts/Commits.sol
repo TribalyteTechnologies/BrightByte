@@ -2,11 +2,13 @@
 pragma solidity 0.7.0;
 
 import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, ICommit } from "./IBrightByte.sol";
 
 contract Commits is ICommit, Initializable {
+    using SafeMath for uint256;
     IRoot private root;
     address private rootAddress;
     bytes32[] private allCommitsArray;

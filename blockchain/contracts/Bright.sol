@@ -3,12 +3,14 @@ pragma solidity 0.7.0;
 
 import "./CloudEventDispatcher.sol";
 import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import { BrightModels } from "./BrightModels.sol";
 import { UtilsLib } from "./UtilsLib.sol";
 import { IRoot, IBright } from "./IBrightByte.sol";
 
 contract Bright is IBright, Initializable {
+    using SafeMath for uint256;
     uint256 private constant FEEDBACK_MULTIPLER = 100;
     uint256 private constant HOUR_TO_SECS = 60 * 60;
     uint256 private constant DAY_LENGTH_SECS = 24 * HOUR_TO_SECS;
