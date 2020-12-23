@@ -25,7 +25,7 @@ export class AchievementsBlockComponent {
         this.rows = Array.from({length: this.NUMBER_OF_ROWS}, (value, index) => index);
     }
 
-    public columns(rowIndex: number): Array<number> {
+    public getColumns(rowIndex: number): Array<number> {
         let row = Array.from({length: this.NUMBER_OF_COLUMNS}, (value, index) => index);
         return Array.from(row, x => x + this.NUMBER_OF_COLUMNS * rowIndex);
     }

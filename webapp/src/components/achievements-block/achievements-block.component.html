@@ -1,8 +1,8 @@
-<ion-row *ngIf="isPageLoaded" padding class="achievement-box-style">
+<ion-row *ngIf="achievementsUnlocked?.length > 0" padding class="achievement-box-style">
     <ion-col class="box-height">
         <ion-row *ngFor="let rowIndex of rows" padding>
             <ion-col class="achievement-grid-style"
-                *ngFor="let i of columns(rowIndex)">
+            *ngFor="let i of getColumns(rowIndex)">
                 <achievement [isEmpty]="achievementsUnlocked[i].isEmpty"
                     [achievementInfo]="achievementsUnlocked[i]"></achievement>
             </ion-col>
