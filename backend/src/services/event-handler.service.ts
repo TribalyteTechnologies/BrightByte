@@ -66,7 +66,7 @@ export class EventHandlerService {
         .subscribe((contractAddressEventDispatcher: string) => {
             this.contractAddressEventDispatcher = contractAddressEventDispatcher;
             this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
-            this.eventsSubscription(true);
+            this.eventsSubscription(false);
         });
     }
 
