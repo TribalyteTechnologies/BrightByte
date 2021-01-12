@@ -14,7 +14,7 @@
     "truffle:migrate": "truffle migrate --reset",
     "posttruffle:migrate": "yarn update:contractsAddresses; yarn copy:contracts",
     "truffle:custom-deploy": "truffle migrate --network custom --reset",
-    "posttruffle:custom-deploy": "yarn update:contractsAddresses; yarn copy:contracts",
+    "posttruffle:custom-deploy": "yarn copy:contracts",
     "truffle:besu": "truffle migrate --reset --network besu",
     "posttruffle:besu": "yarn update:contractsAddresses; yarn copy:contracts",
     "truffle:compile": "truffle compile",

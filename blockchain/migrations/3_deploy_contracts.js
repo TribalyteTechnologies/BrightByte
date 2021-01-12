@@ -1,5 +1,4 @@
 const fs = require("fs")
-const Contract = require("@truffle/contract");
 const Bright = artifacts.require("./Bright.sol");
 const Commits = artifacts.require("./Commits.sol");
 const BrightByteSettings = artifacts.require("./BrightByteSettings.sol");
@@ -17,10 +16,7 @@ const CommitsDeployerLib = artifacts.require("./CommitsDeployerLib.sol");
 const BrightByteSettingsDeployerLib = artifacts.require("./BrightByteSettingsDeployerLib.sol");
 const RootDeployerLib = artifacts.require("./RootDeployerLib.sol");
 const BrightDictionary = artifacts.require("./BrightDictionary.sol");
-const ProxyJSON = require("../node_modules/@openzeppelin/upgrades/build/contracts/AdminUpgradeabilityProxy.json")
 const scVersionObj = require("../../version.json");
-const TruffleConfig = require("../truffle-config");
-const Proxy = Contract(ProxyJSON);
 
 const TEAM_UID = 1;
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -32,7 +28,6 @@ const versionContract = parseInt(scVersionObj.versionContract);
 
 
 module.exports = async function (deployer, network, accounts) {
-    const CONFIG = TruffleConfig.networks[network];
     const OWNER_ACCOUNT = accounts[0];
     const INITIALIZER_ACCOUNT = accounts[1];
 
@@ -48,7 +43,10 @@ module.exports = async function (deployer, network, accounts) {
     let eventDispatcher = await deployer.deploy(CloudEventDispatcher);
     await deployer.link(Reputation, Root);
     await deployer.deploy(Root, Bright.address, Commits.address, BrightByteSettings.address, CloudEventDispatcher.address, USER_ADMIN, TEAM_UID, SEASON_LENGTH_DAYS);
-    await deployer.deploy(BrightDictionary);
+
+    let cloudProjectStore = await deployer.deploy(CloudProjectStore, EMPTY_ADDRESS);
+    let bbDictionary = await deployer.deploy(BrightDictionary);
+    await bbDictionary.initialize(currentVersion);
     await deployer.link(BrightDeployerLib, CloudBBFactory);
     await deployer.link(CommitsDeployerLib, CloudBBFactory);
     await deployer.link(BrightByteSettingsDeployerLib, CloudBBFactory);
@@ -60,49 +58,9 @@ module.exports = async function (deployer, network, accounts) {
     await teamManager.initialize(CloudBBFactory.address, SEASON_LENGTH_DAYS);
     let proxyManager = await deployer.deploy(ProxyManager);
     await proxyManager.initialize(versionContract, teamManager.address, { from: OWNER_ACCOUNT });
-
-    Proxy.setProvider(deployer.provider);
-
-    let cloudBBFactory = await CloudBBFactory.new();
-    let proxyCloudBBFactory = await Proxy.new(cloudBBFactory.address, OWNER_ACCOUNT, [], { from: OWNER_ACCOUNT });
-    cloudBBFactory = await CloudBBFactory.at(proxyCloudBBFactory.address);
-    console.log("CloudBBFactory deployed: ", proxyCloudBBFactory.address);
-
-    let cloudTeamManager = await CloudTeamManager.new();
-    let proxyCloudTeamManager = await Proxy.new(cloudTeamManager.address, OWNER_ACCOUNT, [], { from: OWNER_ACCOUNT });
-    cloudTeamManager = await CloudTeamManager.at(proxyCloudTeamManager.address);
-    console.log("CloudTeamManager deployed: ", proxyCloudTeamManager.address);
-
-    let cloudProjectStore = await CloudProjectStore.new(EMPTY_ADDRESS);
-    let proxyCloudProjectStore = await Proxy.new(cloudProjectStore.address, OWNER_ACCOUNT, [], { from: OWNER_ACCOUNT });
-    cloudProjectStore = await CloudProjectStore.at(proxyCloudProjectStore.address);
-    console.log("CloudProjectStore deployed: ", cloudProjectStore.address);
-
-    let brightDictionary = await BrightDictionary.new();
-    let proxyBrightDictionary = await Proxy.new(brightDictionary.address, OWNER_ACCOUNT, [],  { from: OWNER_ACCOUNT });
-    brightDictionary = await BrightDictionary.at(proxyBrightDictionary.address);
-    console.log("BrightDictionary deployed: ", proxyBrightDictionary.address);
-
-    let cloudProxyManager = await ProxyManager.new();
-    let proxyCloudProxyManager = await Proxy.new(cloudProxyManager.address, OWNER_ACCOUNT, [],  { from: OWNER_ACCOUNT });
-    cloudProxyManager = await ProxyManager.at(proxyCloudProxyManager.address);
-    console.log("ProxyManager deployed: ", proxyCloudProxyManager.address);
+    await cloudProjectStore.initialize(CloudTeamManager.address);
 
     eventDispatcher.addNewOwner(CloudBBFactory.address, { from: OWNER_ACCOUNT });
-    eventDispatcher.addNewOwner(proxyCloudBBFactory.address, { from: OWNER_ACCOUNT });
-
-    await cloudBBFactory.initialize(versionContract, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
-    await cloudTeamManager.initialize(cloudBBFactory.address, SEASON_LENGTH_DAYS, { from: INITIALIZER_ACCOUNT });
-    await cloudProjectStore.initialize(cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
-    await brightDictionary.initialize(currentVersion, { from: INITIALIZER_ACCOUNT });
-    await cloudProxyManager.initialize(versionContract, cloudTeamManager.address, { from: INITIALIZER_ACCOUNT });
-
-    let contractsInfo = {};
-    contractsInfo[CloudBBFactory.contract_name] = { address: cloudBBFactory.address, netId: CONFIG.network_id };
-    contractsInfo[CloudTeamManager.contract_name] = { address: cloudTeamManager.address, netId: CONFIG.network_id };
-    contractsInfo[BrightDictionary.contract_name] = { address: brightDictionary.address, netId: CONFIG.network_id };
-    contractsInfo[ProxyManager.contract_name] = { address: cloudProxyManager.address, netId: CONFIG.network_id };
-    saveAddresesInfo(contractsInfo);
 };
 
 function saveAddresesInfo(obj) {
