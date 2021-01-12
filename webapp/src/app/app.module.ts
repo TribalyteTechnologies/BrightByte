@@ -22,7 +22,6 @@ import { SharePopOver } from "../pages/sharepopover/sharepopover";
 /// core
 import { AppConfig } from "../app.config";
 import { LoggerService } from "../core/logger.service";
-import { Web3Service } from "../core/web3.service";
 import { AppVersionService } from "../core/app-version.service";
 import { LoginService } from "../core/login.service";
 import { DateFormatPipe } from "../core/date-format.pipe";
@@ -162,7 +161,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     providers: [
         AppConfig,
         { provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG) },
-        Web3Service,
         LoginService,
         HttpClientModule,
         SpinnerService,

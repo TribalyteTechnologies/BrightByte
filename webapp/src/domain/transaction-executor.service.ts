@@ -20,11 +20,9 @@ export class TransactionExecutorService implements OnDestroy{
     private nonceValue: number;
 
     constructor(
-        loggerSrv: LoggerService,
-        web3Service: Web3Service
+        loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("TransactionExecutorService");
-        this.web3 = web3Service.getWeb3();
         this.queue = new Array<TransactionTask>();
     }
 
@@ -102,6 +100,14 @@ export class TransactionExecutorService implements OnDestroy{
 
     private getNonce(userAddress: string): Promise<number> {
         return this.nonceValue ? Promise.resolve(this.nonceValue + 1) :
-        this.web3.eth.getTransactionCount(userAddress, "pending");
+        this.getTransactionCount(userAddress);
+    }
+
+    private getTransactionCount(userAddress: string): Promise<number> {
+        const web3Service = new Web3Service();
+        return web3Service.getWeb3().then(web3 => {
+            this.web3 = web3;
+            return this.web3.eth.getTransactionCount(userAddress, "pending");
+        });
     }
 }

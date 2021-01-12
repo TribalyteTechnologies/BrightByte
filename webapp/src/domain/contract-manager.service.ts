@@ -61,97 +61,104 @@ export class ContractManagerService {
 
     constructor(
         private http: HttpClient,
-        private web3Service: Web3Service,
         private loggerSrv: LoggerService,
         private userCacheSrv: UserCacheService,
         private storageSrv: LocalStorageService,
         private transactionQueueSrv: TransactionExecutorService
     ) {
-        this.log = loggerSrv.get("ContractManagerService");
-        this.web3 = web3Service.getWeb3();
-        this.web3Service = web3Service;
-
+        this.log = this.loggerSrv.get("ContractManagerService");
     }
 
-    public init(user: Account, cont: number): Promise<Array<ITrbSmartContact>> {
+    public init(text: string, pass: string, cont: number): Promise<Array<ITrbSmartContact>> {
         AppConfig.CURRENT_NODE_INDEX = cont;
         let configNet = AppConfig.NETWORK_CONFIG[cont];
-        this.web3Service = new Web3Service(this.loggerSrv);
-        this.web3 = this.web3Service.getWeb3();
-        this.currentUser = user;
-        this.log.d("Initializing service with user ", this.currentUser);
+        const web3Service = new Web3Service();
+        this.log.d("Initializing service with user ",  AppConfig.NETWORK_CONFIG[cont]);
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
-        let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractJsonBright = jsonContractData;
-            let brightContractJson = jsonContractData;
-            this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
-            let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
-            this.log.d("TruffleContractBright function: ", contractBright);
-            this.log.d("ContractAddressBright: ", this.contractAddressBright);
-            return contractBright;
+        return web3Service.getWeb3()
+        .then(res => {
+            this.web3 = res;
+            this.currentUser = this.getUserAccount(text, pass);
+            let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractJsonBright = jsonContractData;
+                    let brightContractJson = jsonContractData;
+                    this.contractAddressBright = brightContractJson.networks[configNet.netId].address;
+                    let contractBright = new this.web3.eth.Contract(brightContractJson.abi, this.contractAddressBright);
+                    this.log.d("TruffleContractBright function: ", contractBright);
+                    this.log.d("ContractAddressBright: ", this.contractAddressBright);
+                    return contractBright;
+                });
+            contractPromises.push(promBright);
+            let promCommits = this.http.get(AppConfig.COMMITS_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractJsonCommits = jsonContractData;
+                    let commitContractJson = jsonContractData;
+                    this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
+                    let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
+                    this.log.d("TruffleContractCommits function: ", contractCommits);
+                    this.log.d("ContractAddressCommits: ", this.contractAddressCommits);
+                    return contractCommits;
+                });
+            contractPromises.push(promCommits);
+            let promRoot = this.http.get(AppConfig.ROOT_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractJsonRoot = jsonContractData;
+                    let rootContractJson = jsonContractData;
+                    this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
+                    let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
+                    this.log.d("TruffleContractRoot function: ", contractRoot);
+                    this.log.d("ContractAddressRoot: ", this.contractAddressRoot);
+                    return contractRoot;
+                });
+            contractPromises.push(promRoot);
+            let promTeamManager = this.http.get(AppConfig.TEAM_MANAGER_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractJsonTeamManager = jsonContractData;
+                    this.contractAddressTeamManager = jsonContractData.networks[configNet.netId].address;
+                    let contractTeamManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressTeamManager);
+                    this.log.d("TruffleContractTeamManager function: ", contractTeamManager);
+                    this.log.d("ContractAddressTeamManager: ", this.contractAddressTeamManager);
+                    return contractTeamManager;
+                });
+            contractPromises.push(promTeamManager);
+            let promBBFactory = this.http.get(AppConfig.BB_FACTORY_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractAddressBbFactory = jsonContractData.networks[configNet.netId].address;
+                    let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBbFactory);
+                    this.log.d("TruffleContractBBFactory function: ", contractBBFactory);
+                    this.log.d("ContractAddressBBFactory: ", this.contractAddressBbFactory);
+                    return contractBBFactory;
+                });
+            contractPromises.push(promBBFactory);
+            let promDictionary = this.http.get(AppConfig.BB_DICTIONARY_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractAddressBrightDictionary = jsonContractData.networks[configNet.netId].address;
+                    let contractBrightDictionaty = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBrightDictionary);
+                    this.log.d("TruffleContractBrightDictionaty function: ", contractBrightDictionaty);
+                    this.log.d("ContractAddressBrightDictionary: ", this.contractAddressBrightDictionary);
+                    return contractBrightDictionaty;
+                });
+            contractPromises.push(promDictionary);
+            let promProxyManager = this.http.get(AppConfig.BB_PROXY_CONTRACT_PATH).toPromise()
+                .then((jsonContractData: IContractJson) => {
+                    this.contractAddressProxyManager = jsonContractData.networks[configNet.netId].address;
+                    let contractProxyManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressProxyManager);
+                    this.log.d("TruffleContractProxyManager function: ", contractProxyManager);
+                    this.log.d("ContractAddressProxyManager: ", this.contractAddressProxyManager);
+                    return contractProxyManager;
+                });
+            contractPromises.push(promProxyManager);
+            this.initProm = Promise.all(contractPromises);
+            return this.initProm;
+        }).catch(error => {
+            this.log.w("Contract manager could not start, error: ", error);
+            throw error;
         });
-        contractPromises.push(promBright);
-        let promCommits = this.http.get(AppConfig.COMMITS_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractJsonCommits = jsonContractData;
-            let commitContractJson = jsonContractData;
-            this.contractAddressCommits = commitContractJson.networks[configNet.netId].address;
-            let contractCommits = new this.web3.eth.Contract(commitContractJson.abi, this.contractAddressCommits);
-            this.log.d("TruffleContractCommits function: ", contractCommits);
-            this.log.d("ContractAddressCommits: ", this.contractAddressCommits);
-            return contractCommits;
-        });
-        contractPromises.push(promCommits);
-        let promRoot = this.http.get(AppConfig.ROOT_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractJsonRoot = jsonContractData;
-            let rootContractJson = jsonContractData;
-            this.contractAddressRoot = rootContractJson.networks[configNet.netId].address;
-            let contractRoot = new this.web3.eth.Contract(rootContractJson.abi, this.contractAddressRoot);
-            this.log.d("TruffleContractRoot function: ", contractRoot);
-            this.log.d("ContractAddressRoot: ", this.contractAddressRoot);
-            return contractRoot;
-        });
-        contractPromises.push(promRoot);
-        let promTeamManager = this.http.get(AppConfig.TEAM_MANAGER_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractJsonTeamManager = jsonContractData;
-            this.contractAddressTeamManager = jsonContractData.networks[configNet.netId].address;
-            let contractTeamManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressTeamManager);
-            this.log.d("TruffleContractTeamManager function: ", contractTeamManager);
-            this.log.d("ContractAddressTeamManager: ", this.contractAddressTeamManager);
-            return contractTeamManager;
-        });
-        contractPromises.push(promTeamManager);
-        let promBBFactory = this.http.get(AppConfig.BB_FACTORY_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractAddressBbFactory = jsonContractData.networks[configNet.netId].address;
-            let contractBBFactory = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBbFactory);
-            this.log.d("TruffleContractBBFactory function: ", contractBBFactory);
-            this.log.d("ContractAddressBBFactory: ", this.contractAddressBbFactory);
-            return contractBBFactory;
-        });
-        contractPromises.push(promBBFactory);
-        let promDictionary = this.http.get(AppConfig.BB_DICTIONARY_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractAddressBrightDictionary = jsonContractData.networks[configNet.netId].address;
-            let contractBrightDictionaty = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressBrightDictionary);
-            this.log.d("TruffleContractBrightDictionaty function: ", contractBrightDictionaty);
-            this.log.d("ContractAddressBrightDictionary: ", this.contractAddressBrightDictionary);
-            return contractBrightDictionaty;
-        });
-        contractPromises.push(promDictionary);
-        let promProxyManager = this.http.get(AppConfig.BB_PROXY_CONTRACT_PATH).toPromise()
-        .then((jsonContractData: IContractJson) => {
-            this.contractAddressProxyManager = jsonContractData.networks[configNet.netId].address;
-            let contractProxyManager = new this.web3.eth.Contract(jsonContractData.abi, this.contractAddressProxyManager);
-            this.log.d("TruffleContractProxyManager function: ", contractProxyManager);
-            this.log.d("ContractAddressProxyManager: ", this.contractAddressProxyManager);
-            return contractProxyManager;
-        });
-        contractPromises.push(promProxyManager);
-        return this.initProm = Promise.all(contractPromises);
+    }
+
+    public getUserAccount(text: string, pass: string): Account {
+        return this.web3.eth.accounts.decrypt(text, pass);
     }
 
     public setBaseContracts(teamUid: number, version?: number): Promise<Array<ITrbSmartContact>> {
@@ -1220,7 +1227,11 @@ export class ContractManagerService {
     public getCurrentVersionCloud(): Promise<number> {
         return this.initProm.then(([bright, commit, root, teamManager, bbFactory]) => {
             return bbFactory.methods.getCurrentVersion().call({ from: this.currentUser.address });
-        }).then((version: string) => parseInt(version));
+        }).then((version: string) => parseInt(version))
+        .catch(error => {
+            this.log.w("AAAAAAAAAAAAAAA", error);
+            throw error;
+        });
     }
 
     public getCurrentVersionFromBase(): Promise<number> {

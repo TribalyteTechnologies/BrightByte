@@ -1,13 +1,11 @@
 import { Component, Output, EventEmitter } from "@angular/core";
 import { NavController } from "ionic-angular";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { Web3Service } from "../../core/web3.service";
 import { LoginService } from "../../core/login.service";
 import { TabsPage } from "../../pages/tabs/tabs";
 import { ContractManagerService } from "../../domain/contract-manager.service";
 import { SpinnerService } from "../../core/spinner.service";
 import { UserLoggerService } from "../../domain/user-logger.service";
-import { Account } from "web3-eth-accounts";
 import { AppConfig } from "../../app.config";
 import { BackendApiService } from "../../domain/backend-api.service";
 import { AvatarService } from "../../domain/avatar.service";
@@ -84,7 +82,6 @@ export class LoginForm {
     constructor(
         private navCtrl: NavController,
         private contractManager: ContractManagerService,
-        private web3Service: Web3Service,
         private loginService: LoginService,
         private userLoggerService: UserLoggerService,
         private spinnerService: SpinnerService,
@@ -186,17 +183,12 @@ export class LoginForm {
                 this.log.e("File not loaded");
                 this.msg = "app.fileNotLoaded";
                 this.spinnerService.hideLoader();
-                    
             } else {
-                let account = this.web3Service.getWeb3().eth.accounts.decrypt(this.text, pass);
                 if (this.isKeepCredentialsOn) {
                     this.userLoggerService.setAccount(this.text, pass);
                 }
-                this.password = pass;
-                this.userLoggerService.setLogAccount(this.text, this.password);
-                this.log.d("Imported account from the login file: ", account);
-                this.loginService.setAccount(account);
-                this.checkNodesAndOpenHomePage(account, 0).then((result) => {
+                this.checkNodesAndOpenHomePage(this.text, pass, 0)
+                .then((result) => {
                     this.spinnerService.hideLoader();
                     return true;
                 }).catch((e) => {
@@ -373,12 +365,18 @@ export class LoginForm {
         });
     }
 
-    private checkNodesAndOpenHomePage(account: Account, currentNodeIndex: number): Promise<boolean> {
+    private checkNodesAndOpenHomePage(text: string, pass: string, currentNodeIndex: number): Promise<boolean> {
         let prom = Promise.resolve(false);
+        let account;
         let isAlreadyRegisteredToTeam;
         if (currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
-            prom = this.contractManager.init(account, currentNodeIndex)
+            prom = this.contractManager.init(text, pass, currentNodeIndex)
             .then(() => {
+                account = this.contractManager.getUserAccount(this.text, pass);
+                this.password = pass;
+                this.userLoggerService.setLogAccount(this.text, this.password);
+                this.log.d("Imported account from the login file: ", account);
+                this.loginService.setAccount(account);
                 this.log.d("Account set. Checking the node number: " + currentNodeIndex);
                 return this.contractManager.getCurrentVersionCloud();
             }).then((cloudVersion: number) => {
@@ -401,7 +399,7 @@ export class LoginForm {
             })
             .catch((e) => {
                 this.log.d("Failure to access the node " + currentNodeIndex);
-                return (this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
+                return (this.checkNodesAndOpenHomePage(text, pass, currentNodeIndex + 1));
             });
         }
         return prom;

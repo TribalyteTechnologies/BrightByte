@@ -1,24 +1,26 @@
-import { Injectable } from "@angular/core";
 import { default as Web3 } from "web3";
 import { AppConfig } from "../app.config";
-import { ILogger, LoggerService } from "../core/logger.service";
 
-@Injectable()
 export class Web3Service {
 
-    private web3: Web3;
-    private log: ILogger;
 
-    constructor(
-        loggerSrv: LoggerService
-    ) {
-        this.log = loggerSrv.get("Web3Service");
-        this.web3 = new Web3(new Web3.providers.HttpProvider(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].urlNode));
-        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
-
+    public getWeb3(): Promise<Web3> {
+        const web3 = new Web3(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].urlNode);
+        return Promise.race([
+            this.testWeb3(web3),
+            this.auxFunction()
+        ]);
     }
 
-    public getWeb3(): Web3 {
-        return this.web3;
+    private testWeb3(web3: Web3): Promise<Web3> {
+        return web3.eth.personal.getAccounts().then(accounts => {
+            return web3;
+        });
+    }
+
+    private auxFunction(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => reject("Unreachable Http Provider for web3"), 2000);
+        });
     }
 }
