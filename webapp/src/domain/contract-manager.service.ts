@@ -1229,7 +1229,7 @@ export class ContractManagerService {
             return bbFactory.methods.getCurrentVersion().call({ from: this.currentUser.address });
         }).then((version: string) => parseInt(version))
         .catch(error => {
-            this.log.w("AAAAAAAAAAAAAAA", error);
+            this.log.e("Error getting current current version", error);
             throw error;
         });
     }

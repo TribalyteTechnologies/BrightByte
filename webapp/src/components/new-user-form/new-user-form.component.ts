@@ -2,8 +2,8 @@ import { Component, Output, EventEmitter } from "@angular/core";
 import { NavController, PopoverController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
 import { ILogger, LoggerService } from "../../core/logger.service";
-import { ContractManagerService } from "../../domain/contract-manager.service";
 import { TermsAndConditions } from "../../pages/termsandconditions/termsandconditions";
+import { default as Web3 } from "web3";
 
 
 @Component({
@@ -29,20 +29,19 @@ export class NewUserForm {
         public navCtrl: NavController,
         public popoverCtrl: PopoverController,
         public http: HttpClient,
-        loggerSrv: LoggerService,
-        private contractManager: ContractManagerService
+        loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("NewUserPage");
     }
 
     public createUser(pass: string) {
-        this.contractManager.createUser(pass)
-            .then((dataFile) => {
-                this.file = dataFile;
-                this.saveFileLink(this.file, "Identity.json");
-                this.isUserCreated = true;
-
-            });
+        const web3 = new Web3();
+        let createAccount = web3.eth.accounts.create(web3.utils.randomHex(32));
+        let encrypted = web3.eth.accounts.encrypt(createAccount.privateKey, pass);
+        const dataFile = new Blob([JSON.stringify(encrypted)], { type: "text/plain" });
+        this.file = dataFile;
+        this.saveFileLink(this.file, "Identity.json");
+        this.isUserCreated = true;
     }
 
     public toggleTerms(){
