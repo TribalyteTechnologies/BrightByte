@@ -12,6 +12,7 @@ import { AvatarService } from "../../domain/avatar.service";
 import { Team } from "../../models/team.model";
 import { MemberVersion } from "../../models/member-version.model";
 import { PopupService } from "../../domain/popup.service";
+import { Account } from "web3-eth-accounts";
 
 @Component({
     selector: "login-form",
@@ -367,7 +368,7 @@ export class LoginForm {
 
     private checkNodesAndOpenHomePage(text: string, pass: string, currentNodeIndex: number): Promise<boolean> {
         let prom = Promise.resolve(false);
-        let account;
+        let account: Account;
         let isAlreadyRegisteredToTeam;
         if (currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
             prom = this.contractManager.init(text, pass, currentNodeIndex)

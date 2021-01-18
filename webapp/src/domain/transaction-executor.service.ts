@@ -104,8 +104,7 @@ export class TransactionExecutorService implements OnDestroy{
     }
 
     private getTransactionCount(userAddress: string): Promise<number> {
-        const web3Service = new Web3Service();
-        return web3Service.getWeb3().then(web3 => {
+        return Web3Service.getWeb3().then(web3 => {
             this.web3 = web3;
             return this.web3.eth.getTransactionCount(userAddress, "pending");
         });

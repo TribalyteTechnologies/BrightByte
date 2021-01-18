@@ -61,21 +61,20 @@ export class ContractManagerService {
 
     constructor(
         private http: HttpClient,
-        private loggerSrv: LoggerService,
         private userCacheSrv: UserCacheService,
         private storageSrv: LocalStorageService,
-        private transactionQueueSrv: TransactionExecutorService
+        private transactionQueueSrv: TransactionExecutorService,
+        loggerSrv: LoggerService
     ) {
-        this.log = this.loggerSrv.get("ContractManagerService");
+        this.log = loggerSrv.get("ContractManagerService");
     }
 
     public init(text: string, pass: string, cont: number): Promise<Array<ITrbSmartContact>> {
         AppConfig.CURRENT_NODE_INDEX = cont;
         let configNet = AppConfig.NETWORK_CONFIG[cont];
-        const web3Service = new Web3Service();
         this.log.d("Initializing service with user ",  AppConfig.NETWORK_CONFIG[cont]);
         let contractPromises = new Array<Promise<ITrbSmartContact>>();
-        return web3Service.getWeb3()
+        return Web3Service.getWeb3()
         .then(res => {
             this.web3 = res;
             this.currentUser = this.getUserAccount(text, pass);
@@ -544,15 +543,11 @@ export class ContractManagerService {
         });
     }
 
-    public createUser(pass: string): Promise<Blob> {
-        let createAccount = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-        let encrypted = this.web3.eth.accounts.encrypt(createAccount.privateKey, pass);
-        //The blob constructor needs an array as first parameter, so it is not neccessary use toString.
-        //The second parameter is the MIME type of the file.
-        return new Promise((resolve, reject) => {
-            resolve(new Blob([JSON.stringify(encrypted)], { type: "text/plain" }));
-            reject("Not initialized");
-        });
+    public createUser(pass: string): Blob {
+        const web3 = new Web3();
+        let createAccount = web3.eth.accounts.create(web3.utils.randomHex(32));
+        let encrypted = web3.eth.accounts.encrypt(createAccount.privateKey, pass);
+        return new Blob([JSON.stringify(encrypted)], { type: "text/plain" });
     }
 
     public setProfile(name: string, mail: string): Promise<void | TransactionReceipt> {
