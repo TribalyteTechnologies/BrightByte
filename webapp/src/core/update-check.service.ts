@@ -11,6 +11,8 @@ export class UpdateCheckService {
     public minBetweenChecks: number;
     public msBetweenChecks: number;
 
+    private readonly LATEST_PATH = "/latest/";
+
     private appVersion: string;
     private log: ILogger;
     private interval: NodeJS.Timer;
@@ -44,17 +46,18 @@ export class UpdateCheckService {
         let currentVersion = this.storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
         this.appVersionSrv.getAppVersion().subscribe(
             ver => {
+                const urlPath = window.location.pathname;
                 this.appVersion = ver;
                 if (currentVersion === AppConfig.StorageKey.APPJUSTUPDATED) {
                     this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                } else if (this.appVersion && currentVersion && this.appVersion !== currentVersion) {
+                } else if (this.appVersion && currentVersion && this.appVersion !== currentVersion && this.LATEST_PATH === urlPath) {
                     this.translateService.get("app.versionOutdated")
                         .subscribe(
                             msg => {
                                 window.alert(msg);
                                 let isAfterLoginShown = this.storageSrv.get(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED);
                                 let isRegisterShown = this.storageSrv.get(AppConfig.StorageKey.REGISTERTUTORIALVISITED);
-                                window.location.reload(true);
+                                window.location.reload();
                                 this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, AppConfig.StorageKey.APPJUSTUPDATED);
                                 if (isAfterLoginShown) {
                                     this.storageSrv.set(AppConfig.StorageKey.AFTERLOGINTUTORIALVISITED, isAfterLoginShown);
