@@ -544,7 +544,7 @@ export class ContractManagerService {
     }
 
     public createUser(pass: string): Blob {
-        const web3 = new Web3();
+        const web3: Web3 = Web3Service.getStaticWeb3();
         let createAccount = web3.eth.accounts.create(web3.utils.randomHex(32));
         let encrypted = web3.eth.accounts.encrypt(createAccount.privateKey, pass);
         return new Blob([JSON.stringify(encrypted)], { type: "text/plain" });
