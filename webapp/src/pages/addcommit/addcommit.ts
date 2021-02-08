@@ -302,6 +302,7 @@ export class AddCommitPopover {
         this.commitMethod = method;
         this.clearGuiMessage();
         if (this.commitMethod === this.BATCH_METHOD) {
+            this.selectedRepositories = new Array<Repository>();
             this.tryLoginGithub().then(() => {
                 this.log.d("The user has logged to github");
                 return this.tryLoginBitbucket();
