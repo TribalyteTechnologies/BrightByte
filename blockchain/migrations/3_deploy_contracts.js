@@ -1,4 +1,3 @@
-const fs = require("fs")
 const Bright = artifacts.require("./Bright.sol");
 const Commits = artifacts.require("./Commits.sol");
 const BrightByteSettings = artifacts.require("./BrightByteSettings.sol");
@@ -22,7 +21,6 @@ const TEAM_UID = 1;
 const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USER_ADMIN = EMPTY_ADDRESS;
 const SEASON_LENGTH_DAYS = 15;
-const CONTRACT_INFO_PATH = "./migrations/ContractsInfo.json";
 const currentVersion = scVersionObj.version;
 const versionContract = parseInt(scVersionObj.versionContract);
 
@@ -63,6 +61,3 @@ module.exports = async function (deployer, network, accounts) {
     eventDispatcher.addNewOwner(CloudBBFactory.address, { from: OWNER_ACCOUNT });
 };
 
-function saveAddresesInfo(obj) {
-    fs.writeFileSync(CONTRACT_INFO_PATH, JSON.stringify(obj));
-}
