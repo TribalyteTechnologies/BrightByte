@@ -11,19 +11,19 @@ export class UpdateCheckService {
     public minBetweenChecks: number;
     public msBetweenChecks: number;
 
-    private readonly LATEST_PATH = "/latest/";
+    private readonly CHECK_PATH = AppConfig.IS_CHECKING_PATH_ENABLED ? "latest" : undefined;
 
     private appVersion: string;
     private log: ILogger;
     private interval: NodeJS.Timer;
 
     constructor(
+        loggerSrv: LoggerService,
         private translateService: TranslateService,
-        public appVersionSrv: AppVersionService,
-        private storageSrv: LocalStorageService,
-        private loggerSrv: LoggerService
+        private appVersionSrv: AppVersionService,
+        private storageSrv: LocalStorageService
     ) {
-        this.log = this.loggerSrv.get("UpdateCheckService");
+        this.log = loggerSrv.get("UpdateCheckService");
     }
 
     public start(minutes = AppConfig.UPDATE_CHECK_INTERVAL_MINS) {
@@ -46,11 +46,11 @@ export class UpdateCheckService {
         let currentVersion = this.storageSrv.get(AppConfig.StorageKey.LOCALSTORAGEVERSION);
         this.appVersionSrv.getAppVersion().subscribe(
             ver => {
-                const urlPath = window.location.pathname;
+                const urlPath = (window.location.pathname).replace(/\//g, "");
                 this.appVersion = ver;
                 if (currentVersion === AppConfig.StorageKey.APPJUSTUPDATED) {
                     this.storageSrv.set(AppConfig.StorageKey.LOCALSTORAGEVERSION, this.appVersion);
-                } else if (this.appVersion && currentVersion && this.appVersion !== currentVersion && this.LATEST_PATH === urlPath) {
+                } else if (this.appVersion && currentVersion && this.appVersion !== currentVersion && this.CHECK_PATH === urlPath) {
                     this.translateService.get("app.versionOutdated")
                         .subscribe(
                             msg => {

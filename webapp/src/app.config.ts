@@ -78,6 +78,7 @@ export class AppConfig {
     public static readonly STATUS_NOT_FOUND = "Not Found";
 
     public static readonly IS_SHARING_ENABLED = true;
+    public static readonly IS_CHECKING_PATH_ENABLED = true;
 
     public static readonly StorageKey = {
         USERNAME: "brightUser",
