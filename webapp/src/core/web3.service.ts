@@ -9,7 +9,7 @@ export class Web3Service {
         const web3 = new Web3(AppConfig.NETWORK_CONFIG[AppConfig.CURRENT_NODE_INDEX].urlNode);
         return Promise.race([
             this.checkWeb3(web3),
-            this.getTimeoutFunction()
+            this.getTimeoutPromise()
         ]);
     }
 
@@ -23,7 +23,7 @@ export class Web3Service {
         });
     }
 
-    private static getTimeoutFunction(): Promise<void> {
+    private static getTimeoutPromise(): Promise<void> {
         return new Promise((resolve, reject) => {
             setTimeout(() => reject("Unreachable Http Provider for web3"), this.TIME_OUT_MILIS);
         });
