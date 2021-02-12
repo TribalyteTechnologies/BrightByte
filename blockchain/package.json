@@ -22,7 +22,6 @@
     "ganache": "ganache-cli -p 7545 -i 5777",
     "ganache:quite": "ganache-cli -p 7545 -i 5777 -q",
     "copy:contracts": "shx cp -r ./build/contracts/. ../webapp/src/assets/build",
-    "update:contractsAddresses": "node migrations/updateAddresses.js",
     "truffle:test": "truffle test",
     "truffle:coverage": "truffle run coverage --network development",
     "linters-ci": "solium -d ./contracts"
