@@ -3,11 +3,14 @@ This is the BrightByte backend project.
 
  #### Optional
 
- Since version v0.6.0 it is available a new optional feature that allows the user to use a integration with their favorites systems for version control, to automate the use of the webapp. Right now the only provider available is Bitbucket, in the future Github ang Gitlab will also be implemented.
+ Since version v0.6.0 it is available a new optional feature that allows the user to use a integration with their favorites systems for version control, to automate the use of the webapp. Right now the providers available are Bitbucket and Github, Gitlab will also be implemented.
  
  To enjoy this new feature you have to use a custom set of varibles.
- Set `BITBUCKET_KEY` and `BITBUCKET_SECRET` in `src/backend.config.ts` to adapt to your preferences.
+ To set Bitbucket as a provider you should set the variables `BITBUCKET_KEY` and `BITBUCKET_SECRET` in `src/backend.config.ts` to adapt to your preferences.
  For more information about how to get your own keys and secret you can check our explanation [here](https://tech.tribalyte.eu/blog-brightbyte-v0-6)
+
+First step to set Github as a provider is to register a new [githubApp](https://docs.github.com/en/developers/apps/creating-a-github-app), where we can specify the permissions that we can have with the Github API, the only necessary requirements are read, here we also have the option to configure the Oauth process to authenticate our users. Once we are finished we will obtain a Client ID and a Client Secret, that will be pass to the specific variables.
+To set Github as a provider you should set the variables `GITHUB_KEY` and `GITHUB_SECRET` in `src/backend.config.ts` to adapt to your preferences.
 
 Since version v0.3.0-cloud you can enable secure communications with the API via HTTPS.
 Set `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` in `src/backend.config.ts` to adapt to your preferences. These variables will indicate where to find your secure files.
