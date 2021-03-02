@@ -62,7 +62,7 @@ export class ContractManagerService {
                 [this.TRANSACTION_HASH_PROPERTY]);
             }),
             map(txInfo => {
-                return 0;
+                return txInfo[this.BLOCK_NUMBER_PROPERTY];
             }));
     }
 
