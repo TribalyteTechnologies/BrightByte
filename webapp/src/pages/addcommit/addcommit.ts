@@ -52,6 +52,7 @@ export class AddCommitPopover {
     public currentProject = "";
     public commitMethod = "url";
     public currentSeasonStartDate: Date;
+    public isoStartDate: string;
     public hasNewCommits = false;
     public isFinishedLoadingRepo = false;
 
@@ -685,6 +686,7 @@ export class AddCommitPopover {
             this.log.d("The commits from the blockchain", this.blockChainCommits);
             this.seasonDate.setDate(this.seasonDate.getDate() - this.seasonLengthIndays);
             this.currentSeasonStartDate = this.seasonDate;
+            this.isoStartDate = this.currentSeasonStartDate.toISOString().split("T")[0];
         }).catch((e) => {
             this.log.e("Error getting blockchain config: ", e);
             throw e;

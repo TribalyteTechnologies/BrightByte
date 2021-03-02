@@ -73,7 +73,8 @@
         "noAvailableSelectReviewers": "Reviewers are selected automatically",
         "selectedReviewers": "Selected reviewers",
         "randomReviewersDescription": "Up to four users are picked among the available team members",
-        "providersNotWorking": "The Bitbucket workspace and Github organization are wrong, please notify your team administrator."
+        "providersNotWorking": "The Bitbucket workspace and Github organization are wrong, please notify your team administrator.",
+        "batchDateDescription": "The batch proccess selects commit from the beggining of the current season, {{seasonStart}}"
     },
     "commits": {
         "add": "Contribute",

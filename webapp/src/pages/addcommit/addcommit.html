@@ -1,7 +1,13 @@
 <ion-content padding>
     <ion-row padding *ngIf="commitMethod === 'url'; else addCommitByBatchTitle" class="text-title">{{ "addCommit.add" | translate }}</ion-row>
     <ng-template #addCommitByBatchTitle>
-        <ion-row padding class="text-title">{{ "addCommit.addByBatch" | translate }}</ion-row>
+        <ion-row padding>
+            <ion-row class="text-title">{{ "addCommit.addByBatch" | translate }}</ion-row>
+            <div class="tooltip info-icon">
+                <ion-icon name="ios-information-circle-outline"></ion-icon>
+                <div class="tooltip-text">{{ "addCommit.batchDateDescription" | translate:  {seasonStart: isoStartDate} }}</div>
+            </div>
+        </ion-row>
     </ng-template>
     <ion-segment [(ngModel)]="commitMethod" (ionChange)="setUploadMethodAndProceed($event.value)">
         <ion-segment-button *ngFor="let upMethod of [ 'url', 'batch']" [value]="upMethod">
