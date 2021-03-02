@@ -25,7 +25,7 @@ export class AuthenticationController {
     private readonly GET_TOKEN_URL_BITBUCKET = "https://bitbucket.org/site/oauth2/access_token";
     private readonly GRANT_TYPE = "authorization_code";
     private readonly GITHUB_URL = "https://github.com/login/oauth/";
-    private readonly GITHUB_AUTHORIZE_CALLBACK = this.GITHUB_URL + "authorize?client_id=" + BackendConfig.GITHUB_KEY + "&state=";
+    private readonly GITHUB_AUTHORIZE_CALLBACK = this.GITHUB_URL + "authorize?scope=repo&client_id=" + BackendConfig.GITHUB_KEY + "&state=";
     private readonly GET_GITHUB_TOKEN_URL_AUX = this.GITHUB_URL + "access_token?client_id=" + BackendConfig.GITHUB_KEY;
     private readonly GET_GITHUB_TOKEN_URL = this.GET_GITHUB_TOKEN_URL_AUX + "&client_secret=" + BackendConfig.GITHUB_SECRET;
     private readonly BITBUCKET_PROVIDER = "bitbucket";
