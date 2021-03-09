@@ -160,7 +160,7 @@ export class SetProfileForm {
                 this.areEmailsWellFormated = FormatUtils.getEmailValidatorPattern().test(mail);
             }
             return mail;
-        }).filter(email => email !== "" && email !== this.userEmail);
+        }).filter(email => email && email !== this.userEmail);
         let teamUid;
         this.isRegistering = true;
         if (this.areEmailsWellFormated) {
