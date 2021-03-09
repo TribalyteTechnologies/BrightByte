@@ -13,7 +13,9 @@ export class EmailService {
 
     private readonly INVITATION_SUBJECT = "Invitation to participate on BrightByte";
     private readonly NOTIFICATION_SUBJECT = "You've got reviews to do on BrightByte";
-    private readonly FROM_EMAIL = BackendConfig.EMAIL_TRANSPORT.auth.user;
+    private readonly BRIGHTBYTE = "BrightByte";
+    private readonly FROM_INVITATION_EMAIL = this.BRIGHTBYTE + " Invitations <" + BackendConfig.EMAIL_TRANSPORT.auth.user + ">";
+    private readonly FROM_NOTIFICATION_EMAIL = this.BRIGHTBYTE + " Notifications <" + BackendConfig.EMAIL_TRANSPORT.auth.user + ">";
     private readonly INVITATION_TEMPLATE_PATH = BackendConfig.EMAIL_TEMPLATES + "invitation.html";
     private readonly NOTIFICATION_TEMPLATE = "notification";
 
@@ -23,7 +25,7 @@ export class EmailService {
         let content = this.readFileFrom(this.INVITATION_TEMPLATE_PATH);
         return from(this.mailerService.sendMail({
             to: toEmail,
-            from: this.FROM_EMAIL,
+            from: this.FROM_INVITATION_EMAIL,
             subject: this.INVITATION_SUBJECT,
             html: content
         })).pipe(
@@ -35,7 +37,7 @@ export class EmailService {
     public sendNotificationEmail(toEmail: string, teamName: string, numOfCommits: number): Observable<ResponseDto> {
         return from(this.mailerService.sendMail({
             to: toEmail,
-            from: this.FROM_EMAIL,
+            from: this.FROM_NOTIFICATION_EMAIL,
             subject: this.NOTIFICATION_SUBJECT,
             template: this.NOTIFICATION_TEMPLATE,
             context: {
