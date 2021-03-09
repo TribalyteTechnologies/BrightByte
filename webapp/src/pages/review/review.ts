@@ -59,6 +59,7 @@ export class ReviewPage {
     public currentCommit: UserCommit;
     public filterArrayCommits = new Array<UserCommit>();
     public textComment = "";
+    public teamRules: string;
 
     public submitError = "";
 
@@ -120,7 +121,11 @@ export class ReviewPage {
             this.isShowSpinner = false;
         }
         let commits: Array<UserCommit>;
-        return this.contractManagerService.getReviewCommitsState()
+        return this.contractManagerService.getTextRules()
+        .then((teamRules: string) => {
+            this.teamRules = teamRules;
+            return this.contractManagerService.getReviewCommitsState();
+        })
         .then(state => {
             if (!event){
                 this.loadedCommits = state[this.currentReviewFilterState];

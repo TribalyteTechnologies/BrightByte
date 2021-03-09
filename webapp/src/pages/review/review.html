@@ -64,6 +64,10 @@
                 <div *ngIf="needReview">
                     <comment [isReviewNeeded]="true" [isReviewPage]="true"
                         (submitReview)=setReview(currentCommit.url,$event.txt,$event.points)></comment>
+                    <div padding class="title-left text-details text-details--bold">{{ "setProfile.teamRules" | translate }}:</div>
+                    <div justify-content-center text-center class="review-rules-container">
+                        <div [innerHTML]="teamRules"></div>
+                    </div>
                 </div>
                 <ion-row padding *ngIf="userCommitComment[0]" class="text-details text-details--bold">
                     {{ "review.youReview" | translate }}
