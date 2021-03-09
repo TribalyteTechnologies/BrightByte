@@ -505,7 +505,7 @@ export class AddCommitPopover {
         }).then(user => {
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
-            this.log.w("Bitbucket service not available: ", e);
+            this.log.d("Bitbucket service not available: ", e);
         });
     }
 
@@ -523,7 +523,7 @@ export class AddCommitPopover {
         }).then(user => {
             this.log.d("Waiting for the user to introduce their github credentials");
         }).catch(e => {
-            this.log.w("Github service not available", e);
+            this.log.d("Github service not available: ", e);
         });
     }
 
