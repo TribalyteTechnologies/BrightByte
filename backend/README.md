@@ -9,8 +9,7 @@ This is the BrightByte backend project.
  To set Bitbucket as a provider you should set the variables `BITBUCKET_KEY` and `BITBUCKET_SECRET` in `src/backend.config.ts` to adapt to your preferences.
  For more information about how to get your own keys and secret you can check our explanation [here](https://tech.tribalyte.eu/blog-brightbyte-v0-6)
 
-First step to set Github as a provider is to register a new [githubApp](https://docs.github.com/en/developers/apps/creating-a-github-app), where we can specify the permissions that we can have with the Github API, the only necessary requirements are read, here we also have the option to configure the Oauth process to authenticate our users. Once we are finished we will obtain a Client ID and a Client Secret, that will be pass to the specific variables.
-To set Github as a provider you should set the variables `GITHUB_KEY` and `GITHUB_SECRET` in `src/backend.config.ts` to adapt to your preferences.
+The first step to configure GitHub as a provider is to register a new [OAuth App](https://docs.github.com/en/developers/apps/creating-an-oauth-app ), and specify the permissions to use with the Github API (the required one is read). The Oauth process to authenticate users is also configured via the Oauth App. Once finished, a Client ID and a Client Secret will be generated and these need to be passed to the corresponding variables. To set GitHub as a provider, set the variables `GITHUB_KEY` and `GITHUB_SECRET` in `src/backend.config.ts` to your configuration.
 
 Since version v0.3.0-cloud you can enable secure communications with the API via HTTPS.
 Set `SECRET_PRIVATE_KEY` and `SECRET_CERTIFICATE_CRT` in `src/backend.config.ts` to adapt to your preferences. These variables will indicate where to find your secure files.
