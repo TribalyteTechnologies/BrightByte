@@ -74,12 +74,9 @@
             </ion-list>
         </ion-col>
         <ng-template #notLogged>
-            <ion-col *ngIf="isServiceAvailable; else notAvailable">
-                <ion-label> {{ "addCommit.repositoriesMissingInfo" | translate }} </ion-label>
-            </ion-col>
-            <ng-template #notAvailable>
+            <ion-col *ngIf="!isServiceAvailable && !areProvidersWorking">
                 <ion-label> {{ "addCommit.providerServiceNotAvailable" | translate }} </ion-label>
-            </ng-template>
+            </ion-col>
         </ng-template>
     </ion-row>
 
