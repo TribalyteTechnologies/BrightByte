@@ -71,8 +71,8 @@ export class AddCommitPopover {
     private readonly PERCENTAGE_RANGE = 99.99;
     private readonly FACTOR_PERCENTAGE_DECIMALS = 100; 
     private readonly INITIAL_SEASON_INDEX = 0;
-    private readonly BITBUCKET_PROVIDER = "bitbucket";
-    private readonly GITHUB_PROVIDER = "github";
+    private readonly BITBUCKET_PROVIDER = "Bitbucket";
+    private readonly GITHUB_PROVIDER = "GitHub";
 
     private allEmails = new Array<string>();
     private userDetailsProm: Promise<UserDetails>;
