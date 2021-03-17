@@ -74,7 +74,7 @@
         "selectedReviewers": "Selected reviewers",
         "randomReviewersDescription": "Up to four users are picked among the available team members",
         "providersNotWorking": "The Bitbucket workspace and GitHub organization are wrong, please notify your team administrator.",
-        "batchDateDescription": "Batch upload imports commits and PRs from your configured Git repositories starting at the beggining of the current season, which is {{seasonStart}}"
+        "batchDateDescription": "Batch upload imports commits and PRs from your configured Git repositories starting at the beginning of the current season, which is {{seasonStart}}"
     },
     "commits": {
         "add": "Contribute",
