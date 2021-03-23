@@ -8,7 +8,6 @@ import { ProfileImageController } from "../controllers/profile-image.controller"
 import { AuthenticationController } from "../controllers/authentication.controller";
 import { TeamDatabaseController } from "../controllers/team-database.controller";
 import { LoggerService } from "../logger/logger.service";
-import { Web3Service } from "../services/web3.service";
 import { EventHandlerService } from "../services/event-handler.service";
 import { DispatcherService } from "../services/dispatcher.service";
 import { EventDatabaseService } from "../services/event-database.service";
@@ -52,7 +51,6 @@ import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
         EventDatabaseService,
         CoreDatabaseService,
         TeamDatabaseService,
-        Web3Service,
         DispatcherService,
         EventHandlerService,
         ContractManagerService,

@@ -36,25 +36,25 @@ export class EventHandlerService {
     private contractAddressEventDispatcher: string;
     private eventDispatcherContract: ITrbSmartContractJson;
     private contract: ITrbSmartContact;
-    private web3Service: Web3Service;
     private web3: Web3;
     private log: ILogger;
 
     public constructor(
-        web3Service: Web3Service,
         loggerSrv: LoggerService,
         private contractManagerService: ContractManagerService,
         private dispatcher: DispatcherService
     ) {
         this.log = loggerSrv.get("EventHandlerService");
-        this.web3Service = web3Service;
         this.init();
     }
 
     public init() {
         this.log.d("Initializing Event Handler Service");
-        this.web3 = this.web3Service.openConnection();
-        this.contractManagerService.getCurrentBlock().pipe(
+        Web3Service.getWeb3().pipe(
+        flatMap((web3: Web3) => {
+            this.web3 = web3;
+            return this.contractManagerService.getCurrentBlock();
+        }),
         flatMap((blockNumber: number) => {
             this.firstBlockNumber = blockNumber;
             return this.contractManagerService.getEventDispatcherAbi();
@@ -136,9 +136,8 @@ export class EventHandlerService {
 
     private handlerDisconnects(error) {
         this.log.d("Disconnected from Provider");
-        this.web3  = this.web3Service.openConnection();
-        of(this.web3Service.openConnection()).pipe(
-        map((web3: boolean) => {
+        Web3Service.getWeb3().pipe(
+        map((web3: Web3) => {
             this.web3 = web3;
             this.contract = new this.web3.eth.Contract(this.eventDispatcherContract.abi, this.contractAddressEventDispatcher);
             this.eventsSubscription();

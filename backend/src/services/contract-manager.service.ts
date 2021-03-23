@@ -34,11 +34,9 @@ export class ContractManagerService {
 
     public constructor(
         private httpSrv: HttpService,
-        private web3Service: Web3Service,
         private loggerSrv: LoggerService
     ) {
         this.log = loggerSrv.get("ContractManagerService");
-        this.web3 = this.web3Service.openConnection();
         this.contracts = new Array<ITrbSmartContact>();
         this.initObs = this.init();
     }
@@ -83,9 +81,9 @@ export class ContractManagerService {
 
     private init(): Observable<string> {
         this.log.d("Initializing Contract Manager Service");
-        this.web3 = this.web3Service.openConnection();
-        return from(this.web3.eth.net.isListening()).pipe(
-            flatMap((res: boolean) => {
+        return Web3Service.getWeb3().pipe(
+            flatMap((web3: Web3) => {
+                this.web3 = web3;
                 return this.httpSrv.get(BackendConfig.PROXY_MANAGER_CONTRACT_URL);
             }),
             flatMap(response => {

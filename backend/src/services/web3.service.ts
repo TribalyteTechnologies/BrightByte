@@ -1,21 +1,31 @@
-import { Injectable } from "@nestjs/common";
 import { BackendConfig } from "../backend.config";
-import { ILogger, LoggerService } from "../logger/logger.service";
 import Web3 from "web3";
+import { from, Observable, throwError, timer } from "rxjs";
+import { map, retryWhen, tap, delayWhen } from "rxjs/operators";
 
-@Injectable()
 export class Web3Service {
 
-    private log: ILogger;
+    private static readonly TIME_OUT_MILIS = 3000;
+    private static readonly RETRY_LIMIT = 20;
 
-    public constructor(
-        loggerSrv: LoggerService
-    ) {
-        this.log = loggerSrv.get("Web3Service");
-    }
-
-    public openConnection(): Web3 {
-        this.log.d("Opening a new Wesocket connection via Web3");
-        return new Web3(new Web3.providers.WebsocketProvider(BackendConfig.NODE_CONFIG_URL));
+    public static getWeb3(): Observable<Web3> {
+        let attempt = 1;
+        const web3 = new Web3(new Web3.providers.WebsocketProvider(BackendConfig.NODE_CONFIG_URL));
+        return from(web3.eth.net.isListening()).pipe(
+            retryWhen(errors => errors.pipe(
+                delayWhen(e => timer(this.TIME_OUT_MILIS * attempt)),
+                tap(e => {
+                    if (++attempt >= this.RETRY_LIMIT) {
+                        throw e;
+                    }
+                })
+            )),
+            map(isConnected => {
+                if (!isConnected) {
+                    throw throwError("Connection not open");
+                }
+                return web3;
+            })
+        );
     }
 }
