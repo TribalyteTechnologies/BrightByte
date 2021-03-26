@@ -53,7 +53,7 @@
                     </ion-item>
                 </div>
                 <div class="custom-spinner" *ngIf="showSpinner">
-                    <ion-spinner name="bubbles"></ion-spinner>
+                    <ion-spinner name="lines"></ion-spinner>
                 </div>
                 <div *ngIf="!areProvidersWorking && isFinishedLoadingRepo">
                     <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.providersNotWorking" | translate }} </ion-label>                
@@ -119,7 +119,7 @@
         <div class="label label__error">{{ msg }}</div>
     </ion-row>
     <div class="custom-spinner" *ngIf="isTxOngoing && commitMethod === 'url'">
-        <ion-spinner name="bubbles"></ion-spinner>
+        <ion-spinner name="lines"></ion-spinner>
     </div>
     <progress-bar *ngIf="isUpdatingByBatch" [progress] = "updatingProgress"></progress-bar> 
     <ion-row>
