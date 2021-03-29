@@ -30,7 +30,7 @@
                 </ion-list>
 
                 <ion-infinite-scroll (ionInfinite)="refresh($event)" *ngIf="!disabledInfiniteScroll">
-                    <ion-infinite-scroll-content loadingSpinner="bubbles"
+                    <ion-infinite-scroll-content loadingSpinner="circles"
                         loadingText="{{ 'commitReview.loadMoreCommits' | translate }}">
                     </ion-infinite-scroll-content>
                 </ion-infinite-scroll>
@@ -54,7 +54,7 @@
                         </ion-row>
                     </ion-col>
                     <ion-col col-1 *ngIf="(isSpinnerLoadingObs | async)">
-                        <ion-spinner name="bubbles"></ion-spinner>
+                        <ion-spinner name="cricles"></ion-spinner>
                     </ion-col>
                 </ion-row>
                 <ion-row *ngIf="needReview" padding class="title-left text-details text-details--bold">
