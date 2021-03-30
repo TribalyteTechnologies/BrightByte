@@ -69,7 +69,7 @@ export class ContractManagerService {
         this.log = loggerSrv.get("ContractManagerService");
     }
 
-    public init(text: string, pass: string, cont: number): Promise<Array<ITrbSmartContact>> {
+    public init(account: Account, cont: number): Promise<Array<ITrbSmartContact>> {
         AppConfig.CURRENT_NODE_INDEX = cont;
         let configNet = AppConfig.NETWORK_CONFIG[cont];
         this.log.d("Initializing service with user ",  AppConfig.NETWORK_CONFIG[cont]);
@@ -77,7 +77,7 @@ export class ContractManagerService {
         return Web3Service.getWeb3()
         .then(res => {
             this.web3 = res;
-            this.currentUser = this.getUserAccount(text, pass);
+            this.currentUser = account;
             let promBright = this.http.get(AppConfig.BRIGHT_CONTRACT_PATH).toPromise()
                 .then((jsonContractData: IContractJson) => {
                     this.contractJsonBright = jsonContractData;
@@ -157,7 +157,8 @@ export class ContractManagerService {
     }
 
     public getUserAccount(text: string, pass: string): Account {
-        return this.web3.eth.accounts.decrypt(text, pass);
+        const web3: Web3 = Web3Service.getStaticWeb3();
+        return web3.eth.accounts.decrypt(text, pass);
     }
 
     public setBaseContracts(teamUid: number, version?: number): Promise<Array<ITrbSmartContact>> {

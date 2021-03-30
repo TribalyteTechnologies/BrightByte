@@ -188,7 +188,9 @@ export class LoginForm {
                 if (this.isKeepCredentialsOn) {
                     this.userLoggerService.setAccount(this.text, pass);
                 }
-                this.checkNodesAndOpenHomePage(this.text, pass, 0)
+                let account = this.contractManager.getUserAccount(this.text, pass);
+                this.password = pass;
+                this.checkNodesAndOpenHomePage(account, 0)
                 .then((result) => {
                     this.spinnerService.hideLoader();
                     return true;
@@ -196,7 +198,6 @@ export class LoginForm {
                     this.spinnerService.hideLoader();     
                     this.msg = "app.connectionFailure";
                     this.log.e("There is no node available for connection", e);
-                       
                 });
             }
         } catch (e) { 
@@ -366,15 +367,12 @@ export class LoginForm {
         });
     }
 
-    private checkNodesAndOpenHomePage(text: string, pass: string, currentNodeIndex: number): Promise<boolean> {
+    private checkNodesAndOpenHomePage(account: Account, currentNodeIndex: number): Promise<boolean> {
         let prom = Promise.resolve(false);
-        let account: Account;
         let isAlreadyRegisteredToTeam;
         if (currentNodeIndex >= 0 && currentNodeIndex < AppConfig.NETWORK_CONFIG.length) {
-            prom = this.contractManager.init(text, pass, currentNodeIndex)
+            prom = this.contractManager.init(account, currentNodeIndex)
             .then(() => {
-                account = this.contractManager.getUserAccount(this.text, pass);
-                this.password = pass;
                 this.userLoggerService.setLogAccount(this.text, this.password);
                 this.log.d("Imported account from the login file: ", account);
                 this.loginService.setAccount(account);
@@ -400,7 +398,7 @@ export class LoginForm {
             })
             .catch((e) => {
                 this.log.d("Failure to access the node " + currentNodeIndex);
-                return (this.checkNodesAndOpenHomePage(text, pass, currentNodeIndex + 1));
+                return (this.checkNodesAndOpenHomePage(account, currentNodeIndex + 1));
             });
         }
         return prom;
