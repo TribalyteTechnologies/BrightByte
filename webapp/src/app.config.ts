@@ -3,6 +3,7 @@ import { SocketIoConfig } from "ng-socket-io";
 
 export class AppConfig {
 
+    public static readonly PRODUCTION = false;
     public static readonly LOG_DEBUG = true;
     public static readonly IS_CUSTOM_NET = false;
 
