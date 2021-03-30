@@ -505,7 +505,7 @@ export class AddCommitPopover {
         }).then(user => {
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
-            this.log.d("Bitbucket service not available: ", e);
+            this.log.e("Bitbucket service not available: ", e);
         });
     }
 
@@ -523,7 +523,7 @@ export class AddCommitPopover {
         }).then(user => {
             this.log.d("Waiting for the user to introduce their github credentials");
         }).catch(e => {
-            this.log.d("Github service not available: ", e);
+            this.log.e("Github service not available: ", e);
         });
     }
 
@@ -641,6 +641,8 @@ export class AddCommitPopover {
     }
 
     private init(): Promise<void> {
+        this.userTeam = this.contractManagerService.getCurrentTeam();
+        this.log.d("The user team is: ", this.userTeam);
         return this.contractManagerService.getAllUserReputation(this.INITIAL_SEASON_INDEX, true)
         .then((allReputations: Array<UserReputation>) => {
             this.log.d("All user reputations: ", allReputations);
@@ -656,10 +658,6 @@ export class AddCommitPopover {
             } else{
                 this.setStorageEmails();
             }
-            return this.contractManagerService.getCurrentTeam();
-        }).then(userTeam =>  {
-            this.log.d("The user team is: ", userTeam);
-            this.userTeam = userTeam;
             return this.loadBatchConfig();
         }).catch((e) => {
             this.showGuiMessage("addCommit.errorAddView", e);
