@@ -17,11 +17,11 @@ export class LoggerService {
     private logFns = [console.log, console.warn ? console.warn : console.log, console.error ? console.error : console.log];
     private msgPrefixes = [["[", "]"], ["[", "] WARN: "], ["[", "] ERROR: "]];
     private logDebug = false;
-    private production = false;
+    private logWarnAndErrs = false;
 
-    constructor(logDebug = false, production = false) {
+    constructor(logDebug = false, logWarnAndErrs = false) {
         this.logDebug = logDebug;
-        this.production = production;
+        this.logWarnAndErrs = logWarnAndErrs;
     }
 
     public get(prefix: string) {
@@ -41,7 +41,7 @@ export class LoggerService {
                 };
             });
             ret = {
-                d: this.production ? function (...args: any[]) {/*empty block*/ } :  loggerFns[0],
+                d: this.logWarnAndErrs ? function (...args: any[]) {/*empty block*/ } :  loggerFns[0],
                 w: loggerFns[1],
                 e: loggerFns[2]
             };
