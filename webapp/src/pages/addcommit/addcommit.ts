@@ -22,6 +22,7 @@ import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
 import { BackendBitbucketConfig } from "../../models/backend-bitbucket-config.model";
 import { BackendGithubConfig } from "../../models/backend-github-config.model";
 import { UserReputation } from "../../models/user-reputation.model";
+import { SpinnerService } from "../../core/spinner.service";
 
 @Component({
     selector: "popover-addcommit",
@@ -99,7 +100,8 @@ export class AddCommitPopover {
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
         private bitbucketSrv: BitbucketService,
-        private githubSrv: GithubService
+        private githubSrv: GithubService,
+        private spinnerService: SpinnerService
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -122,6 +124,7 @@ export class AddCommitPopover {
         this.isWorkspaceCorrect = true;
         this.isOrganizationCorrect = true;
         this.areProvidersWorking = true;
+        this.spinnerService.showLoader();
         this.init().then(() => {
             this.log.d("Subscribing to event emitter");
             this.bitbucketLoginSubscription = this.bitbucketSrv.getLoginEmitter()
@@ -142,6 +145,7 @@ export class AddCommitPopover {
                     return this.loadUserPendingCommitsGithub();
                 });
             });
+            this.spinnerService.hideLoader();
         });
     }
 
