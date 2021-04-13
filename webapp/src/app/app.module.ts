@@ -160,7 +160,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ],
     providers: [
         AppConfig,
-        { provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG, AppConfig.PRODUCTION) },
+        { provide: LoggerService, useFactory: () => new LoggerService(AppConfig.LOG_DEBUG, AppConfig.LOG_WARN_AND_ERRS) },
         LoginService,
         HttpClientModule,
         SpinnerService,
