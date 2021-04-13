@@ -509,7 +509,7 @@ export class AddCommitPopover {
         }).then(user => {
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
-            this.log.e("Error: ", e);
+            this.log.d("Error: ", e);
         });
     }
 
@@ -527,7 +527,7 @@ export class AddCommitPopover {
         }).then(user => {
             this.log.d("Waiting for the user to introduce their github credentials");
         }).catch(e => {
-            this.log.e("Github: ", e);
+            this.log.d("Github: ", e);
         });
     }
 
