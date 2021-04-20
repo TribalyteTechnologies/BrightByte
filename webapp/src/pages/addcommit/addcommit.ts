@@ -22,7 +22,6 @@ import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
 import { BackendBitbucketConfig } from "../../models/backend-bitbucket-config.model";
 import { BackendGithubConfig } from "../../models/backend-github-config.model";
 import { UserReputation } from "../../models/user-reputation.model";
-import { SpinnerService } from "../../core/spinner.service";
 
 @Component({
     selector: "popover-addcommit",
@@ -31,7 +30,6 @@ import { SpinnerService } from "../../core/spinner.service";
 export class AddCommitPopover {
 
     public readonly BATCH_METHOD = "batch";
-    public readonly SEASON_IN_MONTHS = 3;
     public isTxOngoing = false;
     public msg: string;
     public usersMail = new Array<string>();
@@ -43,14 +41,15 @@ export class AddCommitPopover {
     public isWorkspaceCorrect: boolean;
     public isOrganizationCorrect: boolean;
     public areProvidersWorking: boolean;
+    public isReady: boolean;
 
     public bitbucketForm: FormGroup;
     public bitbucketUser: string;
     public githubUser: string;
     public bitbucketProjects = new Array<string>();
-    public formUrl = "";
-    public formTitle = "";
-    public currentProject = "";
+    public formUrl: string;
+    public formTitle: string;
+    public currentProject: string;
     public commitMethod = "url";
     public currentSeasonStartDate: Date;
     public isoStartDate: string;
@@ -65,7 +64,7 @@ export class AddCommitPopover {
     public showNextReposOption = false;
     public isUpdatingByBatch = false;
     public updatingProgress = 0;
-    public searchInput = "";
+    public searchInput: string;
     public isRandomReviewers: boolean;
 
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
@@ -100,8 +99,7 @@ export class AddCommitPopover {
         private storageSrv: LocalStorageService,
         private loginService: LoginService,
         private bitbucketSrv: BitbucketService,
-        private githubSrv: GithubService,
-        private spinnerService: SpinnerService
+        private githubSrv: GithubService
     ) {
         let validator = FormatUtils.getUrlValidatorPattern();
         this.log = this.loggerSrv.get("AddCommitPage");
@@ -124,9 +122,10 @@ export class AddCommitPopover {
         this.isWorkspaceCorrect = true;
         this.isOrganizationCorrect = true;
         this.areProvidersWorking = true;
-        this.spinnerService.showLoader();
+        this.isReady = false;
         this.init().then(() => {
             this.log.d("Subscribing to event emitter");
+            this.isReady = true;
             this.bitbucketLoginSubscription = this.bitbucketSrv.getLoginEmitter()
             .subscribe(res => {
                 this.log.d("Provider authentication completed", res);
@@ -145,7 +144,6 @@ export class AddCommitPopover {
                     return this.loadUserPendingCommitsGithub();
                 });
             });
-            this.spinnerService.hideLoader();
         });
     }
 
@@ -307,8 +305,11 @@ export class AddCommitPopover {
         this.commitMethod = method;
         this.clearGuiMessage();
         if (this.commitMethod === this.BATCH_METHOD) {
+            this.showSpinner = true;
             this.selectedRepositories = new Array<Repository>();
-            this.tryLoginGithub().then(() => {
+            this.loadBatchConfig().then(() => {
+                return this.tryLoginGithub();
+            }).then(() => {
                 this.log.d("The user has logged to github");
                 return this.tryLoginBitbucket();
             }).then(() => {
@@ -662,7 +663,6 @@ export class AddCommitPopover {
             } else{
                 this.setStorageEmails();
             }
-            return this.loadBatchConfig();
         }).catch((e) => {
             this.showGuiMessage("addCommit.errorAddView", e);
         });

@@ -85,23 +85,27 @@
     <ion-row padding class="form-container form-container__form-top-rounded">
         <ion-col>
             <ion-row class="text-details text-details--bold">{{ "addCommit.users" | translate }}:</ion-row>
-            <ng-container *ngIf="!isRandomReviewers; else randomReview">
-                <ion-row>
-                    <input [(ngModel)]="searchInput" type="text" class="dropdown dropdown__search" (ngModelChange)="refreshSearchbar()" placeholder="email@example.com">
-                </ion-row>
-                <ion-row class="text-description list-card" *ngFor="let item of arraySearch" (click)="setEmailFromList(item)">
-                    {{ item }}
-                </ion-row>
-            </ng-container>
-            <ng-template #randomReview>
-                <ion-row>
-                    <div class="text-details text-details--bold">{{ "addCommit.noAvailableSelectReviewers" | translate }}</div>
-                    <div class="tooltip info-icon">
-                        <ion-icon name="ios-information-circle-outline"></ion-icon>
-                        <div class="tooltip-text">{{ "addCommit.randomReviewersDescription" | translate }}</div>
-                    </div>
-                </ion-row>
-                
+            <div class="custom-spinner" *ngIf="!isReady; else isReady">
+                <ion-spinner name="circles"></ion-spinner>
+            </div>
+            <ng-template #isReady>
+                <ng-container *ngIf="!isRandomReviewers ; else randomReview">
+                    <ion-row>
+                        <input [(ngModel)]="searchInput" type="text" class="dropdown dropdown__search" (ngModelChange)="refreshSearchbar()" placeholder="email@example.com">
+                    </ion-row>
+                    <ion-row class="text-description list-card" *ngFor="let item of arraySearch" (click)="setEmailFromList(item)">
+                        {{ item }}
+                    </ion-row>
+                </ng-container>
+                <ng-template #randomReview>
+                    <ion-row>
+                        <div class="text-details text-details--bold">{{ "addCommit.noAvailableSelectReviewers" | translate }}</div>
+                        <div class="tooltip info-icon">
+                            <ion-icon name="ios-information-circle-outline"></ion-icon>
+                            <div class="tooltip-text">{{ "addCommit.randomReviewersDescription" | translate }}</div>
+                        </div>
+                    </ion-row>
+                </ng-template>
             </ng-template>
         </ion-col>
     </ion-row>
