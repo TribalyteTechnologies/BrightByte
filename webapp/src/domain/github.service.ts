@@ -77,7 +77,7 @@ export class GithubService {
             this.eventEmitter.emit(true);
             return true;
         }).catch(async err => {
-            this.log.e("Error getting the provider api:", err);
+            this.log.w("Error getting the provider api:", err);
             let ret = await this.refreshToken();
             this.log.d("The refresh response is", ret);
             return false;
@@ -215,7 +215,7 @@ export class GithubService {
             this.log.d("Refreshing token", authUrl);
             return authUrl;
         }).catch(e => {
-            this.log.e("Github Provider not defined, feature not available");
+            this.log.w("Github Provider not defined, feature not available");
             throw e;
         });
     }

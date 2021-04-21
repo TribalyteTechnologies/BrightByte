@@ -33,39 +33,29 @@ export class AddCommitPopover {
     public isTxOngoing = false;
     public msg: string;
     public usersMail = new Array<string>();
-    public isShowList = new Array<boolean>();
-    public mockInputElementList = new Array<any>();
     public arraySearch = new Array<string>();
     public myForm: FormGroup;
     public userAdded = new Array<string>();
-    public isWorkspaceCorrect: boolean;
-    public isOrganizationCorrect: boolean;
     public areProvidersWorking: boolean;
     public isReady: boolean;
-
-    public bitbucketForm: FormGroup;
-    public bitbucketUser: string;
-    public githubUser: string;
-    public bitbucketProjects = new Array<string>();
+    public areProvidersDefined: boolean;
+    public isServiceAvailable: boolean;
+    public isBatchLogged: boolean;
+    public showSpinner: boolean;
+    public isRandomReviewers: boolean;
+    public showNextReposOption: boolean;
+    public isUpdatingByBatch: boolean;
+    
     public formUrl: string;
     public formTitle: string;
-    public currentProject: string;
     public commitMethod = "url";
-    public currentSeasonStartDate: Date;
     public isoStartDate: string;
-    public hasNewCommits = false;
-    public isFinishedLoadingRepo = false;
-
-    public selectedRepositories = new Array<Repository>();
-    public repoSelection: Repository;
-    public isBatchLogged = false;
-    public isServiceAvailable = false;
-    public showSpinner = false;
-    public showNextReposOption = false;
-    public isUpdatingByBatch = false;
+    public hasNewCommits: boolean;
+    public isFinishedLoadingRepo: boolean;
     public updatingProgress = 0;
     public searchInput: string;
-    public isRandomReviewers: boolean;
+    public selectedRepositories = new Array<Repository>();
+    public repoSelection: Repository;
 
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
@@ -87,6 +77,15 @@ export class AddCommitPopover {
     private nextRepositoriesUrl: Map<string, string>;
     private seasonDate: Date;
     private seasonLengthIndays: number;
+    private isWorkspaceCorrect: boolean;
+    private isOrganizationCorrect: boolean;
+    private isWorkspaceDefined: boolean;
+    private isOrganizationDefined: boolean;
+    private isGithubServiceAvailable: boolean;
+    private isBitbuckerServiceAvailable: boolean;
+    private bitbucketUser: string;
+    private currentSeasonStartDate: Date;
+
 
     constructor(
         public navCtrl: NavController,
@@ -109,11 +108,6 @@ export class AddCommitPopover {
             title: ["", [Validators.required]]
         });
 
-
-        this.bitbucketForm = this.fb.group({
-            username: ["", [Validators.required]],
-            password: ["", [Validators.required]]
-        });
         this.userAddress = this.loginService.getAccountAddress();
         this.userDetailsProm = this.contractManagerService.getUserDetails(this.userAddress);
     }
@@ -122,8 +116,11 @@ export class AddCommitPopover {
         this.isWorkspaceCorrect = true;
         this.isOrganizationCorrect = true;
         this.areProvidersWorking = true;
+        this.areProvidersDefined = true;
         this.isReady = false;
+        this.showSpinner = true;
         this.init().then(() => {
+            this.showSpinner = false;
             this.log.d("Subscribing to event emitter");
             this.isReady = true;
             this.bitbucketLoginSubscription = this.bitbucketSrv.getLoginEmitter()
@@ -131,7 +128,6 @@ export class AddCommitPopover {
                 this.log.d("Provider authentication completed", res);
                 this.bitbucketSrv.getUsername().then((user) => {
                     this.bitbucketUser = user;
-                    this.setBatch();
                     return this.loadUserPendingCommitsAndPrs();
                 });
             });
@@ -139,8 +135,6 @@ export class AddCommitPopover {
             .subscribe(res => {
                 this.log.d("Provider authentication completed", res);
                 this.githubSrv.getUsername().then((user) => {
-                    this.githubUser = user.login;
-                    this.setBatch();
                     return this.loadUserPendingCommitsGithub();
                 });
             });
@@ -305,21 +299,31 @@ export class AddCommitPopover {
         this.commitMethod = method;
         this.clearGuiMessage();
         if (this.commitMethod === this.BATCH_METHOD) {
+            this.setBatch();
             this.showSpinner = true;
+            this.isOrganizationCorrect = true;
+            this.isWorkspaceCorrect = true;
+            this.isBitbuckerServiceAvailable = true;
+            this.areProvidersDefined = true;
+            this.isGithubServiceAvailable = true;
             this.selectedRepositories = new Array<Repository>();
+            this.isServiceAvailable = true;
             this.loadBatchConfig().then(() => {
                 return this.tryLoginGithub();
             }).then(() => {
                 this.log.d("The user has logged to github");
                 return this.tryLoginBitbucket();
             }).then(() => {
+                this.areProvidersDefined = this.isOrganizationDefined || this.isWorkspaceDefined;
+                this.isServiceAvailable = this.isBitbuckerServiceAvailable || this.isGithubServiceAvailable;
+                this.showSpinner = this.areProvidersDefined && this.isServiceAvailable;
                 this.log.d("The user has logged to bitbucket");
             });
         }
     }
 
     public addRepoStartingFrom(repoSelection: Repository, commitIndex = 0, prIndex = 0, updatedProgress = 0) {
-        this.log.w("The selected repo is", repoSelection);
+        this.log.d("The selected repo is", repoSelection);
         let errMsgId: string;
         if (this.userAdded.every(userEmail => !userEmail)) {
             errMsgId = "addCommit.emptyInput";
@@ -413,7 +417,6 @@ export class AddCommitPopover {
     }
 
     public loadUserPendingCommitsAndPrs(): Promise<void> {
-        this.isWorkspaceCorrect = true;
         this.showSpinner = true;
         return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
         .then((config: BackendBitbucketConfig) => {
@@ -436,14 +439,13 @@ export class AddCommitPopover {
             });
         }).then(() => {
             this.showSpinner = false;
-            this.isServiceAvailable = true;
             this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the respos", this.selectedRepositories);
         }).catch(err => { 
-            this.showSpinner = false;
             this.isWorkspaceCorrect = false;
             this.areProvidersWorking = this.isOrganizationCorrect || this.isWorkspaceCorrect;
-            this.log.e("Error loading commits and PRs: " + err); 
+            this.showSpinner = this.areProvidersWorking;
+            this.log.w("Error loading commits and PRs: " + err); 
         });
     }
 
@@ -470,13 +472,12 @@ export class AddCommitPopover {
             this.log.d("The repositories from Github are: ", repositories);
             repositories.forEach(orgRepositories => orgRepositories.forEach(repo => this.selectedRepositories.push(repo)));
             this.hasNewCommits = repositories.length > 0;
-            this.isServiceAvailable = true;
             this.isFinishedLoadingRepo = true;
             this.log.d("All the commits from the repos", this.selectedRepositories);
         }).catch(err => { 
-            this.showSpinner = false;
             this.isOrganizationCorrect = false;
             this.areProvidersWorking = this.isOrganizationCorrect || this.isWorkspaceCorrect;
+            this.showSpinner = this.areProvidersWorking;
             this.log.e("Error loading commits from provider (Github): " + err); 
         });
     }
@@ -500,14 +501,18 @@ export class AddCommitPopover {
         this.userAddress = this.loginService.getAccountAddress();
         this.currentVersion = this.loginService.getCurrentVersion();
         this.log.d("The user is going to login with Bitbucket provider");
+        this.isWorkspaceDefined = false;
+        this.isBitbuckerServiceAvailable = true;
         return this.bitbucketSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
         .then((config: BackendBitbucketConfig) => {
             const workspaces = config.bitbucketWorkspaces;
-            let promise = workspaces.length > 0 ? 
+            this.isWorkspaceDefined = workspaces.length > 0;
+            let promise = this.isWorkspaceDefined ? 
                 this.bitbucketSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
                 Promise.reject("No Bitbucket workspaces available");
             return promise;
-        }).then(user => {
+        }).then(isServiceAvailable => {
+            this.isBitbuckerServiceAvailable = isServiceAvailable;
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
             this.log.d("Error: ", e);
@@ -518,17 +523,21 @@ export class AddCommitPopover {
         this.userAddress = this.loginService.getAccountAddress();
         this.currentVersion = this.loginService.getCurrentVersion();
         this.log.d("The user is going to login with Github provider");
+        this.isOrganizationDefined = false;
+        this.isGithubServiceAvailable = true;
         return this.githubSrv.getTeamBackendConfig(this.userTeam, this.userAddress, this.currentVersion)
         .then((config: BackendGithubConfig) => {
             let organizations = config.githubOrganizations;
+            this.isOrganizationDefined = organizations.length > 0;
             let promise = organizations.length > 0 ? 
                 this.githubSrv.checkProviderAvailability(this.userAddress, this.userTeam, this.currentVersion) :
                 Promise.reject("No github organizations available");
             return promise;
-        }).then(user => {
+        }).then(isServiceAvailable => {
+            this.isGithubServiceAvailable = isServiceAvailable;
             this.log.d("Waiting for the user to introduce their github credentials");
         }).catch(e => {
-            this.log.d("Github: ", e);
+            this.log.d("Error: ", e);
         });
     }
 

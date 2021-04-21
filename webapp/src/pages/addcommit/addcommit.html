@@ -10,7 +10,7 @@
         </ion-row>
     </ng-template>
     <ion-segment [(ngModel)]="commitMethod" (ionChange)="setUploadMethodAndProceed($event.value)">
-        <ion-segment-button *ngFor="let upMethod of [ 'url', 'batch']" [value]="upMethod">
+        <ion-segment-button [disabled]="!isReady || showSpinner" *ngFor="let upMethod of [ 'url', 'batch']" [value]="upMethod">
           <ion-label>{{ "addCommit.tabSelection-" + upMethod | translate }}</ion-label>
         </ion-segment-button>
       </ion-segment>
@@ -55,7 +55,13 @@
                 <div class="custom-spinner" *ngIf="showSpinner">
                     <ion-spinner name="circles"></ion-spinner>
                 </div>
-                <div *ngIf="!areProvidersWorking && isFinishedLoadingRepo">
+                <div *ngIf="!isServiceAvailable">
+                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.providerServiceNotAvailable" | translate }} </ion-label>                
+                </div>
+                <div *ngIf="!areProvidersDefined && isServiceAvailable">
+                    <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.providersNotDefined" | translate }} </ion-label>                
+                </div>
+                <div *ngIf="!areProvidersWorking && isServiceAvailable">
                     <ion-label item-right class="text-details text-details--bold"> {{ "addCommit.providersNotWorking" | translate }} </ion-label>                
                 </div>
                 <div *ngIf="!hasNewCommits && isFinishedLoadingRepo">
@@ -73,11 +79,6 @@
                 </div>
             </ion-list>
         </ion-col>
-        <ng-template #notLogged>
-            <ion-col *ngIf="!isServiceAvailable && !areProvidersWorking">
-                <ion-label> {{ "addCommit.providerServiceNotAvailable" | translate }} </ion-label>
-            </ion-col>
-        </ng-template>
     </ion-row>
 
     <ion-row padding></ion-row>
@@ -85,10 +86,10 @@
     <ion-row padding class="form-container form-container__form-top-rounded">
         <ion-col>
             <ion-row class="text-details text-details--bold">{{ "addCommit.users" | translate }}:</ion-row>
-            <div class="custom-spinner" *ngIf="!isReady; else isReady">
+            <div class="custom-spinner" *ngIf="!isReady; else userListReady">
                 <ion-spinner name="circles"></ion-spinner>
             </div>
-            <ng-template #isReady>
+            <ng-template #userListReady>
                 <ng-container *ngIf="!isRandomReviewers ; else randomReview">
                     <ion-row>
                         <input [(ngModel)]="searchInput" type="text" class="dropdown dropdown__search" (ngModelChange)="refreshSearchbar()" placeholder="email@example.com">
