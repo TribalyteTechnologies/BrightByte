@@ -21,7 +21,7 @@ import { GithubApiConstants, GithubService } from "../../domain/github.service";
 import { CommitInfo } from "../../models/bitbucket-github/commit-info.model";
 import { BackendBitbucketConfig } from "../../models/backend-bitbucket-config.model";
 import { BackendGithubConfig } from "../../models/backend-github-config.model";
-import { UserReputation } from "../../models/user-reputation.model";
+import { TeamMember } from "../../models/team-member.model";
 
 @Component({
     selector: "popover-addcommit",
@@ -60,7 +60,6 @@ export class AddCommitPopover {
     private readonly MAX_REVIEWERS = AppConfig.MAX_REVIEWER_COUNT;
     private readonly PERCENTAGE_RANGE = 99.99;
     private readonly FACTOR_PERCENTAGE_DECIMALS = 100; 
-    private readonly INITIAL_SEASON_INDEX = 0;
     private readonly BITBUCKET_PROVIDER = "Bitbucket";
     private readonly GITHUB_PROVIDER = "GitHub";
 
@@ -657,11 +656,12 @@ export class AddCommitPopover {
     private init(): Promise<void> {
         this.userTeam = this.contractManagerService.getCurrentTeam();
         this.log.d("The user team is: ", this.userTeam);
-        return this.contractManagerService.getAllUserReputation(this.INITIAL_SEASON_INDEX, true)
-        .then((allReputations: Array<UserReputation>) => {
-            this.log.d("All user reputations: ", allReputations);
-            this.allEmails = allReputations.map(userRep => userRep.email).sort();
-            const user = allReputations.filter(userRep => userRep.userHash === this.userAddress);
+        return this.contractManagerService.getTeamMembersInfo()
+        .then((teamMember: Array<Array<TeamMember>>) => {
+            const members = teamMember[0].concat(teamMember[1]);
+            this.log.d("Users: ", members);
+            this.allEmails = members.map(userRep => userRep.email).sort();
+            const user = members.filter(userRep => userRep.address === this.userAddress);
             this.userEmail = user[0].email;
             this.setUpList(this.searchInput);
             return this.contractManagerService.getRandomReviewer();
