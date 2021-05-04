@@ -1,4 +1,69 @@
 # Change Log
+#### v0.8.5-cloud 
+
+- Changed error message to debug
+- Improve add commit user experience
+- Improve add commit dialog
+
+#### v0.8.4-cloud
+
+- Removed unused and correction of comments
+- Fixed email link
+- Added Spinner to add commit dialog
+- Minor changes
+
+#### v0.8.3-cloud
+
+- Links color in notifcation email now are white instead of blue
+- Corrected spinner style to circles
+- Fix, show wrong password alert
+- Solved TypeError: l.bitbucketWorkspaces is undefined now it's displayed with a debug log instead of an error (in the console and in the GUI).
+- Remove the debug logs and only print warnings and errors
+
+#### v0.8.2-cloud
+
+- Refactored reminder email
+- Solved issue bitbucketWorkspaces is undefined
+- ReadMe: Add initial startup requirements
+- Corrected names in addCommit for GitHub in Bitbucket
+- Improve backend resilience make the backend retry connecting to geth with a max. time limit. After the timeout, it should exit (and hence the container exit too)
+-
+
+#### v0.8.1-cloud
+
+- Make team rules more visible in review page
+- Refactor the reminder email
+- Check providers logs errors
+
+
+#### v0.8.0-cloud
+
+- Refactor Web3 service
+- Prompt and refresh only when running on "/latest"
+- Fix Batch upload issue (Repeated repos when re-opening the tab)
+- Fix ERROR: nonce too low when using 2 tabs
+- New tools directory for deploy scripts
+- Fix issue: Adding yourself to the team
+- Add to Readme an explanation to configure github integration
+- Fix GitHub integration of private repos
+- Fix backend initialization from scratch.
+- Add tooltip to batch upload indicating the import start time
+
+#### v0.6.1-cloud 
+
+- Fix user registration for multinode
+
+#### v0.6.0-cloud
+
+- Disable backend initialization from previous block
+- Change web3Service to Singleton
+- Updated deploy scripts for redT
+- Refactored Polyfills acording to Angular 5 and Ionic 3
+- Added SafeMath to smart contracts
+- Minor change in set new version script
+- Refactor Smart contract tests (yarn install required)
+- Added achievements to season ranking and created component
+- Report abuse removed
 
 #### v0.5.2-cloud
 
