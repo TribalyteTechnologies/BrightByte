@@ -73,8 +73,8 @@
         "noAvailableSelectReviewers": "Reviewers are selected automatically",
         "selectedReviewers": "Selected reviewers",
         "randomReviewersDescription": "Up to four users are picked among the available team members",
-        "providersNotDefined": "The Bitbucket workspace and GitHub organization are not defined, please notify your team administrator.",
-        "providersNotWorking": "The Bitbucket workspace and GitHub organization are wrong, please notify your team administrator.",
+        "providersNotDefined": "There are no Bitbucket workspaces or GitHub organizations configured, please contact your team administrator.",
+        "providersNotWorking": "Incorrect Bitbucket workspace and/or GitHub organization configuration, please contact your team administrator.",
         "batchDateDescription": "Batch upload imports commits and PRs from your configured Git repositories starting at the beginning of the current season, which is {{seasonStart}}"
     },
     "commits": {
