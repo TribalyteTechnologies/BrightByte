@@ -1334,7 +1334,7 @@ export class ContractManagerService {
             let ret: Promise<any>;
             this.log.d("The current number of retries is: ", iterationIndex);
             if (AppConfig.ERROR_IDENTIFIERS.some(errorId => errorId === error.message)){
-                this.log.e("The current error is: ", error.message);
+                this.log.d("The current error is: ", error.message);
                 ret = this.callAndRetry(promiseFn, iterationIndex + 1);
             } else {
                 this.log.e("Error getting recursive view method:", error);
