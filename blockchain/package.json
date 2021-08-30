@@ -29,7 +29,7 @@
   "author": "Tribalyte Technologies",
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
-    "@openzeppelin/contracts": "3.3.0",
+    "@openzeppelin/contracts": "3.4.2",
     "@openzeppelin/test-helpers": "0.5.9",
     "@openzeppelin/upgrades": "2.8.0",
     "@truffle/contract": "4.3.2",
