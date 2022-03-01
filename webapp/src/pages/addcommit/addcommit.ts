@@ -308,15 +308,12 @@ export class AddCommitPopover {
             this.selectedRepositories = new Array<Repository>();
             this.isServiceAvailable = true;
             this.loadBatchConfig().then(() => {
-                return this.tryLoginGithub();
-            }).then(() => {
-                this.log.d("The user has logged to github");
-                return this.tryLoginBitbucket();
+                return Promise.all([this.tryLoginBitbucket(), this.tryLoginGithub()]);
             }).then(() => {
                 this.areProvidersDefined = this.isOrganizationDefined || this.isWorkspaceDefined;
                 this.isServiceAvailable = this.isBitbuckerServiceAvailable || this.isGithubServiceAvailable;
                 this.showSpinner = this.areProvidersDefined && this.isServiceAvailable;
-                this.log.d("The user has logged to bitbucket");
+                this.log.d("Batch upload set");
             });
         }
     }
@@ -514,7 +511,7 @@ export class AddCommitPopover {
             this.isBitbuckerServiceAvailable = isServiceAvailable;
             this.log.d("Waiting for the user to introduce their bitbucket credentials");
         }).catch(e => {
-            this.log.d("Error: ", e);
+            this.log.w("Ignoring error: ", e);
         });
     }
 
@@ -536,7 +533,7 @@ export class AddCommitPopover {
             this.isGithubServiceAvailable = isServiceAvailable;
             this.log.d("Waiting for the user to introduce their github credentials");
         }).catch(e => {
-            this.log.d("Error: ", e);
+            this.log.w("Ignoring error: ", e);
         });
     }
 
