@@ -4,7 +4,7 @@ import { SocketIoConfig } from "ng-socket-io";
 export class AppConfig {
 
     public static readonly LOG_WARN_AND_ERRS = true;
-    public static readonly LOG_DEBUG = true;
+    public static readonly LOG_DEBUG = false;
     public static readonly IS_CUSTOM_NET = false;
 
     public static readonly DEFAULT_LANGUAGE = "en";
