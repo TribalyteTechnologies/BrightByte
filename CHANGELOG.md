@@ -1,5 +1,17 @@
 # Change Log
-#### v0.8.5-cloud 
+#### v0.8.8-cloud
+
+- Make DB paths configurable via env variable
+
+#### v0.8.7-cloud
+
+- Improved error handling
+
+#### v0.8.6-cloud
+
+- Improved error handling
+
+#### v0.8.5-cloud
 
 - Changed error message to debug
 - Improve add commit user experience

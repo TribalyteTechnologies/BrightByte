@@ -24,14 +24,15 @@ export class CoreDatabaseService {
 
     public initDatabase(databaseName: string): Observable<Loki> {
         return new Observable<Loki>(observer => {
-            let database = new Loki(databaseName);
+            const dbPath = BackendConfig.DB_BASE_PATH + "/" + databaseName;
+            const database = new Loki(dbPath);
             database.loadDatabase({}, (err) => {
                 if (!err) {
-                    this.log.d(databaseName + " database loaded.");
+                    this.log.d(dbPath + " database loaded.");
                     observer.next(database);
                     observer.complete();
                 } else {
-                    this.log.d(databaseName + " database can't be loaded.");
+                    this.log.d(dbPath + " database can't be loaded.");
                     observer.error();
                 }
             });
