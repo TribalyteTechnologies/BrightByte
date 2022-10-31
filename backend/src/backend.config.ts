@@ -12,6 +12,7 @@ export class BackendConfig {
     public static readonly USER_DB_JSON = "brightbyte-user-db.json";
     public static readonly EVENT_DB_JSON = "brightbyte-event-db.json";
     public static readonly TEAMS_DB_JSON = "brightbyte-team-db.json";
+    public static readonly DB_BASE_PATH = process.env.DB_BASE_PATH || ".";
     public static readonly STATUS_SUCCESS = "OK";
     public static readonly STATUS_NOT_FOUND = "Not Found";
     public static readonly STATUS_FAILURE = "Error";
